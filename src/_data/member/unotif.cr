@@ -32,14 +32,14 @@ struct CV::Unotif
     end
   end
 
-  include Crorm::Model
-  include DB::Serializable::NonStrict
-
-  class_getter table = "unotifs"
   class_getter db : DB::Database = PGDB
+  ###
 
-  field id : Int32, primary: true
-  field viuser_id : Int32
+  include Crorm::Model
+  schema "unotifs", :postgres, strict: false
+
+  field id : Int32, pkey: true, auto: true
+  field viuser_id : Int32 = 0
 
   field content : String = ""
 
@@ -58,7 +58,7 @@ struct CV::Unotif
 
   def create!(db = @@db)
     stmt = <<-SQL
-      insert into #{@@table}(
+      insert into #{@@schema.table}(
         viuser_id, content,
         "action", "object_id", "byuser_id",
         created_at
@@ -69,34 +69,33 @@ struct CV::Unotif
     db.query_one stmt, @viuser_id, @content,
       @action, @object_id, @byuser_id,
       @created_at,
-      as: Unotif
+      as: self.class
   end
 
   def self.count_by_user(viuser_id : Int32)
     @@db.query_one(<<-SQL, viuser_id, as: Int32)
-      select COALESCE(COUNT(*), 0)::int from #{@@table}
+      select COALESCE(COUNT(*), 0)::int from #{@@schema.table}
       where viuser_id = $1
     SQL
   end
 
   def self.mark_as_read(ids : Enumerable(Int32), reached_at : Time = Time.utc)
-    Log.info { ids }
     @@db.query <<-SQL, reached_at, ids
-      update #{@@table} set reached_at = $1
+      update #{@@schema.table} set reached_at = $1
       where id = any ($2) and reached_at is null
     SQL
   end
 
   def self.count_unread(viuser_id : Int32)
     @@db.query_one(<<-SQL, viuser_id, as: Int32)
-      select COALESCE(COUNT(*), 0)::int from #{@@table}
+      select COALESCE(COUNT(*), 0)::int from #{@@schema.table}
       where viuser_id = $1 and reached_at is null
     SQL
   end
 
   def self.user_notifs(viuser_id : Int32, limit = 20, offset = 0) : Array(self)
     @@db.query_all <<-SQL, viuser_id, limit, offset, as: self
-      select * from #{@@table}
+      select * from #{@@schema.table}
       where viuser_id = $1
       order by created_at desc
       limit $2 offset $3
@@ -105,7 +104,7 @@ struct CV::Unotif
 
   def self.user_unread_notifs(viuser_id : Int32, limit = 20, offset = 0) : Array(self)
     @@db.query_all <<-SQL, viuser_id, limit, offset, as: self
-      select * from #{@@table}
+      select * from #{@@schema.table}
       where viuser_id = $1 and reached_at is null
       order by created_at desc
       limit $2 offset $3
@@ -114,7 +113,7 @@ struct CV::Unotif
 
   def self.find(action : Action, object_id : Int32, byuser_id : Int32)
     @@db.query_one? <<-SQL, action.value, object_id, byuser_id, as: self
-      select * from #{@@table}
+      select * from #{@@schema.table}
       where "action" = $1 and object_id = $2 and byuser_id = $3
       limit 1
     SQL
@@ -122,7 +121,7 @@ struct CV::Unotif
 
   def self.remove_notif(action : Action, object_id : Int32, byuser_id : Int32)
     @@db.query <<-SQL, action.value, object_id, byuser_id
-      delete from #{@@table}
+      delete from #{@@schema.table}
       where "action" = $1 and object_id = $2 and byuser_id = $3
       SQL
   end

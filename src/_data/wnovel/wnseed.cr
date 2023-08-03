@@ -25,11 +25,11 @@ class CV::Wnseed
   ############
 
   include Crorm::Model
+  schema "wnseeds", :postgres
 
-  class_getter table = "wnseeds"
   class_getter db : DB::Database = PGDB
 
-  field id : Int32, primary: true
+  field id : Int32, pkey: true, auto: true
 
   field wn_id : Int32 = 0
   field sname : String = ""

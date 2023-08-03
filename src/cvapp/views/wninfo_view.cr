@@ -16,8 +16,8 @@ struct CV::WninfoView
       jb.field "id", @data.id
       jb.field "bslug", "#{@data.id}-#{@data.bslug}"
 
-      jb.field "vauthor", @data.author.vname
-      jb.field "vtitle", @data.vname
+      jb.field "vauthor", @data.author_vi
+      jb.field "vtitle", @data.btitle_vi
 
       jb.field "genres", @data.vgenres
       jb.field "bcover", cover_url
@@ -32,9 +32,9 @@ struct CV::WninfoView
         jb.field "bintro", @data.bintro
         jb.field "labels", @data.vlabels
 
-        jb.field "zauthor", @data.author.zname
-        jb.field "ztitle", @data.btitle.zname
-        jb.field "htitle", @data.btitle.hname
+        jb.field "zauthor", @data.author_zh
+        jb.field "ztitle", @data.btitle_zh
+        jb.field "htitle", @data.btitle_hv
 
         jb.field "origins", @data.orig_links
       end

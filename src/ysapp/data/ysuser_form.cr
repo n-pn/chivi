@@ -6,12 +6,12 @@ require "../_raw/raw_yscrit"
 require "../../mtapp/sp_core"
 
 class YS::YsuserForm
+  class_getter db : DB::Database = PG_DB
+
   include Crorm::Model
+  schema "ysusers", :postgres
 
-  @@table = "ysusers"
-  @@db : DB::Database = PG_DB
-
-  field id : Int32, primary: true
+  field id : Int32, pkey: true
 
   field zname : String = ""
   field vname : String = ""
@@ -63,18 +63,8 @@ class YS::YsuserForm
 
   ###############
 
-  def self.find(id : Int32)
-    stmt = String.build do |sql|
-      sql << "select "
-      @@load_fields.join(sql, ", ")
-      sql << " from #{@@table} where id = $1"
-    end
-
-    PG_DB.query_one?(stmt, id, as: self)
-  end
-
   def self.load(id : Int32)
-    find(id: id) || new(id: id)
+    get(id: id) || new(id: id)
   end
 
   def self.bulk_upsert!(raws : Enumerable(EmbedUser))

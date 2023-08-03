@@ -1,5 +1,5 @@
+require "crorm/model"
 require "../_data"
-require "crorm"
 
 class CV::Blabel
   enum Type : Int16
@@ -12,13 +12,13 @@ class CV::Blabel
     Seed = 11
   end
 
-  include Crorm::Model
-  include DB::Serializable::NonStrict
-
-  class_getter table = "blabels"
   class_getter db : DB::Database = PGDB
+  ###
 
-  field name : String
+  include Crorm::Model
+  schema "blabels", :postgres, strict: false
+
+  field name : String, pkey: true, auto: true
   field type : Int16 = 0
 
   field slug : String = ""
@@ -65,9 +65,7 @@ class CV::Blabel
   end
 
   def self.fetch_all(type : Type)
-    @@db.query_all <<-SQL, type.value, as: self
-      select * from #{@@table} where "type" = $1 order by book_count desc
-    SQL
+    self.all(type.value, &.<< "where \"type\" = $1 order by book_count desc")
   end
 
   ###

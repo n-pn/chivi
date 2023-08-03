@@ -29,11 +29,11 @@ module BookUtil
 
   #############
 
-  def fix_names(btitle : String, author : String)
+  def fix_names(author : String, btitle : String)
     new_author = fix_zname(zh_authors, author, "#{author}  #{btitle}")
     new_btitle = fix_zname(zh_btitles, btitle, "#{btitle}  #{new_author}")
 
-    {new_btitle, new_author}
+    {new_author, new_btitle}
   end
 
   @[AlwaysInline]

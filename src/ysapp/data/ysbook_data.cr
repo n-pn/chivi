@@ -87,7 +87,7 @@ class YS::Ysbook
 
     self.nvinfo_id = nvinfo.id.to_i
 
-    M1::DbDict.init_wn_dict(self.nvinfo_id, nvinfo.bslug, nvinfo.vname)
+    M1::DbDict.init_wn_dict(self.nvinfo_id, nvinfo.bslug, nvinfo.btitle_vi)
 
     CV::Wnlink.upsert!(self.nvinfo_id, "https://www.yousuu.com/book/#{self.id}")
     CV::Wnlink.upsert!(self.nvinfo_id, self.sources)
@@ -105,17 +105,20 @@ class YS::Ysbook
   JSON_HEADER = HTTP::Headers{"content-type" => "application/json"}
 
   def create_nvinfo
-    ztitle, zauthor = BookUtil.fix_names(self.btitle, self.author)
+    author_zh, btitle_zh = BookUtil.fix_names(self.btitle, self.author)
     zintro = TextUtil.split_html(self.intro, true).join('\n')
 
-    raise "uknown error" unless tl_data = TranUtil.tl_book(ztitle, zauthor, zintro)
-    vtitle, vauthor, vintro = tl_data
+    if tl_data = TranUtil.tl_book(btitle_zh, author_zh, zintro)
+      btitle_vi, author_vi, vintro = tl_data
+    else
+      raise "uknown translation error"
+    end
 
-    Log.info { "create new book: #{vtitle} -- #{vauthor}".colorize.yellow }
+    Log.info { "create new book: #{btitle_vi} -- #{author_vi}".colorize.yellow }
 
-    author = CV::Author.upsert!(zauthor, vauthor)
-    btitle = CV::Btitle.upsert!(ztitle, vtitle)
-    nvinfo = CV::Wninfo.upsert!(author, btitle, fix_names: true)
+    author = CV::Author.upsert!(author_zh, author_vi)
+    btitle = CV::Btitle.upsert!(btitle_zh, btitle_vi)
+    nvinfo = CV::Wninfo.upsert!(author_zh, btitle_zh, name_fixed: true)
 
     nvinfo.zintro = zintro
     nvinfo.bintro = vintro

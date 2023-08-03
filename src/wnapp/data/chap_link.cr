@@ -1,55 +1,41 @@
-require "crorm"
-require "crorm/sqlite3"
+# require "sqlite3"
+# require "crorm"
 
-class WN::ChapLink
-  include Crorm::Model
-  @@table = "links"
+# class WN::ChapLink
+#   @[AlwaysInline]
+#   def self.db_path(db_name : String)
+#     "var/chaps/infos/#{db_name}-links.db"
+#   end
 
-  field fg_ch_no : Int32
+#   def self.init_sql
+#     <<-SQL
+#     create table if not exists #{@@table} (
+#       fg_ch_no integer not null,
+#       --
+#       bg_sname varchar not null,
+#       bg_s_bid integer not null,
+#       --
+#       bg_ch_no integer not null,
+#       bg_s_cid integer not null,
+#       --
+#       _flag integer not null default 0,
+#       primary key (fg_ch_no, bg_sname)
+#     );
+#     SQL
+#   end
 
-  field bg_sname : String
-  field bg_s_bid : Int32
+#   ###
 
-  field bg_ch_no : Int32
-  field bg_s_cid : Int32
+#   include Crorm::Model
+#   schema "links"
 
-  field _flag : Int32 = 0
+#   field fg_ch_no : Int32, pkey: true
 
-  def save!(repo : SQ3::Repo)
-    fields, values = self.get_changes
-    repo.insert(@@table, fields, values, :replace)
-  end
+#   field bg_sname : String
+#   field bg_s_bid : Int32
 
-  ###
+#   field bg_ch_no : Int32
+#   field bg_s_cid : Int32
 
-  REPOS = {} of String => SQ3::Repo
-
-  def self.repo(sname : String, s_bid : Int32)
-    db_name = "#{sname}/#{s_bid}"
-    REPOS[db_name] ||= SQ3::Repo.new(db_path(db_name), init_sql)
-  end
-
-  @[AlwaysInline]
-  def self.db_path(db_name : String)
-    "var/chaps/infos/#{db_name}-links.db"
-  end
-
-  def self.init_sql
-    <<-SQL
-    create table if not exists #{@@table} (
-      fg_ch_no integer not null,
-      --
-      bg_sname varchar not null,
-      bg_s_bid integer not null,
-      --
-      bg_ch_no integer not null,
-      bg_s_cid integer not null,
-      --
-      _flag integer not null default 0,
-      primary key (fg_ch_no, bg_sname)
-    );
-
-    pragma journal_mode = WAL;
-    SQL
-  end
-end
+#   field _flag : Int32 = 0
+# end

@@ -33,7 +33,7 @@ class CV::WninfoCtrl < CV::BaseCtrl
     query.filter_viuser(uname, bmark) if uname && bmark
 
     total = query.dup.limit(offset + limit * 3).offset(0).count
-    query.limit(limit == 24 ? 25 : limit).offset(offset).with_author
+    query.limit(limit == 24 ? 25 : limit).offset(offset)
 
     render json: {
       books: WninfoView.as_list(query),
@@ -75,7 +75,7 @@ class CV::WninfoCtrl < CV::BaseCtrl
     # spawn Nvstat.inc_info_view(wninfo.id)
 
     books = Wninfo.query
-      .where("author_id = ?", wninfo.author_id)
+      .where("author_zh = ?", wninfo.author_zh)
       .where("id <> ?", wninfo.id)
       .order_by(weight: :desc)
       .limit(6)
@@ -91,11 +91,11 @@ class CV::WninfoCtrl < CV::BaseCtrl
     nvinfo = get_wnovel(wn_id)
 
     render json: {
-      ztitle: nvinfo.btitle.zname,
-      vtitle: nvinfo.btitle.vname,
+      ztitle: nvinfo.btitle_zh,
+      vtitle: nvinfo.btitle_vi,
 
-      zauthor: nvinfo.author.zname,
-      vauthor: nvinfo.author.vname,
+      zauthor: nvinfo.author_zh,
+      vauthor: nvinfo.author_vi,
 
       zintro: nvinfo.zintro,
       vintro: nvinfo.bintro,
@@ -116,7 +116,7 @@ class CV::WninfoCtrl < CV::BaseCtrl
     _log_action("wninfo-upsert", form)
 
     Wnlink.upsert!(nvinfo.id, form.origins)
-    spawn M1::DbDict.init_wn_dict(nvinfo.id, nvinfo.bslug, nvinfo.vname)
+    spawn M1::DbDict.init_wn_dict(nvinfo.id, nvinfo.bslug, nvinfo.btitle_vi)
 
     render json: {id: nvinfo.id, bslug: nvinfo.bslug}
   rescue ex

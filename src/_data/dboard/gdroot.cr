@@ -14,6 +14,10 @@ require "./gdrepl"
 # end
 
 class CV::Gdroot
+  class_getter db : DB::Database = PGDB
+
+  ###
+
   enum Kind : Int16
     Global = 0
     Dtopic = 1
@@ -56,15 +60,12 @@ class CV::Gdroot
   end
 
   include Crorm::Model
-  include DB::Serializable::NonStrict
-
-  class_getter table = "gdroots"
-  class_getter db : DB::Database = PGDB
+  schema "gdroots", :postgres, false
 
   field id : Int32 = 0, auto: true
 
-  field kind : Int16 = 0_i16, primary: true
-  field ukey : String = "", primary: true
+  field kind : Int16 = 0_i16, pkey: true
+  field ukey : String = "", pkey: true
 
   field viuser_id : Int32 = 1
 
@@ -143,7 +144,7 @@ class CV::Gdroot
     @olink = @rlink = vicrit.canonical_path
 
     uname = Viuser.get_uname(vicrit.viuser_id)
-    bname = Wninfo.get_vname(vicrit.nvinfo_id)
+    bname = Wninfo.get_btitle_vi(vicrit.nvinfo_id)
 
     @oname = "Đánh giá của [@#{uname}] cho bộ truyện [#{bname}]"
     @title = "Phản hồi đánh giá ##{vicrit.id} của [@#{uname}]"
@@ -160,7 +161,7 @@ class CV::Gdroot
     @olink = "/wn/#{wninfo.id}-#{wninfo.bslug}"
     @rlink = "#{@olink}/gd/bants"
 
-    @oname = wninfo.vname
+    @oname = wninfo.btitle_vi
     @title = "Bình luận chung truyện [#{@oname}]"
     @tslug = "binh-luan-chung-truyen-#{wninfo.bslug}"
 
@@ -191,10 +192,10 @@ class CV::Gdroot
 
     @viuser_id = Viuser.get_id(sname[1..]) if sname.starts_with?('@')
 
-    @oname = "Danh sách chương [#{sname}] truyện [#{wninfo.vname}]"
+    @oname = "Danh sách chương [#{sname}] truyện [#{wninfo.btitle_vi}]"
     @olink = "#{wninfo.canonical_path}/ch/#{sname}"
 
-    @title = "Bình luận danh sách chương [#{sname}] truyện [#{wninfo.vname}]"
+    @title = "Bình luận danh sách chương [#{sname}] truyện [#{wninfo.btitle_vi}]"
     @tslug = "binh-luan-danh-sach-chuong-#{sname}-truyen-#{wninfo.bslug}"
 
     @htags << "wn:#{wn_id}" << "ns:#{sname}" << "Bình luận danh sách chương"
@@ -208,10 +209,10 @@ class CV::Gdroot
 
     @viuser_id = Viuser.get_id(sname[1..]) if sname.starts_with?('@')
 
-    @oname = "Chương ##{ch_no} nguồn [#{sname}] truyện [#{wninfo.vname}]"
+    @oname = "Chương ##{ch_no} nguồn [#{sname}] truyện [#{wninfo.btitle_vi}]"
     @olink = "#{wninfo.canonical_path}/ch/#{sname}/#{ch_no}"
 
-    @title = "Bình luận chương ##{ch_no} nguồn [#{sname}] truyện [#{wninfo.vname}]"
+    @title = "Bình luận chương ##{ch_no} nguồn [#{sname}] truyện [#{wninfo.btitle_vi}]"
     @tslug = "binh-luan-chuong-#{ch_no}-nguon-#{sname}-truyen-#{wninfo.bslug}"
 
     @htags = ["wn:#{wn_id}", "ns:#{sname}", "ch:#{ch_no}", "Bình luận chương"]
@@ -305,14 +306,14 @@ class CV::Gdroot
 
   def self.find!(id : Int32)
     @@db.query_one <<-SQL, id, as: self
-      select * from #{@@table}
+      select * from #{@@schema.table}
       where id = $1 limit 1
       SQL
   end
 
   def self.find(kind : Kind, ukey : String)
     @@db.query_one? <<-SQL, kind.value, ukey, as: self
-      select * from #{@@table}
+      select * from #{@@schema.table}
       where kind = $1 and ukey = $2 limit 1
       SQL
   end
@@ -322,11 +323,14 @@ class CV::Gdroot
   end
 
   def self.bump_on_new_reply!(id : Int32, last_repl_at : Time = Time.utc)
-    kind, ukey = @@db.query_one <<-SQL, last_repl_at, id, as: {Int16, String}
-      update #{@@table} set repl_count = repl_count + 1, last_repl_at = $1
+    stmt = <<-SQL
+      update #{@@schema.table}
+      set repl_count = repl_count + 1, last_repl_at = $1
       where id = $2
       returning kind, ukey
       SQL
+
+    kind, ukey = @@db.query_one stmt, last_repl_at, id, as: {Int16, String}
 
     case Kind.new(kind)
     when .vicrit? then Vicrit.inc_repl_count!(ukey.to_i)

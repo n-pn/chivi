@@ -5,12 +5,13 @@ require "./_util"
 require "../_raw/raw_ysrepl"
 
 class YS::YsreplForm
+  class_getter db : DB::Database = PG_DB
+
   include Crorm::Model
-  @@table = "ysrepls"
-  @@db : DB::Database = PG_DB
+  schema "ysrepls", :postgres
 
   field id : Int32, auto: true
-  field yr_id : Bytes, primary: true
+  field yr_id : Bytes, pkey: true
 
   field yc_id : Bytes = "".hexbytes
   field yscrit_id : Int32 = 0
@@ -52,14 +53,8 @@ class YS::YsreplForm
 
   ##############
 
-  @@load_stmt = stmt = String.build do |sql|
-    sql << "select "
-    @@load_fields.join(sql, ", ")
-    sql << " from #{@@table} where yr_id = $1"
-  end
-
   def self.load(yr_id : Bytes)
-    PG_DB.query_one?(@@load_stmt, yr_id, as: self) || new(yr_id)
+    get(yr_id, &.<< "where yr_id = $1") || new(yr_id)
   end
 
   def self.bulk_upsert!(

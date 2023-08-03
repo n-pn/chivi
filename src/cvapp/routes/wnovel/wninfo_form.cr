@@ -7,11 +7,11 @@ class CV::WninfoForm
 
   getter wn_id : Int32 = 0
 
-  getter ztitle : String
-  getter vtitle : String?
+  getter btitle_zh : String
+  getter btitle_vi : String?
 
-  getter zauthor : String
-  getter vauthor : String?
+  getter author_zh : String
+  getter author_vi : String?
 
   getter zintro : String?
   getter vintro : String?
@@ -23,13 +23,14 @@ class CV::WninfoForm
   getter origins : Array(String) = [] of String
 
   def after_initialize
-    @ztitle, @zauthor = BookUtil.fix_names(@ztitle, @zauthor)
+    @author_zh, @btitle_zh = BookUtil.fix_names(author: @author_zh, btitle: @btitle_zh)
 
-    @vauthor = nil if @vauthor.try(&.blank?)
-    @vtitle = nil if @vtitle.try(&.blank?)
+    @author_vi = nil if @author_vi.try(&.blank?)
+    @btitle_vi = nil if @btitle_vi.try(&.blank?)
+
     @vintro = nil if @vintro.try(&.blank?)
 
-    gen_vi_data! unless @vauthor && @vtitle && @vintro
+    gen_vi_data! unless @author_vi && @btitle_vi && @vintro
   end
 
   alias ViData = NamedTuple(btitle: String, author: String, bintro: String)
@@ -38,23 +39,23 @@ class CV::WninfoForm
     link = "#{CV_ENV.m1_host}/_m1/qtran/tl_wnovel?wn_id=#{@wn_id}"
 
     headers = HTTP::Headers{"Content-Type" => "application/json"}
-    body = {btitle: @ztitle, author: @zauthor, bintro: @zintro || ""}
+    body = {btitle: @btitle_zh, author: @author_zh, bintro: @zintro || ""}
 
     HTTP::Client.post(link, headers: headers, body: body.to_json) do |res|
       return unless res.success?
       data = ViData.from_json(res.body_io.gets_to_end)
 
-      @vauthor ||= data[:author]
-      @vtitle ||= data[:btitle]
+      @author_vi ||= data[:author]
+      @btitle_vi ||= data[:btitle]
       @vintro ||= data[:bintro]
     end
   end
 
   def save!(_uname : String, _privi : Int32) : Wninfo
-    author = Author.upsert!(@zauthor, @vauthor)
-    btitle = Btitle.upsert!(@ztitle, @vtitle)
+    author = Author.upsert!(@author_zh, @author_vi)
+    btitle = Btitle.upsert!(@btitle_zh, @btitle_vi)
 
-    vi_book = Wninfo.upsert!(author, btitle, fix_names: true)
+    vi_book = Wninfo.upsert!(@author_zh, @btitle_zh, name_fixed: true)
 
     @zintro.try do |intro|
       intro = TextUtil.split_html(intro, true).join('\n')

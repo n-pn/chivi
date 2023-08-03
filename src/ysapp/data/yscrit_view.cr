@@ -5,14 +5,13 @@ require "./_util"
 require "../_raw/raw_yscrit"
 
 class YS::YscritForm
-  include Crorm::Model
+  class_getter db : DB::Database = PG_DB
 
-  @@table = "yscrits"
-  @@db : DB::Database = PG_DB
-  # @@conflicts = {"yc_id"}
+  include Crorm::Model
+  schema "yscrits", :postgres
 
   field id : Int32, auto: true
-  field yc_id : Bytes, primary: true
+  field yc_id : Bytes, pkey: true
   # field yl_id : Bytes? = nil
 
   field nvinfo_id : Int32 = 0
@@ -56,14 +55,8 @@ class YS::YscritForm
     self.upsert!
   end
 
-  @@load_stmt = stmt = String.build do |sql|
-    sql << "select "
-    @@load_fields.join(sql, ", ")
-    sql << " from #{@@table} where yc_id = $1"
-  end
-
   def self.load(yc_id : Bytes)
-    PG_DB.query_one?(@@load_stmt, yc_id, as: self) || new(yc_id)
+    get(yc_id, &.<< "where yc_id = $1") || new(yc_id)
   end
 
   def self.bulk_upsert!(raws : Array(RawYscrit), rtime : Int64 = Time.utc.to_unix)

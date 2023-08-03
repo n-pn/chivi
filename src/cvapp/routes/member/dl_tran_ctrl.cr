@@ -34,7 +34,7 @@ class CV::DlTranCtrl < CV::BaseCtrl
       args << limit << offset
     end
 
-    render json: DlTran.repo.open_db(&.query_all(query, args: args, as: DlTran))
+    render json: DlTran.open_db(&.query_all(query, args: args, as: DlTran))
   end
 
   struct DlForm
@@ -99,7 +99,7 @@ class CV::DlTranCtrl < CV::BaseCtrl
     Clear::SQL.transaction do
       dltran = form.record(_viuser.uname, _viuser.privi)
       _viuser.update!(vcoin: vcoin_remain)
-      dltran.create!
+      dltran.insert!
     end
 
     spawn invoke_translation!(force: false)

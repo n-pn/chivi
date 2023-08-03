@@ -9,7 +9,7 @@ struct CV::UbmemoView
   def to_json(jb : JSON::Builder)
     jb.object do
       if @full
-        jb.field "bname", @data.nvinfo.vname
+        jb.field "bname", @data.nvinfo.btitle_vi
         jb.field "bslug", "#{@data.nvinfo.id}-#{@data.nvinfo.bslug}"
       end
 

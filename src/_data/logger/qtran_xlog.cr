@@ -3,12 +3,14 @@ require "../_data"
 require "../../_util/hash_util"
 
 class CV::QtranXlog
+  class_getter db : DB::Database = PGDB
+
+  ###
+
   include Crorm::Model
+  schema "qtran_xlogs", :postgres
 
-  @@db : DB::Database = PGDB
-  @@table = "qtran_xlogs"
-
-  field id : Int32 = 0, primary: true
+  field id : Int32 = 0, pkey: true, auto: true
   field viuser_id : Int32 = 0
 
   field input_hash : Int32 = 0
@@ -60,9 +62,9 @@ class CV::QtranXlog
     cost
   end
 
-  def create!(db = @@db)
+  def create!(db = self.class.db)
     stmt = <<-SQL
-      insert into #{@@table} (
+      insert into #{@@schema.table} (
         viuser_id, input_hash,
         char_count, point_cost,
         wn_dic, w_udic,
@@ -75,35 +77,35 @@ class CV::QtranXlog
 
     db.query_one stmt, @viuser_id, @input_hash, @char_count, @point_cost,
       @wn_dic, @w_udic, @mt_ver, @cv_ner, @ts_sdk, @ts_acc, @created_at,
-      as: QtranXlog
+      as: self.class
   end
 
   ####
 
   def self.count(vu_id : Int32, ihash : Int32)
     @@db.query_one <<-SQL, vu_id, ihash, as: Int32
-      select COALESCE(COUNT(*), 0)::int from "#{@@table}"
+      select COALESCE(COUNT(*), 0)::int from "#{@@schema.table}"
       where viuser_id = $1 and input_hash = $2
     SQL
   end
 
   def self.count(vu_id : Nil, ihash : Int32)
     @@db.query_one <<-SQL, ihash, as: Int32
-      select COALESCE(COUNT(*), 0)::int from "#{@@table}"
+      select COALESCE(COUNT(*), 0)::int from "#{@@schema.table}"
       where input_hash = $1
     SQL
   end
 
   def self.count(vu_id : Int32, ihash : Nil)
     @@db.query_one <<-SQL, vu_id, as: Int32
-      select COALESCE(COUNT(*), 0)::int from "#{@@table}"
+      select COALESCE(COUNT(*), 0)::int from "#{@@schema.table}"
       where viuser_id = $1
     SQL
   end
 
   def self.count(vu_id : Nil, ihash : Nil)
     @@db.query_one <<-SQL, as: Int32
-      select COALESCE(COUNT(*), 0)::int from "#{@@table}"
+      select COALESCE(COUNT(*), 0)::int from "#{@@schema.table}"
     SQL
   end
 
@@ -114,7 +116,7 @@ class CV::QtranXlog
 
   def self.user_stats(from_time = Time.local - 7.days, upto_time = Time.local + 1.days)
     @@db.query_all <<-SQL, from_time.to_s("%F"), upto_time.to_s("%F"), as: UserStat
-      select viuser_id, sum(point_cost) as point_cost from "#{@@table}"
+      select viuser_id, sum(point_cost) as point_cost from "#{@@schema.table}"
       where created_at >= $1 and created_at <= $2
       group by viuser_id
       order by point_cost desc
@@ -128,7 +130,7 @@ class CV::QtranXlog
 
   def self.book_stats(from_time = Time.local - 7.days, upto_time = Time.local + 1.days)
     @@db.query_all <<-SQL, from_time.to_s("%F"), upto_time.to_s("%F"), as: BookStat
-      select wn_dic as wninfo_id, sum(point_cost) as point_cost from "#{@@table}"
+      select wn_dic as wninfo_id, sum(point_cost) as point_cost from "#{@@schema.table}"
       where created_at >= $1 and created_at <= $2
       group by wn_dic
       order by point_cost desc
@@ -137,7 +139,7 @@ class CV::QtranXlog
 
   def self.fetch(vu_id : Int32, ihash : Nil, limit = 50, offset = 0)
     @@db.query_all <<-SQL, vu_id, limit, offset, as: QtranXlog
-      select * from "#{@@table}"
+      select * from "#{@@schema.table}"
       where viuser_id = $1
       order by id desc
       limit $2 offset $3
@@ -146,7 +148,7 @@ class CV::QtranXlog
 
   def self.fetch(vu_id : Nil, ihash : Nil, limit = 50, offset = 0)
     @@db.query_all <<-SQL, limit, offset, as: QtranXlog
-      select * from "#{@@table}"
+      select * from "#{@@schema.table}"
       order by id desc
       limit $1 offset $2
     SQL
@@ -154,7 +156,7 @@ class CV::QtranXlog
 
   def self.fetch(vu_id : Int32, ihash : Int32, limit = 50, offset = 0)
     @@db.query_all <<-SQL, vu_id, ihash, limit, offset, as: QtranXlog
-      select * from "#{@@table}"
+      select * from "#{@@schema.table}"
       where viuser_id = $1 and input_hash = $2
       order by id desc
       limit $3 offset $4
@@ -163,7 +165,7 @@ class CV::QtranXlog
 
   def self.fetch(vu_id : Nil, ihash : Int32, limit = 50, offset = 0)
     @@db.query_all <<-SQL, ihash, limit, offset, as: QtranXlog
-      select * from "#{@@table}"
+      select * from "#{@@schema.table}"
       where input_hash = $1
       order by id desc
       limit $2 offset $3
@@ -171,7 +173,7 @@ class CV::QtranXlog
   end
 
   def self.today_point_cost(viuser_id : Int32)
-    stmt = "select sum(point_cost) from #{@@table} where viuser_id = $1 and created_at >= $2"
+    stmt = "select sum(point_cost) from #{@@schema.table} where viuser_id = $1 and created_at >= $2"
     @@db.query_one(stmt, viuser_id, Time.local.to_s("%F"), as: Int64) rescue 0
   end
 end

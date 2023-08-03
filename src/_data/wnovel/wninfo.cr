@@ -16,25 +16,27 @@ class CV::Wninfo
   self.table = "wninfos"
   primary_key type: :serial
 
+  column subdue_id : Int64 = 0 # in case of duplicate entries, this column will point to the better one
+
   # getter dt_ii : Int32 { (id > 0 ? id &+ 20 : id * -5).to_i &* 10000 }
 
-  belongs_to author : Author, foreign_key_type: Int32
-  belongs_to btitle : Btitle, foreign_key_type: Int32
+  # belongs_to author : Author, foreign_key_type: Int32
+  # belongs_to btitle : Btitle, foreign_key_type: Int32
 
   # getter seed_list : Nslist { Nslist.new(self) }
 
-  column subdue_id : Int64 = 0 # in case of duplicate entries, this column will point to the better one
+  # column vname : String = ""
+  # column bhash : String # unique string generate from zh_title & zh_author
+  column bslug : String # unique string generate from hv_title & bhash
 
   ##############
 
-  # column zname : String = "" # localization
-  # column hname : String = "" # localization
-  column vname : String = "" # localization
+  column btitle_zh : String = ""
+  column btitle_vi : String = ""
+  column btitle_hv : String = ""
 
-  #################
-
-  # column bhash : String # unique string generate from zh_title & zh_author
-  column bslug : String # unique string generate from hv_title & bhash
+  column author_zh : String = ""
+  column author_vi : String = ""
 
   ###########
 
@@ -93,22 +95,18 @@ class CV::Wninfo
 
   scope :filter_btitle do |input|
     if input =~ /\p{Han}/
-      stmt = "btitle_id in (select id from btitles where zname %> ?)"
+      where("btitle_zh %> ?", input)
     else
-      stmt = "btitle_id in (select id from btitles where __fts like ('%' || scrub_name(?)) || '%')"
+      where("_btitle_ts_ like ('%' || scrub_name(?)) || '%')", input)
     end
-
-    where(stmt, input)
   end
 
   scope :filter_author do |input|
     if input =~ /\p{Han}/
-      stmt = "author_id in (select id from authors where zname %> ?)"
+      where("author_zh %> ?", input)
     else
-      stmt = "author_id in (select id from authors where __fts like ('%' || scrub_name(?)) || '%')"
+      where("_author_ts_ like ('%' || scrub_name(?)) || '%')", input)
     end
-
-    where(stmt, input)
   end
 
   scope :filter_wnseed do |input|
@@ -172,10 +170,6 @@ class CV::Wninfo
 
   class_getter total : Int32 { query.count.to_i }
 
-  def self.get(author : Author, btitle : Btitle)
-    find({author_id: author.id, btitle_id: btitle.id})
-  end
-
   CACHE_INT = RamCache(Int32, self).new
   CACHE_STR = {} of String => Int32
 
@@ -200,28 +194,39 @@ class CV::Wninfo
     end
   end
 
-  def self.upsert!(zauthor : String, ztitle : String, fix_names : Bool = false)
-    author = Author.upsert!(zauthor)
-    btitle = Btitle.upsert!(ztitle)
-    upsert!(author, btitle, fix_names)
+  def self.get(author : String, btitle : String)
+    find({author_zh: author, btitle_zh: btitle})
   end
 
-  def self.upsert!(author : Author, ztitle : String, fix_names : Bool = false)
-    btitle = Btitle.upsert!(ztitle)
-    upsert!(author, btitle, fix_names)
-  end
-
-  def self.upsert!(author : Author, btitle : Btitle, fix_names : Bool = false)
-    unless nvinfo = get(author, btitle)
-      # bhash = HashUtil.digest32("#{btitle.zname}--#{author.zname}")
-      nvinfo = new({author: author, btitle: btitle})
-      fix_names = true
+  def self.upsert!(author_zh : String, btitle_zh : String, name_fixed : Bool = false)
+    unless name_fixed
+      author_zh, btitle_zh = BookUtil.fix_names(author: author_zh, btitle: btitle_zh)
     end
 
-    nvinfo.tap { |x| x.fix_names! if fix_names }
+    get(author: author_zh, btitle: btitle_zh) || begin
+      entry = self.new({author_zh: author_zh, btitle_zh: btitle_zh})
+
+      entry.author_vi = get_author_vi(author_zh)
+      entry.btitle_vi, entry.btitle_hv = get_btitles(btitle_zh)
+
+      entry.set_bslug(TextUtil.slugify(entry.btitle_hv))
+
+      entry.tap(&.save!)
+    end
   end
 
-  def self.get_vname(id : Int32)
-    PGDB.query_one("select vname from wninfos where id = $1 limit 1", id, as: String)
+  def self.get_btitle_vi(id : Int32) : String
+    stmt = "select btitle_vi from wninfos where id = $1 limit 1"
+    PGDB.query_one(stmt, id, as: String)
+  end
+
+  def self.get_author_vi(author_zh : String) : String
+    stmt = "select author_vi from authors where author_zh = $1 limit 1"
+    PGDB.query_one?(stmt, author_zh, as: String) || author_zh
+  end
+
+  def self.get_btitles(btitle_zh : String) : {String, String}
+    stmt = "select vname, hname from btitles where zname = $1 limit 1"
+    PGDB.query_one?(stmt, btitle_zh, as: {String, String}) || {btitle_zh, btitle_zh}
   end
 end

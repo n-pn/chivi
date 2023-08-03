@@ -65,7 +65,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
       dtform: init_form(dtopic),
       dboard: {
         id:    dboard.id,
-        bname: dboard.vname,
+        bname: dboard.btitle_vi,
         bslug: dboard.bslug,
       },
     }
