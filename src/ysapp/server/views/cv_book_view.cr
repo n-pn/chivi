@@ -20,8 +20,8 @@ struct YS::BookView
       jb.field "id", @data.id
       jb.field "bslug", "#{@data.id}-#{@data.bslug}"
 
-      jb.field "vauthor", @data.author.vname
-      jb.field "vtitle", @data.vname
+      jb.field "vauthor", @data.author_vi
+      jb.field "vtitle", @data.btitle_vi
 
       jb.field "genres", @data.genres
       jb.field "bcover", cover_url

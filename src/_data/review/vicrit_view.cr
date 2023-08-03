@@ -44,7 +44,7 @@ struct CV::VicritCard
 
         b.id as book_id,
         (b.id || '-' || b.bslug) as b_uslug,
-        b.vname as b_title,
+        b.btitle_vi as b_title,
 
         l.id as list_id,
         l.title as l_title,

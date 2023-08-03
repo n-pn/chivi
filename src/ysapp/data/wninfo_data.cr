@@ -1,11 +1,12 @@
 require "./_base"
+require "crorm/model"
 
 class YS::Author
-  include Clear::Model
-  self.table = "authors"
+  include Crorm::Model
+  schema "authors", :postgres, strict: false
 
-  column zname : String = ""
-  column vname : String = ""
+  field zname : String = ""
+  field vname : String = ""
 
   class_getter known_authors : Set(String) do
     PG_DB.query_all("select zname from authors", as: String).to_set
@@ -17,9 +18,10 @@ class YS::Wninfo
   self.table = "wninfos"
 
   primary_key type: :serial
-  belongs_to author : Author, foreign_key_type: Int32
 
-  column vname : String
+  column btitle_vi : String
+  column author_vi : String
+
   column bslug : String
 
   column igenres : Array(Int32) = [] of Int32

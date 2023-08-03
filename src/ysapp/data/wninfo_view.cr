@@ -21,8 +21,8 @@ struct YS::WninfoPeek
     PG_DB.query_one <<-SQL, yscrit_id, as: self
     select
       (b.id || '-' || b.bslug) as bslug,
-      b.vname as bname,
-      a.vname as aname,
+      b.btitle_vi as bname,
+      b.author_vi as aname,
 
       (case when b.bcover = '' then b.scover else b.bcover end) as cover,
       b.igenres[1] as genre,
@@ -32,10 +32,7 @@ struct YS::WninfoPeek
 
       b.status as "state",
       b.utime as utime
-    from  wninfos as b
-      on b.id = c.nvinfo_id
-      inner join authors as a
-      on a.id = b.author_id
+    from wninfos
     where b.id = $1
     limit 1;
     SQL

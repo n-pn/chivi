@@ -104,7 +104,7 @@ struct CV::DtopicCard
         u.uname as u_uname,
         u.privi as u_privi,
 
-        b.vname as b_title,
+        b.btitle_vi as b_title,
         (b.id || '-' || b.bslug) as b_uslug,
 
         t.id as dt_id,
