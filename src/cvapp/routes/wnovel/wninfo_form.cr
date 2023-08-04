@@ -13,8 +13,8 @@ class CV::WninfoForm
   getter author_zh : String
   getter author_vi : String?
 
-  getter zintro : String?
-  getter vintro : String?
+  getter intro_zh : String?
+  getter intro_vi : String?
 
   getter genres : Array(String)? = nil
   getter bcover : String? = nil
@@ -28,9 +28,9 @@ class CV::WninfoForm
     @author_vi = nil if @author_vi.try(&.blank?)
     @btitle_vi = nil if @btitle_vi.try(&.blank?)
 
-    @vintro = nil if @vintro.try(&.blank?)
+    @intro_vi = nil if @intro_vi.try(&.blank?)
 
-    gen_vi_data! unless @author_vi && @btitle_vi && @vintro
+    gen_vi_data! unless @author_vi && @btitle_vi && @intro_vi
   end
 
   alias ViData = NamedTuple(btitle: String, author: String, bintro: String)
@@ -39,7 +39,7 @@ class CV::WninfoForm
     link = "#{CV_ENV.m1_host}/_m1/qtran/tl_wnovel?wn_id=#{@wn_id}"
 
     headers = HTTP::Headers{"Content-Type" => "application/json"}
-    body = {btitle: @btitle_zh, author: @author_zh, bintro: @zintro || ""}
+    body = {btitle: @btitle_zh, author: @author_zh, bintro: @intro_zh || ""}
 
     HTTP::Client.post(link, headers: headers, body: body.to_json) do |res|
       return unless res.success?
@@ -47,22 +47,22 @@ class CV::WninfoForm
 
       @author_vi ||= data[:author]
       @btitle_vi ||= data[:btitle]
-      @vintro ||= data[:bintro]
+      @intro_vi ||= data[:bintro]
     end
   end
 
   def save!(_uname : String, _privi : Int32) : Wninfo
-    author = Author.upsert!(@author_zh, @author_vi)
-    btitle = Btitle.upsert!(@btitle_zh, @btitle_vi)
+    Author.upsert!(@author_zh, @author_vi)
+    Btitle.upsert!(@btitle_zh, @btitle_vi)
 
     vi_book = Wninfo.upsert!(@author_zh, @btitle_zh, name_fixed: true)
 
-    @zintro.try do |intro|
+    @intro_zh.try do |intro|
       intro = TextUtil.split_html(intro, true).join('\n')
       vi_book.zintro = intro unless intro.blank?
     end
 
-    @vintro.try do |intro|
+    @intro_vi.try do |intro|
       intro = intro.split(/\R/).map(&.strip).join('\n')
       vi_book.bintro = intro unless intro.blank?
     end

@@ -13,7 +13,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  let form = data.form
+  let form = { ...data.form }
 
   let errors: string
 

@@ -221,7 +221,7 @@ class CV::Wninfo
   end
 
   def self.get_author_vi(author_zh : String) : String
-    stmt = "select author_vi from authors where author_zh = $1 limit 1"
+    stmt = "select vname from authors where zname = $1 limit 1"
     PGDB.query_one?(stmt, author_zh, as: String) || author_zh
   end
 

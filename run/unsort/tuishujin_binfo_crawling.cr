@@ -5,15 +5,17 @@ def still_fresh?(path : String, expiry_date : Time)
 end
 
 def get_page(link : String, save_path : String) : Nil
-  HTTP::Client.get(link) { |res| File.open(save_path, "wb") { |file| IO.copy(res.body_io, file) } }
+  HTTP::Client.get(link) do |res|
+    File.write(save_path, res.body_io.gets_to_end)
+  end
 end
 
 URL = "https://pre-api.tuishujun.com/api/listBookRepository"
-DIR = "/2tb/var.chivi/.keep/random/tuishujin/listBookRepositorypage"
+DIR = "/2tb/var.chivi/.keep/random/tuishujin/listBookRepository"
 Dir.mkdir_p(DIR)
 
-page_total = 304285
-page_limit = 200
+page_total = 304297
+page_limit = 100
 
 page_count = page_total // page_limit + 1
 

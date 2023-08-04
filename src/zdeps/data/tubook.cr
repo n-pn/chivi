@@ -2,10 +2,10 @@ require "crorm/model"
 require "crorm/sqlite"
 
 require "../../_util/book_util"
-require "../_raw/raw_ysbook"
+require "../_raw/raw_tubook"
 
-class ZD::Ysbook
-  class_getter db_path = "/2tb/var.chivi/zdeps/ysbooks.db3"
+class ZD::Tubook
+  class_getter db_path = "/2tb/var.chivi/zdeps/tubooks.db3"
 
   class_getter init_sql = <<-SQL
     CREATE TABLE books(
@@ -23,11 +23,10 @@ class ZD::Ysbook
       voters int NOT NULL DEFAULT 0,
       rating int NOT NULL DEFAULT 0,
       status int NOT NULL DEFAULT 0,
-      shield int NOT NULL DEFAULT 0,
       origin text NOT NULL DEFAULT '',
       --
       word_count int NOT NULL DEFAULT 0,
-      book_mtime bigint NOT NULL DEFAULT 0,
+      chap_count int NOT NULL DEFAULT 0,
       --
       crit_total int NOT NULL DEFAULT 0,
       list_total int NOT NULL DEFAULT 0,
@@ -63,12 +62,12 @@ class ZD::Ysbook
 
   field voters : Int32 = 0
   field rating : Int32 = 0
+
   field status : Int32 = 0
-  field shield : Int32 = 0
   field origin : String = ""
 
-  field book_mtime : Int64 = 0_i64 # yousuu book update time
   field word_count : Int32 = 0
+  field chap_count : Int32 = 0
 
   field crit_total : Int32 = 0 # total reviews
   field list_total : Int32 = 0 # total book lists
@@ -83,35 +82,28 @@ class ZD::Ysbook
   def initialize(@id)
   end
 
-  def self.from_raw_json(raw_json : String,
-                         rtime = Time.utc.to_unix,
-                         rhash = XXHash.xxh32(raw_json))
-    raw_data = RawYsbook.from_json(raw_json)
+  def self.from_raw(raw_data : RawTubook, rtime = Time.utc.to_unix, rhash = 0)
     entry = self.load(raw_data.id)
-
-    entry.rtime = rtime
-    entry.rhash = rhash.unsafe_as(Int32)
 
     entry.btitle = raw_data.btitle
     entry.author = raw_data.author
 
     entry.cover = raw_data.cover
     entry.intro = raw_data.intro
-
     entry.genre = raw_data.genre
-    entry.xtags = raw_data.btags.join('\n')
+    entry.xtags = raw_data.btags.join('\t')
 
     entry.voters = raw_data.voters
     entry.rating = raw_data.rating
     entry.status = raw_data.status
-    entry.shield = raw_data.shield
-    entry.origin = raw_data.sources.join('\n')
+    entry.origin = raw_data.origin_name
 
-    entry.book_mtime = raw_data.book_mtime
     entry.word_count = raw_data.word_count
+    entry.chap_count = raw_data.chap_count
 
-    entry.crit_total = raw_data.crit_total
-    entry.list_total = raw_data.list_total
+    entry.rtime = rtime
+    entry.rhash = rhash
+    entry._flag = 0
 
     entry
   end

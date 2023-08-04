@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<!-- <script context="module" lang="ts">
   import { bgenres } from '$lib/constants'
 </script>
 
@@ -294,4 +294,4 @@
   .form-group {
     margin-top: 0.75rem;
   }
-</style>
+</style> -->

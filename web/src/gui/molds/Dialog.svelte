@@ -14,7 +14,7 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<dialog
+<div
   class="wrap"
   on:click={() => on_close(false)}
   transition:fade|global={{ duration: 100 }}>
@@ -40,7 +40,7 @@
       <slot />
     </section>
   </div>
-</dialog>
+</div>
 
 <style lang="scss">
   .wrap {

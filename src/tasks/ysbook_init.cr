@@ -1,5 +1,5 @@
-require "../../ysapp/data/ysbook_data"
-require "../../zdeps/data/ysbook"
+require "../ysapp/data/ysbook_data"
+require "../zdeps/data/ysbook"
 
 db = ZD::Ysbook.db
 
