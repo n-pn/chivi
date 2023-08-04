@@ -106,9 +106,8 @@ class WN::SeedCtrl < AC::Base
   struct UpdateForm
     include JSON::Serializable
 
-    getter rm_links : Array(String)?
+    getter rm_link : String?
     getter cut_from : Int32?
-
     getter read_privi : Int32?
   end
 
@@ -117,7 +116,7 @@ class WN::SeedCtrl < AC::Base
     guard_privi WnSeed::Type.edit_privi(sname, _uname), "cập nhật nguồn"
     wn_seed = get_wn_seed(wn_id, sname)
 
-    if rlink = form.rm_links.try(&.first?)
+    if rlink = form.rm_link
       wn_seed.rlink = rlink
     end
 
@@ -131,6 +130,8 @@ class WN::SeedCtrl < AC::Base
     end
 
     wn_seed.upsert!
+    wn_seed.update_from_remote! if form.rm_link
+
     render json: wn_seed
   end
 

@@ -21,7 +21,10 @@ page_count = page_total // page_limit + 1
 
 expiry_date = Time.utc - 24.hours
 
-1.upto(page_count) do |page|
+pages = (1..page_count).to_a
+pages.shuffle! if ARGV.includes?("--rand")
+
+pages.each do |page|
   save_path = "#{DIR}/#{page}-#{page_limit}.json"
 
   if still_fresh?(save_path, expiry_date: expiry_date)

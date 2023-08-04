@@ -2,39 +2,23 @@
   import { api_call } from '$lib/api_call'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
+  import { goto } from '$app/navigation'
 
   export let can_edit = true
   export let edit_url: string
   export let seed_data: CV.Wnseed
 
-  export let links = [seed_data.rlink]
   export let ztitle: string
 
-  let slink = ''
+  let rm_link = seed_data.rlink
+
   let error = ''
 
-  const add_seed = () => {
-    if (links.includes(slink)) return
-    links.push(slink)
-    update_rm_links(links)
-    slink = ''
-  }
-
-  const delete_seed = (slink: string) => {
-    links = links.filter((x) => x != slink)
-    update_rm_links(links)
-  }
-
-  const make_slink_as_main = (slink: string) => {
-    links = links.filter((x) => x != slink)
-    links.unshift(slink)
-    update_rm_links(links)
-  }
-
-  const update_rm_links = async (rm_links: string[]) => {
+  const update_rm_link = async () => {
     try {
-      await api_call(edit_url, { rm_links }, 'PATCH')
+      await api_call(edit_url, { rm_link }, 'PATCH')
       seed_data = seed_data
+      await goto('..')
     } catch (ex) {
       error = ex.body.message
     }
@@ -96,72 +80,24 @@
   $: search = 'https://www.google.com/search?q=' + ztitle
 </script>
 
-<h4>Các liên kết tới nguồn ngoài hiện tại:</h4>
+<label class="form-label" for="rm_link">Liên kết tới nguồn ngoài:</label>
 
-<p class="explain">
-  <SIcon name="alert-circle" />
-  <em>
-    Bạn có thể bấm vào biểu tượng <SIcon name="star" /> để thay đổi nguồn được chọn
-    mặc định khi đổi mới.
-  </em>
-</p>
+<div class="input">
+  <input
+    class="m-input _sm"
+    type="link"
+    name="rm_link"
+    bind:value={rm_link}
+    placeholder="Thêm nguồn mới" />
 
-<table>
-  <thead>
-    <tr>
-      <th>Đường dẫn</th>
-      <th align="center">Hành động</th>
-    </tr>
-  </thead>
-
-  <tbody>
-    {#each links as slink, index}
-      <tr>
-        <td>
-          <a href={slink} class="slink" rel="noreferrer" target="_blank"
-            >{slink}</a>
-        </td>
-        <td align="center">
-          <button
-            class="m-btn _xs"
-            class:_active={index < 1}
-            disabled={index < 1}
-            data-tip="Làm nguồn ngoài mặc định"
-            on:click={() => make_slink_as_main(slink)}>
-            <SIcon name="star" />
-          </button>
-
-          <button
-            class="m-btn _xs _harmful"
-            data-tip="Xóa khỏi danh sách"
-            on:click={() => delete_seed(slink)}>
-            <SIcon name="trash" />
-            <span>Xóa</span>
-          </button>
-        </td>
-      </tr>
-    {/each}
-
-    <tr>
-      <td class="input">
-        <input
-          class="m-input _sm"
-          type="link"
-          bind:value={slink}
-          placeholder="Thêm nguồn mới" />
-      </td>
-      <td align="center">
-        <button
-          class="m-btn _sm _primary _fill"
-          disabled={!can_edit}
-          on:click={add_seed}>
-          <SIcon name="square-plus" />
-          <span>Thêm</span>
-        </button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+  <button
+    class="m-btn _sm _primary _fill"
+    disabled={!rm_link || !can_edit}
+    on:click={update_rm_link}>
+    <SIcon name="square-plus" />
+    <span>Thêm</span>
+  </button>
+</div>
 
 <p class="warning">
   <strong
@@ -205,15 +141,16 @@
 <footer />
 
 <style lang="scss">
-  th,
+  .input {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  // th,
   td {
     border-left: none;
     border-right: none;
     border-color: var(--bd-soft);
-  }
-
-  table {
-    margin: 1rem 0;
   }
 
   a {
@@ -224,11 +161,6 @@
     }
   }
 
-  td.input {
-    padding-left: 0;
-    padding-right: 0;
-  }
-
   input {
     width: 100%;
     padding-left: 0.5rem;
@@ -237,31 +169,17 @@
     border-color: var(--bd-soft);
   }
 
-  button + button {
-    margin-left: 0.25rem;
-  }
-
-  button._active {
-    @include fgcolor(warning, 5);
-  }
-
   .search {
     font-style: italic;
-  }
-
-  .explain {
-    @include fgcolor(tert);
-
-    :global(svg) {
-      // vertical-align: sub;
-      font-size: 0.95em;
-      margin-bottom: 0.2em;
-    }
   }
 
   .warning {
     @include fgcolor(warning, 5);
     margin-top: 1rem;
+  }
+
+  table {
+    margin-top: 0.5rem;
   }
 
   details {
@@ -273,7 +191,7 @@
   }
 
   p,
-  h4 {
+  .form-label {
     margin-top: 0.75rem;
   }
 </style>

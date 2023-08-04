@@ -3,7 +3,7 @@
   const _user = get_user()
 
   import ReadPrivi from './ReadPrivi.svelte'
-  import Remotes from './Remotes.svelte'
+  import RemoteLink from './RemoteLink.svelte'
   import DeleteSeed from './DeleteSeed.svelte'
   import CutChapters from './CutChapters.svelte'
   // import CopyChapters from './CopyChapters.svelte'
@@ -26,15 +26,9 @@
   }
 
   const check_conf_privi = ({ sname }, { uname, privi }) => {
-    if (sname[0] == '@') {
-      return sname == '@' + uname ? privi > 1 : privi > 3
-    }
-
-    if (sname[0] == '!') {
-      return sname == '!chivi.app' ? privi > 3 : privi > 2
-    }
-
-    return privi > 1
+    if (sname[0] == '@') return sname == '@' + uname ? privi > 1 : privi > 3
+    if (sname[0] == '~') return sname == '~chivi' ? privi > 3 : privi > 2
+    return privi > (sname[0] == '!' ? 2 : 3)
   }
 </script>
 
@@ -43,7 +37,11 @@
 
   <details open>
     <summary>Liên kết đồng bộ với các nguồn ngoài</summary>
-    <Remotes {ztitle} {can_edit} {edit_url} bind:seed_data={data.seed_data} />
+    <RemoteLink
+      {ztitle}
+      {can_edit}
+      {edit_url}
+      bind:seed_data={data.seed_data} />
   </details>
 
   <details>

@@ -1,11 +1,11 @@
 require "../zdeps/data/tubook"
 
-DIR = "/2tb/var.chivi/.keep/random/tuishujin/listBookRepositorypage"
+DIR = "/2tb/var.chivi/.keep/random/tuishujin/listBookRepository"
 
 OUT_DB = ZD::Tubook.db
 
 (1..).each do |page|
-  path = "#{DIR}/#{page}-200.json"
+  path = "#{DIR}/#{page}-100.json"
   break unless rtime = File.info?(path).try(&.modification_time.to_unix)
 
   json = File.read(path)

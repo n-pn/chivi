@@ -1,6 +1,7 @@
 require "../_data/_data"
 require "../zdeps/data/author"
 require "../zdeps/data/ysbook"
+require "../zdeps/data/tubook"
 
 OUT_DB = ZD::Author.db
 
@@ -17,7 +18,7 @@ existed = Set(String).new
   upper = lower &+ 999
 
   inputs = PGDB.query_all SELECT_STMT, lower, upper, as: Author
-  puts "- block: #{block}, books: #{inputs.size}"
+  puts "- <authors> block: #{block}, books: #{inputs.size}"
 
   break if inputs.empty?
 
@@ -48,7 +49,30 @@ SELECT_STMT_2 = "select author, btitle from books where id >= $1 and id <= $2"
   upper = lower &+ 999
 
   inputs = ZD::Ysbook.db.query_all SELECT_STMT_2, lower, upper, as: {String, String}
-  puts "- block: #{block}, books: #{inputs.size}"
+  puts "- <ysbooks> block: #{block}, books: #{inputs.size}"
+
+  break if inputs.empty?
+
+  OUT_DB.exec "begin"
+
+  inputs.each do |author, btitle|
+    author, btitle = BookUtil.fix_names(author, btitle)
+    next if existed.includes?(author)
+    existed << author
+
+    entry = ZD::Author.new(author)
+    entry.upsert!(OUT_DB)
+  end
+
+  OUT_DB.exec "commit"
+end
+
+(0..).each do |block|
+  lower = block &* 1000
+  upper = lower &+ 999
+
+  inputs = ZD::Tubook.db.query_all SELECT_STMT_2, lower, upper, as: {String, String}
+  puts "- <tubooks> block: #{block}, books: #{inputs.size}"
 
   break if inputs.empty?
 

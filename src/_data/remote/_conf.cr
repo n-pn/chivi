@@ -36,7 +36,7 @@ class Rmconf
 
   ####
 
-  property book_id_re = "(\\d+)$"
+  property book_id_re = "(\\d+)\\D*$"
   @[YAML::Field(ignore: true)]
   getter book_id_regex : Regex { Regex.new(@book_id_re) }
 
@@ -44,7 +44,7 @@ class Rmconf
   @[YAML::Field(ignore: true)]
   getter chap_id_regex : Regex { Regex.new(@chap_id_re) }
 
-  property bid_cid_re = "(?<bid>\\d+)/(?<cid>\\d+)\\D$"
+  property bid_cid_re = "(?<bid>\\d+)/(?<cid>\\d+)\\D*$"
   @[YAML::Field(ignore: true)]
   getter bid_cid_regex : Regex { Regex.new(@bid_cid_re) }
 
@@ -112,6 +112,7 @@ class Rmconf
     if match = self.book_id_regex.match(href)
       match[1]
     else
+      # puts [@seedname, @hostname, @book_id_re].colorize.red
       raise "can't extract bid from [#{href}]"
     end
   end
