@@ -12,7 +12,7 @@ YSRAW_OUT="$OUT/$YSRAW_DIR"
 
 if [[ $1 == "all" || $* == *proxy* ]]
 then
-  PROXY_DIR="var/proxy"
+  PROXY_DIR="var/_conf/proxy"
   PROXY_OUT="$OUT/$PROXY_DIR"
 
   # rsync-fast "$PROXY_DIR/awmproxy.com.txt" $PROXY_OUT

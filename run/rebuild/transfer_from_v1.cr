@@ -51,7 +51,7 @@ end
 def transfer(db_path : String, where_dic : String)
   defns = {} of String => Defn
 
-  DB.open("sqlite3:var/mtdic/users/v1_defns.dic") do |db|
+  DB.open("sqlite3:var/mtapp/v1dic/v1_defns.dic") do |db|
     stmt = <<-SQL
       select dic as d_id, "key" as zstr, "val" as vstr, "ptag" as upos, "prio" as _wsr, "uname", "mtime"
       from defns where #{where_dic} order by mtime desc

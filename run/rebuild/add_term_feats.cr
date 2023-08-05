@@ -3,7 +3,7 @@ require "./_shared"
 DIC = DB.open("sqlite3:#{MT::MtDefn.db_path("common-main")}")
 at_exit { DIC.close }
 
-# INP = DB.open("sqlite3:var/mtdic/users/v1_defns.dic")
+# INP = DB.open("sqlite3:var/mtapp/v1dic/v1_defns.dic")
 # at_exit { INP.close }
 
 # ditrans = INP.query_all("select distinct(key) from defns where dic = -30", as: String)

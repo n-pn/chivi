@@ -3,7 +3,7 @@ require "./char_util"
 module BookUtil
   extend self
 
-  DIR = "var/books/fixes"
+  DIR = "var/_conf/fixes"
 
   class_getter zh_authors : Hash(String, String) { load_tsv("authors_zh") }
   class_getter zh_btitles : Hash(String, String) { load_tsv("btitles_zh") }

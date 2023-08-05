@@ -1,5 +1,5 @@
 require "compress/gzip"
-require "../src/_data/remote/rmchap"
+require "../src/zroot/html_parser/raw_rmchap"
 
 def read_html(gz_file : String)
   File.open(gz_file, "r") do |io|
@@ -12,7 +12,7 @@ OUT = "var/texts/rgbks"
 
 def extract_chap(inp_file : String, out_file : String, conf : Rmconf)
   html = read_html(inp_file)
-  chap = Rmchap.new(html, conf)
+  chap = RawRmchap.new(html, conf)
 
   text = chap.content
   File.write(out_file, text.encode("GB18030", invalid: :skip), encoding: "GB18030")

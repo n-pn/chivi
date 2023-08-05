@@ -1,26 +1,47 @@
-require "crorm"
-require "crorm/sqlite3"
+require "crorm/model"
+require "sqlite3"
 
 require "./v1_dict"
 
 class M1::DbDefn
-  include Crorm::Model
+  class_getter db_path = "var/mtapp/v1dic/v1_defns.dic"
 
-  class_getter table : String = "defns"
-  class_getter repo : SQ3::Repo { SQ3::Repo.new(db_path, init_sql, 3.minutes) }
+  class_getter init_sql = <<-SQL
+    CREATE TABLE IF NOT EXISTS defns (
+      "id" integer PRIMARY KEY,
+      --
+      "dic" integer NOT NULL DEFAULT 0,
+      "tab" integer NOT NULL DEFAULT 0,
+      --
+      "key" varchar NOT NULL, -- raw input
+      "val" varchar NOT NULL, -- raw value
+      --
+      "ptag" varchar NOT NULL DEFAULT '', -- generic postag label
+      "prio" integer NOT NULL DEFAULT 2, -- priority rank for word segmentation
+      --
+      "uname" varchar NOT NULL DEFAULT '', -- user name
+      "mtime" integer NOT NULL DEFAULT 0, -- term update time
+      --
+      '_ctx' varchar NOT NULL DEFAULT ''
+      --
+      "_prev" integer NOT NULL DEFAULT 0,
+      "_flag" integer NOT NULL DEFAULT 0 -- marking term as active or inactive
+    );
 
-  @[AlwaysInline]
-  def self.db_path
-    "var/mtdic/users/v1_defns.dic"
-  end
-
-  def self.init_sql
-    {{ read_file("#{__DIR__}/sql/defns_v1.sql") }}
-  end
+    CREATE INDEX IF NOT EXISTS terms_word_idx ON defns (key);
+    CREATE INDEX IF NOT EXISTS defns_scan_idx ON defns (dic);
+    CREATE INDEX IF NOT EXISTS defns_ptag_idx ON defns (ptag);
+    CREATE INDEX IF NOT EXISTS defns_user_idx ON defns (uname);
+    SQL
 
   ###
 
-  field id : Int32, primary: true
+  include Crorm::Model
+  schema "defns"
+
+  ###
+
+  field id : Int32, pkey: true, auto: true
 
   field dic : Int32 = 0
   field tab : Int32 = 0

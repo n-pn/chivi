@@ -1,7 +1,7 @@
 require "crorm"
 
 require "../../_data/_data"
-require "../../_data/remote/rmcata"
+require "../../zroot/html_parser/raw_rmcata"
 
 require "./wn_repo"
 
@@ -205,10 +205,10 @@ class WN::WnSeed
     stale = mode > 0 ? Time.utc - 3.minutes : Time.utc - 30.minutes
 
     if self.remote?
-      parser = Rmcata.from_seed(@sname, @s_bid, stale: stale)
+      parser = RawRmcata.from_seed(@sname, @s_bid, stale: stale)
       chlist = parser.chap_list(false)
     elsif !@rlink.empty?
-      parser = Rmcata.from_link(@rlink, stale: stale)
+      parser = RawRmcata.from_link(@rlink, stale: stale)
       chlist = parser.chap_list(true)
     else
       raise "not following any remote source!"

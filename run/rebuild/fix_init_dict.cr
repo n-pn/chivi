@@ -2,7 +2,7 @@ require "sqlite3"
 
 db = DB.open("sqlite3:var/dicts/init.dic")
 
-db.exec "attach database 'var/mtdic/users/v1_defns.dic' as inp"
+db.exec "attach database 'var/mtapp/v1dic/v1_defns.dic' as inp"
 db.exec "begin"
 
 db.exec <<-SQL

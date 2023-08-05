@@ -59,6 +59,6 @@ class M1::DefnForm
 
     defn._ctx = @_ctx.to_s
 
-    defn.tap(&.create!)
+    DbDefn.open_tx { |db| defn.tap(&.insert!(db)) }
   end
 end

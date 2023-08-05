@@ -1,7 +1,7 @@
 require "../ysapp/data/ysbook_data"
-require "../zdeps/data/ysbook"
+require "../zroot/data/ysbook"
 
-db = ZD::Ysbook.db
+db = ZR::Ysbook.db
 
 (0..).each do |block|
   lower = block &* 1000
@@ -15,7 +15,7 @@ db = ZD::Ysbook.db
   db.exec "begin"
 
   inputs.each do |input|
-    entry = ZD::Ysbook.new(input.id)
+    entry = ZR::Ysbook.load(input.id)
     entry.wn_id = input.nvinfo_id
 
     entry.btitle = input.btitle
@@ -35,11 +35,11 @@ db = ZD::Ysbook.db
     entry.word_count = input.word_count
     entry.book_mtime = input.book_mtime
 
-    entry.crit_total = input.crit_total
-    entry.list_total = input.list_total
+    entry.crit_count = input.crit_total
+    entry.list_count = input.list_total
 
-    entry.crit_count = input.crit_count
-    entry.list_count = input.list_count
+    entry.crit_avail = input.crit_count
+    entry.list_avail = input.list_count
 
     entry.rtime = input.info_rtime
     entry._flag = 0

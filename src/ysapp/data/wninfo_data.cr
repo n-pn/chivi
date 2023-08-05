@@ -41,7 +41,7 @@ class YS::Wninfo
 
   GENRES = {} of Int32 => String
 
-  File.each_line("var/books/fixes/genres_vi.tsv") do |line|
+  File.each_line("var/_conf/fixes/genres_vi.tsv") do |line|
     next if line.empty?
     id, name = line.split('\t')
     GENRES[id.to_i] = name

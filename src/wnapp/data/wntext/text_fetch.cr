@@ -1,4 +1,4 @@
-require "../../../_data/remote/rmchap"
+require "../../../zroot/html_parser/raw_rmchap"
 
 module WN::TextFetch
   extend self
@@ -11,15 +11,15 @@ module WN::TextFetch
 
     case
     when _path.starts_with?("http")
-      parser = Rmchap.from_link(_path, stale: stale)
+      parser = RawRmchap.from_link(_path, stale: stale)
     when _path.starts_with?('!')
       sname, s_bid, s_cid = _path.split('/')
-      parser = Rmchap.from_seed(sname, s_bid, s_cid, stale: stale)
+      parser = RawRmchap.from_seed(sname, s_bid, s_cid, stale: stale)
     when seed.remote?
       conf = Rmconf.load!(seed.sname)
       cpath = _path.starts_with?('/') ? _path : conf.make_chap_path(seed.s_bid, chap.s_cid)
       cfile = conf.chap_file_path(seed.s_bid, chap.s_cid)
-      parser = Rmchap.new(conf, cpath: cpath, cfile: cfile, stale: stale)
+      parser = RawRmchap.new(conf, cpath: cpath, cfile: cfile, stale: stale)
     else
       return chap.body
     end

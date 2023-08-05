@@ -211,7 +211,7 @@ class WN::WnRepo
     end
   end
 
-  def upsert_chap_infos(chlist : Enumerable(Rmcata::Chap))
+  def upsert_chap_infos(chlist : Enumerable(RawRmcata::Chap))
     @db.open_tx do |db|
       chlist.each do |chap|
         db.exec UPSERT_INFO_SQL, chap.ch_no, chap.s_cid, chap.ctitle, chap.subdiv, chap.cpath
@@ -260,7 +260,7 @@ class WN::WnRepo
 
   ###
 
-  DIR = "var/chaps/infos"
+  DIR = "var/zchap/infos"
 
   @[AlwaysInline]
   def self.db_path(sname : String, s_bid : Int32)

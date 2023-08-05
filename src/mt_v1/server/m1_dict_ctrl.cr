@@ -51,14 +51,16 @@ class M1::DictCtrl < AC::Base
 
   @[AC::Route::PUT("/")]
   def upsert(wn_id : Int32, dname : String, bname : String)
-    DbDict.new(
+    dict = DbDict.new(
       id: wn_id,
       dname: dname,
       label: bname,
       brief: "Từ điển riêng cho bộ truyện [#{bname}]",
       privi: 1,
       dtype: 3,
-    ).save!
+    )
+
+    DbDict.open_tx { |db| dict.upsert!(db) }
 
     render text: wn_id
   end
@@ -85,7 +87,7 @@ class M1::DictCtrl < AC::Base
       io << " limit 10000 order by id desc" if scope != "all"
     end
 
-    terms = DbDefn.repo.open_db do |db|
+    terms = DbDefn.open_db do |db|
       db.query_all query, dict.id, as: {String, String, String, Int32}
     end
 

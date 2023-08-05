@@ -11,7 +11,7 @@ if [[ $* == "all" || $* == *dict* ]]
 then
   echo upload dicts!
 
-  # rsync-fast "var/mtdic/users" "$SSH/var/dicts"
+  # rsync-fast "var/mtapp/v1dic" "$SSH/var/dicts"
   rsync-fast "mtdic/fixed/defns" "$SSH/mtdic/fixed"
   rsync-fast "mtdic/fixed/inits" "$SSH/mtdic/fixed"
   rsync-fast "mtdic/fixed/v1_init.dic" "$SSH/mtdic/fixed"

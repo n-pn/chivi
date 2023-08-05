@@ -2,7 +2,7 @@ require "crorm/model"
 require "crorm/sqlite"
 
 struct WN::ChLineEdit
-  class_getter db_path = "var/chaps/users/line-edits.db"
+  class_getter db_path = "var/zchap/zline-edits.db"
 
   class_getter init_sql = <<-SQL
     create table if not exists line_edits (

@@ -45,7 +45,7 @@ class M1::MtTrie
 end
 
 class M1::MtDict
-  DB_PATH = "var/mtdic/users/v1_defns.dic"
+  DB_PATH = "var/mtapp/v1dic/v1_defns.dic"
 
   MAINS = {} of Int32 => self
   AUTOS = {} of Int32 => self

@@ -12,7 +12,7 @@ struct M1::M1TermView
   getter defns : Hash(String, Array(DbDefn))
 
   def initialize(@forms : Array(String), @uname : String, @wn_id : Int32, @w_udic = true)
-    @defns = DbDefn.repo.open_db do |db|
+    @defns = DbDefn.open_db do |db|
       sql = String.build do |str|
         str << "select * from defns where dic >= -4"
         str << " and val <> '' and key in ("

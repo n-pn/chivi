@@ -1,4 +1,4 @@
-DIR = "var/books/fixes"
+DIR = "var/_conf/fixes"
 require "../../src/_util/char_util"
 
 def update_file(inp_path : String)

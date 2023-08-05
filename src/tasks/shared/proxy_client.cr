@@ -29,7 +29,7 @@ class ProxyClient
     end
   end
 
-  DIR = "var/proxy/.works"
+  DIR = "var/_conf/proxy/.works"
   Dir.mkdir_p(DIR)
 
   getter proxies = [] of Proxy

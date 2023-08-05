@@ -2,8 +2,12 @@ require "crorm"
 require "crorm/sqlite"
 
 class M1::DbDict
-  include Crorm::Model
+  class_getter db_path = "var/mtapp/v1dic/dicts_v1.db"
+  class_getter init_sql : String = {{ read_file("#{__DIR__}/sql/dicts_v1.sql") }}
 
+  ######
+
+  include Crorm::Model
   schema "dicts"
 
   field id : Int32, pkey: true
@@ -29,10 +33,11 @@ class M1::DbDict
   def initialize(@id, @dname, @label = "", @brief = "", @privi = 1, @dtype = 0)
   end
 
-  def save!(repo : SQ3::Repo = self.class.repo)
+  def save!(db : Database)
     fields, values = db_changes
-    smt = SQ3::SQL.upsert_smt(@@table, fields, "(id)", skip_fields: {"id"})
-    repo.db.exec(smt, args: values)
+    smt = SQ3::SQL.upsert_smt(@@schema.table, fields, "(id)", skip_fields: {"id"})
+
+    db.exec(smt, args: values)
   end
 
   def update!(changes : Hash(String, DB::Any))
@@ -53,29 +58,14 @@ class M1::DbDict
     update_smt = "update dicts set mtime = ?, term_total = term_total + 1 where id = ?"
     select_smt = "select term_total from dicts where id = ?"
 
-    self.class.db.open_db do |db|
-      db.exec update_smt, mtime, self.id!
-      @term_total = db.query_one(select_smt, self.id!, as: Int32)
+    self.class.open_db do |db|
+      db.exec update_smt, mtime, self.id
+      @term_total = db.query_one(select_smt, self.id, as: Int32)
     end
   end
 
   def to_json(jb)
     {@dname, @label, @term_total, @brief}.to_json(jb)
-  end
-
-  ######
-
-  class_getter db : Crorm::SQ3 do
-    Crorm::SQ3.new(self.db_path, self.init_sql, ttl: 3.minutes)
-  end
-
-  @[AlwaysInline]
-  def self.db_path
-    "var/mtdic/users/dicts_v1.db"
-  end
-
-  def self.init_sql
-    {{ read_file("#{__DIR__}/sql/dicts_v1.sql") }}
   end
 
   ####
@@ -85,7 +75,7 @@ class M1::DbDict
   def self.get_id(dname : String) : Int32
     DICT_IDS[dname] ||= begin
       query = "select id from dicts where dname = ?"
-      self.repo.open_db(&.query_one?(query, dname, as: Int32)) || 0
+      self.open_db(&.query_one?(query, dname, as: Int32)) || 0
     end
   end
 
@@ -105,12 +95,12 @@ class M1::DbDict
 
   def self.get!(id : Int32) : self
     query = "select * from dicts where id = ?"
-    self.repo.open_db(&.query_one(query, id, as: self))
+    self.open_db(&.query_one(query, id, as: self))
   end
 
   def self.get!(dname : String) : self
-    query = "select * from #{@@table} where dname = ?"
-    self.repo.open_db(&.query_one(query, dname, as: self))
+    query = "select * from #{@@schema.table} where dname = ?"
+    self.open_db(&.query_one(query, dname, as: self))
   end
 
   def self.get(dname : String) : self | Nil
@@ -118,40 +108,40 @@ class M1::DbDict
   end
 
   def self.count : Int32
-    query = "select count(*) from #{@@table} where term_total > 0"
-    self.repo.open_db(&.query_one(query, as: Int32))
+    query = "select count(*) from #{@@schema.table} where term_total > 0"
+    self.open_db(&.query_one(query, as: Int32))
   end
 
   def self.books_count : Int32
-    query = "select count(*) from #{@@table} where term_total > 0 and id > 0"
-    self.repo.open_db(&.query_one(query, as: Int32))
+    query = "select count(*) from #{@@schema.table} where term_total > 0 and id > 0"
+    self.open_db(&.query_one(query, as: Int32))
   end
 
   def self.all(limit : Int32, offset = 0) : Array(self)
     query = <<-SQL
-      select * from #{@@table} where term_total > 0
+      select * from #{@@schema.table} where term_total > 0
       order by mtime desc limit ? offset ?
     SQL
 
-    self.repo.open_db(&.query_all(query, limit, offset, as: self))
+    self.open_db(&.query_all(query, limit, offset, as: self))
   end
 
   def self.all_cores
     query = <<-SQL
-      select * from #{@@table} where dtype = 0 or dtype = 1
+      select * from #{@@schema.table} where dtype = 0 or dtype = 1
       order by id asc
     SQL
 
-    self.repo.open_db(&.query_all(query, as: self))
+    self.open_db(&.query_all(query, as: self))
   end
 
   def self.all_books(limit : Int32, offset = 0)
     query = <<-SQL
-      select * from #{@@table} where id > 0 and term_total > 0
+      select * from #{@@schema.table} where id > 0 and term_total > 0
       order by mtime desc limit ? offset ?
     SQL
 
-    self.repo.open_db(&.query_all(query, limit, offset, as: self))
+    self.open_db(&.query_all(query, limit, offset, as: self))
   end
 
   def self.init_wn_dict(wn_id : Int32, bslug : String, bname : String)

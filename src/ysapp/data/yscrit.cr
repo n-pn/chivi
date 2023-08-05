@@ -40,8 +40,8 @@ class YS::Yscrit
     end
   end
 
-  ZIP_DIR = "var/ysapp/crits-zip"
-  TXT_DIR = "var/ysapp/crits-txt"
+  ZIP_DIR = "var/zroot/yousuu/crits-zip"
+  TXT_DIR = "var/zroot/yousuu/crits-txt"
 
   private def group_by
     self.yc_id.first(2).join(&.to_s(16))

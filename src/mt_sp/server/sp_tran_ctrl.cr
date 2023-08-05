@@ -53,8 +53,8 @@ class SP::TranCtrl < AC::Base
 
   @[AC::Route::GET("/bing_chap/:hash")]
   def bing_chap(hash : String, wn_id : Int32 = 0, format = "mtl", label : String? = nil)
-    zh_path = "/www/chivi/tmp/#{_uname}-#{hash}.txt"
-    bv_path = "/www/chivi/txt/btran/#{hash}.txt"
+    zh_path = "tmp/chaps/#{_uname}-#{hash}.txt"
+    bv_path = "var/zroot/service/btran/#{hash}.txt"
 
     ztext = File.read(zh_path).lines
 
@@ -72,7 +72,7 @@ class SP::TranCtrl < AC::Base
 
   @[AC::Route::GET("/tl_chap/:hash")]
   def tl_chap(hash : String, wn_id : Int32 = 0, format = "mtl", label : String? = nil)
-    ztext = File.read("/www/chivi/tmp/#{_uname}-#{hash}.txt")
+    ztext = File.read("tmp/chaps/#{_uname}-#{hash}.txt")
     plain = format == "txt"
 
     qt_mt = MT::QtCore.new(wn_id, user: @w_user)

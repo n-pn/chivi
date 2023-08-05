@@ -10,7 +10,7 @@ mains = {} of String => Array(String)
 bings = {} of String => Array(String)
 prevs = {} of String => Array(String)
 
-DB.open("sqlite3:var/mtdic/users/v1_defns.dic") do |db|
+DB.open("sqlite3:var/mtapp/v1dic/v1_defns.dic") do |db|
   sql = <<-SQL
   select key, val from defns
   where dic > -4 and val <> ''and _flag >= 0

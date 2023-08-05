@@ -1,9 +1,9 @@
 require "../_data/_data"
-require "../zdeps/data/btitle"
-require "../zdeps/data/ysbook"
-require "../zdeps/data/tubook"
+require "../zroot/btitle"
+require "../zroot/ysbook"
+require "../zroot/tubook"
 
-OUT_DB = ZD::Btitle.db
+OUT_DB = ZR::Btitle.db
 
 SELECT_STMT = "select id, zname, vname, hname from btitles where id >= $1 and id <= $2"
 
@@ -25,7 +25,7 @@ existed = Set(String).new
   OUT_DB.exec "begin"
 
   inputs.each do |input|
-    entry = ZD::Btitle.new(input.zname)
+    entry = ZR::Btitle.new(input.zname)
 
     entry.name_hv = input.hname
     entry.name_mt = input.vname
@@ -49,7 +49,7 @@ SELECT_STMT_2 = "select author, btitle from books where id >= $1 and id <= $2"
   lower = block &* 1000
   upper = lower &+ 999
 
-  inputs = ZD::Ysbook.db.query_all SELECT_STMT_2, lower, upper, as: {String, String}
+  inputs = ZR::Ysbook.db.query_all SELECT_STMT_2, lower, upper, as: {String, String}
   puts "- <ysbooks> block: #{block}, books: #{inputs.size}"
 
   break if inputs.empty?
@@ -61,7 +61,7 @@ SELECT_STMT_2 = "select author, btitle from books where id >= $1 and id <= $2"
     next if existed.includes?(btitle)
     existed << btitle
 
-    entry = ZD::Btitle.new(btitle)
+    entry = ZR::Btitle.new(btitle)
     entry.upsert!(OUT_DB)
   end
 
@@ -72,7 +72,7 @@ end
   lower = block &* 1000
   upper = lower &+ 999
 
-  inputs = ZD::Tubook.db.query_all SELECT_STMT_2, lower, upper, as: {String, String}
+  inputs = ZR::Tubook.db.query_all SELECT_STMT_2, lower, upper, as: {String, String}
   puts "- <tubooks> block: #{block}, books: #{inputs.size}"
 
   break if inputs.empty?
@@ -84,7 +84,7 @@ end
     next if existed.includes?(btitle)
     existed << btitle
 
-    entry = ZD::Btitle.new(btitle)
+    entry = ZR::Btitle.new(btitle)
     entry.upsert!(OUT_DB)
   end
 

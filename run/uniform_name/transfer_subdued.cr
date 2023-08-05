@@ -78,7 +78,7 @@ def transfer(from_id : Int32, to_id : Int32)
   success_all &&= transfer_wnseeds(from_id, to_id)
   success_all &&= transfer_ubmemos(from_id, to_id)
 
-  DB.open("sqlite3:var/mtdic/users/v1_defns.dic") do |db|
+  DB.open("sqlite3:var/mtapp/v1dic/v1_defns.dic") do |db|
     db.exec "update defns set dic = $1 where dic = $2", to_id, from_id
   end
 

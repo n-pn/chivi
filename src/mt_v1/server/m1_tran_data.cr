@@ -15,7 +15,7 @@ class M1::TranData
     when "posts"
       input = File.read("tmp/qtran/#{name}.txt")
     when "chaps"
-      input = File.read("/www/chivi/tmp/#{name}.txt")
+      input = File.read("tmp/chaps/#{name}.txt")
     else
       raise "unsupported!"
     end

@@ -52,7 +52,7 @@ class YS::Ysrepl
     self.fix_vhtml(ztext)
   end
 
-  TXT_DIR = "var/ysapp/repls-txt"
+  TXT_DIR = "var/zroot/yousuu/repls-txt"
 
   def save_ztext_copy(ztext : String) : Nil
     yr_id = self.yr_id

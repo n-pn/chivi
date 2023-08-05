@@ -3,7 +3,7 @@ require "tabkv"
 module CV::GenreMap
   extend self
 
-  DIR = "var/books/fixes"
+  DIR = "var/_conf/fixes"
 
   class_getter zh_map : Tabkv(Array(String)) { Tabkv(Array(String)).new("#{DIR}/genres_zh.tsv") }
   class_getter vi_map : Tabkv(String) { Tabkv(String).new("#{DIR}/genres_vi.tsv") }

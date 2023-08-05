@@ -46,8 +46,8 @@ class Wncata
     current = new(db_path)
 
     unless existed?
-      old_vi_path = "var/chaps/infos/#{sname}/#{s_bid}.db"
-      new_zh_path = "/2tb/var.chivi/zchap/globs/#{new_sname(sname)}/#{s_bid}.db3"
+      old_vi_path = "var/zchap/infos/#{sname}/#{s_bid}.db"
+      new_zh_path = "var/zroot/remote/#{new_sname(sname)}/#{s_bid}.db3"
       if File.file?(old_vi_path)
         current.import_old_vi_db(old_vi_path)
       elsif File.file?(new_zh_path)

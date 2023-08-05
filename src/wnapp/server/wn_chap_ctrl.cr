@@ -60,7 +60,7 @@ class WN::ChapCtrl < AC::Base
     zh_text
   end
 
-  TMP_DIR = "/www/chivi/tmp"
+  TMP_DIR = "tmp/chaps"
 
   private def write_ztext_to_tmp_dir(ztext : Array(String))
     return [] of String if ztext.size < 2

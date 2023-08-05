@@ -1,19 +1,18 @@
-require "../zdeps/data/tubook"
+require "../zroot/tubook"
 
-DIR = "/2tb/var.chivi/.keep/random/tuishujin/listBookRepository"
+DIR = "var/zroot/.keep/tuishu/listBookRepository"
 
-OUT_DB = ZD::Tubook.db
+OUT_DB = ZR::Tubook.db
 
-(1..).each do |page|
-  path = "#{DIR}/#{page}-100.json"
-  break unless rtime = File.info?(path).try(&.modification_time.to_unix)
+Dir.glob("#{DIR}/*.json") do |path|
+  rtime = File.info(path).modification_time.to_unix
 
   json = File.read(path)
-  hash = XXHash.xxh32(json).unsafe_as(Int32)
+  hash = XXHash.xxh32(json)
 
   begin
-    data = ZD::RawTubookList.from_json(json)
-    puts "- page: #{page}, books: #{data.books.size}"
+    data = ZR::RawTubookList.from_json(json)
+    puts "- file: #{path}, books: #{data.books.size}"
   rescue ex
     puts [ex, json]
     next
@@ -22,7 +21,7 @@ OUT_DB = ZD::Tubook.db
   OUT_DB.exec "begin"
 
   data.books.each do |input|
-    entry = ZD::Tubook.from_raw(input, rtime: rtime, rhash: hash)
+    entry = ZR::Tubook.from_raw(input, rtime: rtime, rhash: hash)
     entry.upsert!(OUT_DB)
   end
 

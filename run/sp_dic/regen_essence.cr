@@ -6,7 +6,7 @@ MT::SpDefn.init_db(DNAME, reset: false)
 
 terms = [] of MT::SpDefn
 
-DB.open("sqlite3:var/mtdic/users/v1_defns.dic") do |db|
+DB.open("sqlite3:var/mtapp/v1dic/v1_defns.dic") do |db|
   stmt = <<-SQL
     select "key", val, uname, mtime from defns
     where dic = ? order by mtime asc, "key" asc

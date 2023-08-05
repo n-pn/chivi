@@ -15,11 +15,11 @@ class M1::DefnCtrl < AC::Base
     pg_no, limit, offset = _paginate(min: 50, max: 100)
 
     query, args = build_query(params, limit, offset)
-    terms = DbDefn.repo.open_db { |db| db.query_all query, args: args, as: DbDefn }
+    terms = DbDefn.open_db { |db| db.query_all query, args: args, as: DbDefn }
 
     total = terms.size
     if total == limit
-      total = DbDefn.repo.open_db do |db|
+      total = DbDefn.open_db do |db|
         query = query.sub("select * ", "select count (*) ")
         args[-2] = args[-2].as(Int32) + limit * 2
         args[-1] = 0

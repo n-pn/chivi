@@ -1,13 +1,13 @@
 require "colorize"
 
-INP = "var/texts/rgbks"
-OUT = "/2tb/var.chivi/zchap"
+INP = "var/ztext"
+OUT = "var/zroot"
 
 def gen_out_dir(sname : String)
   case sname[0]
-  when '!' then "#{OUT}/globs/#{sname}"
-  when '@' then "#{OUT}/users/#{sname}"
-  else          "#{OUT}/blend/#{sname}"
+  when '!' then "#{OUT}/remote/#{sname}"
+  when '@' then "#{OUT}/member/#{sname}"
+  else          "#{OUT}/system/#{sname}"
   end
 end
 

@@ -11,7 +11,7 @@ def get_page(link : String, save_path : String) : Nil
 end
 
 URL = "https://pre-api.tuishujun.com/api/listBookRepository"
-DIR = "/2tb/var.chivi/.keep/random/tuishujin/listBookRepository"
+DIR = "var/zroot/.keep/tuishu/listBookRepository"
 Dir.mkdir_p(DIR)
 
 page_total = 304297
