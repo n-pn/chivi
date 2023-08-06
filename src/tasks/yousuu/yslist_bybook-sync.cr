@@ -5,7 +5,7 @@ require "./_crawl_common"
 require "../../zroot/json_parser/raw_yslist"
 
 class YslistCrawlByBook < CrawlTask
-  def db_seed_tasks(entry : Entry, json : String, hash : UInt32)
+  def db_seed_tasks(entry : Entry, json : String)
     return unless json.starts_with?('{')
     CrUtil.post_raw_data("lists/info", json)
 
@@ -61,9 +61,8 @@ class YslistCrawlByBook < CrawlTask
     queue_init.each { |init| Dir.mkdir_p("#{DIR}/#{init.ybid}") }
 
     max_pages = queue_init.max_of(&.pgmax)
-    crawler = new(false)
 
-    crawler = new(false)
+    crawler = new("yslist_bybook", false)
 
     1.upto(max_pages) do |page|
       queue_init.reject!(&.pgmax.< page)
@@ -76,7 +75,7 @@ class YslistCrawlByBook < CrawlTask
         )
       end
 
-      queue.reject!(&.existed?(page.days))
+      queue.reject!(&.cached?(page.days))
       crawler.crawl!(queue)
     end
   end

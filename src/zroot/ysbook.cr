@@ -38,7 +38,6 @@ class ZR::Ysbook
       list_avail int NOT NULL DEFAULT 0,
       -- timestamps
       rtime bigint NOT NULL DEFAULT 0,
-      rhash text NOT NULL DEFAULT '',
       _flag int NOT NULL DEFAULT 0
     );
     SQL
@@ -60,6 +59,7 @@ class ZR::Ysbook
 
   field cover : String = ""
   field intro : String = ""
+
   field genre : String = ""
   field xtags : String = ""
 
@@ -80,7 +80,6 @@ class ZR::Ysbook
   field list_avail : Int32 = 0 # avail book lists
 
   field rtime : Int64 = 0_i64
-  field rhash : String = ""
   field _flag : Int32 = 0
 
   def initialize(@id)
@@ -92,12 +91,11 @@ class ZR::Ysbook
     from_raw_json(json, rtime: time)
   end
 
-  def self.from_raw_json(raw_json : String, rtime = Time.utc.to_unix, rhash = XXHash.xxh32(raw_json))
+  def self.from_raw_json(raw_json : String, rtime = Time.utc.to_unix)
     input = RawYsbook.from_json(raw_json)
-    entry = self.load(input.id)
 
+    entry = self.load(input.id)
     entry.rtime = rtime
-    entry.rhash = rhash != 0 ? rhash.to_s(base: 36) : ""
 
     entry.btitle = input.btitle
     entry.author = input.author
@@ -106,7 +104,7 @@ class ZR::Ysbook
     entry.intro = input.intro
 
     entry.genre = input.genre
-    entry.xtags = input.btags.join('\n')
+    entry.xtags = input.btags.join('\t')
 
     entry.voters = input.voters
     entry.rating = input.rating

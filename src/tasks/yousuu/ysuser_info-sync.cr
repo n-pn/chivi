@@ -4,7 +4,7 @@ require "./_crawl_common"
 require "../../zroot/json_parser/raw_ysuser"
 
 class CrawlYsuser < CrawlTask
-  def db_seed_tasks(entry : Entry, json : String, hash : UInt32)
+  def db_seed_tasks(entry : Entry, json : String)
     CrUtil.post_raw_data("users/info?rtime=#{Time.utc.to_unix}", json)
     # TODO: save to sqlite3 database
   end
@@ -21,8 +21,8 @@ class CrawlYsuser < CrawlTask
   end
 
   def self.run!(argv = ARGV)
-    queue = gen_queue.reject!(&.existed?(1.days))
-    new(false).crawl!(queue)
+    queue = gen_queue.reject!(&.cached?(1.days))
+    new("ysuser_info", false).crawl!(queue)
   end
 
   def self.gen_queue

@@ -2,16 +2,10 @@ require "./_crawl_common"
 require "../../zroot/json_parser/raw_ysrepl"
 
 class CrawlYslistByUser < CrawlTask
-  private def db_seed_tasks(entry : Entry, json : String, hash : UInt32)
+  private def db_seed_tasks(entry : Entry, json : String)
     return unless json.starts_with?('{')
-
-    yc_id = File.basename File.dirname(entry.path)
-    endpoint = "repls/by_crit/#{yc_id}?rtime=#{Time.utc.to_unix}"
-
-    CrUtil.post_raw_data(endpoint, json)
-  rescue ex
-    puts entry.path, json
-    Log.error { ex.message }
+    href = "repls/by_crit/#{entry.parent}?rtime=#{Time.utc.to_unix}"
+    CrUtil.post_raw_data(href, json)
   end
 
   def self.gen_link(yc_id : String, page : Int32 = 1)
@@ -45,7 +39,7 @@ class CrawlYslistByUser < CrawlTask
     queue_init.each { |init| Dir.mkdir_p("#{DIR}/#{init.yc_id}") }
 
     max_pages = queue_init.max_of(&.pgmax)
-    crawler = new(reseed)
+    crawler = new("ysrepl_bycrit", reseed)
 
     start.upto(max_pages) do |pg_no|
       queue_init.reject!(&.pgmax.< pg_no)
@@ -59,7 +53,7 @@ class CrawlYslistByUser < CrawlTask
         )
       end
 
-      queue.reject!(&.existed?((3 + pg_no).days))
+      queue.reject!(&.cached?((2 + pg_no).days))
       crawler.crawl!(queue)
       spawn { `/app/chivi.app/bin/fix_ysrepls_vhtml` }
     end

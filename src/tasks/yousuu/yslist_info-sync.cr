@@ -2,7 +2,7 @@ require "./_crawl_common"
 require "../../zroot/json_parser/raw_yslist"
 
 class YslistCrawl < CrawlTask
-  def db_seed_tasks(entry : Entry, json : String, hash : UInt32)
+  def db_seed_tasks(entry : Entry, json : String)
     # TODO:
   end
 
@@ -28,10 +28,10 @@ class YslistCrawl < CrawlTask
     end
 
     queue = gen_queue()
-    queue.reject!(&.existed?(3.days))
+    queue.reject!(&.cached?(3.days))
     queue = crawl_mode.rearrange!(queue)
 
-    crawler = new(false)
+    crawler = new("yslist_info", false)
     crawler.mkdirs!(queue)
 
     crawler.crawl!(queue)

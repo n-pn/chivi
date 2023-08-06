@@ -3,11 +3,11 @@ require "../../zroot/ysbook"
 require "./_crawl_common"
 
 class CrawlYsbook < CrawlTask
-  def db_seed_tasks(entry : Entry, json : String, hash : UInt32)
+  def db_seed_tasks(entry : Entry, json : String)
     return unless json.starts_with?('{')
     spawn CrUtil.post_raw_data("books/info", json)
 
-    ysbook = ZR::Ysbook.from_raw_json(json, rhash: hash)
+    ysbook = ZR::Ysbook.from_raw_json(json)
     ZR::Ysbook.open_tx { |db| ysbook.upsert!(db) }
   rescue ex
     Log.error(exception: ex) { ex.message }
@@ -49,9 +49,8 @@ class CrawlYsbook < CrawlTask
     queue = gen_queue(min_id, max_id).reject!(&.existed?(1.days))
     queue = crawl_mode.rearrange!(queue)
 
-    worker = new(reseed_proxies)
+    worker = new("ysbook_info", reseed_proxies)
     worker.mkdirs!(queue)
-
     worker.crawl!(queue)
   end
 

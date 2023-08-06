@@ -2,9 +2,7 @@ require "./_crawl_common"
 require "../../zroot/json_parser/raw_yslist"
 
 class CrawlYslistByUser < CrawlTask
-  alias RawData = NamedTuple(data: NamedTuple(total: Int32))
-
-  private def db_seed_tasks(entry : Entry, json : String, hash : UInt32)
+  private def db_seed_tasks(entry : Entry, json : String)
     return unless json.starts_with?('{')
     CrUtil.post_raw_data("lists/by_user?rtime=#{Time.utc.to_unix}", json)
   rescue ex
@@ -39,7 +37,7 @@ class CrawlYslistByUser < CrawlTask
     queue_init.each { |init| Dir.mkdir_p("#{DIR}/#{init.id}") }
 
     max_pages = queue_init.max_of(&.pgmax)
-    crawler = new(false)
+    crawler = new("yslist_byuser", false)
 
     start.upto(max_pages) do |pg_no|
       queue_init.reject!(&.pgmax.< pg_no)
@@ -53,7 +51,7 @@ class CrawlYslistByUser < CrawlTask
       end
 
       expiry = pg_no * (pg_no - 1) // 2 + 1
-      queue.reject!(&.existed?(expiry.days))
+      queue.reject!(&.cached?(expiry.days))
       crawler.crawl!(queue)
     end
   end

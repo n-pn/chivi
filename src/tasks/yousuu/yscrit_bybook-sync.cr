@@ -5,7 +5,7 @@ require "./_crawl_common"
 require "../../zroot/json_parser/raw_yscrit"
 
 class CrawlYscritByBook < CrawlTask
-  def db_seed_tasks(entry : Entry, json : String, hash : UInt32)
+  def db_seed_tasks(entry : Entry, json : String)
     return unless json.starts_with?('{')
     api_path = "crits/by_book?rtime=#{Time.utc.to_unix}"
     CrUtil.post_raw_data(api_path, json)
@@ -38,7 +38,7 @@ class CrawlYscritByBook < CrawlTask
     queue_init.each { |init| Dir.mkdir_p("#{DIR}/#{init.yb_id}") }
 
     max_pages = queue_init.max_of(&.pgmax)
-    crawler = new(false)
+    crawler = new("yscrit_bybook", false)
 
     start.upto(max_pages) do |pg_no|
       queue_init.reject!(&.pgmax.< pg_no)
@@ -52,7 +52,7 @@ class CrawlYscritByBook < CrawlTask
       end
 
       expiry = pg_no * (pg_no - 1) // 2 + 1
-      queue.reject!(&.existed?(expiry.days))
+      queue.reject!(&.cached?(expiry.days))
       crawler.crawl!(queue)
 
       `/app/chivi.app/bin/fix_yscrits_vhtml`
