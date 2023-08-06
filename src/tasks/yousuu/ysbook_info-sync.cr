@@ -9,21 +9,19 @@ class CrawlYsbook < CrawlTask
 
     ysbook = ZR::Ysbook.from_raw_json(json, rhash: hash)
     ZR::Ysbook.open_tx { |db| ysbook.upsert!(db) }
+  rescue ex
+    Log.error(exception: ex) { ex.message }
   end
 
   def self.gen_link(yb_id : Int32)
     "https://api.yousuu.com/api/book/#{yb_id}"
   end
 
-  DIR = "var/ysraw/books"
-
-  # Dir.mkdir_p(DIR)
+  DIR = "var/.keep/yousuu/book-infos"
+  Dir.mkdir_p(DIR)
 
   def self.gen_path(yb_id : Int32)
-    # TODO: remove group
-
-    group = (yb_id // 1000).to_s.rjust(3, '0')
-    "#{DIR}/#{group}/#{yb_id}.latest.json.zst"
+    "#{DIR}/#{yb_id}/latest.json"
   end
 
   #####
@@ -45,7 +43,7 @@ class CrawlYsbook < CrawlTask
       opt.on("--reseed-proxies", "Refresh proxies from init lists") { reseed_proxies = true }
     end
 
-    max_id = get_max_book_id if max_id == 0
+    max_id = get_max_book_id(load_index_page(4.hours)) if max_id == 0
     puts "MIN: #{min_id}, MAX: #{max_id}"
 
     queue = gen_queue(min_id, max_id).reject!(&.existed?(1.days))
@@ -58,16 +56,18 @@ class CrawlYsbook < CrawlTask
   end
 
   SELECT_STMT = <<-SQL
-    select id, voters, info_rtime from ysbooks
+    select id, voters, rtime from ysbooks
     where id >= $1 and id <= $2
     SQL
 
   def self.gen_queue(min = 1, max = 300000)
     y_bids = Set(Int32).new(min..max)
 
-    PG_DB.query_each(SELECT_STMT, min, max) do |rs|
-      id, voters, rtime = rs.read(Int32, Int32, Int64)
-      y_bids.delete(id) unless should_crawl?(voters, rtime)
+    ZR::Ysbook.open_db do |db|
+      db.query_each(SELECT_STMT, min, max) do |rs|
+        id, voters, rtime = rs.read(Int32, Int32, Int64)
+        y_bids.delete(id) unless should_crawl?(voters, rtime)
+      end
     end
 
     y_bids.map_with_index(1) do |y_bid, index|
@@ -79,21 +79,20 @@ class CrawlYsbook < CrawlTask
     end
   end
 
-  def self.get_max_book_id
-    out_path = "tmp/yousuu_newbooks.html"
+  def self.load_index_page(ttl = 4.hours)
+    out_path = "var/.keep/_index/yousuu.htm"
 
-    if File.exists?(out_path)
-      html = File.read(out_path)
-    else
-      html = HTTP::Client.get("https://www.yousuu.com/newbooks") do |res|
-        res.body_io.gets_to_end.tap do |x|
-          File.write(out_path, x)
-        end
-      end
+    unless CrUtil.file_exists?(out_path, ttl)
+      href = "https://www.yousuu.com/newbooks"
+      html = HTTP::Client.get(href, &.body_io.gets_to_end)
+      File.write(out_path, html)
     end
 
-    html = File.read(out_path)
-    page = Lexbor::Parser.new(html)
+    html || File.read(out_path)
+  end
+
+  def self.get_max_book_id(html_page = load_index_page)
+    page = Lexbor::Parser.new(html_page)
     node = page.css(".book-info > .book-name").first
     href = node.attributes["href"]
     File.basename(href).to_i
@@ -106,12 +105,11 @@ class CrawlYsbook < CrawlTask
 
   def self.map_tspan(voters : Int32)
     case voters
-    when .< 10   then 14.days
-    when .< 50   then 10.days
-    when .< 100  then 7.days
-    when .< 300  then 5.days
-    when .< 1000 then 3.days
-    else              1.days
+    when .< 10  then 7.days
+    when .< 50  then 5.days
+    when .< 100 then 3.days
+    when .< 200 then 2.days
+    else             1.days
     end
   end
 

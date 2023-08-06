@@ -2,12 +2,12 @@ require "pg"
 require "../../cv_env"
 
 require "./_crawl_common"
-require "../_raw/raw_yslist"
+require "../../zroot/json_parser/raw_yslist"
 
-class CV::YslistCrawlByBook < CrawlTask
-  def db_seed_tasks(entry : Entry, json : String)
+class YslistCrawlByBook < CrawlTask
+  def db_seed_tasks(entry : Entry, json : String, hash : UInt32)
     return unless json.starts_with?('{')
-    post_raw_data("lists/info", json)
+    CrUtil.post_raw_data("lists/info", json)
 
     #   yslist = YS::Yslist.upsert!(self.oid, self.created_at || self.updated_at)
     #   yslist.ysuser = ysuser || begin
@@ -40,10 +40,10 @@ class CV::YslistCrawlByBook < CrawlTask
     "https://api.yousuu.com/api/book/#{ybid}/booklist?page=#{page}"
   end
 
-  DIR = "var/ysraw/lists-by-book"
+  DIR = "var/.keep/yousuu/lists-bybook"
 
   def self.gen_path(ybid : Int32, page = 1)
-    "#{DIR}/#{ybid}/#{page}.latest.json.zst"
+    "#{DIR}/#{ybid}/#{page}-latest.json"
   end
 
   def self.run!(argv = ARGV)
@@ -92,7 +92,7 @@ class CV::YslistCrawlByBook < CrawlTask
   def self.gen_queue_init(crawl_mode : CrawlMode = :head)
     output = [] of QueueInit
 
-    PG_DB.query_each(SELECT_STMT) do |rs|
+    PGDB.query_each(SELECT_STMT) do |rs|
       ybid, total = rs.read(Int32, Int32)
 
       total = 1 if total < 1

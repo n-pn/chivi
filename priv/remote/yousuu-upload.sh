@@ -6,7 +6,7 @@ function rsync-fast {
 
 OUT=/app/chivi.app
 
-YSRAW_DIR="var/ysraw"
+YSRAW_DIR="var/.keep/yousuu"
 YSRAW_OUT="$OUT/$YSRAW_DIR"
 
 
@@ -27,10 +27,10 @@ if [[ $1 == "all" || $* == *books* ]]
 then
   echo upload book related data!
 
-  yarn build ysbook_crawl
-  rsync-fast "bin/ysbook_crawl" "$OUT/bin"
+  yarn build ysbook_info-sync
+  rsync-fast "bin/ysbook_info-sync" "$OUT/bin"
 
-  rsync-fast "var/ysapp/books.db" $OUT/var/ysapp/books.db
+  rsync-fast "var/zroot/ysbooks.db3" $OUT/var/zroot
   rsync-fast "$YSRAW_DIR/books" $YSRAW_OUT
 fi
 

@@ -1,34 +1,27 @@
 require "sqlite3"
+require "crorm/model"
 require "../shared/utils"
 
 class MT::SpDefn
-  include DB::Serializable
-  class_getter table = "defns"
+  include Crorm::Model
+  schema "defns"
 
-  property zstr : String
-  property vstr : String
+  field zstr : String, pkey: true
+  field vstr : String
 
-  property _fmt : Int32 = 0
+  field _fmt : Int32 = 0
 
-  property uname : String = ""
-  property mtime : Int32 = 0
+  field uname : String = ""
+  field mtime : Int32 = 0
 
   def initialize(@zstr, @vstr, @_fmt = 0, @uname = "", @mtime = Utils.mtime)
   end
 
-  def save!(db : DB::Database | DB::Connection)
-    db.exec <<-SQL, @zstr, @vstr, @_fmt, @uname, @mtime
-      insert into "defns" ("zstr", "vstr", "_fmt", "uname", "mtime")
-      values ($1, $2, $3, $4, $5)
-      on conflict("zstr") do update set
-        "vstr" = excluded.vstr,
-        "_fmt" = excluded._fmt,
-        "uname" = excluded.uname,
-        "mtime" = excluded.mtime
-    SQL
-  end
-
   ######
+
+  def self.db
+    raise "invalid"
+  end
 
   # return path for database
   @[AlwaysInline]
@@ -37,41 +30,29 @@ class MT::SpDefn
   end
 
   # open database for reading/writing
-  def self.open_db(dname : String, &)
-    db_path = self.db_path(dname)
-    connection = "sqlite3:#{db_path}?journal_mode=WAL&synchronous=normal"
-    DB.open(connection) { |db| yield db }
+  def self.db_open(dname : String, &)
+    open_db(db_path(dname)) { |db| yield db }
   end
 
   # open database with transaction for writing
-  def self.open_tx(dname : String, &)
-    open_db(dname) do |db|
-      db.exec "begin"
-      yield db
-      db.exec "commit"
-    end
+  def self.tx_open(dname : String, &)
+    open_tx(db_path(dname)) { |db| yield db }
   end
 
-  def self.init_db(dname : String, reset : Bool = false)
-    open_db(dname) do |db|
-      db.exec "drop table if exists defns" if reset
-
-      db.exec <<-SQL
-        create table if not exists defns (
-          "zstr" varchar primary key,
-          "vstr" varchar not null,
-          "_fmt" integer not null default 0,
-          --
-          "uname" varchar not null default '',
-          "mtime" bigint not null default 0,
-          "_flag" smallint not null default 0
-        );
-      SQL
-    end
-  end
+  class_getter init_sql = <<-SQL
+    create table if not exists defns (
+      "zstr" varchar primary key,
+      "vstr" varchar not null,
+      "_fmt" integer not null default 0,
+      --
+      "uname" varchar not null default '',
+      "mtime" bigint not null default 0,
+      "_flag" smallint not null default 0
+    );
+    SQL
 
   def self.load_data(dname : String, &)
-    open_db(dname) do |db|
+    open_db(db_path(dname)) do |db|
       db.query_each("select zstr, vstr from defns") do |rs|
         yield rs.read(String), rs.read(String)
       end

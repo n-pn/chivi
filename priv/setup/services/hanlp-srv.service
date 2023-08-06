@@ -8,13 +8,11 @@ Type=simple
 Restart=always
 RestartSec=100
 User=nipin
-Environment=PORT=5600
+Environment=PORT=5555
 Environment=HANLP_VERBOSE=0
-Environment=HANLP_HOME=/app/.hanlp
-#Environment=PYTHONPATH=$PYTHONPATH:/home/nipin/.local/lib/python3.10/site-packages
-
+Environment=HANLP_HOME=/app/hanlp.app/.hanlp
 WorkingDirectory=/app/chivi.app
-ExecStart=/usr/bin/python3 /app/chivi.app/bin/hanlp_srv.py
+ExecStart=/usr/bin/python3 /app/chivi.app/bin/hanlp-srv.py
 StandardOutput=file:/app/chivi.app/log/hanlp-srv.log
 StandardError=append:/app/chivi.app/log/hanlp-err.log
 

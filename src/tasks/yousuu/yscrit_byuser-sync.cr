@@ -1,25 +1,20 @@
 require "./_crawl_common"
-require "../_raw/raw_yslist"
+require "../../zroot/json_parser/raw_yscrit"
 
-class YS::CrawlYslistByUser < CrawlTask
-  alias RawData = NamedTuple(data: NamedTuple(total: Int32))
-
-  private def db_seed_tasks(entry : Entry, json : String)
+class CrawlYscritByUser < CrawlTask
+  def db_seed_tasks(entry : Entry, json : String, hash : UInt32)
     return unless json.starts_with?('{')
-    post_raw_data("lists/by_user?rtime=#{Time.utc.to_unix}", json)
-  rescue ex
-    puts entry.path, json
-    Log.error { ex.message }
+    CrUtil.post_raw_data("crits/by_user?rtime=#{Time.utc.to_unix}", json)
   end
 
-  def self.gen_link(u_id : Int32, page : Int32 = 1)
-    "https://api.yousuu.com/api/user/#{u_id}/booklistDetail?page=#{page}"
+  def self.gen_link(yu_id : Int32, page : Int32 = 1)
+    "https://api.yousuu.com/api/user/#{yu_id}/comment?page=#{page}"
   end
 
-  DIR = "var/ysraw/lists-by-user"
+  DIR = "var/.keep/yousuu/crits-byuser"
 
-  def self.gen_path(u_id : Int32, page : Int32 = 1)
-    "#{DIR}/#{u_id}/#{page}.latest.json.zst"
+  def self.gen_path(yu_id : Int32, page : Int32 = 1)
+    "#{DIR}/#{yu_id}/#{page}-latest.json"
   end
 
   ################
@@ -55,22 +50,22 @@ class YS::CrawlYslistByUser < CrawlTask
       expiry = pg_no * (pg_no - 1) // 2 + 1
       queue.reject!(&.existed?(expiry.days))
       crawler.crawl!(queue)
+
+      `/app/chivi.app/bin/fix_yscrits_vhtml`
     end
   end
 
   record QueueInit, id : Int32, pgmax : Int32
 
+  SELECT_STMT = <<-SQL
+    select id, crit_total from ysusers
+    order by (like_count + star_count) desc
+    SQL
+
   def self.gen_queue_init(min_ttl = 1.day)
     output = [] of QueueInit
 
-    # fresh = (Time.utc - min_ttl).to_unix
-
-    sql = <<-SQL
-      select id, list_total from ysusers
-      order by (like_count + star_count) desc
-      SQL
-
-    PG_DB.query_each(sql) do |rs|
+    PGDB.query_each(SELECT_STMT) do |rs|
       id, total = rs.read(Int32, Int32)
 
       total = 1 if total < 1

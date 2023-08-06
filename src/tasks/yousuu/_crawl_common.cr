@@ -4,11 +4,13 @@ require "xxhash"
 require "http/client"
 require "option_parser"
 
+ENV["CV_ENV"] = "production" unless ARGV.includes?("--test")
 require "../../cv_env"
-require "../shared/proxy_client"
 
-PG_DB = DB.open(CV_ENV.database_url)
-at_exit { PG_DB.close }
+PGDB = DB.open(CV_ENV.database_url)
+at_exit { PGDB.close }
+
+require "../shared/proxy_client"
 
 HEADERS = HTTP::Headers{"Content-Type" => "application/json"}
 
@@ -89,8 +91,14 @@ abstract class CrawlTask
 
   def crawl_entry!(entry : Entry) : Entry?
     puts "- <#{entry.name.colorize.magenta}> GET: #{entry.link.colorize.magenta}"
-    return entry unless json = @http.fetch!(entry.link, entry.name)
 
+    if entry.existed?(ttl: 2.hours)
+      json = File.read(entry.path)
+    else
+      json = @http.fetch!(entry.link, entry.name)
+    end
+
+    return entry unless json
     hash = XXHash.xxh32(json)
 
     save_raw_json(entry, json, hash: hash)

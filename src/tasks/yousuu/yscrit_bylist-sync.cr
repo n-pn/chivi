@@ -2,27 +2,27 @@ require "pg"
 require "../../cv_env"
 
 require "./_crawl_common"
-require "../_raw/raw_yscrit"
+require "../../zroot/json_parser/raw_yscrit"
 
-class YS::CrawlYscritByUser < CrawlTask
-  def db_seed_tasks(entry : Entry, json : String)
+class CrawlYscritByUser < CrawlTask
+  def db_seed_tasks(entry : Entry, json : String, hash : UInt32)
     return unless json.starts_with?('{')
 
     yl_id = File.basename(File.dirname(entry.path))
     rtime = Time.utc.to_unix
 
     api_path = "crits/by_list/#{yl_id}?rtime=#{rtime}"
-    post_raw_data(api_path, json)
+    CrUtil.post_raw_data(api_path, json)
   end
 
   def self.gen_link(yl_id : String, page : Int32 = 1)
     "https://api.yousuu.com/api/booklist/#{yl_id}?page=#{page}"
   end
 
-  DIR = "var/ysraw/crits-by-list"
+  DIR = "var/.keep/yousuu/crits-bylist"
 
   def self.gen_path(yl_id : String, page : Int32 = 1)
-    "#{DIR}/#{yl_id}/#{page}.latest.json.zst"
+    "#{DIR}/#{yl_id}/#{page}-latest.json"
   end
 
   ################
@@ -68,7 +68,7 @@ class YS::CrawlYscritByUser < CrawlTask
   end
 
   def self.fix_stats!
-    PG_DB.exec <<-SQL
+    PGDB.exec <<-SQL
       update yslists set book_count = (
         select count(*)::int from yscrits
         where yscrits.yslist_id = yslists.id
@@ -86,7 +86,7 @@ class YS::CrawlYscritByUser < CrawlTask
   def self.gen_queue_init(fix_db_stat : Bool = true)
     output = [] of QueueInit
 
-    PG_DB.query_each(SELECT_STMT) do |rs|
+    PGDB.query_each(SELECT_STMT) do |rs|
       yl_id, total = rs.read(String, Int32)
       output << QueueInit.new(yl_id, (total - 1) // 20 + 1)
     end

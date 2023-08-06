@@ -9,10 +9,10 @@ User=nipin
 
 WorkingDirectory=/app/chivi.app
 Environment=CV_ENV=production
-ExecStart=/app/chivi.app/bin/ysbook_crawl
+ExecStart=/app/chivi.app/bin/ysbook_info-sync
 
-StandardOutput=file:/app/chivi.app/log/ysbook-crawl.log
-StandardError=append:/app/chivi.app/log/ysbook-crawl-err.log
+StandardOutput=file:/app/chivi.app/log/ysbook_info-sync.log
+StandardError=append:/app/chivi.app/log/ysbook_info-sync-err.log
 
 [Install]
 WantedBy=multi-user.target

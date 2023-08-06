@@ -8,7 +8,7 @@ class M1::DbDefn
 
   class_getter init_sql = <<-SQL
     CREATE TABLE IF NOT EXISTS defns (
-      "id" integer PRIMARY KEY,
+      "id" integer not null PRIMARY KEY,
       --
       "dic" integer NOT NULL DEFAULT 0,
       "tab" integer NOT NULL DEFAULT 0,
@@ -37,7 +37,7 @@ class M1::DbDefn
   ###
 
   include Crorm::Model
-  schema "defns"
+  schema "defns", :sqlite, strict: false
 
   ###
 
@@ -56,6 +56,7 @@ class M1::DbDefn
   field mtime : Int64 = 0
 
   field _ctx : String = ""
+  field _idx : Int32 = 0
 
   field _prev : Int32 = 0
   field _flag : Int32 = 1

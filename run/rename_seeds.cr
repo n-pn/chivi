@@ -1,8 +1,8 @@
 require "../src/_data/_data"
 
-NFO_DIR = "/app/chivi.dev/var/chaps/infos"
-TXT_DIR = "/app/chivi.dev/var/texts/rgbks"
-ZIP_DIR = "/app/chivi.dev/var/texts/rzips"
+NFO_DIR = "/app/chivi.app/var/chaps/infos"
+TXT_DIR = "/app/chivi.app/var/texts/rgbks"
+ZIP_DIR = "/app/chivi.app/var/texts/rzips"
 
 def rename_seed(old_sname : String, new_sname : String)
   PGDB.exec "begin transaction"
@@ -49,7 +49,7 @@ MAP_SNAME = {
   "!book.sfacg.com":  "!sfacg",
   "!69shu.io":        "!69shu_io",
   "!zhijianxsw.com":  "!zhijianxsw",
-  "!tw.uukanshu.com": "!uukanshu",
+  "!tw.uukanshu.com": "!uukanshu_tw",
   "!69shu.comBK":     "!69shu",
   "!froog.net":       "!froog",
 }

@@ -1,8 +1,9 @@
 require "./_crawl_common"
-require "../_raw/raw_yslist"
+require "../../zroot/json_parser/raw_yslist"
 
-class YS::YslistCrawl < CrawlTask
-  def db_seed_tasks(entry : Entry, json : String)
+class YslistCrawl < CrawlTask
+  def db_seed_tasks(entry : Entry, json : String, hash : UInt32)
+    # TODO:
   end
 
   #####################
@@ -11,11 +12,10 @@ class YS::YslistCrawl < CrawlTask
     "https://api.yousuu.com/api/booklist/#{uuid}/info"
   end
 
-  DIR = "var/ysraw/lists"
+  DIR = "var/.keep/yousuu/list-infos"
 
   def self.gen_path(uuid : String)
-    group = uuid[0..3]
-    "#{DIR}/#{group}/#{uuid}.latest.json"
+    "#{DIR}/#{uuid}/latest.json"
   end
 
   def self.run!(argv = ARGV)
@@ -40,7 +40,7 @@ class YS::YslistCrawl < CrawlTask
   def self.gen_queue : Array(Entry)
     # fresh = Time.utc - ttl
 
-    yl_ids = PG_DB.query_all <<-SQL, as: String
+    yl_ids = PGDB.query_all <<-SQL, as: String
       select encode(yl_id, 'hex') from yslists
       SQL
 

@@ -22,11 +22,11 @@ module M1::TlUtil
   end
 
   class_getter wn_btitles : Hash(String, String) do
-    load_tsv_hash("var/books/fixes/btitles_vi.tsv")
+    load_tsv_hash("var/_conf/fixes/btitles_vi.tsv")
   end
 
   class_getter wn_authors : Hash(String, String) do
-    load_tsv_hash("var/books/fixes/authors_vi.tsv")
+    load_tsv_hash("var/_conf/fixes/authors_vi.tsv")
   end
 
   def tl_author(author : String) : String

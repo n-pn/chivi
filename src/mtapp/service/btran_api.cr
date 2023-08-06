@@ -1,7 +1,6 @@
 require "json"
 require "uuid"
 require "http/client"
-require "../../_util/ram_cache"
 
 class SP::Btran
   ENDPOINT = "https://api.cognitive.microsofttranslator.com"

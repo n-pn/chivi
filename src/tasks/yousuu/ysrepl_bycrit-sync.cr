@@ -1,27 +1,27 @@
 require "./_crawl_common"
-require "../_raw/raw_ysrepl"
+require "../../zroot/json_parser/raw_ysrepl"
 
-class YS::CrawlYslistByUser < CrawlTask
-  private def db_seed_tasks(entry : Entry, json : String)
+class CrawlYslistByUser < CrawlTask
+  private def db_seed_tasks(entry : Entry, json : String, hash : UInt32)
     return unless json.starts_with?('{')
 
     yc_id = File.basename File.dirname(entry.path)
     endpoint = "repls/by_crit/#{yc_id}?rtime=#{Time.utc.to_unix}"
 
-    post_raw_data(endpoint, json)
+    CrUtil.post_raw_data(endpoint, json)
   rescue ex
     puts entry.path, json
     Log.error { ex.message }
   end
 
   def self.gen_link(yc_id : String, page : Int32 = 1)
-    "https://api.yousuu.com/api/comment/#{yc_id}/reply?&page=#{page}"
+    "https://api.yousuu.com/api/comment/#{yc_id}/reply?page=#{page}"
   end
 
-  DIR = "var/ysraw/repls-by-crit"
+  DIR = "var/.keep/yousuu/repls-bycrit"
 
   def self.gen_path(yc_id : String, page : Int32 = 1)
-    "#{DIR}/#{yc_id}/#{page}.latest.json.zst"
+    "#{DIR}/#{yc_id}/#{page}-latest.json"
   end
 
   ################
@@ -61,12 +61,12 @@ class YS::CrawlYslistByUser < CrawlTask
 
       queue.reject!(&.existed?((3 + pg_no).days))
       crawler.crawl!(queue)
-      `/app/chivi.app/bin/fix_ysrepls_vhtml`
+      spawn { `/app/chivi.app/bin/fix_ysrepls_vhtml` }
     end
   end
 
   def self.update_counters!
-    PG_DB.exec <<-SQL
+    PGDB.exec <<-SQL
       update yscrits set repl_count = (
         select count(*)::int from ysrepls
         where yscrit_id = yscrits.id
@@ -85,7 +85,7 @@ class YS::CrawlYslistByUser < CrawlTask
   def self.gen_queue_init(min_ttl = 1.day)
     output = [] of QueueInit
 
-    PG_DB.query_each(SELECT_STMT) do |rs|
+    PGDB.query_each(SELECT_STMT) do |rs|
       yc_id, total = rs.read(String, Int32)
 
       next if yc_id.size != 24 || yc_id == "5ab33469f51f55f11cbac13b"

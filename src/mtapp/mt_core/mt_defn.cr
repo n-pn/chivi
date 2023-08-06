@@ -1,9 +1,22 @@
 require "crorm"
-require "crorm/sqlite3"
+require "sqlite3"
 
 class MT::MtDefn
+  def self.db(dname : String)
+    open_db(db_path(dname), init_sql)
+  end
+
+  @[AlwaysInline]
+  def self.db_path(dname : String)
+    "var/mtdic/fixed/#{dname}.dic"
+  end
+
+  class_getter init_sql : String = {{ read_file("#{__DIR__}/mt_defn.sql") }}
+
+  ###
+
   include Crorm::Model
-  @@table = "defns"
+  schema "defns"
 
   field d_id : Int32 = 0
   field zstr : String = ""
@@ -25,17 +38,4 @@ class MT::MtDefn
   field _flag : Int16 = 0_i16
 
   ###
-
-  def self.repo(dname : String | Int32)
-    SQ3::Repo.new(db_path(dname), init_sql, ttl: 3.minutes)
-  end
-
-  @[AlwaysInline]
-  def self.db_path(dname : String | Int32)
-    "var/mtdic/fixed/#{dname}.dic"
-  end
-
-  def self.init_sql
-    {{ read_file("#{__DIR__}/mt_defn.sql") }}
-  end
 end

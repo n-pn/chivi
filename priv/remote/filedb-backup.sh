@@ -13,9 +13,8 @@ SSH=$REMOTE:/app/chivi
 if [[ $1 == "all" || $* == *user* ]]
 then
   echo backup users data!
-  rsync-fast "$SSH/var/fixed" "var"
-  rsync-fast --delete "$SSH/var/.keep/web_log/" "var/.keep/web_log/"
-  rsync-fast --delete "$SSH/var/cvmtl/users/" "var/cvmtl/users/"
+  rsync-fast "$SSH/var/_conf" "var"
+  rsync-fast --delete "$SSH/var/ulogs/daily/" "var/ulogs/daily/"
 fi
 
 ## backup dict data
@@ -31,19 +30,12 @@ then
   echo backup books data!
   # rsync-fast "$SSH/var/wninfos/autos" "var/wninfos"
 
-  rsync-fast "$SSH/var/books/infos" "var/books"
-  rsync-fast "$SSH/var/books/cover" "var/books"
-  # rsync-fast "$SSH/var/books/seeds" "var/books"
+  rsync-fast "$SSH/var/files/covers" "var/files"
+  rsync-fast "$SSH/var/chaps/" "var/chaps/"
+  rsync-fast "$SSH/var/texts/" "var/texts/"
 
-  rsync-fast "$SSH/var/chaps/seed-infos.db" "var/chaps"
-
-  # rsync-fast "$SSH/var/chaps/users" "var/chaps"
-  rsync-fast "$SSH/var/chaps/infos" "var/chaps"
-
-  rsync-fast "$SSH/var/texts/rgbks" "var/texts"
-
-  rsync-fast "$SSH/var/.html" "var"
-  # rsync-fast "$SSH/var/texts/rzips" "var/texts"
+  rsync-fast "$SSH/var/.keep/rmbook" "var/.keep/rmbook"
+  rsync-fast "$SSH/var/.keep/rmchap" "var/.keep/rmchap"
 fi
 
 ## backup book data
@@ -53,8 +45,7 @@ then
   # rsync-fast "$SSH/var/texts/edits" "var/texts"
   # rsync-fast "$SSH/var/texts/trans" "var/texts"
 
-  rsync-fast "$SSH/var/books/covers.db" "var/books"
-  rsync-fast "$SSH/var/books/covers" "var/books"
+  rsync-fast "$SSH/var/zroot/bcovers.db" "var/zroot"
 
 fi
 
@@ -62,6 +53,6 @@ fi
 if [[ $1 == "all" || $* == *pgdb* ]]
 then
   echo backup pg_data!
-  rsync-fast --delete "nipin@ssh.chivi.app:var/wal_log" "var/.keep"
-  rsync-fast --delete "nipin@ssh.chivi.app:var/pg_data" "var/.keep"
+  rsync-fast --delete "nipin@ssh.chivi.app:_db/wals" _db
+  rsync-fast --delete "nipin@ssh.chivi.app:_db/data" _db
 fi

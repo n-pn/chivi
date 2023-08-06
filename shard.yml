@@ -30,47 +30,47 @@ targets:
   bcover_cli:
     main: cli/bcover_cli.cr
 
-  ysbook_crawl:
-    main: src/tasks/yousuu/ysbook_crawl.cr
+  ysbook_info-sync:
+    main: src/tasks/yousuu/ysbook_info-sync.cr
 
-  ysuser_crawl:
-    main: src/ysapp/tasks/ysuser_crawl.cr
+  ysuser_info-sync:
+    main: src/tasks/yousuu/ysuser_info-sync.cr
 
-  yslist_crawl:
-    main: src/ysapp/tasks/yslist_crawl.cr
+  yslist_info-sync:
+    main: src/tasks/yousuu/yslist_info-sync.cr
 
-  ysrepl_crawl:
-    main: src/ysapp/tasks/ysrepl_crawl.cr
+  ysrepl_bycrit-sync:
+    main: src/tasks/yousuu/ysrepl_bycrit-sync.cr
 
-  yscrit_crawl_by_user:
-    main: src/ysapp/tasks/yscrit_crawl_by_user.cr
+  yscrit_byuser-sync:
+    main: src/tasks/yousuu/yscrit_byuser-sync.cr
 
-  yscrit_crawl_by_list:
-    main: src/ysapp/tasks/yscrit_crawl_by_list.cr
+  yscrit_bylist-sync:
+    main: src/tasks/yousuu/yscrit_bylist-sync.cr
 
-  yscrit_crawl_by_book:
-    main: src/ysapp/tasks/yscrit_crawl_by_book.cr
+  yscrit_bybook-sync:
+    main: src/tasks/yousuu/yscrit_bybook-sync.cr
 
-  yslist_crawl_by_book:
-    main: src/ysapp/tasks/yslist_crawl_by_book.cr
+  yslist_bybook-sync:
+    main: src/tasks/yousuu/yslist_bybook-sync.cr
 
-  yslist_crawl_by_user:
-    main: src/ysapp/tasks/yslist_crawl_by_user.cr
+  yslist_byuser-sync:
+    main: src/tasks/yousuu/yslist_byuser-sync.cr
 
-  seed_yscrits_by_book:
-    main: run/yousuu/seed_yscrits_by_book.cr
+  yscrit_bybook-seed:
+    main: src/tasks/yousuu/yscrit_bybook-seed.cr
 
-  seed_yscrits_by_list:
-    main: run/yousuu/seed_yscrits_by_list.cr
+  yscrit_bylist-seed:
+    main: src/tasks/yousuu/yscrit_bylist-seed.cr
 
-  seed_yscrits_by_user:
-    main: run/yousuu/seed_yscrits_by_user.cr
+  yscrit_byuser-seed:
+    main: src/tasks/yousuu/yscrit_byuser-seed.cr
 
-  fix_yscrits_vhtml:
-    main: run/yousuu/fix_yscrits_vhtml.cr
+  yscrit-init:
+    main: src/tasks/yousuu/yscrit-init.cr
 
   fix_ysrepls_vhtml:
-    main: run/yousuu/fix_ysrepls_vhtml.cr
+    main: src/tasks/yousuu/fix_ysrepls_vhtml.cr
 
   seed_rmbook:
     main: src/tasks/remote/seed_rmbook.cr

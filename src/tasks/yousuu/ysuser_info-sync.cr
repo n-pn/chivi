@@ -1,20 +1,23 @@
-require "./_crawl_common"
-require "../_raw/raw_ysuser"
+ENV["CV_ENV"] = "production" unless ARGV.includes?("--test")
 
-class YS::CrawlYsuser < CrawlTask
-  def db_seed_tasks(entry : Entry, json : String)
-    post_raw_data("users/info?rtime=#{Time.utc.to_unix}", json)
+require "./_crawl_common"
+require "../../zroot/json_parser/raw_ysuser"
+
+class CrawlYsuser < CrawlTask
+  def db_seed_tasks(entry : Entry, json : String, hash : UInt32)
+    CrUtil.post_raw_data("users/info?rtime=#{Time.utc.to_unix}", json)
+    # TODO: save to sqlite3 database
   end
 
   def self.gen_link(yu_id : Int32)
     "https://api.yousuu.com/api/user/#{yu_id}/info"
   end
 
-  DIR = "var/ysraw/users"
+  DIR = "var/.keep/yousuu/user-infos"
   Dir.mkdir_p(DIR)
 
   def self.gen_path(yu_id : Int32)
-    "#{DIR}/#{yu_id}.latest.json.zst"
+    "#{DIR}/#{yu_id}/latest.json"
   end
 
   def self.run!(argv = ARGV)
@@ -31,7 +34,7 @@ class YS::CrawlYsuser < CrawlTask
       order by (like_count + star_count) desc
     SQL
 
-    PG_DB.query_each(sql) do |rs|
+    PGDB.query_each(sql) do |rs|
       yu_id, rtime = rs.read(Int32, Int64)
       fresh -= 60 # add 1 minute
       u_ids << yu_id if rtime < fresh

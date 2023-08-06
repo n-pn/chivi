@@ -1,5 +1,5 @@
 [Unit]
-Description=mt_v2 dev server
+Description=mt_ai dev server
 After=network.target
 StartLimitIntervalSec=0
 
@@ -11,9 +11,9 @@ User=nipin
 Environment=PORT=5120
 Environment=CV_ENV=development
 WorkingDirectory=/app/chivi.dev
-ExecStart=/app/chivi.dev/bin/mt_v2-srv
-StandardOutput=file:/app/chivi.dev/log/mt_v2-srv.log
-StandardError=append:/app/chivi.dev/log/mt_v2-err.log
+ExecStart=/app/chivi.dev/bin/mt_ai-srv
+StandardOutput=file:/app/chivi.dev/log/mt_ai-srv.log
+StandardError=append:/app/chivi.dev/log/mt_ai-err.log
 
 [Install]
 WantedBy=multi-user.target

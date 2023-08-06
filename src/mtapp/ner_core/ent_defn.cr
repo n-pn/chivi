@@ -1,22 +1,28 @@
 require "crorm"
-require "crorm/sqlite3"
+require "sqlite3"
 
 class MT::EntDefn
   include Crorm::Model
-  @@table = "defns"
+  schema "defns"
 
   @[AlwaysInline]
-  def self.db_path(dname : String | Int32)
+  def self.db_path(dname : String)
     "var/mtdic/fixed/zents/#{dname}.dic"
   end
 
-  def self.init_sql
-    {{read_file("#{__DIR__}/ent_defn.sql")}}
+  class_getter init_sql : String = {{read_file("#{__DIR__}/ent_defn.sql")}}
+
+  def self.db
+    raise "invalid!"
+  end
+
+  def self.db(dname : String)
+    open_db(db_path(dname))
   end
 
   ###
 
-  field id : Int32, primary: true
+  field id : Int32, pkey: true, auto: true
 
   field dic : Int32 = 0
   field tab : Int32 = 0
