@@ -57,10 +57,6 @@ class YS::Ysbook
   #   false
   # end
 
-  def worth_saving?
-    self.crit_total > 0 || Author.known_authors.includes?(self.author) || self.class.in_crits.includes?(self.id)
-  end
-
   class_getter in_crits : Set(Int32) do
     PG_DB.query_all("select distinct(ysbook_id) from yscrits", as: Int32).to_set
   end
@@ -95,7 +91,7 @@ class YS::Ysbook
 
   def get_nvinfo(force : Bool = false)
     case self.nvinfo_id
-    when 0    then create_nvinfo if force || worth_saving?
+    when 0    then create_wnovel
     when .> 0 then CV::Wninfo.find({id: self.nvinfo_id})
     else           nil
     end
@@ -104,7 +100,7 @@ class YS::Ysbook
   API_PATH    = "#{CV_ENV.be_host}/_db/books"
   JSON_HEADER = HTTP::Headers{"content-type" => "application/json"}
 
-  def create_nvinfo
+  def create_wnovel
     author_zh, btitle_zh = BookUtil.fix_names(self.btitle, self.author)
     zintro = TextUtil.split_html(self.intro, true).join('\n')
 

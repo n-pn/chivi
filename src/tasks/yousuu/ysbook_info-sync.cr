@@ -5,12 +5,20 @@ require "./_crawl_common"
 class CrawlYsbook < CrawlTask
   def db_seed_tasks(entry : Entry, json : String)
     return unless json.starts_with?('{')
-    spawn CrUtil.post_raw_data("books/info", json)
 
-    ysbook = ZR::Ysbook.from_raw_json(json)
-    ZR::Ysbook.open_tx { |db| ysbook.upsert!(db) }
-  rescue ex
-    Log.error(exception: ex) { ex.message }
+    spawn do
+      CrUtil.post_raw_data("books/info", json)
+      ysbook = ZR::Ysbook.from_raw_json(json)
+
+      loop do
+        ZR::Ysbook.open_tx { |db| ysbook.upsert!(db) }
+        break
+      rescue ex
+        puts ex.message.colorize.red
+        sleep 1.seconds
+        next
+      end
+    end
   end
 
   def self.gen_link(yb_id : Int32)
@@ -46,7 +54,7 @@ class CrawlYsbook < CrawlTask
     max_id = get_max_book_id(load_index_page(4.hours)) if max_id == 0
     puts "MIN: #{min_id}, MAX: #{max_id}"
 
-    queue = gen_queue(min_id, max_id).reject!(&.existed?(1.days))
+    queue = gen_queue(min_id, max_id).reject!(&.cached?(12.hours))
     queue = crawl_mode.rearrange!(queue)
 
     worker = new("ysbook_info", reseed_proxies)

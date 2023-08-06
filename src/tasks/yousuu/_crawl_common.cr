@@ -16,7 +16,6 @@ HEADERS = HTTP::Headers{"Content-Type" => "application/json"}
 
 module CrUtil
   extend self
-  puts "contact server: #{CV_ENV.ys_host}"
 
   def post_raw_data(href : String, body : String)
     link = "#{CV_ENV.ys_host}/_ys/#{href}"
@@ -74,13 +73,11 @@ abstract class CrawlTask
     end
   end
 
-  CACHE_DIR = "var/.keep/yousuu"
-  Dir.mkdir("#{CACHE_DIR}/.synclog")
+  CACHE_DIR = "var/.keep"
 
   def initialize(@task_name : String, reseed_proxies = false)
     @http = ProxyClient.new(reseed_proxies)
-
-    @log_file = "#{CACHE_DIR}/.synclog/#{@task_name}.tsv"
+    @log_file = "#{CACHE_DIR}/.crlog/#{@task_name}.tsv"
   end
 
   def crawl!(queue : Enumerable(Entry), loop_no = 1)
