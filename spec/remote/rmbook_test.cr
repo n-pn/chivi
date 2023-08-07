@@ -1,9 +1,9 @@
 require "json"
-require "../../src/_data/remote/rmbook.cr"
+require "../../src/zroot/html_parser/raw_rmbook.cr"
 
 def fetch_info(sname : String, s_bid : String | Int32, fresh = false) : Void
   puts "\n[#{Rmconf.full_book_link(sname, s_bid)}]".colorize.green.bold
-  parser = Rmbook.init(sname, s_bid, stale: Time.utc - (fresh ? 10.seconds : 10.years))
+  parser = RawRmbook.init(sname, s_bid, stale: Time.utc - (fresh ? 10.seconds : 10.years))
 
   puts "------".colorize.green
 
@@ -23,7 +23,7 @@ def fetch_info(sname : String, s_bid : String | Int32, fresh = false) : Void
 
   puts output.to_pretty_json
 rescue err
-  puts err.colorize.red
+  puts err.inspect_with_backtrace
 end
 
 tests = [
@@ -35,12 +35,10 @@ tests = [
   {"!xbiquge", 48680, false},
   {"!paoshu8", 817, false},
   # {"!5200_tv", 28208, false},
-  {"!biqu5200", 131878, false},
   # {"!shubaow", 150092, false},
   # {"!biqugee", 33775, false},
   # {"!bxwxorg", 32154, false},
   # {"!nofff", "10", false},
-  {"!ptwxz", "1806", false},
   {"!uukanshu", 33933, false},
 
   # {"!biqugse", 69761, false},
@@ -49,13 +47,22 @@ tests = [
   {"!b5200_org", 160872, false},
   # {"!bxwx_gg", 127400, false},
 
-  # {"!uuks_org", 23389, false},
   # {"!yannuozw", 147108, false},
 
   # {"!kanshu8", 59127, false},
 
   {"!133txt", 9, false},
   {"!tasim", 2777, false},
+
+  {"!hotupub", 100, false},
+  {"!ymxwx", 100, false},
+  {"!wenku8", 1000, false},
+  {"!uuks_org", 28834, false},
+  {"!biqu5200", 1049, false},
+
+  {"!ishuquge", 1000, false},
+  {"!ptwxz", 15261, false},
+  {"!zsdade", 3804, false},
 ]
 
 tests.each do |sname, s_bid, fresh|

@@ -72,8 +72,11 @@ targets:
   fix_ysrepls_vhtml:
     main: src/tasks/yousuu/fix_ysrepls_vhtml.cr
 
-  seed_rmbook:
-    main: src/tasks/remote/seed_rmbook.cr
+  tubook_info-sync:
+    main: src/tasks/tuishu/tubook_info-sync.cr
+
+  rmbook_seed:
+    main: src/tasks/remote/rmbook_seed.cr
 
 dependencies:
   tabkv:

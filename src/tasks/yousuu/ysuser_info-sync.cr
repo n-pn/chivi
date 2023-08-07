@@ -1,6 +1,4 @@
-ENV["CV_ENV"] = "production" unless ARGV.includes?("--test")
-
-require "./_crawl_common"
+require "../shared/crawling"
 require "../../zroot/json_parser/raw_ysuser"
 
 class CrawlYsuser < CrawlTask

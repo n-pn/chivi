@@ -2,6 +2,8 @@ require "log"
 require "yaml"
 require "http/client"
 
+require "./rmpage"
+
 # Log.setup_from_env
 
 module Rmutil
@@ -148,6 +150,14 @@ class Rmconf
     BMID_DIR % {name: @seedname}
   end
 
+  def get_max_bid(tspan = 12.hours)
+    html = load_page(@mbid_path, self.mbid_file_path, stale: Time.utc - tspan)
+    href = Rmpage.new(html).get!(@mbid_elem, "href")
+    extract_bid(href).to_i
+  end
+
+  ###
+
   @[AlwaysInline]
   private def gen_div(bid : Int32 | String)
     (bid.to_i // 1000) rescue 0
@@ -214,15 +224,15 @@ class Rmconf
     end
 
     http_client.get(href, headers: headers(href)) do |res|
-      raise "http error: #{res.status_code}" unless res.status.success?
-
-      html = res.body_io.tap(&.set_encoding(@encoding, invalid: :skip)).gets_to_end
-      html = html.sub(/#{@encoding}|gb2312/i, "utf-8") unless @encoding == "UTF-8"
-
-      html.tap do |data|
-        File.write(path, data)
-      rescue ex
-        Log.error { "can not save file #{path}: #{ex.message}" }
+      if res.status.success?
+        html = res.body_io.tap(&.set_encoding(@encoding, invalid: :skip)).gets_to_end
+        html = html.sub(/#{@encoding}|gb2312/i, "utf-8") unless @encoding == "UTF-8"
+        html.tap { |data| File.write(path, data) rescue "can't write to file!" }
+      elsif res.status == :not_found
+        File.write("#{path}.404", res.body_io.gets_to_end)
+        raise "404 not found!"
+      else
+        raise "http error: #{res.status_code}"
       end
     end
   end

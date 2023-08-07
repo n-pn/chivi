@@ -1,8 +1,8 @@
 require "crorm/model"
 require "crorm/sqlite"
 
-require "../../_util/book_util"
-require "../_raw/raw_tubook"
+require "../_util/book_util"
+require "./json_parser/raw_tubook"
 
 class ZR::Tubook
   class_getter db_path = "var/zroot/tubooks.db3"
@@ -35,7 +35,6 @@ class ZR::Tubook
       list_count int NOT NULL DEFAULT 0,
       -- timestamps
       rtime bigint NOT NULL DEFAULT 0,
-      rhash text NOT NULL DEFAULT "",
       _flag int NOT NULL DEFAULT 0
     );
     SQL
@@ -76,7 +75,6 @@ class ZR::Tubook
   field list_count : Int32 = 0 # fetched book lists
 
   field rtime : Int64 = 0_i64
-  field rhash : String = ""
   field _flag : Int32 = 0
 
   def initialize(@id)

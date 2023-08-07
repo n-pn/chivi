@@ -1,7 +1,4 @@
-require "pg"
-require "../../cv_env"
-
-require "./_crawl_common"
+require "../shared/crawling"
 require "../../zroot/json_parser/raw_yslist"
 
 class YslistCrawlByBook < CrawlTask

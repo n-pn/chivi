@@ -1,6 +1,6 @@
 require "lexbor"
 require "../../zroot/ysbook"
-require "./_crawl_common"
+require "../shared/crawling"
 
 class CrawlYsbook < CrawlTask
   def db_seed_tasks(entry : Entry, json : String)
@@ -8,15 +8,17 @@ class CrawlYsbook < CrawlTask
 
     spawn do
       CrUtil.post_raw_data("books/info", json)
-      ysbook = ZR::Ysbook.from_raw_json(json)
 
       loop do
+        ysbook = ZR::Ysbook.from_raw_json(json)
         ZR::Ysbook.open_tx { |db| ysbook.upsert!(db) }
         break
+      rescue SQLite3::Exception
+        sleep 0.5.seconds
+        next
       rescue ex
         puts ex.message.colorize.red
-        sleep 1.seconds
-        next
+        break
       end
     end
   end

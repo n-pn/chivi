@@ -1,16 +1,11 @@
 require "crorm/model"
 require "crorm/sqlite"
-
 require "../_util/book_util"
 require "./html_parser/raw_rmbook"
 
 class ZR::Rmbook
-  def self.db_path(sname : String)
-    "var/zroot/seeds/#{sname}.db3"
-  end
-
   class_getter init_sql = <<-SQL
-    CREATE TABLE zhbooks(
+    CREATE TABLE rmbooks(
       id text NOT NULL PRIMARY KEY,
       wn_id int not null default 0,
       --
@@ -34,27 +29,44 @@ class ZR::Rmbook
       chap_avail int NOT NULL DEFAULT 0,
       --
       rtime bigint NOT NULL DEFAULT 0,
-      rhash int NOT NULL DEFAULT 0,
       _flag int NOT NULL DEFAULT 0
     );
     SQL
+
+  def self.db_path
+    raise "invalid!"
+  end
+
+  def self.db_path(sname : String)
+    "var/zroot/rmseed/#{sname}.db3"
+  end
 
   def self.db
     raise "you should provide seedname to db"
   end
 
   def self.db(sname : String)
-    open_db(self.db_path(sname))
+    open_db(db_path(sname))
+  end
+
+  def self.db_open(sname : String)
+    with_db(db_path(sname)) { |db| yield db }
+  end
+
+  def self.tx_open(sname : String)
+    open_tx(db_path(sname)) { |db| yield db }
   end
 
   def self.load(sname : String, id : String)
-    open_db(db_path(sname)) { |db| get(id, db: db) || new(id: id) }
+    db_open(sname) do |db|
+      get(id, db: db, &.<< "where id = $1") || new(id: id)
+    end
   end
 
   ####
 
   include Crorm::Model
-  schema "zhbooks", :sqlite
+  schema "rmbooks", :sqlite, multi: true
 
   field id : String, pkey: true
   field wn_id : Int32 = 0 # official chivi id
@@ -76,7 +88,6 @@ class ZR::Rmbook
   field chap_avail : Int32 = 0
 
   field rtime : Int64 = 0_i64
-  field rhash : String = ""
   field _flag : Int32 = 0
 
   def initialize(@id)
@@ -84,23 +95,24 @@ class ZR::Rmbook
 
   ###
 
-  def self.from_html_file(file_path : String,
-                          sname = File.basename(File.dirname(file_path)),
-                          sb_id = File.basename(file_path, ".htm"))
-    html = File.read(file_path)
-    time = File.info(file_path).modification_time
+  def self.from_html_file(fpath : String,
+                          sname = File.basename(File.dirname(fpath)),
+                          sn_id = File.basename(fpath, ".htm"),
+                          force = false)
+    bhtml = File.read(fpath)
+    rtime = File.info(fpath).modification_time.to_unix
 
-    from_html(html, sname: sname, sb_id: sb_id, rtime: time)
+    from_html(bhtml, sname: sname, sn_id: sn_id, rtime: rtime, force: force)
   end
 
-  def self.from_html(html : String, sname : String, sb_id : String,
-                     rtime = Time.utc.to_unix, rhash = XXHash.xxh32(html))
-    raw_data = RawRmbook.new(html, sname: sname)
+  def self.from_html(bhtml : String,
+                     sname : String, sn_id : String,
+                     rtime = Time.utc.to_unix, force = false)
+    entry = self.load(sname, sn_id)
+    return if entry.rtime >= rtime
 
-    entry = self.load(sb_id)
-
+    raw_data = RawRmbook.new(bhtml, sname: sname)
     entry.rtime = rtime
-    entry.rhash = rhash.unsafe_as(Int32)
 
     entry.btitle = raw_data.btitle
     entry.author = raw_data.author
@@ -113,9 +125,9 @@ class ZR::Rmbook
 
     entry.status_str = raw_data.status_str
     entry.update_str = raw_data.update_str
-
     entry.latest_cid = raw_data.latest_cid
-    entry.chap_count = raw_data.chap_count
+
+    # entry.chap_count = raw_data.chap_count
 
     entry
   end

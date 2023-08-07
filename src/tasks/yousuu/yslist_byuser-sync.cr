@@ -1,4 +1,4 @@
-require "./_crawl_common"
+require "../shared/crawling"
 require "../../zroot/json_parser/raw_yslist"
 
 class CrawlYslistByUser < CrawlTask

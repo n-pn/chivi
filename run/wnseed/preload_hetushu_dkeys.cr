@@ -1,7 +1,7 @@
 require "../../src/tasks/remote/shared/rmseed"
 
-HTM_DIR = "/2tb/var.chivi/.keep/wnchap/www.hetushu.com"
-TXT_DIR = "var/texts/rgbks/!hetushu.com"
+HTM_DIR = "var/.keep/wnchap/www.hetushu.com"
+TXT_DIR = "var/texts/rgbks/!hetushu"
 
 def preload_book(bid : Int32)
   htm_dir = "#{HTM_DIR}/#{bid}"
