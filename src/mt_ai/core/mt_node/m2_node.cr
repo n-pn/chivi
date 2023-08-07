@@ -12,6 +12,7 @@ class AI::M2Node
     case ptag
     when "DVP" then fix_dvp!
     when "DNP" then fix_dnp!
+    when "LCP" then fix_lcp!
     end
   end
 
@@ -27,6 +28,10 @@ class AI::M2Node
 
   def last
     @right
+  end
+
+  def fix_lcp!
+    @flip = true # unless ???
   end
 
   def fix_dvp!

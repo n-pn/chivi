@@ -1,8 +1,8 @@
 require "./mt_core"
 
-TXT1 = "(NP (DNP (NP (NR 家乐福) (CC 或) (NR 大润发)) (DEG 的)) (NP (NN 大卖场)))"
-TXT2 = "(NP\n  (QP (CD 很多))\n  (DNP (NP (NN 医学) (NN 领域) (PU 、) (NN 制药) (NN 领域)) (DEG 的))\n  (NP (NN 专家)))"
-TXT3 = <<-TXT
+TEST1 = "(NP (DNP (NP (NR 家乐福) (CC 或) (NR 大润发)) (DEG 的)) (NP (NN 大卖场)))"
+TEST2 = "(NP\n  (QP (CD 很多))\n  (DNP (NP (NN 医学) (NN 领域) (PU 、) (NN 制药) (NN 领域)) (DEG 的))\n  (NP (NN 专家)))"
+TEST3 = <<-TXT
 (TOP
   (IP
     (PU “)
@@ -47,7 +47,33 @@ TXT3 = <<-TXT
     (PU ”)))
 TXT
 
-puts TXT3.gsub(/\n[\t\s]+/, " ")
-# node = AI::MtNode.parse(TXT3.gsub(/\)\Z+\(/, " ")
-# CORE = AI::MtCore.new(0)
-# puts CORE.translate(node)
+TEST4 = <<-TXT
+(TOP
+  (IP
+    (IP
+      (NP (NR 平安县))
+      (VP
+        (VC 是)
+        (NP (NP (NP (NR 宁州)) (QP (CD 七十二)) (NP (NN 县))) (NP (NN 之一)))))
+    (PU ，)
+    (IP
+      (NP (NN 境内))
+      (VP (ADVP (AD 多)) (VP (VC 是) (NP (NN 山川) (NN 丘陵)))))
+    (PU ，)
+    (IP (NP (NN 人口)) (VP (VA 稀少)))
+    (PU ，)
+    (IP
+      (NP (NR 莲花岛))
+      (VP
+        (VC 是)
+        (NP
+          (LCP (NP (NR 平安县)) (LC 内))
+          (DNP (ADJP (JJ 唯一)) (DEG 的))
+          (QP (CD 一) (CLP (M 座)))
+          (NP (NN 湖) (NN 岛)))))
+    (PU 。)))
+TXT
+
+CORE = AI::MtCore.new(0)
+puts CORE.translate(TEST3)
+# puts CORE.translate(TEST4)

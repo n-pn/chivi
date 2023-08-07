@@ -3,46 +3,25 @@ require "./_base"
 class AI::NpNode
   include MtNode
 
-  getter noun : MtNode | Array(MtNode)
-  getter pref = [] of MtNode
-  getter suff = [] of MtNode
+  getter data = [] of MtNode
 
   def initialize(input : Array(MtNode), @ptag, @attr, @_idx)
-    @noun = input # reludant
-
-    while fnode = input.shift?
-      # pp fnode
-
-      if input.empty?
-        @noun = fnode
-        break
-      end
-
-      case fnode.ptag
+    input.reverse_each do |node|
+      case node.ptag
+      when "QP" then @data.unshift(node)
       when "DNP"
-        fnode.attr.includes?("HEAD") ? pref.push(fnode) : suff.unshift(fnode)
-      when "QP"
-        pref.push(fnode)
+        node.attr.includes?("HEAD") ? @data.unshift(node) : @data.push(node)
       else
-        input.unshift(fnode)
-        @noun = input
-        break
+        @data << node
       end
     end
   end
 
   def each(&)
-    @pref.each { |node| yield node }
-
-    case noun = @noun
-    in MtNode        then yield noun
-    in Array(MtNode) then noun.each { |node| yield node }
-    end
-
-    suff.each { |node| yield node }
+    @data.each { |node| yield node }
   end
 
   def last
-    @noun.last
+    @data.last
   end
 end

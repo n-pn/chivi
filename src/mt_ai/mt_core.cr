@@ -8,12 +8,26 @@ class AI::MtCore
     @dict = MtDict.new(wn_id, uname)
   end
 
-  # def translate(data : MtNode, opts = MtOpts::Initial)
-  #   String.build do |io|
-  #     data.translate(io, @dict, opts)
-  #   end
-  # end
+  def translate(data : String, opts = MtOpts::Initial)
+    String.build { |io| translate(Renderer.new(io, opts), MtNode.parse(data)) }
+  end
 
+  def translate(data : MtNode, opts = MtOpts::Initial)
+    String.build { |io| translate(Renderer.new(io, opts), data) }
+  end
+
+  private def translate(rend : Renderer, data : M0Node)
+    vstr, opts = @dict.find(data.zstr, data.ptag)
+    pp [data.zstr, data.ptag, vstr]
+    rend.add(vstr, opts)
+  end
+
+  private def translate(rend : Renderer, data : MtNode)
+    data.each do |node|
+      pp node
+      translate(rend, node)
+    end
+  end
 end
 
 # def parse_file(input : String)
