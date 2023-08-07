@@ -7,7 +7,7 @@ module AI::MtNode
 
   def self.parse(input : String, cleaned = false)
     input = input.gsub(/\n[\t\s]+/, " ") unless cleaned
-    pp input
+    puts input
 
     iter = input.each_char
     iter.next # remove first '(' character

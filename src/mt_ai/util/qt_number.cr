@@ -1,186 +1,253 @@
-# module AI::QtNumber
-#   extend self
+require "log"
 
-#   class Unit
-#     property vstr : String
-#     property unit : Int32 = 0
+module AI::QtNumber
+  extend self
 
-#     def initialize(@vstr : String, @unit = 0)
-#     end
+  HAN_TO_INT = {
+    '零' => 0, '两' => 2,
+    '〇' => 0, '一' => 1,
+    '二' => 2, '三' => 3,
+    '四' => 4, '五' => 5,
+    '六' => 6, '七' => 7,
+    '八' => 8, '九' => 9,
+    '十' => -1, '百' => -2,
+    '千' => -3, '万' => -4,
+    '亿' => -6, '兆' => -9,
+  }
 
-#     def is_digit?
-#       return false unless fchar = @vstr[0]?
-#       '0' <= fchar <= '9'
-#     end
+  EXTRA_STR = {
+    '来' => "chừng ",
+    '余' => "trên ",
+    '多' => "hơn ",
+    '第' => "thứ ",
+  }
 
-#     def to_s(io : IO, prev_unit = 0) : Nil
-#       # pp self
+  class Digit
+    property char : String | Char
+    property unit : Int32
 
-#       io << "lẻ " if prev_unit > @unit &+ 1
+    def initialize(@char, @unit = 0)
+    end
 
-#       if prev_unit == 1 && @vstr == "năm"
-#         @vstr = "lăm"
-#       elsif @unit == 1 && @vstr.in?("1", "một")
-#         @vstr = @vstr == "1" ? "10" : "mười"
-#         @unit = 0
-#       end
+    @[AlwaysInline]
+    def pure_digit?
+      pure_digit?(@char)
+    end
 
-#       io << @vstr
-#       return if @unit == 0
+    @[AlwaysInline]
+    private def pure_digit?(char : Char)
+      '0' <= char <= '9'
+    end
 
-#       io << ' ' unless @vstr.blank?
+    @[AlwaysInline]
+    private def pure_digit?(vstr : String)
+      pure_digit?(vstr[0])
+    end
 
-#       case @unit
-#       when 1 then io << "mươi"
-#       when 2 then io << "trăm"
-#       when 3 then io << "nghìn"
-#       when 6 then io << "triệu"
-#       when 9 then io << "tỉ"
-#       end
-#     end
+    LITS = {"không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"}
 
-#     def inspect(io : IO)
-#       io << {@vstr, @unit}
-#     end
-#   end
+    def render(io : IO, use_raw : Bool = self.pure_digit?(@char)) : Nil
+      return io << @char if use_raw
 
-#   HAN_TO_INT = {
-#     '零' => 0, '两' => 2,
-#     '〇' => 0, '一' => 1,
-#     '二' => 2, '三' => 3,
-#     '四' => 4, '五' => 5,
-#     '六' => 6, '七' => 7,
-#     '八' => 8, '九' => 9,
-#     '十' => -1, '百' => -2,
-#     '千' => -3, '万' => -4,
-#     '亿' => -6, '兆' => -9,
-#   }
+      case vstr = @char
+      in Char
+        io << LITS[vstr - '０']
+      in String
+        spaced = false
+        vstr.each_char do |char|
+          io << ' ' unless spaced
+          io << LITS[char - '０']
+          spaced = true
+        end
+      end
+    end
 
-#   TRAN_LITS = {"không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"}
+    def render(io : IO, prev_unit = 0, use_raw = false) : Nil
+      io << "lẻ " if prev_unit - @unit > 1
 
-#   TRAN_PROX = {
-#     '来' => "chừng ",
-#     '余' => "trên ",
-#     '多' => "hơn ",
-#   }
+      case
+      when prev_unit == 1 && @char == '５'
+        io << "năm"
+      when @unit == 1 && (@char == '１' || use_raw)
+        if use_raw
+          io << @char << '0'
+        else
+          io << "mười"
+        end
 
-#   def translate(input : String)
-#     digs = [] of Unit
-#     prox = ""
+        return
+      when @unit == 1 && use_raw
+        return
+      when @char != ' '
+        render(io, use_raw: use_raw)
+      end
 
-#     has_unit = false
+      return if @unit == 0
+      io << ' ' unless @char == ' '
 
-#     input.each_char do |char|
-#       if tran = TRAN_PROX[char]?
-#         prox = tran
-#       elsif char.in?('0'..'9')
-#         if (last = digs.last?) && last.unit == 0 && last.is_digit?
-#           last.vstr += char
-#         else
-#           digs << Unit.new(char.to_s, 0)
-#         end
-#       elsif int = HAN_TO_INT[char]?
-#         if int >= 0
-#           digs << Unit.new(TRAN_LITS[int], 0)
-#         else
-#           int = -int
-#           has_unit = true
+      case @unit
+      when 1 then io << "mươi"
+      when 2 then io << "trăm"
+      when 3 then io << "nghìn"
+      when 6 then io << "triệu"
+      when 9 then io << "tỉ"
+      end
+    end
 
-#           if last = digs.last?
-#             curr = Unit.new("", int) if last.unit > int
+    def inspect(io : IO)
+      io << '{' << @char << ':' << @unit << '}'
+    end
+  end
 
-#             digs.reverse_each do |item|
-#               break if item.unit > int
-#               item.unit &+= int
-#             end
+  def translate(zstr : String)
+    digits = [] of Digit
 
-#             digs << curr if curr
-#           else
-#             vstr = prox.empty? ? "một" : ""
-#             digs << Unit.new(vstr, int)
-#           end
-#         end
-#       else
-#         puts "#{char} not match any known type"
-#       end
-#     end
+    no_unit = true
+    pre_str = ""
 
-#     if has_unit
-#       translate_with_unit(digs, prox)
-#     else
-#       translate_no_unit(digs, prox)
-#     end
-#   end
+    zstr.each_char do |char|
+      if char.in?('0'..'9')
+        digits << Digit.new(char)
+      elsif char.in?('０'..'９')
+        digits << Digit.new(char - 0xfee0) # to half width
+      elsif extra = EXTRA_STR[char]?
+        pre_str = extra + pre_str
+      elsif !(int = HAN_TO_INT[char]?)
+        Log.error { "#{char} not match any known type" }
+      elsif int >= 0
+        digits << Digit.new('０' + int) # convert to full width form
+      else
+        no_unit = false
+        unit = -int
 
-#   private def translate_no_unit(digs : Array(Unit), prox : String = "")
-#     String.build do |io|
-#       io << prox
-#       digs.join(io, ' ') { |unit, _| io << unit.vstr }
-#     end
-#   end
+        if last = digits.last?
+          digit = Digit.new(' ', unit) if last.unit > unit
 
-#   private def translate_with_unit(digs : Array(Unit), prox : String = "")
-#     i = digs.size &- 1
+          digits.reverse_each do |dig|
+            break if dig.unit > unit
+            dig.unit &+= unit
+          end
 
-#     while i >= 0
-#       dig1 = digs.unsafe_fetch(i)
-#       i &-= 1
+          digits << digit if digit
+        else
+          vstr = pre_str.empty? ? '１' : ' '
+          digits << Digit.new(vstr, unit)
+        end
+      end
+    end
 
-#       case dig1.unit
-#       when .< 3 then next
-#       when .< 6 then unit = 3
-#       when .< 9 then unit = 6
-#       else           unit = 9
-#       end
+    if no_unit
+      render_no_unit(digits, pre_str)
+    else
+      render_unit(digits, pre_str)
+    end
+  end
 
-#       ceil = unit &+ unit
-#       j = i
+  private def render_no_unit(digits : Array(Digit), pre_str : String)
+    String.build do |io|
+      io << pre_str
+      was_digit = false
 
-#       while j >= 0
-#         dig2 = digs.unsafe_fetch(j)
-#         break unless dig2.unit < ceil
+      digits.each_with_index do |digit, index|
+        is_digit = digit.pure_digit?
+        io << ' ' if index > 0 && !(was_digit && is_digit)
 
-#         dig2.unit -= unit
-#         dig2.unit = 0 if dig2.unit == digs.unsafe_fetch(j &+ 1).unit
+        digit.render(io, is_digit)
+        was_digit = is_digit
+      end
+    end
+  end
 
-#         j &-= 1
-#       end
+  private def render_unit(digits : Array(Digit), pre_str : String)
+    i = digits.size &- 1
 
-#       next if dig1.unit == unit
+    # pp digits
 
-#       if dig1.is_digit? && (succ = digs[i &+ 2]?) && succ.is_digit?
+    while i >= 0
+      digit1 = digits.unsafe_fetch(i)
+      i &-= 1
 
-#       digs.insert(i &+ 2, Unit.new("", unit))
-#       dig1.unit -= unit
-#     end
+      case digit1.unit
+      when 1
+        next unless digit1.pure_digit?
+        next unless digit2 = digits[i + 2]?
+        next unless digit2.pure_digit?
+        digit1.unit = 0
+        next
+      when .< 3 then next
+      when .< 6 then unit = 3
+      when .< 9 then unit = 6
+      else           unit = 9
+      end
 
-#     String.build do |io|
-#       io << prox
+      if digit1.unit != unit
+        digits.insert(i &+ 2, Digit.new(' ', unit))
+        digit1.unit -= unit
+      end
 
-#       prev = digs.unsafe_fetch(0)
-#       prev.to_s(io)
+      ceil = unit &+ unit
 
-#       1.upto(digs.size &- 1) do |i|
-#         io << ' ' # unless (prev.is_digit? && item.is_digit?)
-#         item = digs.unsafe_fetch(i)
-#         item.to_s(io, prev.unit)
-#         prev = item
-#       end
-#     end
-#   end
+      j = i
 
-#   test = {
-#     "2百万",
-#     "25百万",
-#     "1万",
-#     "1万6千",
-#     "1万6百",
-#     "六七",
-#     "六七万",
-#     "六万七千",
-#     "十七",
-#   }
-#   test.each do |item|
-#     puts "#{item} => #{translate(item)}"
-#   end
-# end
+      while j >= 0
+        digit2 = digits.unsafe_fetch(j)
+        break unless digit2.unit < ceil
+
+        digit2.unit -= unit
+        digit2.unit = 0 if digit2.unit == digits.unsafe_fetch(j &+ 1).unit
+
+        j &-= 1
+      end
+    end
+
+    String.build do |io|
+      io << pre_str
+
+      prev = digits.unsafe_fetch(0)
+      was_digit = prev.pure_digit?
+      prev_unit = prev.unit
+      prev.render(io, prev_unit: 0, use_raw: was_digit)
+
+      1.upto(digits.size &- 1) do |i|
+        digit = digits.unsafe_fetch(i)
+        is_digit = digit.pure_digit?
+
+        io << ' ' unless is_digit && was_digit
+        digit.render(io, prev_unit, use_raw: is_digit)
+
+        was_digit = is_digit
+
+        if digit.char == ' '
+          prev_unit += digit.unit
+        else
+          prev_unit = digit.unit
+        end
+      end
+    end
+  end
+
+  # test = {
+  #   "六七",
+  #   "123",
+  #   "12七",
+  #   "12七8",
+  #   "六12七8",
+
+  #   "2百万",
+  #   "25百万",
+  #   "1万",
+  #   "1万6千",
+  #   "2万6千",
+  #   "1万6百",
+  #   "六七万",
+  #   "六十七万",
+  #   "七十万",
+  #   "十万",
+  #   "十千",
+  #   "六万七千",
+  #   "十七",
+  # }
+  # test.each do |item|
+  #   puts "#{item} => [#{translate(item)}]"
+  # end
+end

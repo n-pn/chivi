@@ -17,14 +17,20 @@ class AI::MtCore
   end
 
   private def translate(rend : Renderer, data : M0Node)
-    vstr, opts = @dict.find(data.zstr, data.ptag)
-    pp [data.zstr, data.ptag, vstr]
+    if term = data.term
+      vstr = term.vstr
+      opts = MtOpts::None
+    else
+      vstr, opts = @dict.find(data.zstr, data.ptag)
+    end
+
+    # pp [data.zstr, data.ptag, vstr]
     rend.add(vstr, opts)
   end
 
   private def translate(rend : Renderer, data : MtNode)
     data.each do |node|
-      pp node
+      # pp node
       translate(rend, node)
     end
   end

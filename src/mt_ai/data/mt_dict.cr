@@ -1,30 +1,20 @@
 require "sqlite3"
 require "./mt_opts"
+require "../util/*"
+require "../../mtapp/sp_core"
 
 struct AI::MtDefn
-  getter vstr : String | Hash(String, String)
+  getter vmap = {} of String => String
   getter opts = MtOpts::None
 
-  def initialize(vstr : String, xpos : String, vmap : String = "")
-    if xpos == "PU"
-      @opts = MtOpts.for_punctuation(vstr)
-    elsif vstr == "⛶"
-      @opts = MtOpts::Hidden
-      vstr = ""
-    else
-      @opts = MtOpts::None
-    end
+  def initialize(vmap : String = "")
+    @opts = MtOpts::None
 
-    if vmap.empty?
-      @vstr = vstr
-    else
-      hash = {"" => vstr}
-      vmap.split('ǀ') do |elem|
-        xpos, vstr = elem.split(':', 2)
-        hash[xpos] = vstr
-      end
-
-      @vstr = hash
+    vmap.split('ǀ') do |elem|
+      ptag, vstr = elem.split(':', 2)
+      @opts = MtOpts.for_punctuation(vstr) if ptag == "PU"
+      @vmap[ptag] = vstr
+      @vmap[""] ||= vstr
     end
   end
 
@@ -41,16 +31,16 @@ struct AI::MtDefn
     "NT" => {"N", "_C"},
   }
 
-  def add_defn(xpos : String, vstr : String)
-    @vmap[xpos] = vstr
-    return unless alts = SUPERSETS[xpos]?
+  def add_defn(ptag : String, vstr : String)
+    @vmap[ptag] = vstr
+    return unless alts = SUPERSETS[ptag]?
     alts.each { |alt| @vmap[alt] = vstr }
   end
 
-  def get_defn(xpos : String) : String
+  def get_defn(ptag : String) : String
     case val = @vstr
     when String then val
-    else             val.fetch(xpos) { val[""] }
+    else             val.fetch(ptag) { val[""] }
     end
   end
 end
@@ -63,8 +53,14 @@ class AI::MtDict
 
     DB.open("sqlite3:#{db_path}") do |db|
       db.query_each "select zstr, vstr, vmap, xpos from defns" do |rs|
-        zstr, vstr, vmap, xpos = rs.read(String, String, String, String)
-        defns[zstr] = MtDefn.new(vstr, xpos, vmap)
+        zstr, vstr, vmap, ptag = rs.read(String, String, String, String)
+
+        vstr = "" if vstr == "⛶"
+        ptag = ptag.split(' ').first
+
+        data = "#{ptag}:#{vstr}"
+        data = "#{data}ǀ#{vmap}" unless vmap.blank?
+        defns[zstr] = MtDefn.new(data)
       end
     end
 
@@ -72,42 +68,66 @@ class AI::MtDict
   end
 
   DIR = "var/mtdic/fixed"
-  class_getter common : Defns { load_vmap_from_db("#{DIR}/common-main.dic") }
+  class_getter generic : Defns { load_vmap_from_db("#{DIR}/common-main.dic") }
 
-  getter defns : Defns
+  class_getter fixture : Defns do
+    defns = Defns.new
+
+    File.each_line("./src/mt_ai/data/fixed.tsv") do |line|
+      next if line.blank?
+      zstr, vmap = line.split('\t')
+      defns[zstr] = MtDefn.new(vmap)
+    end
+
+    defns
+  end
+
+  getter dicts : Array(Defns)
 
   def initialize(@wn_id : Int32, @uname = "")
     # TODO: load overrides
-    @defns = self.class.common
+    @dicts = [
+      self.class.fixture,
+      Defns.new,
+      self.class.generic,
+    ]
   end
 
-  def find(zstr : String, xpos : String) : {String, MtOpts}
-    return init(zstr, xpos) unless defn = @defns[zstr]?
-    {defn.get_defn(xpos), defn.opts}
-  end
+  def find(zstr : String, ptag : String) : {String, MtOpts}
+    vstr = opts = nil
 
-  def init(zstr : String, xpos : String)
-    # FIXME: add simple translation machine here
-    # FIXME: cache translation
+    @dicts.each do |dict|
+      next unless defn = dict[zstr]?
+      opts ||= defn.opts
 
-    case xpos
-    when "PU"
-      vstr = CharUtil.normalize(zstr)
-      {vstr, MtOpts.for_punctuation(vstr)}
-    when "CD"
-      {translate_number(zstr), MtOpts::None}
+      if vstr = defn.vmap[ptag]?
+        opts = MtOpts::Hidden if vstr == ""
+        return {vstr, opts}
+      else
+        vstr ||= defn.vmap[""]?
+      end
+    end
+
+    if vstr
+      return {vstr, opts || MtOpts::None}
     else
-      pp [zstr, xpos]
-      {zstr, MtOpts::None}
+      init(zstr, ptag)
     end
   end
 
-  def translate_number(zstr : String)
-    case zstr
-    when /^[\d+\p{P}]+$/ then CharUtil.normalize(zstr)
+  def init(zstr : String, ptag : String)
+    # FIXME: add simple translation machine here
+    # FIXME: cache translation
+
+    case ptag
+    when "PU"
+      vstr = CharUtil.normalize(zstr)
+      {vstr, MtOpts.for_punctuation(vstr)}
+    when "CD", "OD"
+      {QtNumber.translate(zstr), MtOpts::None}
     else
-      # TODO: translate hanzi numbers
-      zstr
+      pp [zstr, ptag]
+      {MT::SpCore.tl_hvname(zstr), MtOpts::None}
     end
   end
 end

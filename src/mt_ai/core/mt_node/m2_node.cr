@@ -40,7 +40,6 @@ class AI::M2Node
   end
 
   def fix_dnp!
-    # pp [left, right]
     @attr = "TAIL"
     @flip = true
 
@@ -59,9 +58,12 @@ class AI::M2Node
     end
 
     case node.ptag
-    when "NP", "NR" then true
-    when "NN"       then !node.attr.includes?("ATTR") # TODO: add ATTR to node
-    else                 false
+    when "NP", "NR", "PN"
+      true
+    when "NN"
+      !node.attr.includes?("ATTR") # TODO: add ATTR to node
+    else
+      false
     end
   end
 end

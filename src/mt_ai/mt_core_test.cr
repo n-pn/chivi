@@ -74,6 +74,25 @@ TEST4 = <<-TXT
     (PU 。)))
 TXT
 
+TEST5 = <<-TXT
+(TOP
+  (IP
+    (IP (VP (VV 离) (DER 得) (VP (VP (VA 近)) (SP 了))))
+    (PU ,)
+    (VP
+      (ADVP (AD 就))
+      (ADVP (AD 越发))
+      (VP
+        (VV 觉出)
+        (NP
+          (NP (DNP (NP (NN 尸骸)) (DEG 的)) (NP (NN 高大)))
+          (CC 和)
+          (NP (DNP (NP (PN 自身)) (DEG 的)) (NP (NN 渺小))))))
+    (PU 。)))
+TXT
+
 CORE = AI::MtCore.new(0)
+puts CORE.translate(TEST2)
 puts CORE.translate(TEST3)
-# puts CORE.translate(TEST4)
+puts CORE.translate(TEST4)
+puts CORE.translate(TEST5)
