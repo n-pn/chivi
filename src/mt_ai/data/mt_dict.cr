@@ -109,7 +109,7 @@ class AI::MtDict
     end
 
     if vstr
-      return {vstr, opts || MtOpts::None}
+      {vstr, opts || MtOpts::None}
     else
       init(zstr, ptag)
     end
@@ -125,9 +125,12 @@ class AI::MtDict
       {vstr, MtOpts.for_punctuation(vstr)}
     when "CD", "OD"
       {QtNumber.translate(zstr), MtOpts::None}
-    else
-      pp [zstr, ptag]
+    when "NR"
+      # TODO: call translate engine
       {MT::SpCore.tl_hvname(zstr), MtOpts::None}
+    else
+      # pp [zstr, ptag]
+      {MT::SpCore.tl_sinovi(zstr), MtOpts::None}
     end
   end
 end

@@ -52,7 +52,6 @@ tests = [
   # {"!kanshu8", 59127, false},
 
   {"!133txt", 9, false},
-  {"!tasim", 2777, false},
 
   {"!hotupub", 100, false},
   {"!ymxwx", 100, false},
@@ -62,7 +61,12 @@ tests = [
 
   {"!ishuquge", 1000, false},
   {"!ptwxz", 15261, false},
+
+  {"!tasim", 2777, false},
   {"!zsdade", 3804, false},
+  {"!os2022", 8185, false},
+  {"!madcowww", 145546, false},
+  {"!egyguard", 148776, false},
 ]
 
 tests.each do |sname, s_bid, fresh|

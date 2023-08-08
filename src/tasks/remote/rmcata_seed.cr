@@ -1,8 +1,10 @@
 require "colorize"
 require "option_parser"
-require "../../zroot/rmbook"
 
-class RmbookSeed
+require "../../zroot/rmbook"
+require "../../zroot/zhcata"
+
+class RmcataSeed
   @conf : Rmconf
   @repo : DB::Database
 
@@ -80,6 +82,6 @@ OptionParser.parse(ARGV) do |parser|
   parser.on("--ttl TSPAN", "time to live") { |i| tspan = i.to_i.days }
 end
 
-worker = RmbookSeed.new(sname, conns, stale: Time.utc - tspan)
+worker = RmcataSeed.new(sname, conns, stale: Time.utc - tspan)
 upper = worker.get_max_bid if upper < lower
 worker.sync_all(lower: lower, upper: upper, force: force)

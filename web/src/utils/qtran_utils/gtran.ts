@@ -5,7 +5,7 @@ const tabs = [
 ]
 
 const api =
-  'https://translate.googleapis.com/translate_a/single?client=gtx&text=&dt=t'
+  'https://translate.googleapis.com/translate_a/single?client=gtx&dt=t'
 
 const results = {}
 

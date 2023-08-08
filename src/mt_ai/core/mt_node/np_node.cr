@@ -8,13 +8,49 @@ class AI::NpNode
   def initialize(input : Array(MtNode), @ptag, @attr, @_idx)
     input.reverse_each do |node|
       case node.ptag
-      when "QP" then @data.unshift(node)
+      when "QP"
+        add_head(node)
+      when "DP"
+        left, right = split_dp(node)
+        add_head(right)
+        add_node(left, at_head: is_left_dp?(left))
+      when "CLP"
+        # FIXME: split phrase if first element is CD
+        add_head(node)
       when "DNP"
-        node.attr.includes?("HEAD") ? @data.unshift(node) : @data.push(node)
+        add_node(node, node.attr.includes?("HEAD"))
       else
-        @data << node
+        add_tail(node)
       end
     end
+  end
+
+  def add_node(node : MtNode, at_head = false) : Nil
+    at_head ? add_head(node) : add_tail(node)
+  end
+
+  def add_head(node : MtNode) : Nil
+    @data.unshift(node)
+  end
+
+  def add_tail(node : MtNode) : Nil
+    @data.push(node)
+  end
+
+  def split_dp(node : M2Node)
+    {node.left, node.right}
+  end
+
+  def split_dp(node : MtNode)
+    raise "unsupported DP structure"
+  end
+
+  def is_left_dp?(node : M0Node)
+    node.zstr.in?("")
+  end
+
+  def is_left_dp?(node : MtNode)
+    false
   end
 
   def each(&)

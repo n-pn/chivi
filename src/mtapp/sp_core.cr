@@ -7,7 +7,7 @@ class MT::SpCore
   class_getter pin_yin : self { new(SpDict.pin_yin) }
 
   def self.tl_hvname(str : String)
-    return str unless str.matches?(/\p{Han}/)
+    return CharUtil.normalize(str) unless str.matches?(/\p{Han}/)
     self.hv_name.tokenize(str).to_txt(cap: false)
   end
 

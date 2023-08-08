@@ -109,7 +109,7 @@ class ZR::Rmbook
                      sname : String, sn_id : String,
                      rtime = Time.utc.to_unix, force = false)
     entry = self.load(sname, sn_id)
-    return if entry.rtime >= rtime
+    return if !force && entry.rtime >= rtime
 
     raw_data = RawRmbook.new(bhtml, sname: sname)
     entry.rtime = rtime

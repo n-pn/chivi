@@ -2,6 +2,20 @@ require "../shared/crawling"
 require "../../zroot/tubook"
 
 class TubookSync < CrawlTask
+  def crawl_entry!(entry : Entry) : Entry?
+    puts "- <#{entry.name.colorize.magenta}> GET: #{entry.link.colorize.magenta}"
+
+    return entry unless json = read_entry_no_proxy(entry, tspan: 10.days)
+
+    entry.save!(json, @log_file)
+    db_seed_tasks(entry, json)
+
+    nil
+  rescue ex
+    Log.error(exception: ex) { ex.colorize.red }
+    entry
+  end
+
   def db_seed_tasks(entry : Entry, json : String)
     # TODO
   end
@@ -56,12 +70,12 @@ class TubookSync < CrawlTask
   def self.gen_queue(min = 1, max = 300000)
     tn_ids = Set(Int32).new(min..max)
 
-    ZR::Tubook.open_db do |db|
-      db.query_each(SELECT_STMT, min, max) do |rs|
-        id, voters, rtime = rs.read(Int32, Int32, Int64)
-        tn_ids.delete(id) unless should_crawl?(voters, rtime)
-      end
-    end
+    # ZR::Tubook.open_db do |db|
+    #   db.query_each(SELECT_STMT, min, max) do |rs|
+    #     id, voters, rtime = rs.read(Int32, Int32, Int64)
+    #     tn_ids.delete(id) unless should_crawl?(voters, rtime)
+    #   end
+    # end
 
     tn_ids.map_with_index(1) do |y_bid, index|
       Entry.new(
@@ -85,12 +99,12 @@ class TubookSync < CrawlTask
   end
 
   def self.get_max_book_id(json_data = load_index_json) : Int32
-    data = NamedTuple(data: Array(NamedTuple(book_id: Int32))).from_json(json_data, root: "data")
-    new_max = data[:data].max_of(&.[:book_id])
+    # data = NamedTuple(data: Array(NamedTuple(book_id: Int32))).from_json(json_data, root: "data")
+    # new_max = data[:data].max_of(&.[:book_id])
 
     old_max = ZR::Tubook.open_db(&.query_one "select max(id) from tubooks", as: Int32)
 
-    {old_max, new_max}.max
+    # {old_max, new_max}.max
   end
 
   def self.should_crawl?(voters : Int32, rtime : Int64)

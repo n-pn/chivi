@@ -108,6 +108,16 @@ abstract class CrawlTask
     crawl!(fails, loop_no &+ 1)
   end
 
+  def read_entry_no_proxy(entry : Entry, tspan = 12.hours) : String?
+    return File.read(entry.path) if entry.cached?(tspan: tspan)
+
+    HTTP::Client.get(entry.link) do |res|
+      return unless res.status.success?
+      body = res.body_io.gets_to_end
+      body.tap { |data| File.write(entry.path, data) }
+    end
+  end
+
   def crawl_entry!(entry : Entry) : Entry?
     puts "- <#{entry.name.colorize.magenta}> GET: #{entry.link.colorize.magenta}"
 

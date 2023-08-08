@@ -91,8 +91,22 @@ TEST5 = <<-TXT
     (PU 。)))
 TXT
 
+TEST6 = <<-TXT
+(TOP
+  (IP
+    (NP
+      (LCP (NP (NP (PN 她)) (NP (NN 心))) (LC 中))
+      (DP (DT 那) (CLP (M 份)))
+      (DNP (ADJP (JJ 淡淡)) (DEG 的))
+      (NP (NN 感伤)))
+    (VP (VV 散去))
+    (SP 了)
+    (PU 。)))
+TXT
+
 CORE = AI::MtCore.new(0)
 puts CORE.translate(TEST2)
 puts CORE.translate(TEST3)
 puts CORE.translate(TEST4)
 puts CORE.translate(TEST5)
+puts CORE.translate(TEST6)
