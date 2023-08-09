@@ -56,4 +56,18 @@ class ZR::Author
     stmt = self.schema.select_stmt { |stmt| stmt << " where name_zh = $1" }
     db.query_one?(stmt, name_zh, as: self) || new(name_zh: name_zh)
   end
+
+  ###
+
+  CACHE = {} of String => String
+
+  def self.get_name_vi(name_zh : String) : String
+    CACHE[name_zh] ||= begin
+      stmt = <<-SQL
+        select coalesce(nullif(name_vi, ''), name_mt) from authors
+        where name_zh = $1 limit 1
+        SQL
+      open_db(&.query_one?(stmt, name_zh, as: String)) || name_zh
+    end
+  end
 end

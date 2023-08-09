@@ -101,13 +101,4 @@ module CV::WninfoInner
 
     self.bslug = tokens.join('-')
   end
-
-  def fix_names!
-    self.vname = self.btitle.vname
-
-    hslug = TextUtil.slugify(self.btitle.hname)
-    self.set_bslug(hslug)
-
-    self.save!
-  end
 end

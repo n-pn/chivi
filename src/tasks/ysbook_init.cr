@@ -1,51 +1,40 @@
-require "../ysapp/data/ysbook_data"
-require "../zroot/data/ysbook"
+require "../zroot/ysbook"
 
-db = ZR::Ysbook.db
+DIR = "var/.keep/yousuu/book-infos"
 
-(0..).each do |block|
-  lower = block &* 1000
-  upper = lower &+ 999
+yn_ids = Dir.children(DIR).sort_by!(&.to_i)
 
-  inputs = YS::Ysbook.query.where("id >= #{lower} and id <= #{upper}").to_a
-  puts "- block: #{block}, books: #{inputs.size}"
+yn_ids.each_slice(1000) do |slice|
+  entries = [] of ZR::Ysbook
 
-  break if inputs.empty?
+  entries = ZR::Ysbook.open_db do |db|
+    slice.compact_map do |yn_id|
+      file = "#{DIR}/#{yn_id}/latest.json"
+      next unless File.file?(file)
+      puts file
 
-  db.exec "begin"
-
-  inputs.each do |input|
-    entry = ZR::Ysbook.load(input.id)
-    entry.wn_id = input.nvinfo_id
-
-    entry.btitle = input.btitle
-    entry.author = input.author
-
-    entry.cover = input.cover
-    entry.intro = input.intro
-    entry.genre = input.genre
-    entry.xtags = input.btags.join('\t')
-
-    entry.voters = input.voters
-    entry.rating = input.rating
-    entry.status = input.status
-    entry.shield = input.shield
-    entry.origin = input.sources[0]? || ""
-
-    entry.word_count = input.word_count
-    entry.book_mtime = input.book_mtime
-
-    entry.crit_count = input.crit_total
-    entry.list_count = input.list_total
-
-    entry.crit_avail = input.crit_count
-    entry.list_avail = input.list_count
-
-    entry.rtime = input.info_rtime
-    entry._flag = 0
-
-    entry.upsert!(db)
+      loop do
+        break ZR::Ysbook.from_raw_json_file(file, db: db)
+      rescue ex : SQLite3::Exception
+        puts ex
+        sleep 1.second
+      rescue ex
+        puts ex
+        break nil
+      end
+    end
   end
 
-  db.exec "commit"
+  next if entries.empty?
+
+  ZR::Ysbook.open_tx do |db|
+    entries.each do |entry|
+      loop do
+        break if entry.upsert!(db)
+      rescue ex
+        puts ex
+        sleep 1.second
+      end
+    end
+  end
 end

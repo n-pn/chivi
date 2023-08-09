@@ -119,7 +119,7 @@ TRUSTED_SEEDS.each do |sname|
   DB.open("sqlite3:#{db_path}?mode=ro") do |db|
     db.query_each stmt do |rs|
       author, btitle = rs.read(String, String)
-      author, _ = BookUtil.fix_names(author, btitle)
+      author, btitle = BookUtil.fix_names(author, btitle)
       entries[btitle] ||= ZR::Btitle.load(btitle, db: OUT_DB)
     end
   end
@@ -133,7 +133,6 @@ btitle_flag.each do |btitle, _flag|
 end
 
 puts "- assigned flags: #{flags}"
-
 
 OUT_DB.exec "begin"
 entries.each_value(&.upsert!(db: OUT_DB))

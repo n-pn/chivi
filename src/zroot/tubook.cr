@@ -80,6 +80,23 @@ class ZR::Tubook
   def initialize(@id)
   end
 
+  def upsert_wninfo!
+    wninfo = CV::Wninfo.upsert!(author_zh: @author, btitle_zh: @btitle)
+
+    # TODO: update in wnstats instead
+    wninfo.set_zscores!(@voters, @rating) if @voters > wninfo.zvoters
+    wninfo.scover = @cover if wninfo.bcover.empty?
+
+    wninfo.set_status(@status)
+
+    genres = [@genre].concat(@xtags.split('\t')).reject!(&.empty?).uniq!
+    wninfo.set_genres(genres)
+
+    wninfo.save!
+
+    wninfo
+  end
+
   def self.from_raw(raw_data : RawTubook,
                     rtime = Time.utc.to_unix,
                     rhash : UInt32 = 0)

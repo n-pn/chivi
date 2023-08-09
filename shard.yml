@@ -69,11 +69,17 @@ targets:
   yscrit-init:
     main: src/tasks/yousuu/yscrit-init.cr
 
+  ysbook_seed:
+    main: src/tasks/ysbook_seed.cr
+
   fix_ysrepls_vhtml:
     main: src/tasks/yousuu/fix_ysrepls_vhtml.cr
 
   tubook_info-sync:
     main: src/tasks/tuishu/tubook_info-sync.cr
+
+  tubook_seed:
+    main: src/tasks/tuishu/tubook_seed.cr
 
   rmbook_seed:
     main: src/tasks/remote/rmbook_seed.cr

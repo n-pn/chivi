@@ -111,10 +111,19 @@ abstract class CrawlTask
   def read_entry_no_proxy(entry : Entry, tspan = 12.hours) : String?
     return File.read(entry.path) if entry.cached?(tspan: tspan)
 
-    HTTP::Client.get(entry.link) do |res|
+    uri = URI.parse(entry.link)
+    client = HTTP::Client.new(uri)
+
+    client.connect_timeout = 2
+    client.read_timeout = 5
+
+    client.get(entry.link) do |res|
       return unless res.status.success?
       body = res.body_io.gets_to_end
       body.tap { |data| File.write(entry.path, data) }
+    rescue ex
+      Log.warn { ex.message }
+      nil
     end
   end
 

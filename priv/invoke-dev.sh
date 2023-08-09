@@ -15,7 +15,7 @@ fi
 sudo service $TARGET-dev stop
 echo killed service $TARGET-dev to start $TARGET-srv in dev mode!
 
-nodemon $WATCH --exec "crystal run --error-trace" src/$TARGET-srv.cr
+nodemon $WATCH --exec "crystal run --error-trace --mcpu native --link-flags='-fuse-ld=mold'" src/$TARGET-srv.cr
 
 echo turn back to $TARGET-srv service!
 sudo service $TARGET-srv start

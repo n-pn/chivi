@@ -101,7 +101,7 @@ class YS::Ysbook
   JSON_HEADER = HTTP::Headers{"content-type" => "application/json"}
 
   def create_wnovel
-    author_zh, btitle_zh = BookUtil.fix_names(self.btitle, self.author)
+    author_zh, btitle_zh = BookUtil.fix_names(author: self.author, btitle: self.btitle)
     zintro = TextUtil.split_html(self.intro, true).join('\n')
 
     if tl_data = TranUtil.tl_book(btitle_zh, author_zh, zintro)

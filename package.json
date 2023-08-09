@@ -15,8 +15,8 @@
     "ys-bk": "bash priv/remote/yousuu-backup.sh",
     "backup": "yarn db-bk all && yarn ys-bk",
     "upload": "yarn db-up all && yarn ys-up",
-    "build": "shards build -s --release --production",
-    "build-mt": "shards build -s --release --production -Dpreview_mt",
+    "build": "shards build -s --release --production --mcpu native --link-flags='-fuse-ld=mold'",
+    "build-mt": "shards build -s --release --production -Dpreview_mt --mcpu native --link-flags='-fuse-ld=mold'",
     "dev": "bash priv/invoke-dev.sh",
     "rs": "bash priv/restart-srv.sh"
   }

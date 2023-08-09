@@ -4,42 +4,43 @@ require "../_base"
 require "./wninfo"
 
 class CV::Author
-  include Clear::Model
+  include Crorm::Model
+  schema "authors", :postgres, strict: false
 
-  self.table = "authors"
-  primary_key type: :serial
+  field zname : String
+  field vname : String
 
-  column zname : String
-  column vname : String
-  # column alter : Array(String) = [] of String
-
-  column vdesc : String = ""
-
-  column book_count : Int32 = 0
-  # column post_count : Int32 = 0
-  # column like_count : Int32 = 0
-  # column view_count : Int32 = 0
+  field vdesc : String = ""
+  field book_count : Int32 = 0
 
   timestamps
 
   ####################
 
-  def self.upsert!(zname : String, vname : String?) : Author
-    if author = find({zname: zname})
-      if vname && author.vname != vname
-        author.update({vname: vname})
-      end
+  VNAMES = {} of String => String
 
-      author
-    else
-      vname ||= MT::SpCore.tl_hvname(zname)
-      new({zname: zname, vname: vname}).tap(&.save!)
+  def self.get_vname(zname : String) : String
+    VNAMES[zname] ||= begin
+      stmt = "select vname from authors where zname = $1 limit 1"
+      PGDB.query_one?(stmt, zname, as: String) || zname
     end
   end
 
-  CACHE_INT = RamCache(Int64, self).new(2048)
+  def self.upsert!(zname : String, vname : String? = nil) : Author
+    xname = vname || MT::SpCore.tl_hvname(zname)
+    ctime = Time.utc
 
-  def self.load!(id : Int64)
-    CACHE_INT.get(id) { find!({id: id}) }
+    PGDB.query_one <<-SQL, zname, xname, ctime, ctime, vname, as: Author
+      insert into authors(zname, vname, created_at, updated_at)
+      values ($1, $2, $3, $4)
+      on conflict(zname) do update set
+        vname = coalesce($5, authors.vname),
+        updated_at = excluded.updated_at
+      returning *
+      SQL
   end
+
+  # puts upsert!("囧囧的白日梦").to_pretty_json
+  # puts upsert!("剑士桐人０", "Kiếm Sĩ Đồng Nhân 0").to_pretty_json
+  # puts get_vname("剑士桐人０")
 end

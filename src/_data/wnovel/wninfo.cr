@@ -206,8 +206,8 @@ class CV::Wninfo
     get(author: author_zh, btitle: btitle_zh) || begin
       entry = self.new({author_zh: author_zh, btitle_zh: btitle_zh})
 
-      entry.author_vi = get_author_vi(author_zh)
-      entry.btitle_vi, entry.btitle_hv = get_btitles(btitle_zh)
+      entry.author_vi = Author.get_vname(author_zh)
+      entry.btitle_vi, entry.btitle_hv = Btitle.get_names(btitle_zh)
 
       entry.set_bslug(TextUtil.slugify(entry.btitle_hv))
 
@@ -218,15 +218,5 @@ class CV::Wninfo
   def self.get_btitle_vi(id : Int32) : String
     stmt = "select btitle_vi from wninfos where id = $1 limit 1"
     PGDB.query_one(stmt, id, as: String)
-  end
-
-  def self.get_author_vi(author_zh : String) : String
-    stmt = "select vname from authors where zname = $1 limit 1"
-    PGDB.query_one?(stmt, author_zh, as: String) || author_zh
-  end
-
-  def self.get_btitles(btitle_zh : String) : {String, String}
-    stmt = "select vname, hname from btitles where zname = $1 limit 1"
-    PGDB.query_one?(stmt, btitle_zh, as: {String, String}) || {btitle_zh, btitle_zh}
   end
 end

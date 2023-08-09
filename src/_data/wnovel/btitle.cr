@@ -5,34 +5,41 @@ require "../_base"
 # storing book names
 
 class CV::Btitle
-  include Clear::Model
+  include Crorm::Model
+  schema "btitles", :postgres, strict: false
 
-  self.table = "btitles"
-  primary_key type: :serial
-
-  column zname : String = "" # chinese title
-  column hname : String = "" # hanviet title
-  column vname : String = "" # localization
-
-  # column hslug : String = "" # for text searching, auto generated from hname
-  # column vslug : String = "" # for text searching, auto generated from vname
+  field zname : String = "" # chinese title
+  field hname : String = "" # hanviet title
+  field vname : String = "" # localization
 
   timestamps # created_at and updated_at
 
-  def self.upsert!(zname : String, vname : String?) : self
-    if entry = find({zname: zname})
-      if vname && vname != entry.vname
-        entry.update({vname: vname})
-      end
+  VNAMES = {} of String => {String, String}
 
-      entry
-    else
-      entry = new({zname: zname})
+  def self.get_names(zname : String) : {String, String}
+    VNAMES[zname] ||= begin
+      stmt = <<-SQL
+        select coalesce(nullif(vname, ''), hname), hname
+        from btitles where zname = $1 limit 1
+        SQL
 
-      entry.hname = MT::SpCore.tl_hvname(zname)
-      entry.vname = vname || entry.hname
-
-      entry.tap(&.save!)
+      PGDB.query_one?(stmt, zname, as: {String, String}) || {zname, zname}
     end
+  end
+
+  def self.upsert!(zname : String, vname : String?) : self
+    hname = MT::SpCore.tl_hvname(zname)
+    xname = vname || hname
+    ctime = Time.utc
+
+    PGDB.query_one <<-SQL, zname, xname, ctime, ctime, vname, as: Btitle
+      insert into btitles(zname, vname, hname, created_at, updated_at)
+      values ($1, $2, $3, $4)
+      on conflict(zname) do update set
+        hname = excluded.hname,
+        vname = coalesce($5, btitles.vname),
+        updated_at = excluded.updated_at
+      returning *
+      SQL
   end
 end

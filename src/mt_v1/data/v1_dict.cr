@@ -154,4 +154,20 @@ class M1::DbDict
       dtype: 3
     )
   end
+
+  def self.upsert_wn_dict(db, wn_id : Int32, bslug : String, bname : String)
+    stmt = <<-SQL
+      insert into #{@@schema.table}(id, dname, label, brief, privi, dtype)
+      values ($1, $2, $3, $4, $5, $6)
+      on conflict set
+        dname = excluded.dname,
+        label = excluded.label,
+        brief = excluded.brief,
+        privi = excluded.privi,
+        dtype = excluded.dtype,
+      SQL
+
+    brief = "Từ điển riêng cho bộ truyện [#{bname}]"
+    db.exec stmt, wn_id, "#{wn_id}-#{bslug}", bname, brief, 1, 3
+  end
 end

@@ -4,6 +4,9 @@ require "crorm/model"
 require "../_util/book_util"
 require "./json_parser/raw_ysbook"
 
+require "./author"
+require "./btitle"
+
 class ZR::Ysbook
   class_getter db_path = "var/zroot/ysbooks.db3"
 
@@ -85,16 +88,40 @@ class ZR::Ysbook
   def initialize(@id)
   end
 
-  def self.from_raw_json_file(file_path : String)
-    json = File.read(file_path)
-    time = File.info(file_path).modification_time
-    from_raw_json(json, rtime: time)
+  def upsert_wninfo!
+    wninfo = CV::Wninfo.upsert!(author_zh: @author, btitle_zh: @btitle)
+
+    # TODO: update in wnstats instead
+    wninfo.set_zscores!(@voters, @rating) if @voters > wninfo.zvoters
+    wninfo.scover = @cover if wninfo.bcover.empty?
+
+    wninfo.set_utime(@book_mtime)
+    wninfo.set_status(@status)
+
+    genres = [@genre].concat(@xtags.split('\t')).reject!(&.empty?).uniq!
+    wninfo.set_genres(genres)
+
+    wninfo.save!
+
+    wninfo
   end
 
-  def self.from_raw_json(raw_json : String, rtime = Time.utc.to_unix)
+  def self.from_raw_json_file(file_path : String, db = self.db)
+    json = File.read(file_path)
+    time = File.info(file_path).modification_time.to_unix
+    from_raw_json(json, rtime: time, db: db)
+  end
+
+  def self.load(db, id : Int32)
+    get(id, db: db) || new(id)
+  end
+
+  def self.from_raw_json(raw_json : String,
+                         rtime = Time.utc.to_unix,
+                         db = self.db)
     input = RawYsbook.from_json(raw_json)
 
-    entry = self.load(input.id)
+    entry = self.load(db: db, id: input.id)
     entry.rtime = rtime
 
     entry.btitle = input.btitle

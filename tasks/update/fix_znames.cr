@@ -33,7 +33,7 @@ CV::Wninfo.query.with_author.to_a.each do |nvinfo|
   old_btitle = nvinfo.zname
   old_author = nvinfo.author.zname
 
-  fix_btitle, fix_author = CV::BookUtil.fix_names(old_btitle, old_author)
+  fix_author, fix_btitle = BookUtil.fix_names(old_author, old_btitle)
   next if old_btitle == fix_btitle && old_author == fix_author
 
   puts "- #{nvinfo.btitle_vi}"

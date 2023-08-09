@@ -54,7 +54,7 @@ class TubookSync < CrawlTask
     max_id = get_max_book_id(load_index_json(4.hours)) if max_id == 0
     puts "MIN: #{min_id}, MAX: #{max_id}"
 
-    queue = gen_queue(min_id, max_id).reject!(&.cached?(12.hours))
+    queue = gen_queue(min_id, max_id).reject!(&.cached?(10.days))
     queue = crawl_mode.rearrange!(queue)
 
     worker = new("tubooks_info", reseed_proxies)
