@@ -55,16 +55,19 @@ class CV::WninfoForm
     Author.upsert!(@author_zh, @author_vi)
     Btitle.upsert!(@btitle_zh, @btitle_vi)
 
-    vi_book = Wninfo.upsert!(@author_zh, @btitle_zh, name_fixed: true)
+    wninfo = Wninfo.upsert!(@author_zh, @btitle_zh, name_fixed: true)
+
+    @author_vi.try { |x| wninfo.author_vi = x }
+    @btitle_vi.try { |x| wninfo.btitle_vi = x }
 
     @intro_zh.try do |intro|
       intro = TextUtil.split_html(intro, true).join('\n')
-      vi_book.zintro = intro unless intro.blank?
+      wninfo.zintro = intro unless intro.blank?
     end
 
     @intro_vi.try do |intro|
       intro = intro.split(/\R/).map(&.strip).join('\n')
-      vi_book.bintro = intro unless intro.blank?
+      wninfo.bintro = intro unless intro.blank?
     end
 
     @genres.try do |genres|
@@ -75,22 +78,19 @@ class CV::WninfoForm
       # @zh_user.genres = zh_genres.join("\t")
       # @zh_base.genres = zh_genres.join("\t")
 
-      vi_book.vgenres = vi_genres
-      vi_book.igenres = GenreMap.map_int(vi_genres)
+      wninfo.vgenres = vi_genres
+      wninfo.igenres = GenreMap.map_int(vi_genres)
     end
 
     @bcover.try do |bcover|
-      vi_book.set_bcover(bcover, force: true)
-      vi_book.cache_cover(bcover, persist: false)
+      wninfo.set_bcover(bcover, force: true)
+      wninfo.cache_cover(bcover, persist: false)
     end
 
     @status.try do |status|
-      vi_book.set_status(status.to_i, force: true)
+      wninfo.set_status(status.to_i, force: true)
     end
 
-    # TODO: wite text log
-    # File.append("var/.keep/web_log/books-upsert.tsv", @params.to_json)
-
-    vi_book.tap(&.save!)
+    wninfo.tap(&.save!)
   end
 end

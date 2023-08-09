@@ -96,6 +96,29 @@ def gen_name_de(min_flag = 1)
 end
 
 gen_name_hv
-gen_name_bv(min_flag: 1)
-gen_name_be(min_flag: 1)
+# gen_name_bv(min_flag: 1)
+# gen_name_be(min_flag: 1)
 # gen_name_de(min_flag: 1)
+
+btitles = ZR::Btitle.open_db do |db|
+  db.query_all "select * from btitles where name_vi = ''", as: ZR::Btitle
+end
+
+ZR::Btitle.open_tx do |db|
+  btitles.each do |btitle|
+    name_hv = btitle.name_hv.downcase
+    name_bv = btitle.name_bv.downcase
+    name_mt = btitle.name_mt.downcase
+
+    case
+    when name_mt == name_hv then name_vi = btitle.name_mt
+    when name_mt == name_bv then name_vi = btitle.name_mt
+    when name_hv == name_bv then name_vi = btitle.name_hv
+    end
+
+    next unless name_vi && !name_vi.empty?
+
+    puts "#{btitle.name_zh} => #{name_vi}"
+    db.exec "update btitles set name_vi = $1 where name_zh = $2", name_vi, btitle.name_zh
+  end
+end

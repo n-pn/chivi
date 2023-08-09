@@ -95,7 +95,7 @@ def gen_name_de(min_flag = 1)
   puts "- #{znames.size} entries translated to eng by deepl"
 end
 
-# gen_name_hv
+gen_name_hv
 gen_name_bv(min_flag: 1)
 gen_name_be(min_flag: 1)
 gen_name_de(min_flag: 1)

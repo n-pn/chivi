@@ -123,10 +123,11 @@ def map_flag(scoring : Int32)
 end
 
 flags = [0, 0, 0, 0, 0, 0]
+
 scoring.each do |author, value|
-  _flag = map_flag(value)
-  flags[_flag] += 1
-  entries[author]._flag = _flag
+  entry = entries[author]
+  entry._flag = {entry._flag, map_flag(value)}.max
+  flags[entry._flag] += 1
 end
 
 puts "- assigned flags: #{flags}"
