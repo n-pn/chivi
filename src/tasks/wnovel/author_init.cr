@@ -18,16 +18,14 @@ end
   upper = lower &+ 999
 
   total = 0
-  stmt = "select id, zname, vname from authors where id >= $1 and id <= $2"
+  stmt = "select author_zh, author_vi from wninfos where id >= $1 and id <= $2"
 
   PGDB.query_each stmt, lower, upper do |rs|
     total += 1
-    wa_id, zname, vname = rs.read(Int32, String, String)
+    zname, vname = rs.read(String, String)
 
     entry = entries[zname] ||= ZR::Author.load(zname)
-
-    entry.name_vi = vname
-    entry.wa_id = wa_id
+    entry.name_vi = vname unless vname == zname
   end
 
   puts "- <authors> block: #{block}, books: #{total}"
@@ -47,7 +45,7 @@ end
       total += 1
 
       author, btitle, voters = rs.read(String, String, Int32)
-      author, _ = BookUtil.fix_names(author, btitle)
+      author, btitle = BookUtil.fix_names(author, btitle)
 
       entries[author] ||= ZR::Author.load(author, db: OUT_DB)
       scoring[author] = {scoring[author], voters}.max
@@ -70,7 +68,7 @@ end
       total += 1
 
       author, btitle, voters = rs.read(String, String, Int32)
-      author, _ = BookUtil.fix_names(author, btitle)
+      author, btitle = BookUtil.fix_names(author, btitle)
 
       entries[author] ||= ZR::Author.load(author, db: OUT_DB)
       scoring[author] = {scoring[author], voters}.max
@@ -88,7 +86,7 @@ TRUSTED_SEEDS = {
   "!69shu",
   "!xbiquge",
   "!uukanshu",
-  # "!shubaow",
+  "!shubaow",
   "!ptwxz",
   # "!zxcs_me",
   # "!rengshu",
@@ -126,7 +124,8 @@ flags = [0, 0, 0, 0, 0, 0]
 
 scoring.each do |author, value|
   entry = entries[author]
-  entry._flag = {entry._flag, map_flag(value)}.max
+  # entry._flag = {entry._flag, map_flag(value)}.max
+  entry._flag = map_flag(value)
   flags[entry._flag] += 1
 end
 

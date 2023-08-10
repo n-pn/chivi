@@ -96,9 +96,9 @@ def gen_name_de(min_flag = 1)
 end
 
 gen_name_hv
-# gen_name_bv(min_flag: 1)
-# gen_name_be(min_flag: 1)
-# gen_name_de(min_flag: 1)
+gen_name_bv(min_flag: 1)
+gen_name_be(min_flag: 1)
+gen_name_de(min_flag: 1)
 
 btitles = ZR::Btitle.open_db do |db|
   db.query_all "select * from btitles where name_vi = ''", as: ZR::Btitle

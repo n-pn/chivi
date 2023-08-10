@@ -34,17 +34,14 @@ OUT_DB = ZR::Btitle.db
   total = 0
   lower = 5 if lower < 5
 
-  stmt = "select id, zname, vname, hname from btitles where id >= $1 and id <= $2"
+  stmt = "select btitle_zh, btitle_vi from wninfos where id >= $1 and id <= $2"
 
   PGDB.query_each stmt, lower, upper do |rs|
     total += 1
-    wb_id, zname, vname, hname = rs.read(Int32, String, String, String)
+    zname, vname = rs.read(String, String)
 
     entry = entries[zname] ||= ZR::Btitle.load(zname)
-    entry.name_hv = hname
-    entry.name_mt = vname
-
-    entry.wb_id = wb_id
+    entry.name_mt = vname unless vname == zname || vname.empty?
   end
 
   puts "- block: #{block}, books: #{total}"
