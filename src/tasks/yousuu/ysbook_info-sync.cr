@@ -11,7 +11,7 @@ class CrawlYsbook < CrawlTask
 
       loop do
         ysbook = ZR::Ysbook.from_raw_json(json)
-        ZR::Ysbook.open_tx { |db| ysbook.upsert!(db) }
+        ysbook.upsert!
         break
       rescue SQLite3::Exception
         sleep 0.5.seconds
@@ -72,7 +72,7 @@ class CrawlYsbook < CrawlTask
   def self.gen_queue(min = 1, max = 300000)
     y_bids = Set(Int32).new(min..max)
 
-    ZR::Ysbook.open_db do |db|
+    ZR::Ysbook.db.open_ro do |db|
       db.query_each(SELECT_STMT, min, max) do |rs|
         id, voters, rtime = rs.read(Int32, Int32, Int64)
         y_bids.delete(id) unless should_crawl?(voters, rtime)

@@ -85,12 +85,19 @@ class ZR::Tubook
 
     # TODO: update in wnstats instead
     wninfo.set_zscores!(@voters, @rating) if @voters > wninfo.zvoters
-    wninfo.scover = @cover if wninfo.bcover.empty?
+
+    if wninfo.bcover.empty? || wninfo.scover.empty? || CV::Bcover.dead_link?(wninfo.scover)
+      wninfo.scover = @cover
+    end
 
     wninfo.set_status(@status)
 
     genres = [@genre].concat(@xtags.split('\t')).reject!(&.empty?).uniq!
     wninfo.set_genres(genres)
+
+    if wninfo.zintro.empty? || (@intro.includes?('\n') && !wninfo.zintro.includes?('\n'))
+      wninfo.zintro = @intro
+    end
 
     wninfo.save!
 

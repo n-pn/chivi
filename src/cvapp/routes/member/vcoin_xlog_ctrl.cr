@@ -97,7 +97,7 @@ class CV::VcoinXlogCtrl < CV::BaseCtrl
     Unotif.new(
       viuser_id: target.id, content: content,
       action: :vcoin_xchange, object_id: xlog.id, byuser_id: sender.id,
-    ).create!
+    ).insert!
 
     MailUtil.send(to: target.email, name: target.uname) do |mail|
       mail.subject "Chivi: Bạn nhận được #{xlog.amount} vcoin"

@@ -50,7 +50,7 @@ struct CV::UgpriviForm
     Unotif.new(
       viuser_id: user.id, content: content,
       action: :privi_upgrade, object_id: xlog.id, byuser_id: -1,
-    ).create!
+    ).insert!
 
     MailUtil.send(to: user.email, name: user.uname) do |mail|
       mail.subject "Chivi: Nâng cấp quyền hạn thành công"

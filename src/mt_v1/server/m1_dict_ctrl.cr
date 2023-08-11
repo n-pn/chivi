@@ -26,7 +26,7 @@ class M1::DictCtrl < AC::Base
   end
 
   private def get_dict(dname : String)
-    DbDict.get(dname) || raise NotFound.new("Từ điển không tồn tại!")
+    DbDict.find(dname) || raise NotFound.new("Từ điển không tồn tại!")
   end
 
   @[AC::Route::GET("/:name")]
@@ -50,18 +50,8 @@ class M1::DictCtrl < AC::Base
   end
 
   @[AC::Route::PUT("/")]
-  def upsert(wn_id : Int32, dname : String, bname : String)
-    dict = DbDict.new(
-      id: wn_id,
-      dname: dname,
-      label: bname,
-      brief: "Từ điển riêng cho bộ truyện [#{bname}]",
-      privi: 1,
-      dtype: 3,
-    )
-
-    DbDict.open_tx { |db| dict.upsert!(db) }
-
+  def upsert(wn_id : Int32, bslug : String, bname : String)
+    DbDict.init_wn_dict!(wn_id, bslug, bname)
     render text: wn_id
   end
 
@@ -80,16 +70,14 @@ class M1::DictCtrl < AC::Base
 
     query = String.build do |io|
       io << "select key, val, ptag, prio from defns "
-      io << "where dic = ? and (tab = 1"
+      io << "where dic = $1 and (tab = 1"
       io << " or tab = 2" if temp
       io << " or (tab = 3 and uname = '#{_uname}')" if user
       io << ')'
       io << " limit 10000 order by id desc" if scope != "all"
     end
 
-    terms = DbDefn.open_db do |db|
-      db.query_all query, dict.id, as: {String, String, String, Int32}
-    end
+    terms = DbDefn.get_all(query, dict.id, as: {String, String, String, Int32})
 
     output = String.build do |strio|
       if format == "qt"

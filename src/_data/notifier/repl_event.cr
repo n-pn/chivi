@@ -48,7 +48,7 @@ module CV::Notifier
         viuser_id: target_id, content: content,
         action: :get_replied, object_id: gdrepl.id, byuser_id: gdrepl.viuser_id,
         created_at: gdrepl.created_at
-      ).create!
+      ).insert!
     end
 
     reached
@@ -81,7 +81,7 @@ module CV::Notifier
         viuser_id: tagged_id, content: content,
         action: :tagged_in_reply, object_id: gdrepl.id, byuser_id: gdrepl.viuser_id,
         created_at: gdrepl.created_at
-      ).create!
+      ).insert!
     end
 
     reached

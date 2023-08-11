@@ -17,7 +17,7 @@ module CV::Notifier
       created_at: Time.unix(memoir.liked_at)
     )
 
-    output.create!
+    output.insert!
   end
 
   def liking_content(target : Gdrepl) : String

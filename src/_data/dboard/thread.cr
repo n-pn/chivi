@@ -292,18 +292,8 @@ class CV::Gdroot
 
   ####
 
-  def self.find!(id : Int32)
-    @@db.query_one <<-SQL, id, as: self
-      select * from #{@@schema.table}
-      where id = $1 limit 1
-      SQL
-  end
-
   def self.find(kind : Kind, ukey : String)
-    @@db.query_one? <<-SQL, kind.value, ukey, as: self
-      select * from #{@@schema.table}
-      where kind = $1 and ukey = $2 limit 1
-      SQL
+    self.get(kind.value, ukey, &.<< " where kind = $1 and ukey = $2")
   end
 
   def self.find!(kind : Kind, ukey : String)

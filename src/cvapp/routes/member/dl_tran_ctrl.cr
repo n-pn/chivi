@@ -34,7 +34,7 @@ class CV::DlTranCtrl < CV::BaseCtrl
       args << limit << offset
     end
 
-    render json: DlTran.open_db(&.query_all(query, args: args, as: DlTran))
+    render json: DlTran.db.open_ro(&.query_all(query, args: args, as: DlTran))
   end
 
   struct DlForm

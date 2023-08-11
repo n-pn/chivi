@@ -12,16 +12,14 @@ struct M1::M1TermView
   getter defns : Hash(String, Array(DbDefn))
 
   def initialize(@forms : Array(String), @uname : String, @wn_id : Int32, @w_udic = true)
-    @defns = DbDefn.open_db do |db|
-      sql = String.build do |str|
-        str << "select * from defns where dic >= -4"
-        str << " and val <> '' and key in ("
-        forms.join(str, ",") { |_, s| s << '?' }
-        str << ")"
-      end
-
-      db.query_all(sql, args: forms, as: DbDefn).group_by(&.key)
+    select_stmt = DbDefn.schema.select_stmt do |sql|
+      sql << " where dic >= -4"
+      sql << " and val <> '' and key in ("
+      forms.join(sql, ",") { |_, s| s << '?' }
+      sql << ")"
     end
+
+    @defns = DbDefn.all(select_stmt, forms).group_by(&.key)
 
     # @vdict = MtDict.load(@dname)
     # @form_mtl = MtCore.load(@dname, @user)

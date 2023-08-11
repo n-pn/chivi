@@ -72,7 +72,7 @@ class CV::DlTran
 
   def reset_flag!
     stmt = "update dltrans set _flag = 0 where id = $1"
-    self.class.open_tx(&.exec(stmt, self.id))
+    self.class.db.open_tx(&.exec(stmt, self.id))
   end
 
   ###

@@ -6,6 +6,8 @@ require "../../_util/ram_cache"
 
 require "./author"
 require "./btitle"
+require "./bcover"
+
 require "./wnlink"
 
 require "./wninfo_inner"

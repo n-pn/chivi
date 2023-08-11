@@ -81,12 +81,8 @@ module CV::WninfoInner
     self.voters = self.zvoters &+ self.vvoters
     scores = self.zvoters &* self.zrating &+ self.vvoters &* self.vrating
 
-    if self.voters < 10
-      scores &+= (10 &- self.voters) &* 45
-      self.rating = scores // 10
-    else
-      self.rating = scores // self.voters
-    end
+    self.rating = (scores &+ 1000) // (self.voters &+ 20)
+    self.rating = 50 if self.rating >= 100
 
     self.weight = scores &+ Math.log(self.view_count &+ 10).to_i
   end

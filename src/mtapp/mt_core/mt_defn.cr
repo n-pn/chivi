@@ -2,10 +2,6 @@ require "crorm"
 require "sqlite3"
 
 class MT::MtDefn
-  def self.db(dname : String)
-    open_db(db_path(dname), init_sql)
-  end
-
   @[AlwaysInline]
   def self.db_path(dname : String)
     "var/mtdic/fixed/#{dname}.dic"
@@ -16,7 +12,7 @@ class MT::MtDefn
   ###
 
   include Crorm::Model
-  schema "defns"
+  schema "defns", multi: true
 
   field d_id : Int32 = 0
   field zstr : String = ""

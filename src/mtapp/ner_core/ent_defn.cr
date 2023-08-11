@@ -1,10 +1,6 @@
 require "crorm"
-require "sqlite3"
 
 class MT::EntDefn
-  include Crorm::Model
-  schema "defns"
-
   @[AlwaysInline]
   def self.db_path(dname : String)
     "var/mtdic/fixed/zents/#{dname}.dic"
@@ -12,13 +8,10 @@ class MT::EntDefn
 
   class_getter init_sql : String = {{read_file("#{__DIR__}/ent_defn.sql")}}
 
-  def self.db
-    raise "invalid!"
-  end
+  ###
 
-  def self.db(dname : String)
-    open_db(db_path(dname))
-  end
+  include Crorm::Model
+  schema "defns", multi: true
 
   ###
 

@@ -112,8 +112,8 @@ class ZR::Ysbook
     from_raw_json(json, rtime: time, db: db)
   end
 
-  def self.load(db, id : Int32)
-    get(id, db: db) || new(id)
+  def self.load(id : Int32, db = self.db)
+    find(id, db: db) || new(id)
   end
 
   def self.from_raw_json(raw_json : String,
@@ -121,7 +121,7 @@ class ZR::Ysbook
                          db = self.db)
     input = RawYsbook.from_json(raw_json)
 
-    entry = self.load(db: db, id: input.id)
+    entry = self.load(id: input.id, db: db)
     entry.rtime = rtime
 
     entry.btitle = input.btitle

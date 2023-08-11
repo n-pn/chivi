@@ -1,83 +1,159 @@
-require "json"
-require "sqlite3"
-
+require "crorm"
+require "xxhash"
 require "./html_parser/raw_rmcata"
 
-class ZR::Zhcata
-  class Chap
-    include DB::Serializable
+module ZR::Chroot
+  extend self
 
-    property ch_no : Int32
-    property rpath = ""
+  DIR = "var/zroot"
 
-    property title = ""
-    property chdiv = ""
-
-    property xhash = ""
-    property psize = ""
-    property mtime = 0_i64
-
-    def initialize(@ch_no)
+  def root_dir(sname : String)
+    case sname[0]
+    when '!' then "#{DIR}/remote/#{sname}"
+    when '@' then "#{DIR}/member/#{sname}"
+    when '~' then "#{DIR}/system/#{sname}"
+    else          raise "unsuported #{sname}"
     end
   end
 
-  class Rlog
-    include JSON::Serializable
+  def file_path(sname : String, fname : String)
+    "#{root_dir(sname)}/#{fname}"
+  end
+end
 
-    include DB::Serializable
-    # include DB::Serializable::NonStrict
+class ZR::Chinfo
+  class_getter init_sql = <<-SQL
+    pragma journal_mode = WAL;
 
-    property chap_count = 0
-    property latest_cid = ""
+    CREATE TABLE IF NOT EXISTS chinfos(
+      ch_no int not null PRIMARY KEY,
+      ---
+      rpath text NOT NULL DEFAULT '',
+      s_cid text NOT NULL DEFAULT '',
+      --
+      title text NOT NULL DEFAULT '',
+      chdiv text NOT NULL DEFAULT ''
+    );
+    SQL
 
-    property status_str = ""
-    property update_str = ""
-
-    property uname = ""
-    property rtime = Time.utc.to_unix
+  def self.db_path(sname : String, sn_id : String)
+    "#{Chroot.root_dir(sname)}/#{sn_id}-zinfo.db3"
   end
 
   ###
 
-  OUT = "var/zroot"
+  include Crorm::Model
+  schema "chinfos", :sqlite
 
-  def self.file_path(sname : String, sn_id : String, type = ".dbl")
-    case sname[0]
-    when '!' then "#{OUT}/remote/#{sname}/#{sn_id}#{type}"
-    when '+' then "#{OUT}/member/#{sname}/#{sn_id}#{type}"
-    when '@' then "#{OUT}/member/#{sname}/#{sn_id}#{type}"
-    when '~' then "#{OUT}/system/#{sname}/#{sn_id}#{type}"
-    else          raise "to be unsupported sname: #{sname}"
-    end
+  field ch_no : Int32, pkey: true
+
+  field rpath : String = "" # relative or absolute remote path
+  field s_cid : String = "" # remote chapter id extracted from rpath
+
+  field title : String = "" # chapter title name
+  field chdiv : String = "" # chapter subdivision (volume) name
+
+  def initialize(@ch_no)
   end
+end
 
+class ZR::Chstat
   class_getter init_sql = <<-SQL
     pragma journal_mode = WAL;
 
-    CREATE TABLE IF NOT EXISTS chaps(
-      ch_no int PRIMARY KEY,
-      rpath text NOT NULL DEFAULT '',
+    CREATE TABLE IF NOT EXISTS chstats(
+      ch_no int not null PRIMARY KEY,
       ---
-      title text NOT NULL DEFAULT '',
-      chdiv text NOT NULL DEFAULT '',
-      ---
-      xhash text NOT NULL DEFAULT '',
-      psize text NOT NULL DEFAULT '',
-      mtime bigint NOT NULL DEFAULT 0
+      fhash text NOT NULL DEFAULT '',
+      sizes text NOT NULL DEFAULT '',
+      --
+      mtime bigint NOT NULL DEFAULT 0,
+      uname text not null default ''
     );
+    SQL
 
-    CREATE TABLE IF NOT EXISTS rlogs(
+  def self.db_path(sname : String, sn_id : String)
+    "#{Chroot.root_dir(sname)}/#{sn_id}-zstat.db3"
+  end
+
+  ###
+
+  include Crorm::Model
+  schema "chstats", :sqlite
+
+  field ch_no : Int32, pkey: true
+
+  field fhash : String = "" # raw text file will be stored as "#{ch_no}_#{cpart}-#{fhash}.txt"
+  field sizes : String = "" # char_count of for title + each part joined by a single ' '
+
+  field mtime : Int64 = 0_i64 # last modified at, optional
+  field uname : String = ""   # last modified by, optional
+
+  def initialize(@ch_no)
+  end
+
+  def initialize(@ch_no, ctext : String, @mtime : Int64, @uname = "")
+    @fhash = self.class.make_hash(ctext)
+    @sizes = ctext.split("\n\n").map(&.size).join(' ')
+  end
+
+  def self.make_hash(input : String)
+    # NOTE: this is actually not cover the whole range of UInt32, as it can
+    # only represent 32 ** 6 = 1073741824 integers
+    # but as the chapter count for each novel is as most 10000
+    # it does not matter much
+    # if we use 7 characters then there will be chance when it overflow the UInt32
+    # limit when we convert this back to integer for fast comparision,
+    # so it is not worth it to add an extra character
+
+    xxh32 = XXHash.xxh32(input)
+
+    String.build do |io|
+      6.times do
+        digit = xxh32 % 32
+        io << (digit < 10 ? '0' : 'W') + digit
+        xxh32 //= 32
+      end
+    end
+  end
+end
+
+class ZR::Chrlog
+  class_getter init_sql = <<-SQL
+    pragma journal_mode = WAL;
+
+    CREATE TABLE IF NOT EXISTS chrlogs(
       chap_count int NOT NULL DEFAULT 0,
       latest_cid text NOT NULL DEFAULT '',
       ---
       status_str text NOT NULL DEFAULT '',
       update_str text NOT NULL DEFAULT '',
       ---
-      uname text NOT NULL DEFAULT '',
-      rtime bigint NOT NULL DEFAULT 0
+      rtime bigint NOT NULL DEFAULT 0,
+      uname text NOT NULL DEFAULT ''
     );
     SQL
 
+  def self.db_path(sname : String, sn_id : String)
+    "#{Chroot.root_dir(sname)}/#{sn_id}-rlogs.db3"
+  end
+
+  ###
+
+  include Crorm::Model
+  schema "chrlogs", :sqlite
+
+  field chap_count : Int32 = 0
+  field latest_cid : String = ""
+
+  field status_str : String = ""
+  field update_str : String = ""
+
+  field rtime : Int64 = Time.utc.to_unix
+  field uname : String = ""
+end
+
+class ZR::Zhcata
   ###
 
   getter conf : Rmconf
@@ -139,8 +215,8 @@ class ZR::Zhcata
     db.exec "attach database '#{src_db_path}' as src"
 
     db.exec <<-SQL
-      replace into chaps (ch_no, rpath, title, chdiv, xhash, psize, mtime)
-      select ch_no, s_cid, ctitle, subdiv, '' as xhash, '' as psize, mtime
+      replace into chaps (ch_no, rpath, title, chdiv, xhash, sizes, mtime)
+      select ch_no, s_cid, ctitle, subdiv, '' as xhash, '' as sizes, mtime
       from src.chaps
       SQL
 

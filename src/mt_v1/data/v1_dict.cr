@@ -55,13 +55,12 @@ class M1::DbDict
   end
 
   def update_after_term_added!(@mtime : Int64)
-    update_smt = "update dicts set mtime = ?, term_total = term_total + 1 where id = ?"
-    select_smt = "select term_total from dicts where id = ?"
+    update_smt = <<-SQL
+      update dicts set mtime = $1, term_total = term_total + 1 where id = $2
+      returning term_total
+      SQL
 
-    self.class.open_db do |db|
-      db.exec update_smt, mtime, self.id
-      @term_total = db.query_one(select_smt, self.id, as: Int32)
-    end
+    @term_total = self.class.set_one(update_smt, mtime, @id, as: Int32)
   end
 
   def to_json(jb)
@@ -74,8 +73,8 @@ class M1::DbDict
 
   def self.get_id(dname : String) : Int32
     DICT_IDS[dname] ||= begin
-      query = "select id from dicts where dname = ?"
-      self.open_db(&.query_one?(query, dname, as: Int32)) || 0
+      stmt = "select id from dicts where dname = $1"
+      self.get_one?(stmt, dname, db: self.db, as: Int32) || 0
     end
   end
 
@@ -86,66 +85,45 @@ class M1::DbDict
   CACHED = {} of Int32 => self
 
   def self.load(id : Int32)
-    CACHED[id] ||= get!(id)
+    CACHED[id] ||= find!(id)
   end
 
   def self.load(dname : String)
     load(get_id(dname))
   end
 
-  def self.get!(id : Int32) : self
-    query = "select * from dicts where id = ?"
-    self.open_db(&.query_one(query, id, as: self))
+  def self.find(dname : String) : self | Nil
+    self.get(dname, &.<< "where dname = $1")
   end
 
-  def self.get!(dname : String) : self
-    query = "select * from #{@@schema.table} where dname = ?"
-    self.open_db(&.query_one(query, dname, as: self))
-  end
-
-  def self.get(dname : String) : self | Nil
-    get!(dname) rescue nil
+  def self.find!(dname : String) : self
+    self.get!(dname, &.<< "where dname = $1")
   end
 
   def self.count : Int32
-    query = "select count(*) from #{@@schema.table} where term_total > 0"
-    self.open_db(&.query_one(query, as: Int32))
+    stmt = "select count(*) from #{@@schema.table} where term_total > 0"
+    self.get_one(stmt, as: Int32)
   end
 
   def self.books_count : Int32
-    query = "select count(*) from #{@@schema.table} where term_total > 0 and id > 0"
-    self.open_db(&.query_one(query, as: Int32))
+    stmt = "select count(*) from #{@@schema.table} where term_total > 0 and id > 0"
+    self.get_one(stmt, as: Int32)
   end
 
   def self.all(limit : Int32, offset = 0) : Array(self)
-    query = <<-SQL
-      select * from #{@@schema.table} where term_total > 0
-      order by mtime desc limit ? offset ?
-    SQL
-
-    self.open_db(&.query_all(query, limit, offset, as: self))
+    self.all &.<< " where term_total > 0 order by mtime desc limit $1 offset $2"
   end
 
   def self.all_cores
-    query = <<-SQL
-      select * from #{@@schema.table} where dtype = 0 or dtype = 1
-      order by id asc
-    SQL
-
-    self.open_db(&.query_all(query, as: self))
+    self.all &.<< "where dtype = 0 or dtype = 1 order by id asc"
   end
 
   def self.all_books(limit : Int32, offset = 0)
-    query = <<-SQL
-      select * from #{@@schema.table} where id > 0 and term_total > 0
-      order by mtime desc limit ? offset ?
-    SQL
-
-    self.open_db(&.query_all(query, limit, offset, as: self))
+    self.all &.<< "where id > 0 and term_total > 0 order by mtime desc limit $1 offset $2"
   end
 
-  def self.init_wn_dict(wn_id : Int32, bslug : String, bname : String)
-    new(
+  def self.init_wn_dict!(wn_id : Int32, bslug : String, bname : String, db = self.db)
+    entry = new(
       id: wn_id,
       dname: "#{wn_id}-#{bslug}",
       label: bname,
@@ -153,21 +131,8 @@ class M1::DbDict
       privi: 1,
       dtype: 3
     )
-  end
 
-  def self.upsert_wn_dict(db, wn_id : Int32, bslug : String, bname : String)
-    stmt = <<-SQL
-      insert into #{@@schema.table}(id, dname, label, brief, privi, dtype)
-      values ($1, $2, $3, $4, $5, $6)
-      on conflict set
-        dname = excluded.dname,
-        label = excluded.label,
-        brief = excluded.brief,
-        privi = excluded.privi,
-        dtype = excluded.dtype,
-      SQL
-
-    brief = "Từ điển riêng cho bộ truyện [#{bname}]"
-    db.exec stmt, wn_id, "#{wn_id}-#{bslug}", bname, brief, 1, 3
+    upsert_stmt = @@schema.upsert_stmt(keep_fields: %w(dname label brief privi dtype))
+    entry.upsert!(query: upsert_stmt, db: db)
   end
 end

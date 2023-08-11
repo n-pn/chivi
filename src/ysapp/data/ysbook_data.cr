@@ -83,7 +83,7 @@ class YS::Ysbook
 
     self.nvinfo_id = nvinfo.id.to_i
 
-    M1::DbDict.init_wn_dict(self.nvinfo_id, nvinfo.bslug, nvinfo.btitle_vi)
+    M1::DbDict.init_wn_dict!(self.nvinfo_id, nvinfo.bslug, nvinfo.btitle_vi)
 
     CV::Wnlink.upsert!(self.nvinfo_id, "https://www.yousuu.com/book/#{self.id}")
     CV::Wnlink.upsert!(self.nvinfo_id, self.sources)

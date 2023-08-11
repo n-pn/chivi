@@ -1,16 +1,16 @@
 require "http/client"
-require "crorm/sqlite"
+require "crorm"
 
 require "./_repo"
 require "./wn_chap"
 require "../../cv_env"
 
 class WN::WnRepo
+  INIT_SQL = {{ read_file("#{__DIR__}/sql/init_wn_chap.sql") }}
+
   getter db_path : String
 
-  @db : Crorm::SQ3
-
-  INIT_SQL = {{ read_file("#{__DIR__}/sql/init_wn_chap.sql") }}
+  @repo : Crorm::SQ3
 
   def initialize(@db_path, @wn_id : Int32, reinit = false)
     if reinit
@@ -23,8 +23,7 @@ class WN::WnRepo
     end
 
     Dir.mkdir_p(File.dirname(db_path))
-
-    @db = Crorm::SQ3.new(db_path, INIT_SQL)
+    @repo = Crorm::SQ3.new(db_path, INIT_SQL)
     self.import_zh! if reinit
     self.translate! if retran
   end
@@ -32,7 +31,7 @@ class WN::WnRepo
   def import_zh!(zh_db_path = @db_path.sub(".db", "-infos.db"))
     return unless File.file?(zh_db_path)
 
-    @db.open_tx do |db|
+    @repo.open_tx do |db|
       db.exec "attach database '#{zh_db_path}' as src"
 
       db.exec <<-SQL
@@ -56,23 +55,24 @@ class WN::WnRepo
     ch_nos = [] of Int32
     buffer = String::Builder.new
 
-    @db.db.query_each(SELECT_RAW_SMT, min, max) do |rs|
-      buffer << rs.read(String) << '\n' # read title
-      buffer << rs.read(String) << '\n' # read chdiv
-      ch_nos << rs.read(Int32)          # read ch_no
+    @repo.open_ro do |db|
+      db.query_each(SELECT_RAW_SMT, min, max) do |rs|
+        buffer << rs.read(String) << '\n' # read title
+        buffer << rs.read(String) << '\n' # read chdiv
+        ch_nos << rs.read(Int32)          # read ch_no
+      end
     end
 
     translated = tl_mulu(buffer.to_s).lines
 
-    @db.open_tx do
+    @repo.open_tx do |db|
       ch_nos.each_with_index do |ch_no, idx|
         break unless vtitle = translated[idx * 2]?
         break unless vchdiv = translated[idx * 2 + 1]?
 
-        update_vnames!(vtitle, vchdiv, ch_no)
+        update_vnames!(vtitle, vchdiv, ch_no, db: db)
       end
     rescue ex
-      Log.error { @db_path.colorize.red }
       Log.error(exception: ex) { ex.message.colorize.red }
     end
   end
@@ -83,28 +83,28 @@ class WN::WnRepo
   end
 
   def count
-    @db.db.scalar("chaps", "count (ch_no)")
+    @repo.db.scalar("chaps", "count (ch_no)")
   end
 
   def all(pg_no : Int32 = 1, limit = 32) : Array(WnChap)
     offset = (pg_no &- 1) * limit
-    stmt = "select * from chaps where ch_no > ? and ch_no <= ? order by ch_no asc"
-    @db.db.query_all stmt, offset, offset &+ limit, as: WnChap
+    query = "select * from chaps where ch_no > ? and ch_no <= ? order by ch_no asc"
+    @repo.query_all(query, offset, offset &+ limit, as: WnChap)
   end
 
   def top(take = 6)
-    stmt = "select * from chaps where ch_no > 0 order by ch_no desc limit ?"
-    @db.db.query_all stmt, take, as: WnChap
+    query = "select * from chaps where ch_no > 0 order by ch_no desc limit ?"
+    @repo.query_all(query, take, as: WnChap)
   end
 
   def get(ch_no : Int32)
-    stmt = "select * from chaps where ch_no = ? limit 1"
-    @db.db.query_one? stmt, ch_no, as: WnChap
+    query = "select * from chaps where ch_no = ? limit 1"
+    @repo.query_one?(query, ch_no, as: WnChap)
   end
 
   def get_title(ch_no : Int32) : String?
-    stmt = "select title from chaps where ch_no = $1 limit 1"
-    @db.db.query_one? stmt, ch_no, as: String
+    query = "select title from chaps where ch_no = $1 limit 1"
+    @repo.query_one?(query, ch_no, as: String)
   end
 
   # for two chapter source of a single book, find the matching ch_no, which is
@@ -118,7 +118,7 @@ class WN::WnRepo
       limit 1
     SQL
 
-    @db.db.query_one?(stmt, ch_no &- 10, ch_no &+ 10, title, as: Int32) || ch_no
+    @repo.query_one?(stmt, ch_no &- 10, ch_no &+ 10, title, as: Int32) || ch_no
   end
 
   # find the previous chdiv if none provided in chapter upsert action
@@ -130,14 +130,14 @@ class WN::WnRepo
       limit 1
     SQL
 
-    @db.db.query_one?(stmt, ch_no, as: String)
+    @repo.query_one?(stmt, ch_no, as: String)
   end
 
   def reload_stats!(sname : String, s_bid : Int32) : Int32
     stats = [] of {Int32, Int32}
     avail = 0
 
-    @db.open_db do |db|
+    @repo.open_ro do |db|
       sql = "select ch_no, s_cid from chaps"
 
       db.query_each(sql) do |rs|
@@ -155,25 +155,23 @@ class WN::WnRepo
       end
     end
 
-    @db.open_tx do |db|
-      smt = "update chaps set c_len = ? where ch_no = ?"
-      stats.each { |c_len, ch_no| db.exec(smt, c_len, ch_no) }
+    @repo.open_tx do |db|
+      query = "update chaps set c_len = ? where ch_no = ?"
+      stats.each { |c_len, ch_no| db.exec(query, c_len, ch_no) }
     end
 
     avail
   end
 
   def word_count(from : Int32, upto : Int32) : Int32
-    @db.open_db do |db|
-      sql = "select sum(c_len) from chaps where ch_no >= ? and ch_no <= ?"
-      db.query_one(sql, from, upto, as: Int32?) || 0
-    end
+    stmt = "select coalesce(sum(c_len), 0) from chaps where ch_no >= $1 and ch_no <= $2"
+    @repo.query_one(stmt, from, upto, as: Int32)
   end
 
   ###
 
   def delete_chaps!(from_ch_no : Int32)
-    @db.open_db do |db|
+    @repo.open_tx do |db|
       # delete previous deleted entries
       db.exec "delete from chaps where ch_no <= ?", -from_ch_no
 
@@ -206,13 +204,13 @@ class WN::WnRepo
   UPDATE_TRAN_SQL = "update chaps set vtitle = ?, vchdiv = ? where ch_no = ?"
 
   def upsert_chap_infos(chlist : Enumerable(WnChap))
-    @db.open_tx do |db|
+    @repo.open_tx do |db|
       chlist.each { |chap| db.exec UPSERT_INFO_SQL, *chap.info_values }
     end
   end
 
   def upsert_chap_infos(chlist : Enumerable(RawRmcata::Chap))
-    @db.open_tx do |db|
+    @repo.open_tx do |db|
       chlist.each do |chap|
         db.exec UPSERT_INFO_SQL, chap.ch_no, chap.s_cid, chap.ctitle, chap.subdiv, chap.cpath
       end
@@ -220,11 +218,16 @@ class WN::WnRepo
   end
 
   def upsert_chap_full(chap : WnChap)
-    @db.db.exec UPSERT_FULL_SQL, *chap.full_values
+    @repo.write_one UPSERT_FULL_SQL, *chap.full_values, as: WnChap
   end
 
-  private def update_vnames!(vtitle : String, vchdiv : String, ch_no : Int32)
-    @db.db.exec(UPDATE_TRAN_SQL, vtitle, vchdiv, ch_no)
+  private def update_vnames!(
+    vtitle : String,
+    vchdiv : String,
+    ch_no : Int32,
+    db : DB::Database
+  )
+    db.exec(UPDATE_TRAN_SQL, vtitle, vchdiv, ch_no)
   end
 
   ###
@@ -238,7 +241,7 @@ class WN::WnRepo
       sql << " where ch_no = ?"
     end
 
-    @db.open_tx do |db|
+    @repo.open_tx do |db|
       values.each { |args| db.exec smt, args: args.to_a }
     end
 

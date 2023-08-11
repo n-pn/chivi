@@ -4,7 +4,7 @@ require "../shared/utils"
 
 class MT::SpDefn
   include Crorm::Model
-  schema "defns"
+  schema "defns", multi: true
 
   field zstr : String, pkey: true
   field vstr : String
@@ -17,26 +17,12 @@ class MT::SpDefn
   def initialize(@zstr, @vstr, @_fmt = 0, @uname = "", @mtime = Utils.mtime)
   end
 
-  ######
-
-  def self.db
-    raise "invalid"
-  end
+  ###
 
   # return path for database
   @[AlwaysInline]
   def self.db_path(dname : String)
     "var/mtdic/fixed/spdic/#{dname}.dic"
-  end
-
-  # open database for reading/writing
-  def self.db_open(dname : String, &)
-    open_db(db_path(dname)) { |db| yield db }
-  end
-
-  # open database with transaction for writing
-  def self.tx_open(dname : String, &)
-    open_tx(db_path(dname)) { |db| yield db }
   end
 
   class_getter init_sql = <<-SQL
@@ -52,7 +38,7 @@ class MT::SpDefn
     SQL
 
   def self.load_data(dname : String, &)
-    open_db(db_path(dname)) do |db|
+    self.db(db_path(dname)).open_ro do |db|
       db.query_each("select zstr, vstr from defns") do |rs|
         yield rs.read(String), rs.read(String)
       end
