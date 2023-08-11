@@ -32,12 +32,12 @@ class CV::Btitle
     xname = vname || hname
     ctime = Time.utc
 
-    PGDB.query_one <<-SQL, zname, xname, ctime, ctime, vname, as: Btitle
+    PGDB.query_one <<-SQL, zname, xname, hname, ctime, ctime, vname, as: Btitle
       insert into btitles(zname, vname, hname, created_at, updated_at)
-      values ($1, $2, $3, $4)
+      values ($1, $2, $3, $4, $5)
       on conflict(zname) do update set
         hname = excluded.hname,
-        vname = coalesce($5, btitles.vname),
+        vname = coalesce($6, btitles.vname),
         updated_at = excluded.updated_at
       returning *
       SQL

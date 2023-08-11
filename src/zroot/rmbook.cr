@@ -33,34 +33,12 @@ class ZR::Rmbook
     );
     SQL
 
-  def self.db_path
-    raise "invalid!"
-  end
-
   def self.db_path(sname : String)
     "var/zroot/rmseed/#{sname}.db3"
   end
 
-  def self.db
-    raise "you should provide seedname to db"
-  end
-
-  def self.db(sname : String)
-    open_db(db_path(sname))
-  end
-
-  def self.db_open(sname : String)
-    with_db(db_path(sname)) { |db| yield db }
-  end
-
-  def self.tx_open(sname : String)
-    open_tx(db_path(sname)) { |db| yield db }
-  end
-
   def self.load(sname : String, id : String)
-    db_open(sname) do |db|
-      get(id, db: db, &.<< "where id = $1") || new(id: id)
-    end
+    find(id, db: db(sname)) || new(id: id)
   end
 
   ####

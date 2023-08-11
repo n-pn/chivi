@@ -15,11 +15,16 @@ struct M1::M1TermView
     select_stmt = DbDefn.schema.select_stmt do |sql|
       sql << " where dic >= -4"
       sql << " and val <> '' and key in ("
-      forms.join(sql, ",") { |_, s| s << '?' }
-      sql << ")"
+
+      forms.size.times do |i|
+        sql << ", " if i > 0
+        sql << "$" << i + 1
+      end
+
+      sql << ')'
     end
 
-    @defns = DbDefn.all(select_stmt, forms).group_by(&.key)
+    @defns = DbDefn.db.query_all(select_stmt, args: forms, as: DbDefn).group_by(&.key)
 
     # @vdict = MtDict.load(@dname)
     # @form_mtl = MtCore.load(@dname, @user)

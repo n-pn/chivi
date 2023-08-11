@@ -38,7 +38,7 @@ class MT::SpDefn
     SQL
 
   def self.load_data(dname : String, &)
-    self.db(db_path(dname)).open_ro do |db|
+    self.db(dname).open_ro do |db|
       db.query_each("select zstr, vstr from defns") do |rs|
         yield rs.read(String), rs.read(String)
       end

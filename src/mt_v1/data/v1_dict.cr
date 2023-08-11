@@ -40,18 +40,9 @@ class M1::DbDict
     db.exec(smt, args: values)
   end
 
-  def update!(changes : Hash(String, DB::Any))
-    update!(changes.keys, changes.value)
-  end
-
-  def update!(fields : Enumerable(String), values : Enumerable(DB::Any))
-    values << self.id!
-    self.class.repo.update(@table, fields, values, where_clause: "id = ?")
-  end
-
   def update_after_term_added!(@mtime : Int64, @term_total : Int32)
-    smt = "update dicts set mtime = ?, term_total = ? where id = ?"
-    self.class.db.db.exec smt, mtime, term_total, self.id!
+    query = "update dicts set mtime = $1, term_total = $2 where id = $3"
+    @@db.exec query, mtime, term_total, self.id!
   end
 
   def update_after_term_added!(@mtime : Int64)
@@ -60,7 +51,7 @@ class M1::DbDict
       returning term_total
       SQL
 
-    @term_total = self.class.set_one(update_smt, mtime, @id, as: Int32)
+    @term_total = @@db.write_one(update_smt, mtime, @id, as: Int32)
   end
 
   def to_json(jb)
@@ -73,8 +64,8 @@ class M1::DbDict
 
   def self.get_id(dname : String) : Int32
     DICT_IDS[dname] ||= begin
-      stmt = "select id from dicts where dname = $1"
-      self.get_one?(stmt, dname, db: self.db, as: Int32) || 0
+      query = "select id from dicts where dname = $1"
+      self.db.query_one?(query, dname, as: Int32) || 0
     end
   end
 
@@ -101,25 +92,25 @@ class M1::DbDict
   end
 
   def self.count : Int32
-    stmt = "select count(*) from #{@@schema.table} where term_total > 0"
-    self.get_one(stmt, as: Int32)
+    query = "select count(*) from #{@@schema.table} where term_total > 0"
+    @@db.query_one(query, as: Int32)
   end
 
   def self.books_count : Int32
-    stmt = "select count(*) from #{@@schema.table} where term_total > 0 and id > 0"
-    self.get_one(stmt, as: Int32)
+    query = "select count(*) from #{@@schema.table} where term_total > 0 and id > 0"
+    @@db.query_one(query, as: Int32)
   end
 
   def self.all(limit : Int32, offset = 0) : Array(self)
-    self.all &.<< " where term_total > 0 order by mtime desc limit $1 offset $2"
+    self.get_all &.<< " where term_total > 0 order by mtime desc limit $1 offset $2"
   end
 
   def self.all_cores
-    self.all &.<< "where dtype = 0 or dtype = 1 order by id asc"
+    self.get_all &.<< "where dtype = 0 or dtype = 1 order by id asc"
   end
 
   def self.all_books(limit : Int32, offset = 0)
-    self.all &.<< "where id > 0 and term_total > 0 order by mtime desc limit $1 offset $2"
+    self.get_all &.<< "where id > 0 and term_total > 0 order by mtime desc limit $1 offset $2"
   end
 
   def self.init_wn_dict!(wn_id : Int32, bslug : String, bname : String, db = self.db)
