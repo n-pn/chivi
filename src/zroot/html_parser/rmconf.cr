@@ -167,6 +167,10 @@ class Rmconf
     @book_path % {div: gen_div(bid), bid: bid}
   end
 
+  def full_book_link(bid : Int32 | String)
+    full_path(make_book_path(bid))
+  end
+
   def book_file_path(bid : Int32 | String)
     BOOK_DIR % {site: @hostname, bid: bid}
   end
@@ -277,8 +281,7 @@ class Rmconf
   ######
 
   def self.full_book_link(sname : String, s_bid : Int32 | String)
-    conf = load!(sname)
-    conf.full_path(conf.make_book_path(s_bid))
+    load!(sname).full_book_link
   end
 
   def self.full_cata_link(sname : String, s_bid : Int32 | String)

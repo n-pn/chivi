@@ -1,6 +1,7 @@
 require "sqlite3"
 require "colorize"
 require "../../src/_data/_data"
+require "../../src/_util/book_util"
 
 # require "../../src/_data/wnovel/wnseed"
 # require "../../src/_data/member/ubmemo"
@@ -82,13 +83,25 @@ def transfer(from_id : Int32, to_id : Int32)
     db.exec "update defns set dic = $1 where dic = $2", to_id, from_id
   end
 
-  puts success_all
+  PGDB.exec "delete from wninfos where id = $1", from_id
+  puts "book #{from_id} deleted"
 end
 
-inputs = PGDB.query_all <<-SQL, as: {Int32, Int32}
-  select id, subdue_id from wninfos where subdue_id > 0 order by id asc
+existed = {} of String => Int32
+
+inputs = PGDB.query_all <<-SQL, as: {Int32, String, String}
+  select id, author_zh, btitle_zh from wninfos order by id asc
   SQL
 
-inputs.each do |from_id, to_id|
-  transfer(from_id, to_id)
+inputs.each do |wn_id, author, btitle|
+  author, btitle = BookUtil.fix_names(author, btitle)
+
+  label = "#{author}---#{btitle}".downcase
+
+  if older_id = existed[label]?
+    puts "#{wn_id} => #{older_id} (#{label})"
+    transfer(wn_id, older_id)
+  else
+    existed[label] = wn_id
+  end
 end

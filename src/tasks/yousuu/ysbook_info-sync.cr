@@ -114,6 +114,7 @@ class CrawlYsbook < CrawlTask
 
   def self.map_tspan(voters : Int32)
     case voters
+    when .< 5   then 10.days
     when .< 10  then 7.days
     when .< 50  then 5.days
     when .< 100 then 3.days

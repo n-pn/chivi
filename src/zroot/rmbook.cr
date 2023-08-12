@@ -1,6 +1,9 @@
-require "crorm/model"
-require "crorm/sqlite"
+require "crorm"
+
 require "../_util/book_util"
+require "../_util/time_util"
+require "../_util/text_util"
+
 require "./html_parser/raw_rmbook"
 
 class ZR::Rmbook
@@ -69,6 +72,29 @@ class ZR::Rmbook
   field _flag : Int32 = 0
 
   def initialize(@id)
+  end
+
+  def update_wninfo(wninfo : CV::Wninfo, fake_rating : Bool = false)
+    # TODO: update in wnstats instead
+    if wninfo.zvoters == 0 && fake_rating
+      voters = Random.rand(20..50)
+      rating = Random.rand(50..60)
+      wninfo.set_zscores!(voters, rating)
+    end
+
+    wninfo.scover = @cover if wninfo.bcover.empty?
+
+    # wninfo.set_utime(@book_mtime)
+    # wninfo.set_status(@status)
+
+    if wninfo.vgenres.empty?
+      genres = [@genre].concat(@xtags.split('\t')).reject!(&.empty?).uniq!
+      wninfo.set_genres(genres)
+    end
+
+    wninfo.save!
+
+    wninfo
   end
 
   ###

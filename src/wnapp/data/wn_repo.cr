@@ -1,7 +1,6 @@
 require "http/client"
 require "crorm"
 
-require "./_repo"
 require "./wn_chap"
 require "../../cv_env"
 
@@ -209,10 +208,10 @@ class WN::WnRepo
     end
   end
 
-  def upsert_chap_infos(chlist : Enumerable(RawRmcata::Chap))
+  def upsert_chap_infos(chlist : Enumerable(ZR::Chinfo))
     @repo.open_tx do |db|
       chlist.each do |chap|
-        db.exec UPSERT_INFO_SQL, chap.ch_no, chap.s_cid, chap.ctitle, chap.subdiv, chap.cpath
+        db.exec UPSERT_INFO_SQL, chap.ch_no, chap.s_cid, chap.title, chap.chdiv, chap.rpath
       end
     end
   end

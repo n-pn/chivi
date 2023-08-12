@@ -205,10 +205,10 @@ class WN::WnSeed
     stale = mode > 0 ? Time.utc - 3.minutes : Time.utc - 30.minutes
 
     if self.remote?
-      parser = RawRmcata.from_seed(@sname, @s_bid, stale: stale)
+      parser = ZR::RawRmcata.from_seed(@sname, @s_bid, stale: stale)
       chlist = parser.chap_list(false)
     elsif !@rlink.empty?
-      parser = RawRmcata.from_link(@rlink, stale: stale)
+      parser = ZR::RawRmcata.from_link(@rlink, stale: stale)
       chlist = parser.chap_list(true)
     else
       raise "not following any remote source!"

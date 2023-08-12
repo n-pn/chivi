@@ -21,16 +21,14 @@ class ZR::Chlist
   # getter conf : Rmconf
 
   getter zinfo_db : Crorm::SQ3
-  getter zfile_db : Crorm::SQ3
-  getter rinit_db : Crorm::SQ3
+  # getter zfile_db : Crorm::SQ3
 
   getter zip_path : String
   getter tmp_path : String
 
   def initialize(@sname : String, @sn_id : String)
     @zinfo_db = Chinfo.db(sname, sn_id)
-    @zfile_db = Chfile.db(sname, sn_id)
-    @rinit_db = Rminit.db(sname, sn_id)
+    # @zfile_db = Chfile.db(sname, sn_id)
 
     @zip_path = "#{DIR}/#{sname}/#{sn_id}-ztext.zip"
     @tmp_path = "#{DIR}/#{sname}/#{sn_id}"
@@ -46,22 +44,6 @@ class ZR::Chlist
   #     SQL
   # end
 
-  # def import_new_zh_db(src_db_path : String)
-  #   db.exec "attach database '#{src_db_path}' as src"
-
-  #   db.exec <<-SQL
-  #     replace into chaps (ch_no, rpath, title, chdiv, xhash, sizes, mtime)
-  #     select ch_no, s_cid, ctitle, subdiv, '' as xhash, '' as sizes, mtime
-  #     from src.chaps
-  #     SQL
-
-  #   db.exec <<-SQL
-  #     replace into rlogs (chap_count, latest_cid, status_str, update_str, uname, rtime)
-  #     select total_chap, latest_cid, status_str, update_str, uname, rtime
-  #     from src.rlogs
-  #     SQL
-  # end
-
   ###
 
   def reload_from_remote!(stale : Time = Time.utc - 1.days,
@@ -72,10 +54,10 @@ class ZR::Chlist
 
     @zinfo_db.open_tx { |db| chlist.each(&.upsert!(db: db)) }
 
-    Rminit.new(
-      chap_count: chlist.size, latest_cid: chlist.last.s_cid,
-      status_str: parser.status_str, update_str: parser.update_str,
-      uname: uname, rtime: Time.utc.to_unix
-    ).insert!(db: @rinit_db)
+    # Rminit.new(
+    #   chap_count: chlist.size, latest_cid: chlist.last.s_cid,
+    #   status_str: parser.status_str, update_str: parser.update_str,
+    #   uname: uname, rtime: Time.utc.to_unix
+    # ).insert!(db: @rinit_db)
   end
 end

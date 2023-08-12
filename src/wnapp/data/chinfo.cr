@@ -1,23 +1,32 @@
 require "crorm"
 require "../../_util/text_util"
 
-class ZR::Chinfo
+class WN::Chinfo
   class_getter init_sql = <<-SQL
     pragma journal_mode = WAL;
 
     CREATE TABLE IF NOT EXISTS chinfos(
       ch_no int not null PRIMARY KEY,
-      ---
       rpath text NOT NULL DEFAULT '',
-      s_cid text NOT NULL DEFAULT '',
       --
-      title text NOT NULL DEFAULT '',
-      chdiv text NOT NULL DEFAULT ''
+      cksum text NOT NULL DEFAULT '',
+      sizes text NOT NULL DEFAULT '',
+      --
+      ztitle text NOT NULL DEFAULT '',
+      zchdiv text NOT NULL DEFAULT '',
+      --
+      vtitle text NOT NULL DEFAULT '',
+      vchdiv text NOT NULL DEFAULT ''
+      --
+      mtime bigint NOT NULL DEFAULT 0,
+      uname text NOT NULL default '',
+      --
+      _flag int NOT NULL default 0
     );
     SQL
 
   def self.db_path(sname : String, sn_id : String)
-    "var/zroot/wnovel/#{sname}/#{sn_id}-zchap.db3"
+    "var/zroot/wnchap/#{sname}/#{sn_id}.db3"
   end
 
   ###
@@ -26,23 +35,24 @@ class ZR::Chinfo
   schema "chinfos", :sqlite, multi: true
 
   field ch_no : Int32, pkey: true
-
   field rpath : String = "" # relative or absolute remote path
-  field s_cid : String = "" # remote chapter id extracted from rpath
 
-  field title : String = "" # chapter title name
-  field chdiv : String = "" # chapter chdivision (volume) name
+  field ztitle : String = "" # chapter zh title name
+  field zchdiv : String = "" # chapter zh division (volume) name
+
+  field vtitle : String = "" # chapter vi title name
+  field vchdiv : String = "" # chapter vi division (volume) name
+
+  field cksum : String = "" # check sum of raw chapter text
+  field sizes : String = "" # char_count of for title + each part joined by a single ' '
+
+  field mtime : Int64 = 0_i64 # last modified at, optional
+  field uname : String = ""   # last modified by, optional
 
   def initialize(@ch_no)
   end
 
-  def initialize(@ch_no, @rpath, @s_cid, @title, @chdiv)
-  end
-
-  def as_mirror!(conf)
-    @rpath = conf.full_path(@rpath) if @rpath.starts_with?('/')
-    @s_Cid = @ch_no.to_s
-    self
+  def initialize(@ch_no, @rpath, @ztitle, @zchdiv)
   end
 
   ####
@@ -72,5 +82,3 @@ class ZR::Chinfo
     {title, chdiv}
   end
 end
-
-puts "Ｖ１".downcase

@@ -72,6 +72,9 @@ targets:
   ysbook_seed:
     main: src/tasks/ysbook_seed.cr
 
+  rmbook_seed:
+    main: src/tasks/rmbook_seed.cr
+
   fix_ysrepls_vhtml:
     main: src/tasks/yousuu/fix_ysrepls_vhtml.cr
 
@@ -81,8 +84,8 @@ targets:
   tubook_seed:
     main: src/tasks/tuishu/tubook_seed.cr
 
-  rmbook_seed:
-    main: src/tasks/remote/rmbook_seed.cr
+  rmbook_pull:
+    main: src/tasks/remote/rmbook_pull.cr
 
 dependencies:
   tabkv:

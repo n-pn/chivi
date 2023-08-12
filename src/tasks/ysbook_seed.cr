@@ -11,7 +11,7 @@ SELECT_SQL = ZR::Ysbook.schema.select_stmt { |stmt| stmt << "where id >= $1 and 
   lower = block &* 1000
   upper = lower &+ 999
 
-  inputs = ZR::Ysbook.open_db(&.query_all(SELECT_SQL, lower, upper, as: ZR::Ysbook))
+  inputs = ZR::Ysbook.db.query_all(SELECT_SQL, lower, upper, as: ZR::Ysbook)
 
   puts "- block: #{block}, books: #{inputs.size}"
   break if inputs.empty?
@@ -27,13 +27,13 @@ SELECT_SQL = ZR::Ysbook.schema.select_stmt { |stmt| stmt << "where id >= $1 and 
 
   PGDB.exec "commit"
 
-  # M1::DbDict.open_tx do |db|
-  #   outputs.each do |_yb_id, wn_id, bslug, vname|
-  #     M1::DbDict.upsert_wn_dict(db, wn_id, bslug, vname) rescue nil
-  #   end
-  # end
+  M1::DbDict.db.open_tx do |db|
+    outputs.each do |_yb_id, wn_id, bslug, vname|
+      M1::DbDict.init_wn_dict!(wn_id, bslug, vname, db: db) rescue nil
+    end
+  end
 
-  ZR::Ysbook.open_tx do |db|
+  ZR::Ysbook.db.open_tx do |db|
     outputs.each do |yn_id, wn_id, _bslug, _vname|
       db.exec("update ysbooks set wn_id = $1 where id = $2", wn_id, yn_id) rescue nil
     end

@@ -70,12 +70,12 @@ class TubookSync < CrawlTask
   def self.gen_queue(min = 1, max = 300000)
     tn_ids = Set(Int32).new(min..max)
 
-    # ZR::Tubook.open_db do |db|
-    #   db.query_each(SELECT_STMT, min, max) do |rs|
-    #     id, voters, rtime = rs.read(Int32, Int32, Int64)
-    #     tn_ids.delete(id) unless should_crawl?(voters, rtime)
-    #   end
-    # end
+    ZR::Tubook.db.open_ro do |db|
+      db.query_each(SELECT_STMT, min, max) do |rs|
+        id, voters, rtime = rs.read(Int32, Int32, Int64)
+        tn_ids.delete(id) unless should_crawl?(voters, rtime)
+      end
+    end
 
     tn_ids.map_with_index(1) do |y_bid, index|
       Entry.new(
@@ -108,12 +108,14 @@ class TubookSync < CrawlTask
   end
 
   def self.should_crawl?(voters : Int32, rtime : Int64)
-    tspan = map_tspan(voters)
-    Time.unix(rtime) + tspan < Time.utc
+    voters > 0
+    # tspan = map_tspan(voters)
+    # Time.unix(rtime) + tspan < Time.utc
   end
 
   def self.map_tspan(voters : Int32)
     case voters
+    when .< 5   then 10.days
     when .< 10  then 7.days
     when .< 50  then 5.days
     when .< 100 then 3.days

@@ -74,8 +74,8 @@ class ZR::RawYsbook
   property sources = [] of String
 
   def after_initialize
-    @btitle = TextUtil.trim_spaces(@btitle)
-    @author = TextUtil.trim_spaces(@author)
+    @btitle = TextUtil.clean_and_trim(@btitle)
+    @author = TextUtil.clean_and_trim(@author)
 
     @intro = TextUtil.split_html(@intro).join('\n')
     @btags = @btags.flat_map(&.split('-', remove_empty: true)).uniq!
