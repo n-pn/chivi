@@ -6,12 +6,12 @@ StartLimitIntervalSec=0
 [Service]
 Type=oneshot
 User=nipin
-WorkingDirectory=/app/chivi.app
+WorkingDirectory=/2tb/app.chivi
 Environment=CV_ENV=production
-ExecStart=/app/chivi.app/bin/yscrit_crawl_by_book
+ExecStart=/2tb/app.chivi/bin/yscrit_crawl_by_book
 
-StandardOutput=file:/app/chivi.app/log/yscrit-crawl-by-book.log
-StandardError=append:/app/chivi.app/log/yscrit-crawl-by-book-err.log
+StandardOutput=file:/2tb/app.chivi/log/yscrit-crawl-by-book.log
+StandardError=append:/2tb/app.chivi/log/yscrit-crawl-by-book-err.log
 
 [Install]
 WantedBy=multi-user.target

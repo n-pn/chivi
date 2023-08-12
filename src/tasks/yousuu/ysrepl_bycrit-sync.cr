@@ -55,7 +55,7 @@ class CrawlYslistByUser < CrawlTask
 
       queue.reject!(&.cached?((2 + pg_no).days))
       crawler.crawl!(queue)
-      spawn { `/app/chivi.app/bin/fix_ysrepls_vhtml` }
+      spawn { `/2tb/app.chivi/bin/fix_ysrepls_vhtml` }
     end
   end
 

@@ -10,10 +10,10 @@ RestartSec=5
 User=nipin
 Environment=PORT=5111
 Environment=CV_ENV=development
-WorkingDirectory=/app/chivi.dev
-ExecStart=/app/chivi.dev/bin/mt_v1-srv
-StandardOutput=file:/app/chivi.dev/log/mt_v1-srv.log
-StandardError=append:/app/chivi.dev/log/mt_v1-err.log
+WorkingDirectory=/2tb/dev.chivi
+ExecStart=/2tb/dev.chivi/bin/mt_v1-srv
+StandardOutput=file:/2tb/dev.chivi/log/mt_v1-srv.log
+StandardError=append:/2tb/dev.chivi/log/mt_v1-err.log
 
 [Install]
 WantedBy=multi-user.target

@@ -10,10 +10,10 @@ RestartSec=5
 User=nipin
 Environment=PORT=5011
 Environment=CV_ENV=development
-WorkingDirectory=/app/chivi.dev
-ExecStart=/app/chivi.dev/bin/cvapp-srv
-StandardOutput=file:/app/chivi.dev/log/cvapp-srv.log
-StandardError=append:/app/chivi.dev/log/cvapp-err.log
+WorkingDirectory=/2tb/dev.chivi
+ExecStart=/2tb/dev.chivi/bin/cvapp-srv
+StandardOutput=file:/2tb/dev.chivi/log/cvapp-srv.log
+StandardError=append:/2tb/dev.chivi/log/cvapp-err.log
 
 [Install]
 WantedBy=multi-user.target

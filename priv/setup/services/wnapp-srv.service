@@ -10,10 +10,10 @@ RestartSec=5
 User=nipin
 Environment=PORT=5020
 Environment=CV_ENV=production
-WorkingDirectory=/app/chivi.app
-ExecStart=/app/chivi.app/bin/wnapp-srv
-StandardOutput=file:/app/chivi.app/log/wnapp-srv.log
-StandardError=append:/app/chivi.app/log/wnapp-err.log
+WorkingDirectory=/2tb/app.chivi
+ExecStart=/2tb/app.chivi/bin/wnapp-srv
+StandardOutput=file:/2tb/app.chivi/log/wnapp-srv.log
+StandardError=append:/2tb/app.chivi/log/wnapp-err.log
 
 [Install]
 WantedBy=multi-user.target

@@ -7,12 +7,12 @@ StartLimitIntervalSec=0
 Type=oneshot
 User=nipin
 
-WorkingDirectory=/app/chivi.app
+WorkingDirectory=/2tb/app.chivi
 Environment=CV_ENV=production
-ExecStart=/app/chivi.app/bin/ysbook_info-sync
+ExecStart=/2tb/app.chivi/bin/ysbook_info-sync
 
-StandardOutput=file:/app/chivi.app/log/ysbook_info-sync.log
-StandardError=append:/app/chivi.app/log/ysbook_info-sync-err.log
+StandardOutput=file:/2tb/app.chivi/log/ysbook_info-sync.log
+StandardError=append:/2tb/app.chivi/log/ysbook_info-sync-err.log
 
 [Install]
 WantedBy=multi-user.target

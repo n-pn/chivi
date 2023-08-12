@@ -10,10 +10,10 @@ RestartSec=5
 User=nipin
 Environment=PORT=5001
 Environment=NODE_ENV=production
-WorkingDirectory=/app/chivi.dev/web
+WorkingDirectory=/2tb/dev.chivi/web
 ExecStart=/usr/bin/node index.js
-StandardOutput=file:/app/chivi.dev/log/cvweb-serv.log
-StandardError=append:/app/chivi.dev/log/cvweb-err.log
+StandardOutput=file:/2tb/dev.chivi/log/cvweb-serv.log
+StandardError=append:/2tb/dev.chivi/log/cvweb-err.log
 
 [Install]
 WantedBy=multi-user.target

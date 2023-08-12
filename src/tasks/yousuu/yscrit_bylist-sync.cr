@@ -60,7 +60,7 @@ class CrawlYscritByUser < CrawlTask
       queue.reject!(&.cached?(expiry.days))
       crawler.crawl!(queue)
 
-      `/app/chivi.app/bin/fix_yscrits_vhtml`
+      `/2tb/app.chivi/bin/fix_yscrits_vhtml`
     end
   end
 

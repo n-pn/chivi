@@ -102,7 +102,7 @@ class TubookSync < CrawlTask
     # data = NamedTuple(data: Array(NamedTuple(book_id: Int32))).from_json(json_data, root: "data")
     # new_max = data[:data].max_of(&.[:book_id])
 
-    old_max = ZR::Tubook.open_db(&.query_one "select max(id) from tubooks", as: Int32)
+    old_max = ZR::Tubook.db.query_one("select max(id) from tubooks", as: Int32)
 
     # {old_max, new_max}.max
   end

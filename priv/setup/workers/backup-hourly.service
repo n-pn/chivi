@@ -7,12 +7,12 @@ StartLimitIntervalSec=0
 Type=oneshot
 User=nipin
 
-WorkingDirectory=/app/chivi.app
+WorkingDirectory=/2tb/app.chivi
 Environment=CV_ENV=production
-ExecStart=/bin/bash /app/chivi.app/run/backup-hourly.sh
+ExecStart=/bin/bash /2tb/app.chivi/run/backup-hourly.sh
 
-StandardOutput=append:/app/chivi.app/log/backup-hourly.log
-StandardError=append:/app/chivi.app/log/backup-hourly-err.log
+StandardOutput=append:/2tb/app.chivi/log/backup-hourly.log
+StandardError=append:/2tb/app.chivi/log/backup-hourly-err.log
 
 [Install]
 WantedBy=multi-user.target

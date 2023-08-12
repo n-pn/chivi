@@ -4,7 +4,7 @@ function rsync-fast {
   rsync -aHAXxviz --compress-choice=zstd --numeric-ids -e 'ssh -T -c aes128-gcm@openssh.com -o Compression=no -x ' $@
 }
 
-OUT=/app/chivi.app
+OUT=/2tb/app.chivi
 
 YSRAW_DIR="var/.keep/yousuu"
 YSRAW_OUT="$OUT/$YSRAW_DIR"

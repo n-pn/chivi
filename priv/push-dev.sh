@@ -10,13 +10,13 @@ do
   if [[ $target == "cvweb" ]]
   then
     cd web && pnpm run build
-    rsync -ai --no-p build/ /app/chivi.dev/web/
+    rsync -ai --no-p build/ /2tb/dev.chivi/web/
     cd ..
   elif [[ $target == "hanlp" ]]
   then
-    cp -f "src/mt_sp/hanlp_srv.py" /app/chivi.dev/bin
+    cp -f "src/mt_sp/hanlp_srv.py" /2tb/dev.chivi/bin
   else
-    crystal build -s --release src/$target-srv.cr -o /app/chivi.dev/bin/$target-srv
+    crystal build -s --release src/$target-srv.cr -o /2tb/dev.chivi/bin/$target-srv
   fi
 
   echo restarting $target-dev service
