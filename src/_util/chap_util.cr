@@ -105,6 +105,16 @@ module ChapUtil
   end
 
   @[AlwaysInline]
+  def calc_cksum(input : Array(String), cksum = BASIS_32)
+    input.each_with_index do |cpart, index|
+      cksum = calc_cksum("\n\n", cksum) if index > 0
+      cksum = calc_cksum(cpart, cksum)
+    end
+
+    cksum
+  end
+
+  @[AlwaysInline]
   def cksum_to_s(cksum : UInt32)
     # NOTE: this is actually not cover the whole range of UInt32, as it can
     # only represent 32 ** 6 = 1073741824 integers
@@ -124,4 +134,8 @@ module ChapUtil
   end
 
   # puts calc_cksum("1234")
+  lines = File.read_lines("/www/devel/chivi/tmp/chaps/Nipin-2g1fg13.txt").reject!(&.blank?)
+  parts, sizes, cksum = split_rawtxt(lines)
+  puts sizes, parts.map(&.size)
+  puts cksum, calc_cksum(parts)
 end
