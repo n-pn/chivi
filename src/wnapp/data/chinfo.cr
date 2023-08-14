@@ -29,9 +29,9 @@ class WN::Chinfo
       ch_no int not null PRIMARY KEY,
       --
       ztitle text NOT NULL DEFAULT '',
-      zchdiv text NOT NULL DEFAULT '',
-      --
       vtitle text NOT NULL DEFAULT '',
+      --
+      zchdiv text NOT NULL DEFAULT '',
       vchdiv text NOT NULL DEFAULT '',
       --
       spath text NOT NULL DEFAULT '',
@@ -168,7 +168,7 @@ class WN::Chinfo
   def self.upsert_zinfos!(db : Crorm::SQ3, input : Array(ZR::Chinfo))
     db.open_tx do |tx|
       query = @@schema.upsert_stmt(keep_fields: %w[rlink spath ztitle zchdiv])
-      input.each { |entry| tx.exec query, *entry.db_values }
+      input.map { |x| self.from(x).upsert!(query, db: tx) }
     rescue ex
       Log.error(exception: ex) { ex.message.colorize.red }
     end
@@ -188,7 +188,11 @@ class WN::Chinfo
     buffer = String::Builder.new
 
     db.open_ro do |cnn|
-      query = @@schema.select_stmt(%w{ch_no ztitle zchdiv})
+      query = @@schema.select_stmt(%w{ch_no ztitle zchdiv}) do |sql|
+        sql << "where ch_no >= $1 and ch_no <= $2"
+      end
+
+      # Log.info { query.colorize.yellow }
 
       cnn.query_each(query, chmin, chmax) do |rs|
         ch_nos << rs.read(Int32)          # read ch_no
@@ -248,6 +252,22 @@ class WN::Chinfo
     true
   end
 
+  def self.import_older_data(repo, db_path : String)
+    false
+  end
+
+  ####
+
+  def self.from(raw_chap : ZR::Chinfo)
+    new(
+      ch_no: raw_chap.ch_no,
+      ztitle: raw_chap.ztitle,
+      zchdiv: raw_chap.zchdiv,
+      rlink: raw_chap.rlink,
+      spath: raw_chap.spath,
+    )
+  end
+
   def self.from(old_chap : OldChap1, sname : String, sn_id : String)
     new_chap = Chinfo.new(ch_no: old_chap.ch_no)
     new_chap.mtime = old_chap.mtime
@@ -286,9 +306,5 @@ class WN::Chinfo
     end
 
     new_chap
-  end
-
-  def self.import_older_data(repo, db_path : String)
-    false
   end
 end

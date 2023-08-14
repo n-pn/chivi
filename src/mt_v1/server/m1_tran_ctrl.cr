@@ -165,7 +165,11 @@ class M1::TranCtrl < AC::Base
 
     lines = String.build do |str|
       input.each_line do |line|
-        cv_mt.cv_title(line).to_txt(str) unless line.empty?
+        unless line.empty?
+          line = TextUtil.normalize(line)
+          cv_mt.cv_title(line).to_txt(str)
+        end
+
         str << '\n'
       end
     end

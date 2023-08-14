@@ -46,7 +46,7 @@ class WN::Wnseed
   end
 
   def init!(force : Bool = false) : Nil
-    return unless force || @_flag < 0
+    return unless force || @_flag < 0 || !File.file?(Chinfo.db_path(@sname, @s_bid))
 
     Dir.mkdir_p("var/texts/rgbks/#{@sname}/#{@s_bid}")
     return unless Chinfo.init!(@sname, @s_bid)
