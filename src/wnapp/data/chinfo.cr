@@ -28,14 +28,14 @@ class WN::Chinfo
     CREATE TABLE IF NOT EXISTS chinfos(
       ch_no int not null PRIMARY KEY,
       --
-      rlink text NOT NULL DEFAULT '',
-      spath text NOT NULL DEFAULT '',
-      --
       ztitle text NOT NULL DEFAULT '',
       zchdiv text NOT NULL DEFAULT '',
       --
       vtitle text NOT NULL DEFAULT '',
       vchdiv text NOT NULL DEFAULT '',
+      --
+      spath text NOT NULL DEFAULT '',
+      rlink text NOT NULL DEFAULT '',
       --
       cksum text NOT NULL DEFAULT '',
       sizes text NOT NULL DEFAULT '',
@@ -217,7 +217,7 @@ class WN::Chinfo
     CACHE["#{sname}/#{sn_id}"] ||= self.db(sname, sn_id)
   end
 
-  def self.init!(sname : String, sn_id : String) : Nil
+  def self.init!(sname : String, sn_id : String) : Bool
     Log.info { "reinit #{sname}/#{sn_id}".colorize.red }
     Dir.mkdir_p("var/zroot/wnchap/#{sname}")
     Dir.mkdir_p("var/zroot/wntext/#{sname}/#{sn_id}")
@@ -226,7 +226,7 @@ class WN::Chinfo
     import_old_data(repo, sname, sn_id)
   end
 
-  def self.import_old_data(repo, sname : String, sn_id : String)
+  def self.import_old_data(repo, sname : String, sn_id : String) : Bool
     db_path = "var/zchap/infos/#{sname}/#{sn_id}.db"
 
     unless File.file?(db_path)
@@ -238,15 +238,17 @@ class WN::Chinfo
         db.query_all("select * from chaps where ch_no > 0 order by ch_no asc", as: OldChap1)
       end
 
-      new_chaps = old_chaps.map { |old_chap| self.from(old_chap) }
+      new_chaps = old_chaps.map { |old_chap| self.from(old_chap, sname, sn_id) }
 
       repo.open_tx do |db|
         new_chaps.each(&.upsert!(db: db))
       end
     end
+
+    true
   end
 
-  def self.from(old_chap : OldChap1)
+  def self.from(old_chap : OldChap1, sname : String, sn_id : String)
     new_chap = Chinfo.new(ch_no: old_chap.ch_no)
     new_chap.mtime = old_chap.mtime
     new_chap.uname = old_chap.uname
@@ -257,9 +259,36 @@ class WN::Chinfo
     new_chap.vtitle = old_chap.vtitle
     new_chap.vchdiv = old_chap.vchdiv
 
+    case xpath = old_chap._path
+    when ""
+      if Rmconf.is_remote?(sname)
+        new_chap.spath = "#{sname}/#{sn_id}/#{old_chap.s_cid}"
+        new_chap.rlink = Rmconf.full_chap_link(sname, sn_id, old_chap.s_cid)
+      end
+    when .starts_with?('!')
+      sname, sn_id, s_cid = xpath.split(/[\/:]/)
+      sname = SeedUtil.fix_sname(sname)
+
+      new_chap.spath = "#{sname}/#{sn_id}/#{s_cid}"
+      new_chap.rlink = Rmconf.full_chap_link(sname, sn_id, s_cid)
+    when .starts_with?('/')
+      new_chap.spath = "#{sname}/#{sn_id}/#{old_chap.s_cid}"
+      new_chap.rlink = Rmconf.full_chap_link(sname, sn_id, old_chap.s_cid)
+    when .starts_with?("http")
+      uri = URI.parse(xpath)
+      conf = Rmconf.from_host!(uri.host.as(String)) rescue nil
+
+      if conf
+        new_chap.rlink = xpath
+        sn_id, s_cid = conf.extract_ids(uri.path.as(String))
+        new_chap.spath = "#{conf.seedname}/#{sn_id}/#{s_cid}"
+      end
+    end
+
     new_chap
   end
 
   def self.import_older_data(repo, db_path : String)
+    false
   end
 end

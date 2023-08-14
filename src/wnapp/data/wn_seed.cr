@@ -46,10 +46,16 @@ class WN::Wnseed
   end
 
   def init!(force : Bool = false) : Nil
-    return unless force || _flag < 0
+    return unless force || @_flag < 0
 
     Dir.mkdir_p("var/texts/rgbks/#{@sname}/#{@s_bid}")
-    Chinfo.init!(@sname, @s_bid)
+    return unless Chinfo.init!(@sname, @s_bid)
+    Log.info { "restored".colorize.green }
+
+    @_flag = -@_flag
+    query = @@schema.update_stmt(%w{_flag})
+    Log.info { query.colorize.yellow }
+    @@db.exec(query, @_flag, @wn_id, @sname)
   end
 
   def to_json(jb : JSON::Builder)

@@ -268,6 +268,10 @@ class Rmconf
     Hash(String, String).from_yaml File.read("#{CONF_DIR}/../sites.yml")
   end
 
+  def self.is_remote?(sname : String)
+    mapping.has_value?(sname)
+  end
+
   CACHED = {} of String => self
 
   def self.load!(sname : String)

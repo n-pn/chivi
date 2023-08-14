@@ -31,116 +31,116 @@ class WN::WnChap
   # 2: exists as txt
   # 3: exists as txt and edited by users
 
-  @[DB::Field(ignore: true)]
-  getter! seed : Wnseed
+  # @[DB::Field(ignore: true)]
+  # getter! seed : Wnseed
 
-  def initialize(@ch_no, @s_cid, @title, @chdiv = "", @_path = "")
-  end
+  # def initialize(@ch_no, @s_cid, @title, @chdiv = "", @_path = "")
+  # end
 
-  def to_json(jb : JSON::Builder)
-    # FIXME: rename json fields
-    jb.object {
-      jb.field "chidx", self.ch_no
-      jb.field "schid", self.s_cid
+  # def to_json(jb : JSON::Builder)
+  #   # FIXME: rename json fields
+  #   jb.object {
+  #     jb.field "chidx", self.ch_no
+  #     jb.field "schid", self.s_cid
 
-      jb.field "title", self.vtitle
-      jb.field "chvol", self.vchdiv
+  #     jb.field "title", self.vtitle
+  #     jb.field "chvol", self.vchdiv
 
-      jb.field "chars", self.c_len
-      jb.field "parts", self.p_len
+  #     jb.field "chars", self.c_len
+  #     jb.field "parts", self.p_len
 
-      jb.field "utime", self.mtime
-      jb.field "uname", self.uname
+  #     jb.field "utime", self.mtime
+  #     jb.field "uname", self.uname
 
-      jb.field "uslug", self.uslug
+  #     jb.field "uslug", self.uslug
 
-      # jb.field "sname", self.sname
-    }
-  end
+  #     # jb.field "sname", self.sname
+  #   }
+  # end
 
-  def uslug(title = @vtitle)
-    input = title.unicode_normalize(:nfd).gsub(/[\x{0300}-\x{036f}]/, "")
-    input.downcase.tr("đ", "d").split(/\W+/, remove_empty: true).first(7).join('-')
-  end
+  # def uslug(title = @vtitle)
+  #   input = title.unicode_normalize(:nfd).gsub(/[\x{0300}-\x{036f}]/, "")
+  #   input.downcase.tr("đ", "d").split(/\W+/, remove_empty: true).first(7).join('-')
+  # end
 
-  def _href(part_no : Int32 = 1)
-    String.build do |io|
-      io << @ch_no << '/' << self.uslug << '-'
-      io << (part_no < 1 ? @p_len : part_no) if part_no != 1
-    end
-  end
+  # def _href(part_no : Int32 = 1)
+  #   String.build do |io|
+  #     io << @ch_no << '/' << self.uslug << '-'
+  #     io << (part_no < 1 ? @p_len : part_no) if part_no != 1
+  #   end
+  # end
 
-  INFO_FIELDS = {
-    "ch_no", "s_cid",
-    "title", "chdiv",
-    "_path",
-  }
+  # INFO_FIELDS = {
+  #   "ch_no", "s_cid",
+  #   "title", "chdiv",
+  #   "_path",
+  # }
 
-  def info_values
-    {
-      @ch_no, @s_cid,
-      @title, @chdiv,
-      @_path,
-    }
-  end
+  # def info_values
+  #   {
+  #     @ch_no, @s_cid,
+  #     @title, @chdiv,
+  #     @_path,
+  #   }
+  # end
 
-  FULL_FIELDS = {
-    "ch_no", "s_cid",
-    "title", "chdiv",
-    "mtime", "uname",
-    "c_len", "p_len",
-    "_path", "_flag",
-  }
+  # FULL_FIELDS = {
+  #   "ch_no", "s_cid",
+  #   "title", "chdiv",
+  #   "mtime", "uname",
+  #   "c_len", "p_len",
+  #   "_path", "_flag",
+  # }
 
-  def full_values
-    {
-      @ch_no, @s_cid,
-      @title, @chdiv,
-      @mtime, @uname,
-      @c_len, @p_len,
-      @_path, @_flag,
-    }
-  end
+  # def full_values
+  #   {
+  #     @ch_no, @s_cid,
+  #     @title, @chdiv,
+  #     @mtime, @uname,
+  #     @c_len, @p_len,
+  #     @_path, @_flag,
+  #   }
+  # end
 
-  ###
+  # ###
 
-  def set_seed(@seed)
-    self
-  end
+  # def set_seed(@seed)
+  #   self
+  # end
 
-  @[DB::Field(ignore: true)]
-  getter body : Array(String) { TextStore.get_chap(self.seed, self) || [""] }
+  # @[DB::Field(ignore: true)]
+  # getter body : Array(String) { TextStore.get_chap(self.seed, self) || [""] }
 
-  def save_body!(input : String, seed : Wnseed = self.seed, uname = "", _flag = 2) : Nil
-    input = TextUtil.clean_spaces(input)
-    lines = input.split(/\s*\R\s*/, remove_empty: true)
-    save_body!(lines, seed, uname: uname, _flag: _flag)
-  end
+  # def save_body!(input : String, seed : Wnseed = self.seed, uname = "", _flag = 2) : Nil
+  #   input = TextUtil.clean_spaces(input)
+  #   lines = input.split(/\s*\R\s*/, remove_empty: true)
+  #   save_body!(lines, seed, uname: uname, _flag: _flag)
+  # end
 
-  def save_body!(lines : Array(String), seed : Wnseed = self.seed, @uname = "", _flag = 2) : Nil
-    parts = lines.empty? ? [self.title] : TextSplit.split_entry(lines)
-    save_full!(parts, seed, uname, _flag: _flag)
-  end
+  # def save_body!(lines : Array(String), seed : Wnseed = self.seed, @uname = "", _flag = 2) : Nil
+  #   parts = lines.empty? ? [self.title] : TextSplit.split_entry(lines)
+  #   save_full!(parts, seed, uname, _flag: _flag)
+  # end
 
-  def save_full!(body : Array(String), seed : Wnseed = self.seed, @uname = "", _flag = 1)
-    @body = body
-    @title = body.first if @title.empty?
+  # def save_full!(body : Array(String), seed : Wnseed = self.seed, @uname = "", _flag = 1)
+  #   @body = body
+  #   @title = body.first if @title.empty?
 
-    @c_len = body.sum(&.size)
-    @p_len = body.size - 1
+  #   @c_len = body.sum(&.size)
+  #   @p_len = body.size - 1
 
-    @mtime = Time.utc.to_unix
+  #   @mtime = Time.utc.to_unix
 
-    save_body_copy!(seed, _flag: _flag)
-  end
+  #   save_body_copy!(seed, _flag: _flag)
+  # end
 
-  def save_body_copy!(seed : Wnseed = self.seed, @_flag = 2) : Nil
-    txt_path = TextStore.save_txt_file(seed, self)
-    # TextStore.zip_one(seed.sname, seed.s_bid, txt_path)
-    seed.save_chap!(self)
-  end
+  # def save_body_copy!(seed : Wnseed = self.seed, @_flag = 2) : Nil
+  #   txt_path = TextStore.save_txt_file(seed, self)
+  #   # TextStore.zip_one(seed.sname, seed.s_bid, txt_path)
+  #   seed.save_chap!(self)
+  # end
 
-  def on_txt_dir?
-    self._flag > 0
-  end
+  # def on_txt_dir?
+  #   self._flag > 0
+  # end
 end
