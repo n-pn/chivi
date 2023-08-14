@@ -52,12 +52,12 @@ class SP::TranCtrl < AC::Base
   end
 
   TEXT_DIR = "var/zroot/wntext"
-  BING_DIR = "var/zroot/wntran"
+  TRAN_DIR = "var/zroot/wntran"
 
   @[AC::Route::GET("/bing_chap")]
   def bing_chap(cpath : String, wn_id : Int32 = 0, format = "mtl", label : String? = nil)
     zh_path = "#{TEXT_DIR}/#{cpath}.txt"
-    bv_path = "#{BING_DIR}/#{cpath}.bv.txt"
+    bv_path = "#{TRAN_DIR}/#{cpath}.bv.txt"
     Dir.mkdir_p(File.dirname(bv_path))
 
     ztext = File.read(zh_path).lines
@@ -74,18 +74,19 @@ class SP::TranCtrl < AC::Base
     render json: {btran: btran, ztext: ztext, mtime: mtime}
   end
 
-  @[AC::Route::GET("/tl_chap/:hash")]
-  def tl_chap(hash : String, wn_id : Int32 = 0, format = "mtl", label : String? = nil)
-    ztext = File.read("tmp/chaps/#{_uname}-#{hash}.txt")
-    plain = format == "txt"
+  @[AC::Route::GET("/tl_chap")]
+  def tl_chap(cpath : String, wn_id : Int32 = 0, format = "mtl", label : String? = nil)
+    zpath = "#{TEXT_DIR}/#{cpath}.txt"
+    ztext = File.read(zpath)
 
+    plain = format == "txt"
     qt_mt = MT::QtCore.new(wn_id, user: @w_user)
 
-    spawn do
-      ihash = HashUtil.decode32(hash).to_u32.unsafe_as(Int32)
-      isize = ztext.size
-      log_tran_stats(ihash, isize, wn_id, w_udic: !@w_user.empty?)
-    end
+    # spawn do
+    #   ihash = HashUtil.decode32(hash).to_u32.unsafe_as(Int32)
+    #   isize = ztext.size
+    #   log_tran_stats(ihash, isize, wn_id, w_udic: !@w_user.empty?)
+    # end
 
     cvmtl = String.build do |io|
       start = Time.monotonic

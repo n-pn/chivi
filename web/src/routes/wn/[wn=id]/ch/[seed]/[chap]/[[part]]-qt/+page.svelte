@@ -7,10 +7,10 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ nvinfo, curr_seed, wnchap, cvmtl, ztext } = data)
+  $: ({ nvinfo, curr_seed, chinfo, cvmtl, ztext } = data)
 
   async function do_fixraw(line_no: number, orig: string, edit: string) {
-    const url = `/_wn/texts/${nvinfo.id}/${curr_seed.sname}/${wnchap.ch_no}`
+    const url = `/_wn/texts/${nvinfo.id}/${curr_seed.sname}/${chinfo.ch_no}`
     const body = { part_no: data.cpart, line_no, orig, edit }
 
     const res = await fetch(url, {
@@ -24,4 +24,4 @@
   }
 </script>
 
-<MtPage {cvmtl} {ztext} mtime={wnchap.mtime} wn_id={nvinfo.id} {do_fixraw} />
+<MtPage {cvmtl} {ztext} mtime={chinfo.mtime} wn_id={nvinfo.id} {do_fixraw} />

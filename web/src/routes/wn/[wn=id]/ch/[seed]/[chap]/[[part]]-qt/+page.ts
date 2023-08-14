@@ -10,16 +10,18 @@ type Data = { cvmtl: string; ztext: string }
 export const load = (async ({ parent, params, fetch }) => {
   const pslug = params.part || ''
   const cpart = parseInt(pslug.split('-').pop(), 10) || 1
-  const { nvinfo, wnchap } = await parent()
 
-  const hash = wnchap.parts[cpart - 1]
-  if (!hash) throw error(404, 'Chương tiết không tồn tại!')
+  const { nvinfo, chdata } = await parent()
 
-  const p_len = wnchap.parts.length
+  const cksum = chdata.cksum
+  if (!cksum) throw error(404, 'Chương tiết không tồn tại!')
+
+  const cpath = `${chdata.cbase}_${cpart}-${chdata.cksum}`
+  const p_len = chdata.sizes.length - 1
   const label = p_len > 1 ? `[${cpart}/${p_len}]` : ''
 
-  const path = `/_sp/tl_chap/${hash}?wn_id=${nvinfo.id}&label=${label}`
-  const { ztext, cvmtl } = await api_get<Data>(path, fetch)
+  const qturl = `/_sp/tl_chap?cpath=${cpath}&wn_id=${nvinfo.id}&label=${label}`
+  const { ztext, cvmtl } = await api_get<Data>(qturl, fetch)
 
   return { ztext, cvmtl, cpart, rmode: 'qt' }
 }) satisfies PageLoad
