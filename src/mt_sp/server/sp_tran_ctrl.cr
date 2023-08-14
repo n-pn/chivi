@@ -51,10 +51,14 @@ class SP::TranCtrl < AC::Base
     render text: output.join('\n', &.[1])
   end
 
-  @[AC::Route::GET("/bing_chap/:hash")]
-  def bing_chap(hash : String, wn_id : Int32 = 0, format = "mtl", label : String? = nil)
-    zh_path = "tmp/chaps/#{_uname}-#{hash}.txt"
-    bv_path = "var/zroot/service/btran/#{hash}.txt"
+  TEXT_DIR = "var/zroot/wntext"
+  BING_DIR = "var/zroot/wntran"
+
+  @[AC::Route::GET("/bing_chap")]
+  def bing_chap(cpath : String, wn_id : Int32 = 0, format = "mtl", label : String? = nil)
+    zh_path = "#{TEXT_DIR}/#{cpath}.txt"
+    bv_path = "#{BING_DIR}/#{cpath}.bv.txt"
+    Dir.mkdir_p(File.dirname(bv_path))
 
     ztext = File.read(zh_path).lines
 

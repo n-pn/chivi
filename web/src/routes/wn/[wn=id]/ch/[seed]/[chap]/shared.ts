@@ -10,10 +10,10 @@ export function api_chap_url(
   return regen ? base + '?load_mode=1' : base
 }
 
-export const recrawl_chap = async ({ nvinfo, wnchap, curr_seed }) => {
+export const recrawl_chap = async ({ nvinfo, chinfo, curr_seed }) => {
   const wn_id = nvinfo.id
   const sname = curr_seed.sname
-  const ch_no = wnchap.ch_no
+  const ch_no = chinfo.ch_no
 
   const href = `/_wn/chaps/${wn_id}/${sname}/${ch_no}?load_mode=2`
 

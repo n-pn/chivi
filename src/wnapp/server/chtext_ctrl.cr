@@ -4,7 +4,7 @@ require "../data/viuser/ch_line_edit"
 
 require "../../_util/diff_util"
 
-class WN::TextCtrl < AC::Base
+class WN::ChtextCtrl < AC::Base
   base "/_wn/texts/:wn_id/:sname"
 
   @[AC::Route::GET("/:ch_no")]
@@ -15,7 +15,7 @@ class WN::TextCtrl < AC::Base
     zctext = Zctext.new(wnseed, chinfo)
 
     render json: {
-      ztext: zctext.get_ztext!,
+      ztext: zctext.load_all!,
       title: chinfo.ztitle,
       chdiv: chinfo.zchdiv,
     }

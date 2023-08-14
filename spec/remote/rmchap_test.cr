@@ -1,6 +1,6 @@
 require "colorize"
 
-require "../../src/_data/remote/rmchap.cr"
+require "../../src/zroot/html_parser/raw_rmchap.cr"
 
 def do_test(sname : String, s_bid : Int32 | String, s_cid : Int32 | String, reset = false)
   full_link = Rmconf.full_chap_link(sname, s_bid, s_cid)
@@ -8,14 +8,14 @@ def do_test(sname : String, s_bid : Int32 | String, s_cid : Int32 | String, rese
   puts
 
   stale = Time.utc - (reset ? 3.minutes : 10.years)
-  parser = Rmchap.from_seed(sname, s_bid, s_cid, stale)
+  parser = ZR::RawRmchap.from_seed(sname, s_bid, s_cid, stale)
   parser.parse_page!
 
   puts parser.title.colorize.green
   puts "---".colorize.dark_gray
-  puts parser.paras.first(4).join("\n")
+  puts parser.paras.first(4).join('\n')
   puts "---".colorize.dark_gray
-  puts parser.paras.last(4).join("\n")
+  puts parser.paras.last(4).join('\n')
 rescue err
   puts err.inspect_with_backtrace.colorize.red
 end

@@ -9,26 +9,33 @@ class WN::Zctext
     @cbase = "#{seed.sname}/#{seed.s_bid}/#{chap.ch_no}"
   end
 
-  def get_ztext!
-    ""
-  end
-
   def get_cksum!(uname : String, _mode = 0)
     return "" if _mode < 0
-    return force_regen! if _mode > 1
-    return @chap.cksum unless @chap.cksum.empty?
 
-    # TODO: fetch from remote
-    import_existing! || @chap.cksum
+    if _mode < 1 && !@chap.cksum.empty? && @chap.sizes.size > 1
+      return @chap.cksum
+    end
+
+    if _mode > 1
+      load_from_remote!(force: true) || import_existing! || @chap.cksum
+    else
+      import_existing! || load_from_remote!(force: false) || @chap.cksum
+    end
   end
 
-  def force_regen!
-    # TODO
-    ""
+  def load_from_remote!(force : Bool = false)
+    rlink = @chap.rlink
+    return if rlink.empty?
+
+    stale = Time.utc - (force ? 1.minutes : 20.years)
+    parser = ZR::RawRmchap.from_link(rlink, stale: stale).tap(&.parse_page!)
+
+    parts, sizes, cksum = ChapUtil.split_rawtxt(parser.paras, parser.title)
+    self.save_text!(parts, sizes, cksum)
   end
 
   def import_existing!
-    Log.info { "find from existing data".colorize.yellow }
+    # Log.info { "find from existing data".colorize.yellow }
 
     files = {
       "var/texts/rgbks/#{@seed.sname}/#{@seed.s_bid}/#{@chap.ch_no}.gbk",
@@ -38,7 +45,7 @@ class WN::Zctext
     }
 
     return unless file = files.find { |x| File.file?(x) }
-    Log.info { "found: #{file}".colorize.green }
+    # Log.info { "found: #{file}".colorize.green }
 
     encoding = file.ends_with?("gbk") ? "GB18030" : "UTF-8"
 
@@ -56,8 +63,12 @@ class WN::Zctext
     @chap.sizes = sizes.map(&.to_s).join(' ')
 
     parts.each_with_index do |cpart, index|
-      next if index == 0
-      File.open(self.text_path(index), "w") { |f| f << parts[0] << '\n' << cpart }
+      save_path = self.text_path(index)
+
+      File.open(save_path, "w") do |file|
+        file << parts[0]
+        file << '\n' << cpart if index > 0
+      end
     end
 
     @chap.update!(db: @seed.chap_list)
@@ -68,5 +79,19 @@ class WN::Zctext
 
   def text_path(index : Int32)
     "#{DIR}/#{@cbase}_#{index}-#{@chap.cksum}.txt"
+  end
+
+  def load_all!
+    return "" if @chap.cksum.empty?
+    String.build do |io|
+      (@chap.sizes.size).times do |index|
+        cpart = File.read(text_path(index))
+        cpart = index > 0 ? cpart.gsub(/^[^\n]+/, "") : cpart.gsub(/\n.+/, "")
+
+        io << cpart
+      rescue ex
+        io << "[Có lỗi, mời liên hệ ban quản trị!]"
+      end
+    end
   end
 end

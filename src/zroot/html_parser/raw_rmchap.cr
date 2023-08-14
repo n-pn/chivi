@@ -1,10 +1,11 @@
 require "uri"
 require "colorize"
 
+require "../../_util/chap_util"
 require "./rmconf"
 require "./rmpage"
 
-class RawRmchap
+class ZR::RawRmchap
   ####
 
   def self.from_link(full_link : String, stale : Time = Time.utc - 1.years)
@@ -74,7 +75,7 @@ class RawRmchap
       .sub(/^\d+\.第/, "第")
       .sub(/(^章节目录|(《.+》)?正文)/, "")
 
-    Rmutil.clean_text(title)
+    TextUtil.canon_clean(title)
   end
 
   def extract_paras(chap_type : String, selector : String)
@@ -101,14 +102,14 @@ class RawRmchap
     container.inner_text('\n').each_line do |line|
       scrub_re.try { |re| line = line.sub(re, "") }
 
-      line = Rmutil.clean_text(line)
+      line = TextUtil.canon_clean(line)
       next if line.empty?
 
       @paras << line
     end
 
     @paras.shift if invalid_first_line?(@paras.first? || "")
-    @paras.pop if @paras.last? == "(本章完)"
+    @paras.pop if @paras.last? == "（本章完）"
 
     @paras
   end
@@ -134,7 +135,7 @@ class RawRmchap
         ord -= jmp
       end
 
-      @paras[ord] = node.inner_text(deep: false).strip
+      @paras[ord] = TextUtil.canon_clean(node.inner_text(deep: false))
     end
 
     @paras
@@ -142,48 +143,7 @@ class RawRmchap
 
   def parse_page!
     @title = extract_title(@conf.chap_name)
-
     @paras = extract_paras(@conf.chap_type, @conf.chap_body)
     @parsed = true
-  end
-
-  AVG_COUNT = 3000
-  MAX_COUNT = 4500
-
-  def content
-    parse_page! unless self.parsed?
-
-    word_count = @paras.sum(&.size)
-    return build_single_part if word_count <= MAX_COUNT
-
-    part_count = (word_count &- 1) // AVG_COUNT &+ 1
-    word_limit = word_count // part_count
-
-    build_multi_parts(word_limit)
-  end
-
-  private def build_single_part
-    String.build do |io|
-      io << @title << '\n'
-      @paras.each { |para| io << '\n' << para }
-    end
-  end
-
-  private def build_multi_parts(word_limit : Int32)
-    word_count = 0
-
-    String.build do |io|
-      io << @title << '\n'
-
-      @paras.each do |para|
-        if word_count > word_limit
-          io << '\n'
-          word_count = 0
-        end
-
-        word_count &+= para.size
-        io << '\n' << para
-      end
-    end
   end
 end

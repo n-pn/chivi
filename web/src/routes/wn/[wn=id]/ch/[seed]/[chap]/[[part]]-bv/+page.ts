@@ -9,12 +9,14 @@ type Data = { btran: string[]; ztext: string[]; mtime: number }
 export const load = (async ({ parent, params, fetch }) => {
   const pslug = params.part || ''
   const cpart = parseInt(pslug.split('-').pop(), 10) || 1
-  const { wnchap } = await parent()
+  const { chdata } = await parent()
 
-  const hash = wnchap.parts[cpart - 1]
-  if (!hash) throw error(404, 'Chương tiết không tồn tại!')
+  const cksum = chdata.cksum
+  if (!cksum) throw error(404, 'Chương tiết không tồn tại!')
 
-  const path = `/_sp/bing_chap/${hash}`
-  const data = await api_get<Data>(path, fetch)
-  return { ...data, cpart, rmode: 'bv' }
+  const cpath = `${chdata.cbase}_${cpart}-${chdata.cksum}`
+  const bvurl = `/_sp/bing_chap?cpath=${cpath}`
+
+  const { btran, ztext, mtime } = await api_get<Data>(bvurl, fetch)
+  return { btran, ztext, mtime, cpart, rmode: 'bv' }
 }) satisfies PageLoad
