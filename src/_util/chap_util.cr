@@ -132,10 +132,4 @@ module ChapUtil
       end
     end
   end
-
-  # puts calc_cksum("1234")
-  lines = File.read_lines("/www/devel/chivi/tmp/chaps/Nipin-2g1fg13.txt").reject!(&.blank?)
-  parts, sizes, cksum = split_rawtxt(lines)
-  puts sizes, parts.map(&.size)
-  puts cksum, calc_cksum(parts)
 end

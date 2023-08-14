@@ -30,12 +30,26 @@ declare namespace CV {
     ch_no: number
 
     title: string
-    chdiv: string
     uslug: string
 
-    sizes: number
+    chdiv: string
+
+    sizes: number[]
+
     mtime: number
     uname: string
+  }
+
+  interface Chdata {
+    ch_no: number
+    rlink: string
+
+    cbase: string
+    cksum: string
+    sizes: number[]
+
+    _next?: string
+    _prev?: string
   }
 
   interface Chlist extends Paginate {

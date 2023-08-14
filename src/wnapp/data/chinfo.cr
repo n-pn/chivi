@@ -148,12 +148,12 @@ class WN::Chinfo
   end
 
   def self.find_prev(db, ch_no : Int32)
-    query = @@schema.select_stmt(&.<< " where ch_no > 0 and ch_no < $1 order by ch_no desc")
+    query = @@schema.select_stmt(&.<< " where ch_no < $1 order by ch_no desc limit 1")
     db.query_one?(query, ch_no, as: self)
   end
 
   def self.find_succ(db, ch_no : Int32)
-    query = @@schema.select_stmt(&.<< " where ch_no > $1 order by ch_no asc")
+    query = @@schema.select_stmt(&.<< " where ch_no > $1 order by ch_no asc limit 1")
     db.query_one?(query, ch_no, as: self)
   end
 

@@ -6,6 +6,8 @@ class M1::TranData
   CRIT_URL = "#{CV_ENV.ys_host}/_ys/crits"
   REPL_URL = "#{CV_ENV.ys_host}/_ys/repls"
 
+  TEXT_DIR = "var/zroot/wntext"
+
   def self.load_cached(type : String, name : String, wn_id : Int32, format : String = "mtl")
     case type
     when "crits"
@@ -15,7 +17,7 @@ class M1::TranData
     when "posts"
       input = File.read("tmp/qtran/#{name}.txt")
     when "chaps"
-      input = File.read("tmp/chaps/#{name}.txt")
+      input = CharUtil.normalize(File.read("#{TEXT_DIR}/#{name}.txt"))
     else
       raise "unsupported!"
     end

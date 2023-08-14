@@ -42,15 +42,15 @@ class M1::TranCtrl < AC::Base
     render json: {cvmtl: cvmtl, ztext: qtran.input, wn_id: wn_id}
   end
 
-  @[AC::Route::GET("/wnchap/:hash")]
-  def tl_wnchap(hash : String, wn_id : Int32 = 0, format = "mtl", label : String? = nil)
-    qtran = TranData.load_cached("chaps", "#{_uname}-#{hash}", wn_id, format)
+  @[AC::Route::GET("/wnchap")]
+  def tl_wnchap(cpath : String, wn_id : Int32 = 0, format = "mtl", label : String? = nil)
+    qtran = TranData.load_cached("chaps", cpath, wn_id, format)
 
-    spawn do
-      ihash = HashUtil.decode32(hash).to_u32.unsafe_as(Int32)
-      isize = qtran.input.size
-      log_tran_stats(ihash, isize, wn_id, w_udic: !@w_user.empty?)
-    end
+    # spawn do
+    #   ihash = HashUtil.decode32(hash).to_u32.unsafe_as(Int32)
+    #   isize = qtran.input.size
+    #   log_tran_stats(ihash, isize, wn_id, w_udic: !@w_user.empty?)
+    # end
 
     cvmtl = qtran.cv_wrap(w_user: @w_user, w_init: @w_init) do |io, engine|
       cv_chap(io, engine, w_title: true, label: label)
