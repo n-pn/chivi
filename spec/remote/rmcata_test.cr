@@ -1,7 +1,7 @@
 require "json"
 require "colorize"
 
-require "../../src/_data/remote/rmcata.cr"
+require "../../src/zroot/html_parser/raw_rmcata.cr"
 
 def do_test(sname : String, b_id : String | Int32, fresh : Bool = false)
   puts "\n[#{Rmconf.full_cata_link(sname, b_id)}]".colorize.green.bold
@@ -9,20 +9,19 @@ def do_test(sname : String, b_id : String | Int32, fresh : Bool = false)
   # path = conf.cata_file_path(b_id)
   # Dir.mkdir_p(File.dirname(path))
 
-  parser = Rmcata.new(sname, b_id, stale: fresh ? Time.utc : Time.utc - 10.years)
+  parser = ZR::RawRmcata.from_seed(sname, b_id, stale: fresh ? Time.utc : Time.utc - 10.years)
+  chlist = parser.chap_list
 
   puts "update_str: [#{parser.update_str}], real_time: #{Time.unix(parser.update_int)}"
   puts "status_str: [#{parser.status_str}]"
-  puts "latest_cid: #{parser.latest_cid}"
-
-  chlist = parser.chap_list
-  puts "chap_count: #{chlist.size}"
+  puts "latest_cid: [#{parser.latest_cid}]"
+  puts "chap_count: [#{chlist.size}]"
   puts "------".colorize.green
 
-  chlist.first(4).map { |x| puts [x.ch_no, x.s_cid, x.cpath, x.ctitle, x.subdiv] }
+  chlist.first(4).map { |x| pp x }
   puts "------".colorize.green
 
-  chlist.last(4).map { |x| puts [x.ch_no, x.s_cid, x.cpath, x.ctitle, x.subdiv] }
+  chlist.last(4).map { |x| pp x }
   puts "------".colorize.green
 rescue err
   puts err.inspect_with_backtrace.colorize.red

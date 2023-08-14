@@ -32,7 +32,7 @@ class WN::WnChap
   # 3: exists as txt and edited by users
 
   @[DB::Field(ignore: true)]
-  getter! seed : WnSeed
+  getter! seed : Wnseed
 
   def initialize(@ch_no, @s_cid, @title, @chdiv = "", @_path = "")
   end
@@ -111,18 +111,18 @@ class WN::WnChap
   @[DB::Field(ignore: true)]
   getter body : Array(String) { TextStore.get_chap(self.seed, self) || [""] }
 
-  def save_body!(input : String, seed : WnSeed = self.seed, uname = "", _flag = 2) : Nil
+  def save_body!(input : String, seed : Wnseed = self.seed, uname = "", _flag = 2) : Nil
     input = TextUtil.clean_spaces(input)
     lines = input.split(/\s*\R\s*/, remove_empty: true)
     save_body!(lines, seed, uname: uname, _flag: _flag)
   end
 
-  def save_body!(lines : Array(String), seed : WnSeed = self.seed, @uname = "", _flag = 2) : Nil
+  def save_body!(lines : Array(String), seed : Wnseed = self.seed, @uname = "", _flag = 2) : Nil
     parts = lines.empty? ? [self.title] : TextSplit.split_entry(lines)
     save_full!(parts, seed, uname, _flag: _flag)
   end
 
-  def save_full!(body : Array(String), seed : WnSeed = self.seed, @uname = "", _flag = 1)
+  def save_full!(body : Array(String), seed : Wnseed = self.seed, @uname = "", _flag = 1)
     @body = body
     @title = body.first if @title.empty?
 
@@ -134,7 +134,7 @@ class WN::WnChap
     save_body_copy!(seed, _flag: _flag)
   end
 
-  def save_body_copy!(seed : WnSeed = self.seed, @_flag = 2) : Nil
+  def save_body_copy!(seed : Wnseed = self.seed, @_flag = 2) : Nil
     txt_path = TextStore.save_txt_file(seed, self)
     # TextStore.zip_one(seed.sname, seed.s_bid, txt_path)
     seed.save_chap!(self)

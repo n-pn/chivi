@@ -32,6 +32,32 @@ module TextUtil
     clean_spaces(input).strip
   end
 
+  # convert all halfwidth to fullwidth and group similar characters
+  @[AlwaysInline]
+  def canon_clean(input : String, upcase : Bool = false) : String
+    CharUtil.to_canon(input, upcase: upcase).strip('　')
+  end
+
+  # Convert chinese punctuations to english punctuations
+  # and full width characters to ascii characters
+  def normalize(input : String) : String
+    normalize(input.chars).join
+  end
+
+  # :ditto:
+  def normalize(input : Array(Char)) : Array(Char)
+    input.map { |char| CharUtil.normalize(char) }
+  end
+
+  # convert all halfwidth to fullwidth and group similar characters
+  def uniformize(input : String, upcase : Bool = false) : String
+    String.build do |io|
+      str.each_char { |char| io << CharUtil.uniformize(char, upcase: upcase) }
+    end
+  end
+
+  ###
+
   # capitalize all words
   def titleize(input : String) : String
     input.split(' ').map { |x| capitalize(x) }.join(' ')
@@ -137,17 +163,6 @@ module TextUtil
 
     output << buffer.to_s
     output
-  end
-
-  # Convert chinese punctuations to english punctuations
-  # and full width characters to ascii characters
-  def normalize(input : String) : String
-    normalize(input.chars).join
-  end
-
-  # :ditto:
-  def normalize(input : Array(Char)) : Array(Char)
-    input.map { |char| CharUtil.normalize(char) }
   end
 
   FIX_MARKS = {

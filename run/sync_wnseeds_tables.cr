@@ -74,7 +74,7 @@
 # inputs.each do |input|
 #   next if input.wn_id < 0
 
-#   output = WN::WnSeed.load(wn_id: input.wn_id, sname: map_sname(input.sname))
+#   output = WN::Wnseed.load(wn_id: input.wn_id, sname: map_sname(input.sname))
 #   next if output.chap_total >= input.chap_total
 
 #   output.s_bid = input.s_bid

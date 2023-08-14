@@ -108,9 +108,8 @@ class TubookSync < CrawlTask
   end
 
   def self.should_crawl?(voters : Int32, rtime : Int64)
-    voters > 0
-    # tspan = map_tspan(voters)
-    # Time.unix(rtime) + tspan < Time.utc
+    tspan = map_tspan(voters)
+    Time.unix(rtime) + tspan < Time.utc
   end
 
   def self.map_tspan(voters : Int32)

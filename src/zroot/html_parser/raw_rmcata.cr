@@ -4,26 +4,9 @@ require "colorize"
 require "./rmconf"
 require "./rmpage"
 require "../shared/chinfo"
+require "../../_util/chap_util"
 
 class ZR::RawRmcata
-  # class Chap
-  #   getter ch_no : Int32
-  #   getter s_cid : String
-  #   getter rpath : String
-
-  #   getter title : String
-  #   getter chdiv : String
-
-  #   def initialize(@ch_no, @s_cid, @rpath, @title, @chdiv)
-  #   end
-
-  #   def as_mirror!(conf : Rmconf)
-  #     @rpath = conf.full_path(@rpath)
-  #     @s_cid = @ch_no.to_s
-  #   end
-
-  # end
-
   ####
 
   def self.from_link(rlink : String, stale : Time = Time.utc - 1.years)
@@ -36,17 +19,19 @@ class ZR::RawRmcata
     new(Rmconf.load!(sname), b_id: b_id.to_s, stale: stale)
   end
 
-  def self.new(conf : Rmconf, b_id : String, stale : Time)
-    cbase = conf.make_cata_path(b_id)
+  def self.new(conf : Rmconf, b_id : String | Int32, stale : Time)
+    cpath = conf.make_cata_path(b_id)
     cfile = conf.cata_file_path(b_id)
 
-    html = conf.load_page(cbase, cfile, stale: stale)
-    new(html, conf, cbase: cbase)
+    html = conf.load_page(cpath, cfile, stale: stale)
+    new(html, conf, b_id: b_id.to_s, base: cpath)
   end
 
   ###
 
-  def initialize(html : String, @conf : Rmconf, @cbase : String)
+  def initialize(html : String, @conf : Rmconf, @b_id : String,
+                 @base : String = conf.make_cata_path(b_id))
+    @base = File.dirname(base) + '/' unless base.ends_with?('/')
     @page = Rmpage.new(html)
   end
 
@@ -74,30 +59,26 @@ class ZR::RawRmcata
     (prev_latest != latest_cid) || (update_str != prev_update)
   end
 
-  def gen_cpath(href : String)
+  private def full_path(href : String)
     case href
-    when .starts_with?('/')
-      href[1] == '/' ? href.sub("//#{@conf.hostname}", "") : href
-    when .starts_with?("http")
-      href.sub(/^https?:\/\/[^\/]+/, "")
-    else
-      "#{@cbase}#{href}"
+    when .starts_with?("http") then href
+    when .starts_with?("//")   then "#{@conf.uri_schema}:#{href}"
+    when .starts_with?('/')    then @conf.full_path(href)
+    else                            @conf.full_path("#{@base}#{href}")
     end
   end
 
   @chlist = [] of Chinfo
 
-  def chap_list(as_mirror : Bool = false)
+  def chap_list
     extract_chlist!(@conf.cata_type) if @chlist.empty?
-    @chlist.each(&.as_mirror!(@conf)) if as_mirror
-
     @chlist
   end
 
   def extract_chlist!(chap_type : String = "anchor")
     case chap_type
     when "anchor"     then extract_type_anchor(@conf.cata_elem)
-    when "chdiv"      then extract_type_chdiv(@conf.cata_elem)
+    when "subdiv"     then extract_type_subdiv(@conf.cata_elem)
     when "wenku8"     then extract_type_wenku8(@conf.cata_elem)
     when "uukanshu"   then extract_type_uukanshu(@conf.cata_elem)
     when "ymxwx"      then extract_type_ymxwx(@conf.cata_elem)
@@ -108,19 +89,24 @@ class ZR::RawRmcata
     end
   end
 
-  private def add_chap(node : Lexbor::Node?, chdiv = "")
+  private def add_chap(node : Lexbor::Node?, subdiv = "")
     return unless node && (href = node.attributes["href"]?)
 
-    title = node.inner_text("  ")
-    return if title.empty?
+    ctitle = node.inner_text("  ")
+    return if ctitle.empty?
 
     ch_no = @chlist.size &+ 1
+    rlink = self.full_path(href)
 
     s_cid = @conf.extract_cid(href)
-    rpath = self.gen_cpath(href)
+    spath = "#{@conf.seedname}/#{@b_id}/#{s_cid}"
 
-    title, chdiv = Chinfo.split_title(title, chdiv)
-    @chlist << Chinfo.new(ch_no: ch_no, rpath: rpath, s_cid: s_cid, title: title, chdiv: chdiv)
+    ctitle, subdiv = ChapUtil.split_ztitle(ctitle, subdiv)
+
+    @chlist << Chinfo.new(
+      ch_no: ch_no, rlink: rlink, spath: spath,
+      ztitle: ctitle, zchdiv: subdiv
+    )
   rescue ex
     Log.error(exception: ex) { ex.message.colorize.red }
   end
@@ -130,20 +116,20 @@ class ZR::RawRmcata
     @page.css(selector).each { |node| add_chap(node) }
   end
 
-  # extract chapter info + chdiv by scanning <dt> and <dd> elements
-  private def extract_type_chdiv(selector : String)
+  # extract chapter info + subdiv by scanning <dt> and <dd> elements
+  private def extract_type_subdiv(selector : String)
     return unless container = @page.find(selector)
-    chdiv = ""
+    subdiv = ""
 
     container.children.each do |node|
       case node.tag_sym
       when :dt
         inner = node.css("b", &.first?) || node
-        chdiv = Chinfo.clean_chdiv(inner.inner_text)
-        add_chap(node.css("a", &.first?), chdiv)
+        subdiv = ChapUtil.clean_zchdiv(inner.inner_text)
+        add_chap(node.css("a", &.first?), subdiv)
       when :dd
-        next if chdiv.includes?("最新章节")
-        add_chap(node.css("a", &.first?), chdiv)
+        next if subdiv.includes?("最新章节")
+        add_chap(node.css("a", &.first?), subdiv)
       end
     end
   end
@@ -151,12 +137,12 @@ class ZR::RawRmcata
   # extract chap info for some certain website
   private def extract_type_wenku8(selector : String)
     return unless container = @page.find(selector)
-    chdiv = ""
+    subdiv = ""
 
     container.css("td").each do |node|
       case node.attributes["class"]?
-      when "vcss" then chdiv = Chinfo.clean_chdiv(node.inner_text)
-      when "ccss" then add_chap(node.css("a", &.first?), chdiv)
+      when "vcss" then subdiv = ChapUtil.clean_zchdiv(node.inner_text)
+      when "ccss" then add_chap(node.css("a", &.first?), subdiv)
       end
     end
   end
@@ -164,14 +150,14 @@ class ZR::RawRmcata
   # extract chap info for some certain website
   private def extract_type_uukanshu(selector : String)
     return unless container = @page.find(selector)
-    chdiv = ""
+    subdiv = ""
 
     # NOTE: chapters are in reversed order
     container.children.to_a.reverse_each do |node|
       if node.attributes["class"]? == "volume"
-        chdiv = node.inner_text.strip
+        subdiv = node.inner_text.strip
       else
-        add_chap(node.css("a").first?, chdiv)
+        add_chap(node.css("a").first?, subdiv)
       end
     end
   end
@@ -179,17 +165,17 @@ class ZR::RawRmcata
   # extract chap info for some certain website
   private def extract_type_ymxwx(selector : String)
     return unless container = @page.find(selector)
-    chdiv = ""
+    subdiv = ""
 
     container.children.each do |node|
       next unless node.tag_sym == :li
 
       case node.attributes["class"]?
       when "col1 volumn"
-        chdiv = Chinfo.clean_chdiv(node.inner_text)
+        subdiv = ChapUtil.clean_zchdiv(node.inner_text)
       when "col3"
-        next if chdiv.includes?("最新九章")
-        add_chap(node.css("a", &.first?), chdiv)
+        next if subdiv.includes?("最新九章")
+        add_chap(node.css("a", &.first?), subdiv)
       end
     end
   end
@@ -212,14 +198,14 @@ class ZR::RawRmcata
   # extract chap info for some certain website
   private def extract_type_51shucheng(selector : String)
     return unless container = @page.find(selector)
-    chdiv = ""
+    subdiv = ""
 
     container.children.each do |node|
       case node.attributes["class"]?
       when "mulu-title"
-        chdiv = Chinfo.clean_chdiv(node.inner_text)
+        subdiv = ChapUtil.clean_zchdiv(node.inner_text)
       when "mulu-list quanji"
-        node.css("a").each { |link| add_chap(link, chdiv) }
+        node.css("a").each { |link| add_chap(link, subdiv) }
       end
     end
   end

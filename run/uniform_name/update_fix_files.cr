@@ -11,8 +11,8 @@ def update_file(inp_path : String)
     end
 
     inp_name, out_name = line.split('\t')
-    inp_name = CharUtil.canonicalize(inp_name, true).sub("　　", "  ")
-    out_name = CharUtil.canonicalize(out_name, false)
+    inp_name = CharUtil.uniformize(inp_name, true).sub("　　", "  ")
+    out_name = CharUtil.uniformize(out_name, false)
     out_file << inp_name << '\t' << out_name << '\n'
   end
 

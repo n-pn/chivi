@@ -85,20 +85,20 @@ class WN::WnRepo
     @repo.db.scalar("chaps", "count (ch_no)")
   end
 
-  def all(pg_no : Int32 = 1, limit = 32) : Array(WnChap)
+  def all(pg_no : Int32 = 1, limit = 32) : Array(Chinfo)
     offset = (pg_no &- 1) * limit
     query = "select * from chaps where ch_no > ? and ch_no <= ? order by ch_no asc"
-    @repo.query_all(query, offset, offset &+ limit, as: WnChap)
+    @repo.query_all(query, offset, offset &+ limit, as: Chinfo)
   end
 
   def top(take = 6)
     query = "select * from chaps where ch_no > 0 order by ch_no desc limit ?"
-    @repo.query_all(query, take, as: WnChap)
+    @repo.query_all(query, take, as: Chinfo)
   end
 
   def get(ch_no : Int32)
     query = "select * from chaps where ch_no = ? limit 1"
-    @repo.query_one?(query, ch_no, as: WnChap)
+    @repo.query_one?(query, ch_no, as: Chinfo)
   end
 
   def get_title(ch_no : Int32) : String?
@@ -198,11 +198,11 @@ class WN::WnRepo
     end
   end
 
-  UPSERT_INFO_SQL = upsert_sql(WnChap::INFO_FIELDS, unsafe: false)
-  UPSERT_FULL_SQL = upsert_sql(WnChap::FULL_FIELDS, unsafe: false)
+  UPSERT_INFO_SQL = upsert_sql(Chinfo::INFO_FIELDS, unsafe: false)
+  UPSERT_FULL_SQL = upsert_sql(Chinfo::FULL_FIELDS, unsafe: false)
   UPDATE_TRAN_SQL = "update chaps set vtitle = ?, vchdiv = ? where ch_no = ?"
 
-  def upsert_chap_infos(chlist : Enumerable(WnChap))
+  def upsert_chap_infos(chlist : Enumerable(Chinfo))
     @repo.open_tx do |db|
       chlist.each { |chap| db.exec UPSERT_INFO_SQL, *chap.info_values }
     end
@@ -216,8 +216,8 @@ class WN::WnRepo
     end
   end
 
-  def upsert_chap_full(chap : WnChap)
-    @repo.write_one UPSERT_FULL_SQL, *chap.full_values, as: WnChap
+  def upsert_chap_full(chap : Chinfo)
+    @repo.write_one UPSERT_FULL_SQL, *chap.full_values, as: Chinfo
   end
 
   private def update_vnames!(

@@ -112,18 +112,15 @@ class CV::Wninfo
   end
 
   scope :filter_wnseed do |input|
-    stmt = <<-SQL
-      id IN (
-        SELECT wn_id FROM wnseeds
-        WHERE sname = ? AND s_bid > 0 AND chap_total > 0
-      )
-    SQL
+    stmt = "id IN (SELECT wn_id FROM wnseeds WHERE sname = ?"
+    stmt += " AND chap_total > 0" unless input[0]? == '!'
+    stmt += ")"
 
     where(stmt, input)
   end
 
   scope :filter_origin do |input|
-    stmt = "id in (select book_id from wnlinks where type = 1 and name = ?)"
+    stmt = "id IN (SELECT book_id FROM wnlinks WHERE type = 1 AND name = ?)"
     where(stmt, input)
   end
 

@@ -13,7 +13,7 @@
 
   export let chaps: CV.Wnchap[]
 
-  export let mark_chidx = ubmemo.chidx
+  export let mark_ch_no = ubmemo.chidx
 
   $: same_sname = curr_seed.sname == ubmemo.sname
   $: base_url = seed_path(nvinfo.bslug, curr_seed.sname)
@@ -37,33 +37,33 @@
 {#key curr_seed.sname}
   <div class="chaps">
     {#each chaps as chinfo}
-      {@const [lock_text, lock_icon, lock_iset] = map_privi(chinfo.chidx)}
+      {@const [lock_text, lock_icon, lock_iset] = map_privi(chinfo.ch_no)}
 
       <a
-        href="{base_url}/{chinfo.chidx}/{chinfo.uslug}--mt"
+        href="{base_url}/{chinfo.ch_no}/{chinfo.uslug}--mt"
         class="chinfo"
-        class:_active={chinfo.chidx == mark_chidx}
+        class:_active={chinfo.ch_no == mark_ch_no}
         rel="nofollow">
         <div class="chap-text">
-          <chap-title>{chinfo.title}</chap-title>
-          <chap-chidx>{chinfo.chidx}.</chap-chidx>
+          <span class="title">{chinfo.title}</span>
+          <span class="ch_no">{chinfo.ch_no}.</span>
         </div>
         <div class="chap-meta">
-          <chap-chvol>{chinfo.chvol || 'Chính văn'}</chap-chvol>
-          {#if chinfo.utime > 0}
-            <chap-track data-tip="Lưu: {get_rtime(chinfo.utime)}}">
+          <span class="chdiv">{chinfo.chdiv || 'Chính văn'}</span>
+          {#if chinfo.mtime > 0}
+            <span class="meta" data-tip="Lưu: {get_rtime(chinfo.mtime)}">
               <SIcon name="file-download" />
-            </chap-track>
+            </span>
           {/if}
 
-          {#if same_sname && chinfo.chidx == ubmemo.chidx}
-            <chap-mark data-tip="Xem: {get_rtime(ubmemo.utime)}">
+          {#if same_sname && chinfo.ch_no == ubmemo.chidx}
+            <span class="meta" data-tip="Xem: {get_rtime(ubmemo.utime)}">
               <SIcon name={ubmemo.locked ? 'bookmark' : 'eye'} />
-            </chap-mark>
+            </span>
           {/if}
 
-          <chap-mark data-tip={lock_text}
-            ><SIcon name={lock_icon} iset={lock_iset} /></chap-mark>
+          <span class="meta" data-tip={lock_text}
+            ><SIcon name={lock_icon} iset={lock_iset} /></span>
         </div>
       </a>
     {/each}
@@ -140,7 +140,7 @@
   }
 
   // prettier-ignore
-  chap-title {
+  .title {
     flex: 1;
     @include clamp($width: null);
     @include fgcolor(secd);
@@ -149,26 +149,21 @@
     .chinfo:hover & { @include fgcolor(primary, 5); }
   }
 
-  chap-chidx {
+  .ch_no {
     margin-left: 0.125rem;
     user-select: none;
     @include fgcolor(neutral, 5);
     @include ftsize(xs);
   }
 
-  chap-chvol {
+  .chdiv {
     flex: 1;
     @include fgcolor(neutral, 5);
     @include clamp($width: null);
   }
 
-  chap-track {
-    @include fgcolor(neutral, 5);
-    font-size: 1rem;
-  }
-
-  chap-mark {
-    font-size: 1rem;
-    @include fgcolor(mute);
+  .meta {
+    @include fgcolor(mute, 5);
+    font-size: 0.875rem;
   }
 </style>

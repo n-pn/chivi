@@ -53,7 +53,7 @@ module BookUtil
   end
 
   def scrub_name(zname : String, upcase : Bool = true)
-    CharUtil.canonicalize(zname, upcase: upcase)
+    CharUtil.uniformize(zname, upcase: upcase)
       .sub(/　*(ˇ第.+章ˇ)?　*(最新更新.+)?$/, "")
       .sub(/^　*(.+?)　*[（［].*?[］）]$/) { |_, x| x[1] }
       .sub(/．(ＱＤ|ＣＳ)$/, "")

@@ -4,7 +4,7 @@ require "log"
 module WN::TextStore
   extend self
 
-  def get_chap(seed : WnSeed, chap : WnChap)
+  def get_chap(seed : Wnseed, chap : Chinfo)
     txt_path = gen_txt_path(seed.sname, seed.s_bid, chap.s_cid)
 
     File.file?(txt_path) ? read_txt_file(txt_path) : [""]
@@ -56,7 +56,7 @@ module WN::TextStore
 
   # save chap text file with body parts provided
   @[AlwaysInline]
-  def save_txt_file(seed : WnSeed, chap : WnChap) : String
+  def save_txt_file(seed : Wnseed, chap : Chinfo) : String
     txt_path = gen_txt_path(seed.sname, seed.s_bid, chap.s_cid)
     save_txt_file(txt_path, chap.body)
   end
@@ -100,7 +100,7 @@ module WN::TextStore
 
   # generate zip path
   @[AlwaysInline]
-  def gen_zip_path(seed : WnSeed)
+  def gen_zip_path(seed : Wnseed)
     gen_zip_path(seed.sname, seed.s_bid)
   end
 
@@ -112,7 +112,7 @@ module WN::TextStore
 
   # read text from zip file
   @[AlwaysInline]
-  def read_txt_from_zip(seed : WnSeed, chap : WnChap)
+  def read_txt_from_zip(seed : Wnseed, chap : Chinfo)
     read_txt_from_zip(gen_zip_path(seed), chap.s_cid)
   end
 

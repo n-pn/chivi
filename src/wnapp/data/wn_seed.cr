@@ -3,80 +3,9 @@ require "crorm"
 require "../../_data/_data"
 require "../../zroot/html_parser/raw_rmcata"
 
-require "./wn_repo"
+require "./seed_type"
 
-class WN::WnSeed
-  enum Type
-    Chivi
-    Draft
-    Users
-    Globs
-    Other
-
-    def read_privi(is_owner = false, base_privi = 2)
-      case self
-      when Draft then 1
-      when Chivi then 2
-      when Users then is_owner ? 1 : base_privi
-      else            3
-      end
-    end
-
-    def edit_privi(is_owner = false)
-      case self
-      when Draft then 1
-      when Chivi then 3
-      when Users then is_owner ? 2 : 4
-      else            3
-      end
-    end
-
-    def delete_privi(is_owner = false)
-      case self
-      when Globs then 3
-      when Users then is_owner ? 2 : 4
-      else            5
-      end
-    end
-
-    def type_name
-      case self
-      when Chivi then "chính thức"
-      when Draft then "tạm thời"
-      when Users then "cá nhân"
-      when Globs then "bên ngoài"
-      else            "đặc biệt"
-      end
-    end
-
-    def self.parse(sname : String)
-      fchar = sname[0]
-      case
-      when fchar == '!'      then Globs
-      when fchar == '@'      then Users
-      when sname == "~chivi" then Chivi
-      when sname == "~draft" then Draft
-      else                        Other
-      end
-    end
-
-    def self.read_privi(sname : String, uname : String, base_privi : Int32)
-      parse(sname).read_privi(owner?(sname, uname), base_privi)
-    end
-
-    def self.edit_privi(sname : String, uname : String)
-      parse(sname).edit_privi(owner?(sname, uname))
-    end
-
-    def self.delete_privi(sname : String, uname : String)
-      parse(sname).delete_privi(owner?(sname, uname))
-    end
-
-    def self.owner?(sname : String, uname : String)
-      sname == "@#{uname}"
-    end
-  end
-
+class WN::Wnseed
   ############
 
   class_getter db : DB::Database = PGDB
@@ -88,7 +17,8 @@ class WN::WnSeed
 
   field wn_id : Int32 = 0, pkey: true
   field sname : String = "", pkey: true
-  field s_bid : Int32 = 0
+
+  field s_bid : String = ""
 
   field chap_total : Int32 = 0
   field chap_avail : Int32 = 0
@@ -105,17 +35,21 @@ class WN::WnSeed
   # field updated_at : Time = Time.utc
 
   @[DB::Field(ignore: true)]
-  # getter chaps : Wncata { Wncata.load(@wn_id, @sname, @s_bid) }
-  getter chaps : WnRepo { WnRepo.load(@sname, @s_bid, @wn_id) }
+  getter chap_list : Crorm::SQ3 { Chinfo.load(@sname, @s_bid) }
+
+  @[DB::Field(ignore: true)]
+  getter seed_type : SeedType { SeedType.parse(sname) }
 
   #########
 
-  def initialize(@wn_id, @sname, @s_bid = wn_id, @privi = 2_i16)
+  def initialize(@wn_id, @sname, @s_bid = wn_id.to_s, @privi = 2_i16)
   end
 
-  def mkdirs! : Nil
+  def init!(force : Bool = false) : Nil
+    return unless force || _flag < 0
+
     Dir.mkdir_p("var/texts/rgbks/#{@sname}/#{@s_bid}")
-    Dir.mkdir_p("var/texts/rzips/#{@sname}")
+    Chinfo.init!(@sname, @s_bid)
   end
 
   def to_json(jb : JSON::Builder)
@@ -130,12 +64,8 @@ class WN::WnSeed
     }
   end
 
-  def seed_type
-    Type.parse(sname)
-  end
-
   def remote?
-    @sname.starts_with?('!')
+    self.seed_type.globs?
   end
 
   def owner?(uname : String = "")
@@ -143,11 +73,11 @@ class WN::WnSeed
   end
 
   def edit_privi(uname = "")
-    Type.edit_privi(@sname, uname)
+    self.seed_type.edit_privi(is_owner: owner?(uname))
   end
 
   def read_privi(uname = "")
-    Type.read_privi(@sname, uname, privi.to_i)
+    self.seed_type.read_privi(is_owner: owner?(uname), base_privi: privi.to_i)
   end
 
   def lower_read_privi_count
@@ -155,11 +85,37 @@ class WN::WnSeed
     chap_count > 40 ? chap_count : 40
   end
 
-  def reload_stats!(force : Bool = false)
+  def unpack_old_text!(force : Bool = false)
     return unless force || @chap_avail < 0
 
-    # TextStore.unload_zip!(@sname, @s_bid)
-    self.chaps.reload_stats!(@sname, @s_bid)
+    raise "to be implemented!"
+
+    # chaps = self.chap_list.all(&.<< "where ch_no > 0")
+
+    # clist.open_ro do |db|
+    #   sql = "select ch_no, s_cid from chaps"
+
+    #   db.query_each(sql) do |rs|
+    #     ch_no, s_cid = rs.read(Int32, Int32)
+    #     txt_path = TextStore.gen_txt_path(sname, s_bid, s_cid)
+
+    #     if File.file?(txt_path)
+    #       c_len = File.read(txt_path, encoding: "GB18030").size
+    #       avail += 1 if c_len > 0
+    #     else
+    #       c_len = 0
+    #     end
+
+    #     stats << {c_len, ch_no}
+    #   end
+    # end
+
+    # @repo.open_tx do |db|
+    #   query = "update chaps set c_len = ? where ch_no = ?"
+    #   stats.each { |c_len, ch_no| db.exec(query, c_len, ch_no) }
+    # end
+
+    # avail
 
     # self.upsert!
   end
@@ -170,49 +126,46 @@ class WN::WnSeed
     @mtime = mtime if mtime > 0 || force
   end
 
-  def bump_chmax(ch_no : Int32, force : Bool = false)
-    return unless force || ch_no > self.chap_total
-    @chap_total = ch_no
+  def bump_chmax(chmax : Int32, force : Bool = false)
+    return unless force || chmax > self.chap_total
+    @chap_total = chmax
   end
 
-  def upsert!(db = @@db)
-    stmt = <<-SQL
-      insert into wnseeds (
-        wn_id, sname, s_bid, chap_total, chap_avail,
-        rlink, rtime, privi, _flag, mtime
-      ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-      on conflict (wn_id, sname) do update set
-        s_bid = excluded.s_bid,
-        chap_total = excluded.chap_total, chap_avail = excluded.chap_avail,
-        rlink = excluded.rlink, rtime = excluded.rtime,
-        privi = excluded.privi, _flag = excluded._flag, mtime = excluded.mtime
-      returning id
-      SQL
-
-    @id = db.query_one stmt,
-      @wn_id, @sname, @s_bid, @chap_total, @chap_avail,
-      @rlink, @rtime, @privi, @_flag, @mtime,
-      as: Int32
-
+  def upsert!(query = @@schema.upsert_stmt, args_ = self.db_values, db = @@db)
+    entry = db.write_one(query, *args_, as: self.class)
+    @id = entry.id
     self
   end
 
-  def word_count(from = 1, upto = @chap_total) : Int32
-    self.chaps.word_count(from, upto)
+  def update_stats!(chmax : Int32, mtime : Int64 = Time.utc.to_unix)
+    @chap_total = chmax if @chap_total < chmax
+    @mtime = mtime if @mtime < mtime
+
+    query = @@schema.update_stmt(%w{chap_total mtime})
+    @@db.exec(query, @chap_total, @mtime, @wn_id, @sname)
   end
 
-  def update_from_remote!(mode : Int32 = 0)
+  ###
+
+  def refresh_chlist!(mode : Int32 = 1)
     stale = mode > 0 ? Time.utc - 3.minutes : Time.utc - 30.minutes
 
     if self.remote?
-      parser = ZR::RawRmcata.from_seed(@sname, @s_bid, stale: stale)
-      chlist = parser.chap_list(false)
+      rmcata = ZR::RawRmcata.from_seed(@sname, @s_bid, stale: stale)
     elsif !@rlink.empty?
-      parser = ZR::RawRmcata.from_link(@rlink, stale: stale)
-      chlist = parser.chap_list(true)
+      rmcata = ZR::RawRmcata.from_link(@rlink, stale: stale)
     else
-      raise "not following any remote source!"
+      # Do nothing
     end
+
+    sync_with_remote!(rmcata, mode: mode) if rmcata
+
+    # TODO: smart reload translation instead of force regen
+    self.update_chap_vinfos!
+  end
+
+  private def sync_with_remote!(rmcata : ZR::RawRmcata, mode : Int32 = 0)
+    chlist = rmcata.chap_list
 
     return if chlist.empty?
     max_ch_no = chlist.size
@@ -224,41 +177,59 @@ class WN::WnSeed
 
     # @_flag = parser.status_int.to_i
 
-    self.update_stats!(max_ch_no, parser.update_int)
-    self.chaps.upsert_chap_infos(chlist)
-    self.chaps.translate!(chlist.first.ch_no, chlist.last.ch_no)
+    self.upsert_chap_zinfos!(chlist)
+    self.update_stats!(max_ch_no, rmcata.update_int)
   end
 
-  def update_stats!(chmax : Int32, mtime : Int64 = Time.utc.to_unix)
-    @chap_total = chmax if @chap_total < chmax
-    @mtime = mtime if @mtime < mtime
-
-    # Log.info { [@chap_total, @mtime, @id, mtime] }
-
-    @@db.exec <<-SQL, @chap_total, @mtime, @id
-      update wnseeds set chap_total = $1, mtime = $2 where id = $3
-      SQL
+  private def upsert_chap_zinfos!(chlist : Array(ZR::Chinfo))
+    Chinfo.upsert_zinfos!(self.chap_list, chlist)
   end
 
-  def reload_content!(min = 1, max = 99999)
-    # TODO: smart reload translation instead of force regen
-    self.chaps.translate!(min: min, max: max)
+  private def update_chap_vinfos!(chmin = 1, chmax = 99999)
+    ch_nos, zinfos = Chinfo.get_zinfos(self.chap_list, chmin, chmax)
+    output = Chinfo.gen_vinfos_from_mt(ch_nos, zinfos, @wn_id)
+    Chinfo.update_vinfos!(self.chap_list, output)
   end
 
-  getter seed_conf : Rmconf do
-    case
-    when @sname[0] == '!' then Rmconf.load!(@sname)
-    when !@rlink.empty?   then Rmconf.from_link!(@rlink)
-    else                       raise "not linked with remote source"
-    end
+  ###
+
+  def word_count(chmin = 1, chmax = @chap_total) : Int32
+    Chinfo.word_count(self.chap_list, chmin, chmax)
   end
 
-  def get_chap(ch_no : Int32)
-    self.chaps.get(ch_no).try(&.set_seed(self))
+  def get_chaps(pg_no : Int32, limit = 32)
+    chmax = pg_no &* limit
+    chmin = chmax &- limit
+
+    chmax = @chap_total if chmax > @chap_total
+    Chinfo.get_all(self.chap_list, chmin: chmin, chmax: chmax)
   end
 
-  def save_chap!(chap : WnChap) : Nil
-    self.chaps.upsert_chap_full(chap)
+  def top_chaps(limit : Int32 = 4)
+    chmax = @chap_total
+    Chinfo.get_top(self.chap_list, chmax: chmax, limit: limit)
+  end
+
+  def find_chap(ch_no : Int32)
+    Chinfo.find(self.chap_list, ch_no)
+  end
+
+  def find_prev(ch_no : Int32)
+    Chinfo.find_prev(self.chap_list, ch_no)
+  end
+
+  def find_succ(ch_no : Int32)
+    Chinfo.find_succ(self.chap_list, ch_no)
+  end
+
+  def save_chap!(chinfo : Chinfo) : Nil
+    chinfo.upsert!(db: self.chap_list)
+  end
+
+  def delete_chaps!(from : Int32 = 1, upto : Int32 = self.chap_total)
+    query = "delete from chinfos where ch_no >= $1 and ch_no <= $2"
+    self.chap_list.exec query, from, upto
+    @chap_total = from &- 1
   end
 
   #######
@@ -308,4 +279,13 @@ class WN::WnSeed
   end
 
   ###
+
+  def self.auto_create_privi(sname : String, uname : String) : Int32?
+    case SeedType.parse(sname)
+    when .draft? then 1
+    when .chivi? then 2
+    when .users? then 2
+    else              nil
+    end
+  end
 end

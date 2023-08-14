@@ -77,6 +77,14 @@ module CharUtil
   end
 
   CANONICAL = {
+    '\u00A0' => '　',
+    '\u2002' => '　',
+    '\u2003' => '　',
+    '\u2004' => '　',
+    '\u2007' => '　',
+    '\u2008' => '　',
+    '\u205F' => '　',
+
     ' ' => '　',
     '⟨' => '〈',
     '⟩' => '〉',
@@ -132,10 +140,11 @@ module CharUtil
     '≒' => '≈',
     '≦' => '≤',
     '≧' => '≥',
+
   }
 
   # convert input to fullwidth form
-  def canonicalize(char : Char, upcase : Bool = false) : Char
+  def to_canon(char : Char, upcase : Bool = false) : Char
     case
     when 'a' <= char <= 'z' then to_fullwidth(upcase ? char - 32 : char)
     when '!' <= char <= '~' then to_fullwidth(char)
@@ -143,17 +152,19 @@ module CharUtil
     end
   end
 
-  # puts canonicalize('a', true)
-  # puts canonicalize('a', false)
-  # puts canonicalize('?', true)
-  # puts canonicalize('$', true)
+  # puts to_canon('a', true)
+  # puts to_canon('a', false)
+  # puts to_canon('?', true)
+  # puts to_canon('$', true)
 
   # :ditto:
-  def canonicalize(str : String, upcase : Bool = false) : String
+  def to_canon(str : String, upcase : Bool = false) : String
     String.build do |io|
-      str.each_char { |char| io << canonicalize(char, upcase: upcase) }
+      str.each_char { |char| io << to_canon(char, upcase: upcase) }
     end
   end
+
+  ####
 
   @[AlwaysInline]
   def fullwidth?(char : Char)

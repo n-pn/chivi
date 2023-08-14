@@ -102,9 +102,13 @@ class Rmconf
   #   end
   # end
 
+  def uri_schema
+    self.insecure? ? "http" : "https"
+  end
+
   def full_path(path : String = "/")
     String.build do |io|
-      io << (self.insecure? ? "http" : "https") << "://" << @hostname << path
+      io << self.uri_schema << "://" << @hostname << path
     end
   end
 

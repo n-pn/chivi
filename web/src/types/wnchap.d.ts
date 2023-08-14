@@ -27,17 +27,15 @@ declare namespace CV {
   }
 
   interface Wnchap {
-    chidx: number
+    ch_no: number
+
     title: string
-    chvol: string
+    chdiv: string
     uslug: string
 
-    chars: number
-    parts: number
-    utime: number
+    sizes: number
+    mtime: number
     uname: string
-
-    sname: string
   }
 
   interface Chlist extends Paginate {
