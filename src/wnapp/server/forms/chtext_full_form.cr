@@ -35,7 +35,7 @@ struct WN::ChtextFullForm
     ChtextFullEdit.new(
       wn_id: seed.wn_id, sname: seed.sname,
       ch_no: chap.ch_no, fpath: "#{chap.spath}-#{chap.cksum}",
-      patch: @ztext, uname: user,
+      uname: user,
     ).insert!
   rescue ex
     Log.error(exception: ex) { ex.message.colorize.red }

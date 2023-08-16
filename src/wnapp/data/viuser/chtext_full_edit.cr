@@ -14,8 +14,6 @@ struct WN::ChtextFullEdit
       ch_no integer not null,
       fpath varchar not null,
       --
-      patch text not null,
-      --
       uname varchar not null default '',
       ctime integer not null default 0,
       --
@@ -39,14 +37,12 @@ struct WN::ChtextFullEdit
   field ch_no : Int32 = 0
   field fpath : String = ""
 
-  field patch : String = ""
-
   field uname : String = ""
   field ctime : Int64 = Time.utc.to_unix
 
   field _flag : Int32 = 0
 
-  def initialize(@wn_id, @sname, @ch_no, @fpath, @patch, @uname)
+  def initialize(@wn_id, @sname, @ch_no, @fpath, @uname)
   end
 
   ###
