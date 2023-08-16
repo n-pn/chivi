@@ -237,10 +237,14 @@ class WN::Chinfo
     db.query_one?(query, as: Int32) || 0
   end
 
+  OLD_DIR = "/2tb/app.chivi/var/zchap/infos"
+
   def self.import_old!(repo, sname : String, sn_id : String) : Bool
     db_paths = {
-      "var/zchap/infos/#{sname}/#{sn_id}.db",
-      "var/zchap/infos/#{sname}/#{sn_id}-infos.db",
+      "#{OLD_DIR}/#{sname}/#{sn_id}.db",
+      "#{OLD_DIR}/#{sname}/#{sn_id}.db.old",
+      "#{OLD_DIR}/#{sname}/#{sn_id}-infos.db",
+      "#{OLD_DIR}/#{sname}/#{sn_id}-infos.db.old",
     }
 
     db_paths.each do |db_path|
@@ -251,13 +255,15 @@ class WN::Chinfo
         db.query_all(query, as: OldChap)
       end
 
+      next if old_chaps.empty?
+
       new_chaps = old_chaps.map { |old_chap| self.from(old_chap, sname, sn_id) }
       repo.open_tx { |db| new_chaps.each(&.upsert!(db: db)) }
 
-      return true
+      break
     end
 
-    false
+    true
   end
 
   ####
@@ -294,7 +300,7 @@ class WN::Chinfo
       sname = SeedUtil.fix_sname(sname)
 
       new_chap.spath = "#{sname}/#{sn_id}/#{s_cid}"
-      new_chap.rlink = Rmconf.full_chap_link(sname, sn_id, s_cid)
+      new_chap.rlink = Rmconf.full_chap_link(sname, sn_id, s_cid) if Rmconf.is_remote?(sname)
     when .starts_with?('/')
       new_chap.spath = "#{sname}/#{sn_id}/#{old_chap.s_cid}"
       new_chap.rlink = Rmconf.full_chap_link(sname, sn_id, old_chap.s_cid)
