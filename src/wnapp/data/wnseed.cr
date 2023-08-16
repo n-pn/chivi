@@ -73,6 +73,11 @@ class WN::Wnseed
     self.seed_type.globs?
   end
 
+  def active_remote?
+    return unless @sname[0] == '!' && Rmconf.is_remote?(@sname)
+    Rmconf.load!(@sname).active? # not dead or hidden behind cloudflare
+  end
+
   def owner?(uname : String = "")
     @sname == "@#{uname}"
   end
@@ -152,18 +157,26 @@ class WN::Wnseed
 
   ###
 
-  def refresh_chlist!(mode : Int32 = 1)
-    stale = mode > 0 ? Time.utc - 3.minutes : Time.utc - 30.minutes
+  private def remote_reload_tspan(_mode : Int32 = 1)
+    case _mode
+    when 2 then 3.minutes
+    when 1 then 30.minutes
+    else        10.years
+    end
+  end
+
+  def reload_chlist!(mode : Int32 = 1)
+    stale = Time.utc - remote_reload_tspan(mode)
 
     if self.remote?
-      rmcata = ZR::RawRmcata.from_seed(@sname, @s_bid, stale: stale)
+      rmcata = ZR::RawRmcata.from_seed(@sname, @s_bid, stale: stale) rescue nil
     elsif !@rlink.empty?
-      rmcata = ZR::RawRmcata.from_link(@rlink, stale: stale)
+      rmcata = ZR::RawRmcata.from_link(@rlink, stale: stale) rescue nil
     else
       # Do nothing
     end
 
-    sync_with_remote!(rmcata, mode: mode) if rmcata
+    sync_with_remote!(rmcata, mode: mode) if rmcata && mode >= 0
 
     # TODO: smart reload translation instead of force regen
     self.update_chap_vinfos!

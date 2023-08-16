@@ -26,11 +26,11 @@
   let _onload = false
   let err_msg: string
 
-  async function refresh_seed() {
+  async function reload_chlist(_mode = 1) {
     _onload = true
     err_msg = ''
 
-    const api_url = `/_wn/seeds/${nvinfo.id}/${curr_seed.sname}/refresh`
+    const api_url = `/_wn/seeds/${nvinfo.id}/${curr_seed.sname}/reload`
     const headers = { Accept: 'application/json' }
     const api_res = await fetch(api_url, { headers })
     _onload = false
@@ -41,13 +41,6 @@
     } else {
       await invalidateAll()
     }
-  }
-
-  const reconvert = async () => {
-    const api = `/_wn/seeds/${nvinfo.id}/${curr_seed.sname}/reconvert`
-    const time = await fetch(api).then((r) => r.text())
-    console.log(`time to reconvert: ${time}`)
-    await invalidateAll()
   }
 
   $: [can_upsert, can_reload] = check_edit_privi(
@@ -101,7 +94,7 @@
         <button
           class="m-btn _primary"
           disabled={!can_reload}
-          on:click={refresh_seed}
+          on:click={() => reload_chlist(2)}
           data-tip="Cập nhật danh sách chương tiết từ nguồn ngoài"
           data-tip-loc="bottom"
           data-tip-pos="right">
@@ -134,7 +127,7 @@
           <button
             class="gmenu-item"
             class:_disable={$_user.privi < 0}
-            on:click={reconvert}>
+            on:click={() => reload_chlist(-1)}>
             <SIcon name="language" />
             <span>Dịch lại</span>
           </button>

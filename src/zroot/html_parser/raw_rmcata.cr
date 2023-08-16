@@ -23,7 +23,9 @@ class ZR::RawRmcata
     cpath = conf.make_cata_path(b_id)
     cfile = conf.cata_file_path(b_id)
 
+    stale = Time.utc - 100.years unless conf.active?
     html = conf.load_page(cpath, cfile, stale: stale)
+
     new(html, conf, b_id: b_id.to_s, base: cpath)
   end
 

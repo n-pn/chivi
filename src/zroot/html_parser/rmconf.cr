@@ -95,6 +95,14 @@ class Rmconf
 
   ###
 
+  def active?
+    @seedtype < 2
+  end
+
+  def dead?
+    @seedtype > 3
+  end
+
   # getter root_link : String do
   #   String.build do |io|
   #     io << (@conf.insecure ? "http" : "https")

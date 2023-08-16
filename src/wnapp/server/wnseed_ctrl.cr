@@ -80,13 +80,13 @@ class WN::SeedCtrl < AC::Base
     render json: Wnseed.get!(form.wn_id, form.sname)
   end
 
-  @[AC::Route::GET("/:wn_id/:sname/refresh")]
+  @[AC::Route::GET("/:wn_id/:sname/reload")]
   def refresh(wn_id : Int32, sname : String, mode : Int32 = 1)
     privi = SeedType.edit_privi(sname, _uname) - 1
     guard_privi privi, "cập nhật nguồn"
 
     wnseed = get_wnseed(wn_id, sname)
-    wnseed.refresh_chlist!(mode: mode)
+    wnseed.reload_chlist!(mode: mode)
 
     render json: wnseed
   end
@@ -115,7 +115,7 @@ class WN::SeedCtrl < AC::Base
 
     if rlink = form.rm_link
       wnseed.rlink = rlink
-      spawn wnseed.refresh_chlist!(mode: 1)
+      spawn wnseed.reload_chlist!(mode: 0)
     end
 
     if cut_from = form.cut_from
