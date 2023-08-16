@@ -102,7 +102,7 @@ class M1::DbDict
   end
 
   def self.all(limit : Int32, offset = 0) : Array(self)
-    self.get_all &.<< " where term_total > 0 order by mtime desc limit $1 offset $2"
+    self.get_all limit, offset, &.<< " where term_total > 0 order by mtime desc limit $1 offset $2"
   end
 
   def self.all_cores
@@ -110,7 +110,7 @@ class M1::DbDict
   end
 
   def self.all_books(limit : Int32, offset = 0)
-    self.get_all &.<< "where id > 0 and term_total > 0 order by mtime desc limit $1 offset $2"
+    self.get_all limit, offset, &.<< "where id > 0 and term_total > 0 order by mtime desc limit $1 offset $2"
   end
 
   def self.init_wn_dict!(wn_id : Int32, bslug : String, bname : String, db = self.db)

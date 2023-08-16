@@ -12,7 +12,7 @@ class WN::ChtextCtrl < AC::Base
     wnseed = get_wnseed(wn_id, sname)
     chinfo = get_chinfo(wnseed, ch_no)
 
-    zctext = Zctext.new(wnseed, chinfo)
+    zctext = Chtext.new(wnseed, chinfo)
 
     render json: {
       ztext: zctext.load_all!,

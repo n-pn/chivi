@@ -1,20 +1,32 @@
 require "./chinfo"
-require "./wn_seed"
-require "../../_util/chap_util"
+require "./wnseed"
 
-class WN::Zctext
-  getter cbase : String
+require "../../_util/chap_util"
+require "../../zroot/html_parser/raw_rmchap"
+
+class WN::Chtext
+  getter wc_base : String
+
+  WN_DIR = "var/wnapp/chtext"
+  ZH_DIR = "var/zroot/wntext"
+
+  V0_DIR = "var/texts/rgbks"
 
   def initialize(@seed : Wnseed, @chap : Chinfo)
-    @cbase = "#{seed.sname}/#{seed.s_bid}/#{chap.ch_no}"
+    @wc_base = "#{WN_DIR}/#{seed.wn_id}/#{chap.ch_no}"
+  end
+
+  def wn_path(index : Int32, cksum = @chap.cksum)
+    "#{@wc_base}-#{cksum}-#{index}.txt"
+  end
+
+  def file_exists?
+    !@chap.cksum.empty? && File.file?(wn_path(0))
   end
 
   def get_cksum!(uname : String, _mode = 0)
     return "" if _mode < 0
-
-    if _mode < 1 && !@chap.cksum.empty? && @chap.sizes.size > 1
-      return @chap.cksum
-    end
+    return @chap.cksum if _mode < 1 && file_exists?
 
     if _mode > 1
       load_from_remote!(force: true) || import_existing! || @chap.cksum
@@ -31,18 +43,27 @@ class WN::Zctext
     parser = ZR::RawRmchap.from_link(rlink, stale: stale).tap(&.parse_page!)
 
     parts, sizes, cksum = ChapUtil.split_rawtxt(parser.paras, parser.title)
+
+    zh_path = "#{ZH_DIR}/#{@chap.spath}.txt"
+    Dir.mkdir_p(File.dirname(zh_path))
+    File.open(zh_path, "w") { |file| parts.join(file, "\n\n") }
+
     self.save_text!(parts, sizes, cksum)
   end
 
   def import_existing!
     # Log.info { "find from existing data".colorize.yellow }
 
-    files = {
-      "var/texts/rgbks/#{@seed.sname}/#{@seed.s_bid}/#{@chap.ch_no}.gbk",
-      "var/texts/rgbks/#{@chap.spath}.gbk",
-      "var/texts/rgbks/#{@seed.sname}/#{@seed.s_bid}/#{@chap.ch_no}.txt",
-      "var/texts/rgbks/#{@chap.spath}.txt",
-    }
+    files = ["#{ZH_DIR}/#{@chap.spath}.txt"]
+
+    if @seed.sname[0] != '!'
+      spath = "#{@seed.sname}/#{@seed.wn_id}/#{@chap.ch_no}"
+      files << "#{V0_DIR}/#{spath}.gbk"
+      files << "#{V0_DIR}/#{spath}.txt"
+    end
+
+    files << "#{V0_DIR}/#{@chap.spath}.gbk"
+    files << "#{V0_DIR}/#{@chap.spath}.txt"
 
     return unless file = files.find { |x| File.file?(x) }
     # Log.info { "found: #{file}".colorize.green }
@@ -62,8 +83,10 @@ class WN::Zctext
     @chap.cksum = cksum
     @chap.sizes = sizes.map(&.to_s).join(' ')
 
+    Dir.mkdir_p(File.dirname(@wc_base))
+
     parts.each_with_index do |cpart, index|
-      save_path = self.text_path(index)
+      save_path = self.wn_path(index)
 
       File.open(save_path, "w") do |file|
         file << parts[0]
@@ -75,17 +98,11 @@ class WN::Zctext
     cksum
   end
 
-  DIR = "var/zroot/wntext"
-
-  def text_path(index : Int32)
-    "#{DIR}/#{@cbase}_#{index}-#{@chap.cksum}.txt"
-  end
-
   def load_all!
     return "" if @chap.cksum.empty?
     String.build do |io|
       (@chap.sizes.size).times do |index|
-        cpart = File.read(text_path(index))
+        cpart = File.read(wn_path(index))
         cpart = index > 0 ? cpart.gsub(/^[^\n]+/, "") : cpart.gsub(/\n.+/, "")
 
         io << cpart

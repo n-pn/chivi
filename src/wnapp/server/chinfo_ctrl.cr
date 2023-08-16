@@ -21,17 +21,19 @@ class WN::ChinfoCtrl < AC::Base
 
     load_mode = -1 if _privi < read_privi
 
-    ztext = Zctext.new(wnseed, chinfo)
+    ztext = Chtext.new(wnseed, chinfo)
     cksum = ztext.get_cksum!(_uname, _mode: load_mode)
+    cbase = "#{wnseed.wn_id}/#{chinfo.ch_no}-#{cksum}" unless cksum.empty?
 
     render json: {
       chinfo: chinfo,
       chdata: {
         privi: read_privi,
         rlink: chinfo.rlink,
+
         sizes: chinfo.sizes,
-        cbase: ztext.cbase,
-        cksum: cksum,
+        cbase: cbase,
+
         _prev: wnseed.find_prev(ch_no).try(&._href(-1)),
         _next: wnseed.find_succ(ch_no).try(&._href(1)),
       },

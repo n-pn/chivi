@@ -6,7 +6,7 @@ class M1::TranData
   CRIT_URL = "#{CV_ENV.ys_host}/_ys/crits"
   REPL_URL = "#{CV_ENV.ys_host}/_ys/repls"
 
-  TEXT_DIR = "var/zroot/wntext"
+  TEXT_DIR = "var/wnapp/chtext"
 
   def self.load_cached(type : String, name : String, wn_id : Int32, format : String = "mtl")
     case type

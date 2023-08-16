@@ -1,7 +1,12 @@
 require "crorm"
+require "./seed_util"
 
-class WN::OldChap1
+require "../../_util/chap_util"
+require "../../zroot/html_parser/raw_rmchap"
+
+class WN::OldChap
   include DB::Serializable
+  include DB::Serializable::NonStrict
 
   property ch_no : Int32 # chaper index number
   property s_cid : Int32 # chapter fname in disk/remote
@@ -221,38 +226,37 @@ class WN::Chinfo
     CACHE["#{sname}/#{sn_id}"] ||= self.db(sname, sn_id)
   end
 
-  def self.init!(sname : String, sn_id : String) : Bool
-    Log.info { "reinit #{sname}/#{sn_id}".colorize.red }
-    Dir.mkdir_p("var/zroot/wnchap/#{sname}")
-    Dir.mkdir_p("var/zroot/wntext/#{sname}/#{sn_id}")
-
+  def self.init!(sname : String, sn_id : String, force : Bool = false) : Bool
     repo = self.load(sname, sn_id)
-    import_old_data(repo, sname, sn_id)
+    return false if !force && self.chap_count(repo) > 0
+    import_old!(repo, sname, sn_id)
   end
 
-  def self.import_old_data(repo, sname : String, sn_id : String) : Bool
-    db_path = "var/zchap/infos/#{sname}/#{sn_id}.db"
+  def self.chap_count(db : Crorm::SQ3)
+    query = "select ch_no from chinfos order by ch_no desc limit 1"
+    db.query_one?(query, as: Int32) || 0
+  end
 
-    unless File.file?(db_path)
-      return import_older_data(repo, db_path.sub(".db", "-infos.db"))
-    end
+  def self.import_old!(repo, sname : String, sn_id : String) : Bool
+    db_paths = {
+      "var/zchap/infos/#{sname}/#{sn_id}.db",
+      "var/zchap/infos/#{sname}/#{sn_id}-infos.db",
+    }
 
-    if File.file?(db_path)
+    db_paths.each do |db_path|
+      next unless File.file?(db_path)
+
       old_chaps = DB.open("sqlite3:#{db_path}?immutable=1") do |db|
-        db.query_all("select * from chaps where ch_no > 0 order by ch_no asc", as: OldChap1)
+        query = "select * from chaps where ch_no > 0 order by ch_no asc"
+        db.query_all(query, as: OldChap)
       end
 
       new_chaps = old_chaps.map { |old_chap| self.from(old_chap, sname, sn_id) }
+      repo.open_tx { |db| new_chaps.each(&.upsert!(db: db)) }
 
-      repo.open_tx do |db|
-        new_chaps.each(&.upsert!(db: db))
-      end
+      return true
     end
 
-    true
-  end
-
-  def self.import_older_data(repo, db_path : String)
     false
   end
 
@@ -268,7 +272,7 @@ class WN::Chinfo
     )
   end
 
-  def self.from(old_chap : OldChap1, sname : String, sn_id : String)
+  def self.from(old_chap : OldChap, sname : String, sn_id : String)
     new_chap = Chinfo.new(ch_no: old_chap.ch_no)
     new_chap.mtime = old_chap.mtime
     new_chap.uname = old_chap.uname

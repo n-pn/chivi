@@ -3,20 +3,15 @@ import { chap_path, _pgidx } from '$lib/kit_path'
 // import { book_nav, seed_nav, nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
-import { error } from '@sveltejs/kit'
 
 type Data = { cvmtl: string; ztext: string }
 
 export const load = (async ({ parent, params, fetch }) => {
-  const pslug = params.part || ''
-  const cpart = parseInt(pslug.split('-').pop(), 10) || 1
-
   const { nvinfo, chdata } = await parent()
 
-  const cksum = chdata.cksum
-  if (!cksum) throw error(404, 'Chương tiết không tồn tại!')
+  const cpart = parseInt((params.part || '').split('-').pop(), 10) || 1
+  const cpath = `${chdata.cbase}_${cpart}`
 
-  const cpath = `${chdata.cbase}_${cpart}-${chdata.cksum}`
   const p_len = chdata.sizes.length - 1
   const label = p_len > 1 ? `[${cpart}/${p_len}]` : ''
 
