@@ -17,7 +17,7 @@ class M1::TranData
     when "posts"
       input = File.read("tmp/qtran/#{name}.txt")
     when "chaps"
-      input = CharUtil.normalize(File.read("#{TEXT_DIR}/#{name}.txt"))
+      input = File.read("#{TEXT_DIR}/#{name}.txt")
     else
       raise "unsupported!"
     end
@@ -60,6 +60,8 @@ class M1::TranData
 
   def cv_post(io : IO, engine : MtCore)
     @input.each_line do |line|
+      line = CharUtil.normalize(line)
+
       data = engine.cv_plain(line)
       @to_mtl ? data.to_mtl(io) : data.to_txt(io)
       io << '\n'
@@ -73,6 +75,7 @@ class M1::TranData
     title = input.next
 
     return unless title.is_a?(String)
+    title = CharUtil.normalize(title)
 
     data = w_title ? engine.cv_title(title) : engine.cv_plain(title)
     @to_mtl ? data.to_mtl(io) : data.to_txt(io)
@@ -80,6 +83,8 @@ class M1::TranData
     io << '\n'
 
     input.each do |line|
+      line = CharUtil.normalize(line)
+
       data = engine.cv_plain(line)
       @to_mtl ? data.to_mtl(io) : data.to_txt(io)
       io << '\n'

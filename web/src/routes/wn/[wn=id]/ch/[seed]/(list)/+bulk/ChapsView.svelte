@@ -3,20 +3,11 @@
   import type { Zchap } from './text_split'
 
   export let chaps: Zchap[]
+  export let pg_no = 1
 
-  export let start: number = 1
-
-  const sum_length = (list: string[]) => list.reduce((a, x) => a + x.length, 0)
-
-  let pg_no = 1
-
-  const limit = 32
-
-  $: pgmax = Math.floor((chaps.length - 1) / limit) + 1
-
-  $: offset = (pg_no - 1) * limit
-
-  $: curr_chaps = chaps.slice(offset, offset + limit)
+  $: start = (pg_no - 1) * 32
+  $: pgmax = Math.floor((chaps.length - 1) / 32) + 1
+  $: cpage = chaps.slice(start, start + 32)
 </script>
 
 <div class="count">
@@ -26,15 +17,15 @@
 </div>
 
 <div class="chaps">
-  {#each curr_chaps as chap, idx}
+  {#each cpage as chap, idx}
     <div class="chap">
       <div class="chap-main">
-        <span class="chidx">{offset + idx + 1}.</span>
+        <span class="ch.ch_no">{start + idx + 1}.</span>
         <span class="title">{chap.title}</span>
         <span class="c_len"
-          >(<span class="fg-warn">{sum_length(chap.lines)}</span> chữ)</span>
+          >(<span class="fg-warn">{chap.ztext.length}</span> chữ)</span>
         <span class="ch_no"
-          >Vị trí: <span class="fg-warn">{offset + start + idx}</span></span>
+          >Vị trí: <span class="fg-warn">{chap.ch_no}</span></span>
       </div>
 
       {#if chap.chdiv}
@@ -115,17 +106,7 @@
     line-height: 1.375rem;
   }
 
-  // .chap-secd {
-  //   display: flex;
-  //   gap: 0.5rem;
-  //   line-height: 1.25;
-
-  //   @include fgcolor(tert);
-  //   font-style: italic;
-  //   font-size: rem(14px);
-  // }
-
-  .chidx {
+  .ch_no {
     font-weight: 500;
     font-size: rem(12px);
     @include fgcolor(warning, 5);

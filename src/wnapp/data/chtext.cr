@@ -16,45 +16,53 @@ class WN::Chtext
     @wc_base = "#{WN_DIR}/#{seed.wn_id}/#{chap.ch_no}"
   end
 
-  def wn_path(index : Int32, cksum = @chap.cksum)
-    "#{@wc_base}-#{cksum}-#{index}.txt"
+  def wn_path(p_idx : Int32, cksum : String = @chap.cksum)
+    "#{@wc_base}-#{cksum}-#{p_idx}.txt"
+  end
+
+  def zh_path(cksum : String = @chap.cksum)
+    "#{ZH_DIR}/#{@chap.spath}-#{cksum}-#{@chap.ch_no}.txt"
   end
 
   def file_exists?
-    !@chap.cksum.empty? && File.file?(wn_path(0))
+    !@chap.cksum.empty? && File.file?(wn_path(p_idx: 0))
   end
 
-  def get_cksum!(uname : String, _mode = 0)
+  def get_cksum!(uname : String = "", _mode = 0)
     return "" if _mode < 0
-    return @chap.cksum if _mode < 1 && file_exists?
+    return @chap.cksum if _mode < 2 && file_exists?
 
     if _mode > 1
-      load_from_remote!(force: true) || import_existing! || @chap.cksum
+      load_from_remote!(uname: uname, force: true) || import_existing! || @chap.cksum
     else
-      import_existing! || load_from_remote!(force: false) || @chap.cksum
+      import_existing! || load_from_remote!(uname: uname, force: false) || @chap.cksum
     end
   end
 
-  def load_from_remote!(force : Bool = false)
+  def save_from_upload!(ztext : String, uname : String = "")
+    @chap.uname = uname
+    @chap.mtime = Time.utc.to_unix
+
+    self.save_text!(ztext: ztext)
+  end
+
+  def load_from_remote!(uname : String, force : Bool = false)
     rlink = @chap.rlink
     return if rlink.empty?
 
     stale = Time.utc - (force ? 1.minutes : 20.years)
-    parser = ZR::RawRmchap.from_link(rlink, stale: stale).tap(&.parse_page!)
+    title, paras = ZR::RawRmchap.from_link(rlink, stale: stale).parse_page!
 
-    parts, sizes, cksum = ChapUtil.split_rawtxt(parser.paras, parser.title)
+    @chap.uname = uname
+    @chap.mtime = Time.utc.to_unix
 
-    zh_path = "#{ZH_DIR}/#{@chap.spath}.txt"
-    Dir.mkdir_p(File.dirname(zh_path))
-    File.open(zh_path, "w") { |file| parts.join(file, "\n\n") }
-
-    self.save_text!(parts, sizes, cksum)
+    self.save_text!(paras: paras, title: title)
   end
 
   def import_existing!
     # Log.info { "find from existing data".colorize.yellow }
 
-    files = ["#{ZH_DIR}/#{@chap.spath}.txt"]
+    files = [self.zh_path]
 
     if @seed.sname[0] != '!'
       spath = "#{@seed.sname}/#{@seed.wn_id}/#{@chap.ch_no}"
@@ -69,21 +77,34 @@ class WN::Chtext
     # Log.info { "found: #{file}".colorize.green }
 
     encoding = file.ends_with?("gbk") ? "GB18030" : "UTF-8"
-
-    lines = File.read_lines(file, encoding: encoding).reject(&.blank?)
-    lines.map! { |line| TextUtil.canon_clean(line) }
-
-    parts, sizes, cksum = ChapUtil.split_rawtxt(lines)
-    self.save_text!(parts, sizes, cksum)
+    self.save_text!(ztext: File.read(file, encoding: encoding, invalid: :skip))
   end
 
-  def save_text!(parts : Array(String), sizes : Array(Int32), cksum : UInt32) : String
-    cksum = ChapUtil.cksum_to_s(cksum)
+  def save_text!(ztext : String) : String
+    lines = [] of String
 
-    @chap.cksum = cksum
+    ztext.each_line do |line|
+      lines << TextUtil.canon_clean(line) unless line.blank?
+    end
+
+    self.save_text!(paras: lines)
+  end
+
+  def save_text!(paras : Array(String), title : String = paras.shift) : String
+    parts, sizes, cksum = ChapUtil.split_rawtxt(lines: paras, title: title)
+    save_text!(parts, cksum: cksum, sizes: sizes)
+  end
+
+  def save_text!(parts : Array(String),
+                 cksum : UInt32,
+                 sizes : Array(Int32) = parts.map(&.size)) : String
+    @chap.cksum = ChapUtil.cksum_to_s(cksum)
     @chap.sizes = sizes.map(&.to_s).join(' ')
 
-    Dir.mkdir_p(File.dirname(@wc_base))
+    self.save_backup!(parts)
+    # return @chap.cksum if File.file?(self.wn_path(0))
+
+    # Dir.mkdir_p(File.dirname(@wc_base))
 
     parts.each_with_index do |cpart, index|
       save_path = self.wn_path(index)
@@ -94,21 +115,39 @@ class WN::Chtext
       end
     end
 
-    @chap.update!(db: @seed.chap_list)
-    cksum
+    @chap.upsert!(db: @seed.chap_list)
+    @chap.cksum
+  end
+
+  private def save_backup!(parts : Array(String), cksum : String = @chap.cksum)
+    Log.info { "save backup!".colorize.yellow }
+
+    zh_path = self.zh_path(cksum)
+    return if File.file?(zh_path)
+
+    dirname = File.dirname(zh_path)
+    Dir.mkdir_p(dirname)
+
+    # TODO: track activity?
+
+    File.open(zh_path, "w") { |file| parts.join(file, "\n\n") }
   end
 
   def load_all!
     return "" if @chap.cksum.empty?
-    String.build do |io|
-      (@chap.sizes.size).times do |index|
-        cpart = File.read(wn_path(index))
-        cpart = index > 0 ? cpart.gsub(/^[^\n]+/, "") : cpart.gsub(/\n.+/, "")
 
+    String.build do |io|
+      @chap.sizes.each_index do |p_idx|
+        cpart = File.read(self.wn_path(p_idx))
+        cpart = p_idx > 0 ? cpart.gsub(/^[^\n]+/, "") : cpart.gsub(/\n.+/, "")
         io << cpart
       rescue ex
-        io << "[Có lỗi, mời liên hệ ban quản trị!]"
+        io << "[[Thiếu nội dung, mời liên hệ ban quản trị!]]"
       end
     end
+  end
+
+  def load_part!(p_idx : Int32 = 1)
+    File.read(self.wn_path(p_idx))
   end
 end

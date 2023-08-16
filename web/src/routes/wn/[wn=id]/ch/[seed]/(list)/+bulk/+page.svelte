@@ -17,28 +17,45 @@
   import { seed_path, _pgidx } from '$lib/kit_path'
 
   import SplitOpts, { Opts } from './SplitOpts.svelte'
-  import ChapList from './ChapList.svelte'
+  import ChapsView from './ChapsView.svelte'
 
   export let data: PageData
   $: ({ nvinfo, curr_seed, seed_data } = data)
+  $: min_privi = seed_data.edit_privi
+
+  let chdiv = data.chdiv || ''
+  let start = data.start
 
   let input = ''
-  let start = data.start
+  let pg_no = 1
+
   let files: FileList
   let chaps: Zchap[] = []
 
   let opts = new Opts()
   let err_msg = ''
 
-  $: {
+  $: if (input) {
+    console.log(`parsing input: ${input.length}`)
     chaps = []
+    err_msg = ''
+
     try {
-      err_msg = ''
       chaps = split_text(input, opts)
     } catch (ex) {
+      err_msg = ex.toString()
       console.log(ex)
-      err_msg = ex
     }
+  }
+
+  $: if (start) {
+    console.log(`update start offset: ${start}`)
+    for (let i = 0; i < chaps.length; i++) chaps[i].ch_no = start + i
+  }
+
+  $: if (chdiv) {
+    console.log(`update initial division: ${chdiv}`)
+    for (const chap of chaps) chap.chdiv ||= chdiv
   }
 
   const split_text = (input: string, options: Opts) => {
@@ -48,15 +65,17 @@
       case 1:
         let min_blanks = +options.min_blanks
         if (min_blanks < 1) min_blanks = 1
-        return split.split_mode_1(input, min_blanks, options.trim_space)
+        let trim_space = options.trim_space
+
+        return split.split_mode_1(input, min_blanks, trim_space, chdiv, start)
       case 2:
-        return split.split_mode_2(input, options.need_blank)
+        return split.split_mode_2(input, options.need_blank, chdiv, start)
       case 3:
-        return split.split_mode_3(input, options.chdiv_labels)
+        return split.split_mode_3(input, options.chdiv_labels, chdiv, start)
       case 4:
-        return split.split_mode_4(input, options.custom_regex)
+        return split.split_mode_4(input, options.custom_regex, chdiv, start)
       default:
-        return split.split_mode_0(input, 3)
+        return split.split_mode_0(input, 3, chdiv, start)
     }
   }
 
@@ -84,39 +103,32 @@
     err_msg = ''
     _onload = true
 
-    const body = render_body(chaps)
+    for (let index = 0; index < chaps.length; index += 32) {
+      const page = chaps.slice(index, index + 32)
 
-    const url = `/_wn/texts/${nvinfo.id}/${curr_seed.sname}?start=${start}`
-    const res = await fetch(url, { method: 'POST', body })
+      pg_no = index / 32 + 1
+      err_msg = await submit_part(page)
+      if (err_msg) break
+    }
+
     _onload = false
 
-    if (!res.ok) {
-      err_msg = await res.text()
-      console.log({ err_msg })
+    if (err_msg) {
+      alert(err_msg)
     } else {
       await invalidateAll()
       await goto(seed_path(nvinfo.bslug, curr_seed.sname, _pgidx(start)))
     }
   }
 
-  function render_body(chaps: Zchap[]) {
-    let body = ''
+  async function submit_part(chaps: Zchap[]) {
+    const url = `/_wn/texts/${nvinfo.id}/${curr_seed.sname}`
+    const headers = { 'Content-type': 'application/json' }
+    const body = JSON.stringify(chaps)
+    const res = await fetch(url, { headers, method: 'POST', body })
 
-    for (let idx = 0; idx < chaps.length; idx++) {
-      const { chdiv, title, lines } = chaps[idx]
-
-      if (chdiv) body += chdiv + '\n\n'
-
-      body += title
-      for (const line of lines) {
-        const clean_line = line.trim()
-        if (clean_line) body += '\n' + clean_line
-      }
-
-      if (idx < chaps.length - 1) body += '\n\n'
-    }
-
-    return body
+    if (res.ok) return ''
+    else return await res.text()
   }
 
   const trad2sim = async (_: Event) => {
@@ -124,14 +136,6 @@
     input = await opencc(input, 'hk2s')
     _onload = false
   }
-
-  const max_chars_allowed = [
-    100_000, 500_000, 2_000_000, 5_000_000, 10_000_000, 20_000_000,
-  ]
-
-  $: _privi = $_user.privi
-  $: max_chars = _privi < 0 ? 0 : max_chars_allowed[_privi]
-  $: limit_exceed = input.length > max_chars
 </script>
 
 <svelte:head>
@@ -145,12 +149,11 @@
     <section class="input">
       <div class="label">
         <span>Nội dung:</span>
-        <em data-tip="Giới hạn số ký tự">{input.length}/{max_chars}</em>
+        <em data-tip="Tổng số ký tự">{input.length}</em>
       </div>
 
       <textarea
         class="m-input"
-        class:_err={input.length > max_chars}
         name="input"
         rows="25"
         bind:value={input}
@@ -160,8 +163,8 @@
     </section>
 
     <section class="preview">
-      <SplitOpts bind:opts {_onload} />
-      <ChapList {chaps} {start} />
+      <SplitOpts {_onload} bind:opts />
+      <ChapsView {chaps} bind:pg_no />
     </section>
   </div>
 
@@ -213,13 +216,13 @@
         <button
           type="button"
           class="m-btn _primary _fill"
-          disabled={_onload || _privi < seed_data.edit_privi || limit_exceed}
-          data-tip="Bạn cần quyền hạn tối thiểu là {seed_data.edit_privi} để thêm chương"
+          disabled={_onload || $_user.privi < min_privi}
+          data-tip="Bạn cần quyền hạn tối thiểu là {min_privi} để thêm chương"
           data-tip-pos="right"
           on:click={submit}>
           <SIcon name={_onload ? 'loader-2' : 'send'} spin={_onload} />
           <span class="m-show-ts -text">Đăng tải</span>
-          <SIcon name="privi-{seed_data.edit_privi}" iset="sprite" />
+          <SIcon name="privi-{min_privi}" iset="sprite" />
         </button>
       </div>
     </footer>

@@ -61,7 +61,6 @@ class ZR::RawRmchap
 
   getter title = ""
   getter paras = [] of String
-  getter? parsed = false
 
   def initialize(html : String, @conf : Rmconf, @extra = "")
     @page = Rmpage.new(html)
@@ -144,6 +143,7 @@ class ZR::RawRmchap
   def parse_page!
     @title = extract_title(@conf.chap_name)
     @paras = extract_paras(@conf.chap_type, @conf.chap_body)
-    @parsed = true
+
+    {@title, @paras}
   end
 end

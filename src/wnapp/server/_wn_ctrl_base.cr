@@ -26,4 +26,8 @@ abstract class AC::Base
   private def get_chinfo(seed : WN::Wnseed, ch_no : Int32)
     seed.find_chap(ch_no) || raise NotFound.new("Chương tiết không tồn tại")
   end
+
+  private def get_or_new_chinfo(seed : WN::Wnseed, ch_no : Int32)
+    seed.find_chap(ch_no) || WN::Chinfo.new(ch_no)
+  end
 end

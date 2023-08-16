@@ -103,7 +103,7 @@ class WN::Chinfo
     }
   end
 
-  def self.full_details(can_view : Bool = true)
+  def full_details(can_view : Bool = true)
     {
       rlink: @rlink,
       spath: @spath,

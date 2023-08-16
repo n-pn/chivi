@@ -22,13 +22,13 @@
   $: ({ nvinfo } = data)
   $: disabled = $_user.privi < 1 || ($_user.privi == 1 && ztext.length > 30000)
 
-  $: action_url = `/_wn/texts/${data.wn_id}/${data.sname}/${ch_no}`
+  $: action_url = `/_wn/texts/${data.wn_id}/${data.sname}`
 
   async function submit(event: Event) {
     event.preventDefault()
 
     const headers = { 'Content-Type': 'application/json' }
-    const body = JSON.stringify({ chdiv, title, ztext })
+    const body = JSON.stringify({ ch_no, chdiv, title, ztext })
 
     const res = await fetch(action_url, { method: 'PUT', headers, body })
 

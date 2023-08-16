@@ -203,7 +203,7 @@ class WN::Wnseed
     Chinfo.upsert_zinfos!(self.chap_list, chlist)
   end
 
-  private def update_chap_vinfos!(chmin = 1, chmax = 99999)
+  def update_chap_vinfos!(chmin = 1, chmax = 99999)
     ch_nos, zinfos = Chinfo.get_zinfos(self.chap_list, chmin, chmax)
     output = Chinfo.gen_vinfos_from_mt(ch_nos, zinfos, @wn_id)
     Chinfo.update_vinfos!(self.chap_list, output)
@@ -230,6 +230,10 @@ class WN::Wnseed
 
   def find_chap(ch_no : Int32)
     Chinfo.find(self.chap_list, ch_no)
+  end
+
+  def load_chap(ch_no : Int32)
+    find_chap(ch_no) || Chinfo.new(ch_no)
   end
 
   def find_prev(ch_no : Int32)
