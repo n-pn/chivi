@@ -4,12 +4,21 @@ class AI::MxNode
   include MtNode
 
   getter list : Array(MtNode)
+  getter _ord : Array(String)? = nil
 
-  def initialize(@list, @ptag, @attr, @_idx)
+  def initialize(@list, @ptag, @attr, @_idx, @_ord = nil)
   end
 
-  def each(&)
+  def z_each(&)
     @list.each { |node| yield node }
+  end
+
+  def v_each(&)
+    if _ord = @_ord
+      _ord.each { |_idx| yield @list[_idx] }
+    else
+      @list.each { |node| yield node }
+    end
   end
 
   def last

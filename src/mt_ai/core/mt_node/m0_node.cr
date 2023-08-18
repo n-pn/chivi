@@ -11,7 +11,11 @@ class AI::M0Node
   def initialize(@zstr, @ptag, @attr, @_idx)
   end
 
-  def each(&)
+  def z_each(&)
+    yield self
+  end
+
+  def v_each(&)
     yield self
   end
 

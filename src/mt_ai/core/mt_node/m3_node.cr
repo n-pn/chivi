@@ -10,7 +10,13 @@ class AI::M3Node
   def initialize(@left, @middle, @right, @ptag, @attr, @_idx)
   end
 
-  def each(&)
+  def z_each(&)
+    yield left
+    yield middle
+    yield right
+  end
+
+  def v_each(&)
     yield left
     yield middle
     yield right

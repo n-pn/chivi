@@ -16,7 +16,12 @@ class AI::M2Node
     end
   end
 
-  def each(&)
+  def z_each(&)
+    yield left
+    yield right
+  end
+
+  def v_each(&)
     if @flip
       yield right
       yield left

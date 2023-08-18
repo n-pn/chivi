@@ -3,20 +3,20 @@ require "./_base"
 class AI::VpNode
   include MtNode
 
-  getter verb : Array(MtNode)
-  getter pref = [] of MtNode
-  getter suff = [] of MtNode
+  getter data : Array(MtNode)
 
-  def initialize(@verb, @ptag, @attr, @_idx)
+  def initialize(@data, @ptag, @attr, @_idx)
   end
 
-  def each(&)
-    pref.each { |node| yield node }
-    verb.each { |node| yield node }
-    suff.each { |node| yield node }
+  def z_each(&)
+    @data.sort_by(&._idx).each { |node| yield node }
+  end
+
+  def v_each(&)
+    @data.each { |node| yield node }
   end
 
   def last
-    @verb.last
+    @data.max_by(&._idx)
   end
 end

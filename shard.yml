@@ -122,9 +122,12 @@ dependencies:
   micrate:
     github: amberframework/micrate
 
-  xxhash:
-    github: zph/xxhash
-    version: ~> 1.0.0
+  # xxhash:
+  #   github: zph/xxhash
+  #   version: ~> 1.0.0
+
+  wordsmith:
+    github: luckyframework/wordsmith
 
   # zip:
   #   github: n-pn/libzip.cr

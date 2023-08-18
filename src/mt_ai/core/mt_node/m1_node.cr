@@ -8,7 +8,11 @@ class AI::M1Node
   def initialize(@node, @ptag, @attr, @_idx)
   end
 
-  def each(&)
+  def z_each(&)
+    yield @node
+  end
+
+  def v_each(&)
     yield @node
   end
 
