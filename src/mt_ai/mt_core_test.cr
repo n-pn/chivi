@@ -123,7 +123,7 @@ TXT
 # puts do_test(TEST6)
 
 def parse_file(input : String)
-  url = "localhost:5555/mtl/electra_small/file?file=#{input}"
+  url = "localhost:5555/mtl/electra_base/file?file=#{input}"
   HTTP::Client.get(url) do |res|
     raise "invalid: #{res.body_io.gets_to_end}" unless res.status.success?
     # puts File.read(input.sub(".txt", ".con"))
@@ -139,7 +139,7 @@ end
 # end
 time = Time.measure do
   # parse_line " “浅川同学。”一花笑吟吟道，“昨天下午的提议你考虑的怎么样了？” "
-  parse_file "/2tb/tmp.chivi/texts/127-33h89j-1.txt"
+  parse_file "/2tb/tmp.chivi/texts/1-f3mh03-1.txt"
 end
 
 puts time
