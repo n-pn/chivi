@@ -1,13 +1,15 @@
 require "./mt_node/*"
 
-module AI::MtNode
-  # references:
-  # - https://hanlp.hankcs.com/docs/annotations/pos/ctb.html
-  # - https://hanlp.hankcs.com/docs/annotations/constituency/ctb.html
+# references:
+# - https://hanlp.hankcs.com/docs/annotations/pos/ctb.html
+# - https://hanlp.hankcs.com/docs/annotations/constituency/ctb.html
+
+class AI::MtData
+  def initialize(@data : MtNode)
+  end
 
   def self.parse(input : String, cleaned = false)
     input = input.gsub(/\n[\t\s]+/, " ") unless cleaned
-    puts input
 
     iter = input.each_char
     iter.next # remove first '(' character
@@ -69,5 +71,5 @@ module AI::MtNode
     end
   end
 
-  pp parse("(NP\n  (QP (CD 很多))\n  (DNP (NP (NN 医学) (NN 领域) (PU 、) (NN 制药) (NN 领域)) (DEG 的))\n  (NP (NN 专家)))")
+  # pp parse("(NP\n  (QP (CD 很多))\n  (DNP (NP (NN 医学) (NN 领域) (PU 、) (NN 制药) (NN 领域)) (DEG 的))\n  (NP (NN 专家)))")
 end

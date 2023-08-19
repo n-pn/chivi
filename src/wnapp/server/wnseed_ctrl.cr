@@ -19,6 +19,21 @@ class WN::SeedCtrl < AC::Base
     seeds.find(&.sname.== sname) || Wnseed.new(wn_id, sname).tap(&.upsert!)
   end
 
+  @[AC::Route::GET("/:wn_id/:sname/brief")]
+  def brief(wn_id : Int32, sname : String)
+    wnseed = get_wnseed(wn_id, sname)
+
+    tdiff = Time.utc - Time.unix(wnseed.rtime)
+    # FIXME: change timespan according to `_flag`
+    fresh = tdiff < 24.hours
+
+    render json: {
+      chap_count: wnseed.chap_total,
+      chap_avail: wnseed.chap_avail,
+      track_link: wnseed.rlink,
+    }
+  end
+
   @[AC::Route::GET("/:wn_id/:sname")]
   def show(wn_id : Int32, sname : String)
     wnseed = get_wnseed(wn_id, sname)

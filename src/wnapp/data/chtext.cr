@@ -120,7 +120,7 @@ class WN::Chtext
   end
 
   private def save_backup!(parts : Array(String), cksum : String = @chap.cksum)
-    Log.info { "save backup!".colorize.yellow }
+    # Log.info { "save backup!".colorize.yellow }
 
     zh_path = self.zh_path(cksum)
     return if File.file?(zh_path)
@@ -138,7 +138,7 @@ class WN::Chtext
 
     String.build do |io|
       @chap.sizes.each_index do |p_idx|
-        cpart = File.read(self.wn_path(p_idx))
+        cpart = load_part!(p_idx)
         cpart = p_idx > 0 ? cpart.gsub(/^[^\n]+/, "") : cpart.gsub(/\n.+/, "")
         io << cpart
       rescue ex

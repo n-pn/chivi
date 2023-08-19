@@ -1,3 +1,4 @@
+require "colorize"
 require "./mt_core"
 
 TEST1 = "(NP (DNP (NP (NR 家乐福) (CC 或) (NR 大润发)) (DEG 的)) (NP (NN 大卖场)))"
@@ -104,9 +105,41 @@ TEST6 = <<-TXT
     (PU 。)))
 TXT
 
-CORE = AI::MtCore.new(0)
-puts CORE.translate(TEST2)
-puts CORE.translate(TEST3)
-puts CORE.translate(TEST4)
-puts CORE.translate(TEST5)
-puts CORE.translate(TEST6)
+# CORE = AI::MtCore.new(0)
+
+# def do_test(input : String)
+#   input = input.strip
+#   puts input
+#   puts "--------------------------------".colorize.dark_gray
+#   puts CORE.translate(input).colorize.yellow
+#   puts "--------------------------------".colorize.dark_gray
+# end
+
+# puts do_test(TEST1)
+# puts do_test(TEST2)
+# puts do_test(TEST3)
+# puts do_test(TEST4)
+# puts do_test(TEST5)
+# puts do_test(TEST6)
+
+def parse_file(input : String)
+  url = "localhost:5555/mtl/electra_small/file?file=#{input}"
+  HTTP::Client.get(url) do |res|
+    raise "invalid: #{res.body_io.gets_to_end}" unless res.status.success?
+    # puts File.read(input.sub(".txt", ".con"))
+  end
+end
+
+# def parse_line(input : String)
+#   url = "localhost:5555/con/rand"
+
+#   HTTP::Client.post(url, body: input) do |res|
+#     puts res.body_io.gets_to_end
+#   end
+# end
+time = Time.measure do
+  # parse_line " “浅川同学。”一花笑吟吟道，“昨天下午的提议你考虑的怎么样了？” "
+  parse_file "/2tb/tmp.chivi/texts/127-33h89j-1.txt"
+end
+
+puts time

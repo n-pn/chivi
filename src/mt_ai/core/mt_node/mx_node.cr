@@ -4,7 +4,7 @@ class AI::MxNode
   include MtNode
 
   getter list : Array(MtNode)
-  getter _ord : Array(String)? = nil
+  getter _ord : Array(Int32)? = nil
 
   def initialize(@list, @ptag, @attr, @_idx, @_ord = nil)
   end

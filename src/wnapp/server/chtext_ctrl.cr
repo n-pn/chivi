@@ -56,6 +56,18 @@ class WN::ChtextCtrl < AC::Base
     }
   end
 
+  @[AC::Route::GET("/:ch_no/parts")]
+  def parts(wn_id : Int32, sname : String, ch_no : Int32)
+    wnseed = get_wnseed(wn_id, sname)
+    chinfo = wnseed.load_chap(ch_no)
+    chtext = Chtext.new(wnseed, chinfo)
+
+    cksum = chtext.get_cksum!(_uname, _mode: 0)
+    parts = chinfo.sizes.map_with_index { |_, p_idx| chtext.load_part!(p_idx) }
+
+    render json: {cksum: cksum, parts: parts}
+  end
+
   def guard_edit_privi(wn_id : Int32, sname : String)
     type = SeedType.parse(sname)
 
