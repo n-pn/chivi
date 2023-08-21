@@ -1,8 +1,8 @@
 require "./_wn_ctrl_base"
 require "../data/viuser/chtext_anlz_ulog"
 
-class WN::ChanlztCtrl < AC::Base
-  base "/_wn/anlzs"
+class WN::UploadCtrl < AC::Base
+  base "/_wn"
 
   struct AnlzForm
     include JSON::Serializable
@@ -26,28 +26,20 @@ class WN::ChanlztCtrl < AC::Base
     end
 
     def save_con!
-      con_path = "#{DIR}/#{@wn_id}/#{@ch_no}-#{@cksum}-#{p_idx}.con"
-
-      File.open(con_path, "a") do |file|
-        @con_text.each_line.with_index do |con, idx|
-          file << idx << '\t' << @_algo << '\t' << con << '\n'
-        end
-      end
+      path = "#{DIR}/#{@wn_id}/#{@ch_no}-#{@cksum}-#{p_idx}.#{@_algo}.con"
+      File.write(path, @con_text)
     end
 
     def save_log!(uname : String)
       ChtextAnlzUlog.new(
-        wn_id: @wn_id,
-        ch_no: @ch_no,
-        cksum: @cksum,
-        p_idx: @p_idx,
-        uname: uname,
+        ch_no: @ch_no, p_idx: @p_idx,
+        uname: uname, cksum: @cksum,
         _algo: @_algo,
-      ).insert!
+      ).create!(@wn_id)
     end
   end
 
-  @[AC::Route::POST("/chaps", body: :form)]
+  @[AC::Route::POST("/alnzs/chaps", body: :form)]
   def upload_anlz_data(form : AnlzForm)
     form.save_mtl!
     form.save_con!
