@@ -37,8 +37,9 @@ class M1::MtTrie
       break unless trie = node.trie
 
       char = chars.unsafe_fetch(i)
-      break unless node = trie[char]?
+      char = char - 32 if 'ａ' <= char <= 'ｚ'
 
+      break unless node = trie[char]?
       node.term.try { |term| yield term }
     end
   end

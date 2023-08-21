@@ -1,5 +1,6 @@
 require "json"
 require "../data/v1_dict"
+require "../../_util/char_util"
 
 class M1::DefnForm
   include JSON::Serializable
@@ -25,6 +26,8 @@ class M1::DefnForm
 
   def after_initialize
     @key = @key.gsub(/[\p{C}\s]+/, " ").strip
+    @key = CharUtil.to_canon(@key, upcase: true)
+
     @val = @val.gsub(/[\p{C}\s]+/, " ").strip.unicode_normalize(:nfkc)
     @val = @val.split(/[|ǀ]/, remove_empty: true).map!(&.strip).join('\t')
 
