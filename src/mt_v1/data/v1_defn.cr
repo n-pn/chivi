@@ -1,5 +1,4 @@
-require "crorm/model"
-require "sqlite3"
+require "crorm"
 
 require "./v1_dict"
 
