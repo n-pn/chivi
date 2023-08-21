@@ -60,7 +60,7 @@ class M1::TranData
 
   def cv_post(io : IO, engine : MtCore)
     @input.each_line do |line|
-      line = CharUtil.normalize(line)
+      # line = CharUtil.normalize(line)
 
       data = engine.cv_plain(line)
       @to_mtl ? data.to_mtl(io) : data.to_txt(io)
@@ -75,7 +75,7 @@ class M1::TranData
     title = input.next
 
     return unless title.is_a?(String)
-    title = CharUtil.normalize(title)
+    # title = CharUtil.normalize(title)
 
     data = w_title ? engine.cv_title(title) : engine.cv_plain(title)
     @to_mtl ? data.to_mtl(io) : data.to_txt(io)
@@ -83,7 +83,7 @@ class M1::TranData
     io << '\n'
 
     input.each do |line|
-      line = CharUtil.normalize(line)
+      # line = CharUtil.normalize(line)
 
       data = engine.cv_plain(line)
       @to_mtl ? data.to_mtl(io) : data.to_txt(io)

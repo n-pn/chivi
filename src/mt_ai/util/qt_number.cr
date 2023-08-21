@@ -1,4 +1,5 @@
 require "log"
+require "colorize"
 
 module AI::QtNumber
   extend self
@@ -23,7 +24,7 @@ module AI::QtNumber
   }
 
   class Digit
-    property char : String | Char
+    property char : Char
     property unit : Int32
 
     def initialize(@char, @unit = 0)
@@ -46,26 +47,39 @@ module AI::QtNumber
 
     LITS = {"không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"}
 
-    def render(io : IO, use_raw : Bool = self.pure_digit?(@char)) : Nil
-      return io << @char if use_raw
+    def to_digit(io : IO, prev_unit = 0)
+      zeros = @char == ' ' ? prev_unit : (prev_unit - @unit - 1)
+      zeros.times { io << '0' }
 
-      case vstr = @char
-      in Char
-        io << LITS[vstr - '０']
-      in String
-        spaced = false
-        vstr.each_char do |char|
-          io << ' ' unless spaced
-          io << LITS[char - '０']
-          spaced = true
-        end
+      case
+      when @char == ' ' # do nothing
+      when '0' <= @char <= '9' then io << @char
+      else                          io << @char - 0xfee0
       end
+    end
+
+    def render(io : IO, use_raw : Bool = self.pure_digit?(@char)) : Nil
+      io << (use_raw ? @char : LITS[@char - '０'])
+
+      # case vstr = @char
+      # in Char
+      #   io << LITS[vstr - '０']
+      # in String
+      #   spaced = false
+      #   vstr.each_char do |char|
+      #     io << ' ' unless spaced
+      #     io << LITS[char - '０']
+      #     spaced = true
+      #   end
+      # end
     end
 
     def render(io : IO, prev_unit = 0, use_raw = false) : Nil
       io << "lẻ " if prev_unit - @unit > 1
 
       case
+      when prev_unit == 1 && @char == '１'
+        io << "mốt"
       when prev_unit == 1 && @char == '５'
         io << "năm"
       when @unit == 1 && (@char == '１' || use_raw)
@@ -99,7 +113,7 @@ module AI::QtNumber
     end
   end
 
-  def translate(zstr : String)
+  def translate(zstr : String, digit_only : Bool = false)
     digits = [] of Digit
 
     no_unit = true
@@ -136,7 +150,9 @@ module AI::QtNumber
       end
     end
 
-    if no_unit
+    if digit_only
+      render_pure_digit(digits, pre_str)
+    elsif no_unit
       render_no_unit(digits, pre_str)
     else
       render_unit(digits, pre_str)
@@ -158,10 +174,55 @@ module AI::QtNumber
     end
   end
 
-  private def render_unit(digits : Array(Digit), pre_str : String)
-    i = digits.size &- 1
+  private def render_pure_digit(digits : Array(Digit), pre_str : String)
+    digits = fix_digits_unit!(digits)
+    # pp digits.colorize.blue
 
+    String.build do |io|
+      io << pre_str
+      prev_unit = 0
+
+      digits.each do |digit|
+        digit.to_digit(io, prev_unit)
+        prev_unit = digit.unit
+      end
+
+      prev_unit.times { io << '0' }
+    end
+  end
+
+  private def render_unit(digits : Array(Digit), pre_str : String)
+    digits = fix_digits_unit!(digits)
     # pp digits
+
+    String.build do |io|
+      io << pre_str
+
+      prev = digits.unsafe_fetch(0)
+      was_digit = prev.pure_digit?
+      prev_unit = prev.unit
+      prev.render(io, prev_unit: 0, use_raw: was_digit)
+
+      1.upto(digits.size &- 1) do |i|
+        digit = digits.unsafe_fetch(i)
+        is_digit = digit.pure_digit?
+
+        io << ' ' unless is_digit && was_digit
+        digit.render(io, prev_unit, use_raw: is_digit)
+
+        was_digit = is_digit
+
+        if digit.char == ' '
+          prev_unit += digit.unit
+        else
+          prev_unit = digit.unit
+        end
+      end
+    end
+  end
+
+  private def fix_digits_unit!(digits : Array(Digit))
+    i = digits.size &- 1
 
     while i >= 0
       digit1 = digits.unsafe_fetch(i)
@@ -200,54 +261,6 @@ module AI::QtNumber
       end
     end
 
-    String.build do |io|
-      io << pre_str
-
-      prev = digits.unsafe_fetch(0)
-      was_digit = prev.pure_digit?
-      prev_unit = prev.unit
-      prev.render(io, prev_unit: 0, use_raw: was_digit)
-
-      1.upto(digits.size &- 1) do |i|
-        digit = digits.unsafe_fetch(i)
-        is_digit = digit.pure_digit?
-
-        io << ' ' unless is_digit && was_digit
-        digit.render(io, prev_unit, use_raw: is_digit)
-
-        was_digit = is_digit
-
-        if digit.char == ' '
-          prev_unit += digit.unit
-        else
-          prev_unit = digit.unit
-        end
-      end
-    end
+    digits
   end
-
-  # test = {
-  #   "六七",
-  #   "123",
-  #   "12七",
-  #   "12七8",
-  #   "六12七8",
-
-  #   "2百万",
-  #   "25百万",
-  #   "1万",
-  #   "1万6千",
-  #   "2万6千",
-  #   "1万6百",
-  #   "六七万",
-  #   "六十七万",
-  #   "七十万",
-  #   "十万",
-  #   "十千",
-  #   "六万七千",
-  #   "十七",
-  # }
-  # test.each do |item|
-  #   puts "#{item} => [#{translate(item)}]"
-  # end
 end

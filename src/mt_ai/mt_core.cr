@@ -9,7 +9,7 @@ class AI::MtCore
   end
 
   def translate(data : String, opts = MtOpts::Initial)
-    translate(MtNode.parse(data), opts)
+    translate(MtData.parse(data), opts)
   end
 
   def translate(data : MtNode, opts = MtOpts::Initial)

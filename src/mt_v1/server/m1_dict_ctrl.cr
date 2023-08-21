@@ -77,7 +77,7 @@ class M1::DictCtrl < AC::Base
       io << " limit 10000 order by id desc" if scope != "all"
     end
 
-    terms = DbDefn.get_all(query, dict.id, as: {String, String, String, Int32})
+    terms = DbDefn.db.query_all(query, dict.id, as: {String, String, String, Int32})
 
     output = String.build do |strio|
       if format == "qt"

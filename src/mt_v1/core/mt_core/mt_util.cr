@@ -1,3 +1,5 @@
+require "../../../mt_ai/util/qt_number"
+
 module M1::MtUtil
   extend self
 
@@ -68,18 +70,22 @@ module M1::MtUtil
     "折" => "Chiết",
   }
 
-  LABEL_RE_1 = /^(\p{Ps}?第?([#{NUMS}]+|\d+)([集卷季])\p{Pe}?)([\p{P}\s]*)(.*)$/
+  LABEL_RE_1 = /^(\p{Ps}?第?([#{NUMS}]+|[０-９]+|\d+)([集卷季])\p{Pe}?)([\p{P}\s　]*)(.*)$/
 
-  TITLE_RE_1 = /^(第\s*([#{NUMS}]+|\d+)\s*([章节幕回折]))([\p{P}\s]*)(.+)/
-  TITLE_RE_2 = /^(\p{Ps}?([#{NUMS}]+|\d+)\p{Pe}?([章节幕回折]))([\p{P}\s]*)(.*)$/
+  TITLE_RE_1 = /^(第[　\s]*([#{NUMS}]+|[０-９]+|\d+)[　\s]*([章节幕回折]))([\p{P}\s　]*)(.+)/
+  TITLE_RE_2 = /^(\p{Ps}?([#{NUMS}]+|[０-９]+|\d+)\p{Pe}?([章节幕回折]))([\p{P}\s　]*)(.*)$/
 
-  TITLE_RE_3 = /^(\d+)([\p{P}\s]*)(.*)$/
-  TITLE_RE_4 = /^(楔\s*子)(\s+)(.+)$/
+  TITLE_RE_3 = /^(\d+|[０-９]+)([\p{P}\s　]*)(.*)$/
+  TITLE_RE_4 = /^(楔\s*子)(\s+|　+)(.+)$/
 
   def tl_title(title : String)
     if match = LABEL_RE_1.match(title) || TITLE_RE_1.match(title) || TITLE_RE_2.match(title)
       _, idx_zh, num, lbl, pad, title = match
-      idx_cv = String.build { |io| io << LBLS.fetch(lbl, "#") << ' ' << to_integer(num) }
+      idx_cv = String.build do |io|
+        io << LBLS.fetch(lbl, "#") << ' '
+        io << AI::QtNumber.translate(num, true)
+      end
+
       {idx_zh, idx_cv, pad, title}
     elsif match = TITLE_RE_3.match(title)
       _, num, pad, title = match
@@ -98,3 +104,5 @@ end
 
 # puts M1::MtUtil.to_integer("1245")
 # puts M1::MtUtil.tl_title("第1章 归序者")
+# puts M1::MtUtil.tl_title("第１章　业余的悍匪")
+# puts M1::MtUtil.tl_title("第１章　业余的悍匪")

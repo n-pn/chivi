@@ -1,7 +1,7 @@
 module AI::MtNode
-  property ptag = ""
-  property attr = ""
-  getter _idx = 0
+  property ptag : String = ""
+  property attr : String = ""
+  getter _idx : Int32 = 0
 
   abstract def z_each(& : MtNode ->)
   abstract def v_each(& : MtNode ->)
