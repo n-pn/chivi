@@ -39,7 +39,7 @@ class WN::UploadCtrl < AC::Base
     end
   end
 
-  @[AC::Route::POST("/alnzs/chaps", body: :form)]
+  @[AC::Route::POST("/anlzs/chaps", body: :form)]
   def upload_anlz_data(form : AnlzForm)
     form.save_mtl!
     form.save_con!

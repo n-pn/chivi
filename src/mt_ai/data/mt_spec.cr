@@ -35,6 +35,7 @@ class AI::MtSpec
       "vie_flag" integer NOT NULL DEFAULT 0,
       "eng_flag" integer NOT NULL DEFAULT 0,
 
+      "sdict" varchar not null default 'testing',
       "uname" varchar not null default '',
       "mtime" bigint not null default 0
     );
@@ -73,6 +74,7 @@ class AI::MtSpec
   field eng_deep : String = ""
   field eng_flag : Int32 = 0
 
+  field sdict : String = "testing"
   field uname : String = ""
   field mtime : Int64 = 0
 

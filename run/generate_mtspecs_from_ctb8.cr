@@ -1,6 +1,7 @@
 require "lexbor"
 
 require "../src/mt_ai/data/mt_spec"
+require "../src/mtapp/service/btran_api"
 
 class RawNode
   getter ptag = ""
@@ -160,16 +161,40 @@ def parse_bracketed_file(inp_path : String)
   output
 end
 
-# parse_bracketed_file("/2tb/var.chivi/mtdic/cvmtl/inits/NLP/ctb8.0/data/bracketed/chtb_1133.mz")
+def init_from_ctb8
+  inp_dir = "/2tb/var.chivi/mtdic/cvmtl/inits/NLP/ctb8.0/data/bracketed"
 
-DIR = "/2tb/var.chivi/mtdic/cvmtl/inits/NLP/ctb8.0/data/bracketed"
+  output = [] of AI::MtSpec
 
-output = [] of AI::MtSpec
+  Dir.children(inp_dir).sort!.each do |child|
+    output.concat parse_bracketed_file("#{inp_dir}/#{child}")
+  end
 
-Dir.children(DIR).sort!.each do |child|
-  output.concat parse_bracketed_file("#{DIR}/#{child}")
+  AI::MtSpec.db.open_tx do |db|
+    output.each(&.upsert!(db: db))
+  end
 end
 
-AI::MtSpec.db.open_tx do |db|
-  output.each(&.upsert!(db: db))
+def add_vie_bing
+  zstrs = AI::MtSpec.db.open_ro do |db|
+    db.query_all "select zstr from specs where vie_bing = ''", as: String
+  end
+
+  slice_size = zstrs.size // (zstrs.size // 20)
+
+  zstrs.each_slice(slice_size) do |slice|
+    output = SP::Btran.translate(slice)
+
+    AI::MtSpec.db.open_tx do |db|
+      output.each do |zstr, vstr|
+        db.exec "update specs set vie_bing = $1 where zstr = $2", vstr, zstr
+      end
+    end
+
+
+
+
+  end
 end
+
+add_vie_bing

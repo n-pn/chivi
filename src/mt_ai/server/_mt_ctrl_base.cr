@@ -1,4 +1,4 @@
-require "../m2_core"
+require "../mt_core"
 require "../../cv_srv"
 
 abstract class AC::Base
