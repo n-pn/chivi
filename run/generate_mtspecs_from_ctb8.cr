@@ -29,7 +29,7 @@ class RawNode
     in String
       io << data
     in Array(RawNode)
-      data.each { |node| node.to_raw(io) }
+      data.each(&.to_raw(io))
     end
   end
 
@@ -40,7 +40,7 @@ class RawNode
     in String
       io << SEP << data
     in Array(RawNode)
-      data.each { |node| node.to_tok(io) }
+      data.each(&.to_tok(io))
     end
   end
 
@@ -51,7 +51,7 @@ class RawNode
     in String
       io << SEP << @ptag
     in Array(RawNode)
-      data.each { |node| node.to_pos(io) }
+      data.each(&.to_pos(io))
     end
   end
 
@@ -190,10 +190,6 @@ def add_vie_bing
         db.exec "update specs set vie_bing = $1 where zstr = $2", vstr, zstr
       end
     end
-
-
-
-
   end
 end
 

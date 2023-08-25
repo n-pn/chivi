@@ -7,7 +7,7 @@
   export let _privi = -1
 
   export let curr_seed: CV.Chroot
-  export let seed_data: CV.Wnseed
+  export let seed_data: CV.Wnsterm
 
   const read_privis = [
     [0, 'Cần đăng nhập'],

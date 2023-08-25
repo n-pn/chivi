@@ -14,7 +14,7 @@ struct WN::ChtextLineForm
     @edit = TextUtil.canon_clean(@edit)
   end
 
-  def save!(seed : Wnseed, chap : Chinfo, user : String)
+  def save!(seed : Wnsterm, chap : Chinfo, user : String)
     repo = Chtext.new(seed, chap)
 
     old_ztext = repo.load_all!

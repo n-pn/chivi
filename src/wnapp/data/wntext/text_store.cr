@@ -4,7 +4,7 @@
 # module WN::TextStore
 #   extend self
 
-#   def get_chap(seed : Wnseed, chap : Chinfo)
+#   def get_chap(seed : Wnsterm, chap : Chinfo)
 #     txt_path = gen_txt_path(seed.sname, seed.s_bid, chap.s_cid)
 
 #     File.file?(txt_path) ? read_txt_file(txt_path) : [""]
@@ -56,7 +56,7 @@
 
 #   # save chap text file with body parts provided
 #   @[AlwaysInline]
-#   def save_txt_file(seed : Wnseed, chap : Chinfo) : String
+#   def save_txt_file(seed : Wnsterm, chap : Chinfo) : String
 #     txt_path = gen_txt_path(seed.sname, seed.s_bid, chap.s_cid)
 #     save_txt_file(txt_path, chap.body)
 #   end
@@ -100,7 +100,7 @@
 
 #   # generate zip path
 #   @[AlwaysInline]
-#   def gen_zip_path(seed : Wnseed)
+#   def gen_zip_path(seed : Wnsterm)
 #     gen_zip_path(seed.sname, seed.s_bid)
 #   end
 
@@ -112,7 +112,7 @@
 
 #   # read text from zip file
 #   @[AlwaysInline]
-#   def read_txt_from_zip(seed : Wnseed, chap : Chinfo)
+#   def read_txt_from_zip(seed : Wnsterm, chap : Chinfo)
 #     read_txt_from_zip(gen_zip_path(seed), chap.s_cid)
 #   end
 

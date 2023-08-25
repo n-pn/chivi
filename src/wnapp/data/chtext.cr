@@ -12,7 +12,7 @@ class WN::Chtext
 
   V0_DIR = "var/texts/rgbks"
 
-  def initialize(@seed : Wnseed, @chap : Chinfo)
+  def initialize(@seed : Wnsterm, @chap : Chinfo)
     @wc_base = "#{WN_DIR}/#{seed.wn_id}/#{chap.ch_no}"
   end
 
@@ -21,7 +21,9 @@ class WN::Chtext
   end
 
   def zh_path(cksum : String = @chap.cksum)
-    "#{ZH_DIR}/#{@chap.spath}-#{cksum}-#{@chap.ch_no}.txt"
+    spath = @chap.spath
+    spath = "#{@seed.sname}/#{@seed.s_bid}/#{@chap.ch_no}" if spath.empty?
+    "#{ZH_DIR}/#{spath}-#{cksum}-#{@chap.ch_no}.txt"
   end
 
   def file_exists?

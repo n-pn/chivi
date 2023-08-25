@@ -3,7 +3,7 @@ require "../../../zroot/html_parser/raw_rmchap"
 module WN::TextFetch
   extend self
 
-  def fetch(seed : Wnseed, chap : Chinfo, uname : String = "", force : Bool = false)
+  def fetch(seed : Wnsterm, chap : Chinfo, uname : String = "", force : Bool = false)
     seed.mkdirs!
     stale = Time.utc - (force ? 1.minutes : 20.years)
 

@@ -6,7 +6,7 @@ import type { LayoutLoad } from './$types'
 export interface SeedData {
   curr_seed: CV.Chroot
   top_chaps: CV.Wnchap[]
-  seed_data: CV.Wnseed
+  seed_data: CV.Wnsterm
 }
 
 export const load = (async ({ params: { wn, seed }, fetch, url }) => {

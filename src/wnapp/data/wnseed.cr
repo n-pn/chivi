@@ -5,7 +5,7 @@ require "../../zroot/html_parser/raw_rmcata"
 
 require "./seed_type"
 
-class WN::Wnseed
+class WN::Wnsterm
   ############
 
   class_getter db : DB::Database = PGDB
