@@ -14,6 +14,7 @@ class WN::Chtext
 
   def initialize(@seed : Wnsterm, @chap : Chinfo)
     @wc_base = "#{WN_DIR}/#{seed.wn_id}/#{chap.ch_no}"
+    @chap.spath = "#{@seed.sname}/#{@seed.s_bid}/#{@chap.ch_no}" if chap.spath.empty?
   end
 
   def wn_path(p_idx : Int32, cksum : String = @chap.cksum)
@@ -21,9 +22,7 @@ class WN::Chtext
   end
 
   def zh_path(cksum : String = @chap.cksum)
-    spath = @chap.spath
-    spath = "#{@seed.sname}/#{@seed.s_bid}/#{@chap.ch_no}" if spath.empty?
-    "#{ZH_DIR}/#{spath}-#{cksum}-#{@chap.ch_no}.txt"
+    "#{ZH_DIR}/#{@chap.spath}-#{cksum}-#{@chap.ch_no}.txt"
   end
 
   def file_exists?
@@ -61,7 +60,7 @@ class WN::Chtext
     self.save_text!(paras: paras, title: title)
   end
 
-  def import_existing!
+  def import_existing! : String?
     # Log.info { "find from existing data".colorize.yellow }
 
     files = [self.zh_path]
