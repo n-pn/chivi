@@ -6,7 +6,7 @@ require "compress/zip"
 require "../../src/mt_sp/data/wd_defn"
 
 URL = "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.zip"
-DIR = "var/cvmtl/spdic"
+DIR = "var/mtdic/spdic"
 
 ZIP_FILE = "#{DIR}/cc-cedict.zip"
 PY_TONES = Hash(String, String).from_json File.read("#{__DIR__}/pinyin-tones.json")
@@ -68,4 +68,4 @@ puts "input: #{defns.size}"
 
 SP::WdDefn.init_db("cc_cedict", reset: true)
 SP::WdDefn.upsert("cc_cedict", defns)
-# TL::LuTerm.remove_dup!("cc_cedict")
+# SP::WdDefn.remove_dup!("cc_cedict")

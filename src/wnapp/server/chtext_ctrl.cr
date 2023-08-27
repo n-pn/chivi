@@ -9,12 +9,20 @@ require "./forms/chtext_full_form"
 class WN::ChtextCtrl < AC::Base
   base "/_wn/texts/:wn_id/:sname"
 
+  private def mkdirs!(wn_id : Int32)
+    Dir.mkdir_p("var/wnapp/chinfo/#{wn_id}")
+    Dir.mkdir_p("var/wnapp/chtext/#{wn_id}")
+    Dir.mkdir_p("var/wnapp/chtran/#{wn_id}")
+  end
+
   @[AC::Route::POST("/", body: :list)]
   def upsert_bulk(list : Array(ChtextFullForm), wn_id : Int32, sname : String)
     raise "Bạn chỉ được upload nhiều nhất 32 chương một lúc!" if list.size > 32
     guard_edit_privi wn_id: wn_id, sname: sname
 
     wnseed = get_wnseed(wn_id, sname)
+    self.mkdirs!(wn_id)
+
     list.each(&.save!(seed: wnseed, user: _uname))
 
     chmin = list.first.ch_no
@@ -31,6 +39,8 @@ class WN::ChtextCtrl < AC::Base
     guard_edit_privi wn_id: wn_id, sname: sname
 
     wnseed = get_wnseed(wn_id, sname)
+    self.mkdirs!(wn_id)
+
     chinfo = form.save!(seed: wnseed, user: _uname)
 
     chmin = chinfo.ch_no - 5

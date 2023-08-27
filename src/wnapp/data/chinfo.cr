@@ -97,7 +97,8 @@ class WN::Chinfo
       jb.field "chdiv", @vchdiv.empty? ? @zchdiv : @vchdiv
       jb.field "uslug", self.uslug
 
-      jb.field "sizes", self.sizes
+      # jb.field "sizes", self.sizes
+      jb.field "psize", self.psize
       jb.field "mtime", @mtime
       jb.field "uname", @uname
     }
@@ -116,6 +117,10 @@ class WN::Chinfo
 
   def sizes
     @sizes.empty? ? [0] : @sizes.split(' ').map(&.to_i)
+  end
+
+  def psize
+    @sizes.count(' ')
   end
 
   def uslug

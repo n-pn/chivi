@@ -1,9 +1,0 @@
-#   "An"   => "Ajno",
-#   "Ad"   => "Ajad",
-#   "Aa"   => "Adjt",
-#   "Ab"   => "Amod_1",
-#   "Al_"  => "Amix",
-#   "Al_z" => "Ades",
-
-Amod_1: Amod_t
-Amix: Aexpr

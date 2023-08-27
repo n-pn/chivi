@@ -14,7 +14,7 @@ class WN::Chtext
 
   def initialize(@seed : Wnsterm, @chap : Chinfo)
     @wc_base = "#{WN_DIR}/#{seed.wn_id}/#{chap.ch_no}"
-    @chap.spath = "#{@seed.sname}/#{@seed.s_bid}/#{@chap.ch_no}" if chap.spath.empty?
+    chap.spath = "#{seed.sname}/#{seed.s_bid}/#{chap.ch_no}" if chap.spath.empty?
   end
 
   def wn_path(p_idx : Int32, cksum : String = @chap.cksum)
@@ -26,7 +26,7 @@ class WN::Chtext
   end
 
   def file_exists?
-    !@chap.cksum.empty? && File.file?(wn_path(p_idx: 0))
+    !@chap.cksum.empty? && File.file?(wn_path(p_idx: @chap.psize))
   end
 
   def get_cksum!(uname : String = "", _mode = 0)
@@ -102,19 +102,18 @@ class WN::Chtext
     @chap.cksum = ChapUtil.cksum_to_s(cksum)
     @chap.sizes = sizes.map(&.to_s).join(' ')
 
-    self.save_backup!(parts)
-    # return @chap.cksum if File.file?(self.wn_path(0))
-
     # Dir.mkdir_p(File.dirname(@wc_base))
 
     parts.each_with_index do |cpart, index|
-      save_path = self.wn_path(index)
+      save_path = self.wn_path(p_idx: index)
 
       File.open(save_path, "w") do |file|
         file << parts[0]
         file << '\n' << cpart if index > 0
       end
     end
+
+    self.save_backup!(parts)
 
     @chap.upsert!(db: @seed.chap_list)
     @chap.cksum
