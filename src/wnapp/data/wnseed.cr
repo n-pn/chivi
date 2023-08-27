@@ -256,7 +256,12 @@ class WN::Wnsterm
 
   #######
 
-  def self.all(wn_id : Int32) : Array(self)
+  def self.all_by_sname(sname : String) : Array(self)
+    stmt = self.schema.select_stmt(&.<< " where sname = $1")
+    self.db.query_all(stmt, sname, as: self)
+  end
+
+  def self.all_by_wn_id(wn_id : Int32) : Array(self)
     stmt = self.schema.select_stmt(&.<< " where wn_id = $1 order by mtime desc")
     self.db.query_all(stmt, wn_id, as: self)
   end
