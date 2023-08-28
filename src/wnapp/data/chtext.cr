@@ -12,7 +12,7 @@ class WN::Chtext
 
   V0_DIR = "var/texts/rgbks"
 
-  def initialize(@seed : Wnsterm, @chap : Chinfo)
+  def initialize(@seed : Wnstem, @chap : Chinfo)
     @wc_base = "#{WN_DIR}/#{seed.wn_id}/#{chap.ch_no}"
     chap.spath = "#{seed.sname}/#{seed.s_bid}/#{chap.ch_no}" if chap.spath.empty?
   end

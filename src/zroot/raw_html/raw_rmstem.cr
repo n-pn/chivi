@@ -1,57 +1,60 @@
 require "uri"
 require "colorize"
 
-require "./rmconf"
+require "./rmhost"
 require "./rmpage"
 require "../shared/chinfo"
 require "../../_util/chap_util"
 
-class ZR::RawRmcata
+class ZR::RawRmstem
   ####
 
   def self.from_link(rlink : String, stale : Time = Time.utc - 1.years)
     host, path = URI.parse(rlink).try { |x| {x.host, x.path} }
-    conf = Rmconf.from_host!(host.as(String))
-    new(conf, b_id: conf.extract_bid(path.as(String)), stale: stale)
+    host = Rmhost.from_host!(host.as(String))
+
+    new(host, b_id: host.extract_bid(path.as(String)), stale: stale)
   end
 
-  def self.from_seed(sname : String, b_id : String | Int32, stale : Time = Time.utc - 1.years)
-    new(Rmconf.load!(sname), b_id: b_id.to_s, stale: stale)
+  def self.from_stem(sname : String, b_id : String | Int32, stale : Time = Time.utc - 1.years)
+    new(Rmhost.from_name!(sname), b_id: b_id.to_s, stale: stale)
   end
 
-  def self.new(conf : Rmconf, b_id : String | Int32, stale : Time)
-    cpath = conf.make_cata_path(b_id)
-    cfile = conf.cata_file_path(b_id)
+  def self.new(host : Rmhost, b_id : String | Int32, stale : Time)
+    stem_href = host.stem_href(b_id)
+    save_path = host.stem_file(b_id)
 
-    stale = Time.utc - 100.years unless conf.active?
-    html = conf.load_page(cpath, cfile, stale: stale)
+    stale = Time.utc - 100.years unless host.active?
+    html = host.load_page(stem_href, save_path, stale: stale)
 
-    new(html, conf, b_id: b_id.to_s, base: cpath)
+    new(html, host, b_id: b_id.to_s, base: host.full_url(stem_href))
   end
 
   ###
 
-  def initialize(html : String, @conf : Rmconf, @b_id : String,
-                 @base : String = conf.make_cata_path(b_id))
-    @base = File.dirname(base) + '/' unless base.ends_with?('/')
+  getter base : String
+
+  def initialize(html : String, @host : Rmhost, @b_id : String,
+                 base : String = host.stem_url(b_id))
+    @base = base.ends_with?('/') ? base.rchop('/') : File.dirname(base)
     @page = Rmpage.new(html)
   end
 
-  getter latest_cid : String { @conf.extract_cid(@page.get!(@conf.cata_latest)) }
+  getter latest_cid : String { @host.extract_cid(@page.get!(@host.cata_latest)) }
 
   getter status_str : String do
-    return "" unless matcher = @conf.cata_status
+    return "" unless matcher = @host.cata_status
     @page.get!(matcher).sub(/(book_info|状态：)\s*/, "")
   end
 
   getter update_str : String do
-    return "" unless matcher = @conf.cata_update
+    return "" unless matcher = @host.cata_update
     @page.get!(matcher).sub(/^\s*更新(时间)?\s*[: ：]\s*/, "")
   end
 
   getter update_int : Int64 do
     update_str = self.update_str
-    update_str.empty? ? 0_i64 : @conf.parse_time(update_str).to_unix
+    update_str.empty? ? 0_i64 : @host.parse_time(update_str).to_unix
   rescue ex
     puts [update_str, ex]
     0_i64
@@ -61,32 +64,32 @@ class ZR::RawRmcata
     (prev_latest != latest_cid) || (update_str != prev_update)
   end
 
-  private def full_path(href : String)
+  private def full_url(href : String)
     case href
     when .starts_with?("http") then href
-    when .starts_with?("//")   then "#{@conf.uri_schema}:#{href}"
-    when .starts_with?('/')    then @conf.full_path(href)
-    else                            @conf.full_path("#{@base}#{href}")
+    when .starts_with?("//")   then "https//:#{href}"
+    when .starts_with?('/')    then "#{@base}#{href}"
+    else                            "#{@base}.#{href}"
     end
   end
 
   @chlist = [] of Chinfo
 
   def chap_list
-    extract_chlist!(@conf.cata_type) if @chlist.empty?
+    extract_chlist!(@host.cata_type) if @chlist.empty?
     @chlist
   end
 
   def extract_chlist!(chap_type : String = "anchor")
     case chap_type
-    when "anchor"     then extract_type_anchor(@conf.cata_elem)
-    when "subdiv"     then extract_type_subdiv(@conf.cata_elem)
-    when "wenku8"     then extract_type_wenku8(@conf.cata_elem)
-    when "uukanshu"   then extract_type_uukanshu(@conf.cata_elem)
-    when "ymxwx"      then extract_type_ymxwx(@conf.cata_elem)
-    when "00kxs"      then extract_type_00kxs(@conf.cata_elem)
-    when "paopaoxs"   then extract_type_paopaoxs(@conf.cata_elem)
-    when "51shucheng" then extract_type_51shucheng(@conf.cata_elem)
+    when "anchor"     then extract_type_anchor(@host.cata_elem)
+    when "subdiv"     then extract_type_subdiv(@host.cata_elem)
+    when "wenku8"     then extract_type_wenku8(@host.cata_elem)
+    when "uukanshu"   then extract_type_uukanshu(@host.cata_elem)
+    when "ymxwx"      then extract_type_ymxwx(@host.cata_elem)
+    when "00kxs"      then extract_type_00kxs(@host.cata_elem)
+    when "paopaoxs"   then extract_type_paopaoxs(@host.cata_elem)
+    when "51shucheng" then extract_type_51shucheng(@host.cata_elem)
     else                   raise "unsupported parser type: #{chap_type}"
     end
   end
@@ -98,17 +101,14 @@ class ZR::RawRmcata
     return if ctitle.empty?
 
     ch_no = @chlist.size &+ 1
-    rlink = self.full_path(href)
+    rlink = self.full_url(href)
 
-    s_cid = @conf.extract_cid(href)
-    spath = "#{@conf.seedname}/#{@b_id}/#{s_cid}"
+    sc_id = @host.extract_cid(href)
+    spath = "#{@host.seedname}/#{@b_id}/#{sc_id}"
 
     ctitle, subdiv = ChapUtil.split_ztitle(ctitle, subdiv)
 
-    @chlist << Chinfo.new(
-      ch_no: ch_no, rlink: rlink, spath: spath,
-      ztitle: ctitle, zchdiv: subdiv
-    )
+    @chlist << Chinfo.new(ch_no: ch_no, rlink: rlink, spath: spath, ztitle: ctitle, zchdiv: subdiv)
   rescue ex
     Log.error(exception: ex) { ex.message.colorize.red }
   end

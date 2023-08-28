@@ -2,7 +2,7 @@ require "sqlite3"
 require "crorm/model"
 
 class ZR::Btitle
-  class_getter db_path = "var/zroot/btitles.db3"
+  class_getter db_path = "var/zroot/global/btitles.db3"
 
   class_getter init_sql = <<-SQL
     CREATE TABLE btitles(

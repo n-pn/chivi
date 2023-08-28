@@ -13,10 +13,10 @@ class CV::Gdroot
     Global = 0
     Dtopic = 1
 
-    Author  = 10
-    Wninfo  = 11
-    Wnsterm = 12
-    Wnchap  = 13
+    Author = 10
+    Wninfo = 11
+    Wnstem = 12
+    Wnchap = 13
 
     Viuser = 20
     Vilist = 21
@@ -37,7 +37,7 @@ class CV::Gdroot
       when "dt" then Dtopic
       when "au" then Author
       when "wn" then Wninfo
-      when "ns" then Wnsterm
+      when "ns" then Wnstem
       when "ch" then Wnchap
       when "vc" then Vicrit
       when "vl" then Vilist

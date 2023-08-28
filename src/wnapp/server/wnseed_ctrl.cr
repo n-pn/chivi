@@ -5,7 +5,7 @@ class WN::SeedCtrl < AC::Base
 
   @[AC::Route::GET("/")]
   def index(wn_id : Int32)
-    seeds = Wnsterm.all(wn_id).sort_by!(&.mtime.-)
+    seeds = Wnstem.all(wn_id).sort_by!(&.mtime.-)
 
     render json: {
       chivi: find_or_init(seeds, wn_id, "~chivi"),
@@ -15,8 +15,8 @@ class WN::SeedCtrl < AC::Base
     }
   end
 
-  private def find_or_init(seeds : Array(Wnsterm), wn_id : Int32, sname : String)
-    seeds.find(&.sname.== sname) || Wnsterm.new(wn_id, sname).tap(&.upsert!)
+  private def find_or_init(seeds : Array(Wnstem), wn_id : Int32, sname : String)
+    seeds.find(&.sname.== sname) || Wnstem.new(wn_id, sname).tap(&.upsert!)
   end
 
   @[AC::Route::GET("/:wn_id/:sname/brief")]
@@ -91,8 +91,8 @@ class WN::SeedCtrl < AC::Base
       raise BadRequest.new("Tên nguồn truyện không được chấp nhận")
     end
 
-    Wnsterm.upsert!(form.wn_id, form.sname, form.s_bid)
-    render json: Wnsterm.get!(form.wn_id, form.sname)
+    Wnstem.upsert!(form.wn_id, form.sname, form.s_bid)
+    render json: Wnstem.get!(form.wn_id, form.sname)
   end
 
   @[AC::Route::GET("/:wn_id/:sname/reload")]
@@ -151,7 +151,7 @@ class WN::SeedCtrl < AC::Base
     guard_privi SeedType.delete_privi(sname, _uname), "xóa danh sách chương"
     wnseed = get_wnseed(wn_id, sname)
 
-    Wnsterm.soft_delete!(wn_id, sname)
+    Wnstem.soft_delete!(wn_id, sname)
     # WnRepo.soft_delete!(wnseed.sname, wnseed.s_bid)
 
     render json: {message: "ok"}

@@ -9,7 +9,7 @@
   export let ubmemo: CV.Ubmemo
 
   export let curr_seed: CV.Chroot
-  export let seed_data: CV.Wnsterm
+  export let seed_data: CV.Wnstem
 
   export let chaps: CV.Wnchap[]
 

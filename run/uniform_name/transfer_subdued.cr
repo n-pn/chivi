@@ -6,12 +6,12 @@ require "../../src/_util/book_util"
 # require "../../src/_data/wnovel/wnseed"
 # require "../../src/_data/member/ubmemo"
 
-record Wnsterm, id : Int32, sname : String, chap_total : Int32 do
+record Wnstem, id : Int32, sname : String, chap_total : Int32 do
   include DB::Serializable
 end
 
 def find_all_seeds(wn_id : Int32)
-  PGDB.query_all(<<-SQL, wn_id, as: Wnsterm)
+  PGDB.query_all(<<-SQL, wn_id, as: Wnstem)
     select id, sname, chap_total from wnseeds where wn_id = $1
   SQL
 end

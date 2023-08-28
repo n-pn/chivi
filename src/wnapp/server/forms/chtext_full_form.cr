@@ -16,7 +16,7 @@ struct WN::ChtextFullForm
     @chdiv = TextUtil.canon_clean(@chdiv)
   end
 
-  def save!(seed : Wnsterm,
+  def save!(seed : Wnstem,
             chap : Chinfo = seed.load_chap(@ch_no),
             user : String = "") : Chinfo
     repo = Chtext.new(seed, chap)

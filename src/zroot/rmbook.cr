@@ -4,7 +4,7 @@ require "../_util/book_util"
 require "../_util/time_util"
 require "../_util/text_util"
 
-require "./html_parser/raw_rmbook"
+require "./raw_html/raw_rmbook"
 
 class ZR::Rmbook
   class_getter init_sql = <<-SQL

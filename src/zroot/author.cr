@@ -2,7 +2,7 @@ require "sqlite3"
 require "crorm/model"
 
 class ZR::Author
-  class_getter db_path = "var/zroot/authors.db3"
+  class_getter db_path = "var/zroot/global/authors.db3"
 
   class_getter init_sql = <<-SQL
     CREATE TABLE authors(
@@ -27,7 +27,7 @@ class ZR::Author
   ####
 
   include Crorm::Model
-  schema "authors"
+  schema "authors", :sqlite
 
   field name_zh : String, pkey: true
 
@@ -49,25 +49,32 @@ class ZR::Author
   end
 
   def self.load(name_zh : String)
-    open_db { |db| load(name_zh, db: db) }
+    self.db.open_ro { |db| load(name_zh, db: db) }
   end
 
   def self.load(name_zh : String, db : DB::Database | DB::Connection)
-    stmt = self.schema.select_stmt { |stmt| stmt << " where name_zh = $1" }
-    db.query_one?(stmt, name_zh, as: self) || new(name_zh: name_zh)
+    query = self.schema.select_stmt { |stmt| stmt << " where name_zh = $1" }
+    db.query_one?(query, name_zh, as: self) || new(name_zh: name_zh)
   end
 
   ###
 
+  GET_NAME_QUERY = <<-SQL
+    select coalesce(nullif(name_vi, ''), name_mt) from authors
+    where name_zh = $1 limit 1
+    SQL
+
   CACHE = {} of String => String
 
   def self.get_name_vi(name_zh : String) : String
-    CACHE[name_zh] ||= begin
-      stmt = <<-SQL
-        select coalesce(nullif(name_vi, ''), name_mt) from authors
-        where name_zh = $1 limit 1
-        SQL
-      open_db(&.query_one?(stmt, name_zh, as: String)) || name_zh
+    CACHE[name_zh] ||= db.query_one?(GET_NAME_QUERY, name_zh, as: String) || name_zh
+  end
+
+  def self.preload_cache!
+    query = "select name_zh, coalesce(nullif(name_vi, ''), name_mt) as name_vi from authors"
+
+    self.db.open_ro do |db|
+      db.query_each(query) { |zname, vname| CACHE[zname] = vname }
     end
   end
 end

@@ -1,8 +1,7 @@
-require "crorm/model"
-require "crorm/sqlite"
+require "crorm"
 
 require "../_util/book_util"
-require "./json_parser/raw_tubook"
+require "./raw_json/raw_tubook"
 
 class ZR::Tubook
   class_getter db_path = "var/zroot/tubooks.db3"

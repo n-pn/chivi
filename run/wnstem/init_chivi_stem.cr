@@ -2,18 +2,18 @@ ENV["CV_ENV"] = "production"
 require "../../src/wnapp/data/wnseed"
 require "../../src/wnapp/data/chinfo"
 
-QUERY = WN::Wnsterm.schema.upsert_stmt(keep_fields: %w[chap_total chap_avail rlink rtime])
+QUERY = WN::Wnstem.schema.upsert_stmt(keep_fields: %w[chap_total chap_avail rlink rtime])
 
-CHIVI = WN::Wnsterm.all_by_sname("~chivi").to_h { |x| {x.wn_id, x} }
+CHIVI = WN::Wnstem.all_by_sname("~chivi").to_h { |x| {x.wn_id, x} }
 
 def transfer(sname : String)
-  stems = WN::Wnsterm.all_by_sname(sname)
+  stems = WN::Wnstem.all_by_sname(sname)
 
   stems.each do |origin|
     if target = CHIVI[origin.wn_id]?
       next if target.chap_total > 0
     else
-      target = WN::Wnsterm.new(origin.wn_id, "~chivi")
+      target = WN::Wnstem.new(origin.wn_id, "~chivi")
     end
 
     chinfos = WN::Chinfo.get_all(db: origin.chap_list)
@@ -36,4 +36,5 @@ def transfer(sname : String)
   end
 end
 
-transfer "!hetushu"
+snames = ARGV.reject(&.starts_with?('-'))
+snames.each { |sname| transfer(sname) }

@@ -14,9 +14,9 @@ class CV::Memoir
     Dtopic = 12
     # Dboard = 15
 
-    Author  = 30
-    Wnovel  = 31
-    Wnsterm = 35
+    Author = 30
+    Wnovel = 31
+    Wnstem = 35
 
     Vilist = 41
     Vicrit = 42

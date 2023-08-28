@@ -1,8 +1,7 @@
-require "sqlite3"
-require "crorm/model"
+require "crorm"
 
 require "../_util/book_util"
-require "./json_parser/raw_ysbook"
+require "./raw_json/raw_ysbook"
 
 require "./author"
 require "./btitle"

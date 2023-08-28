@@ -1,15 +1,15 @@
 require "json"
 require "colorize"
 
-require "../../src/zroot/html_parser/raw_rmcata.cr"
+require "../../src/zroot/raw_html/raw_rmstem.cr"
 
 def do_test(sname : String, b_id : String | Int32, fresh : Bool = false)
-  puts "\n[#{Rmconf.full_cata_link(sname, b_id)}]".colorize.green.bold
+  puts "\n[#{Rmhost.stem_url(sname, b_id)}]".colorize.green.bold
 
   # path = conf.cata_file_path(b_id)
   # Dir.mkdir_p(File.dirname(path))
 
-  parser = ZR::RawRmcata.from_seed(sname, b_id, stale: fresh ? Time.utc : Time.utc - 10.years)
+  parser = ZR::RawRmstem.from_stem(sname, b_id, stale: fresh ? Time.utc : Time.utc - 10.years)
   chlist = parser.chap_list
 
   puts "update_str: [#{parser.update_str}], real_time: #{Time.unix(parser.update_int)}"

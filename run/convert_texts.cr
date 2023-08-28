@@ -1,3 +1,5 @@
+ENV["CV_ENV"] = "production"
+
 require "../src/wnapp/data/chinfo"
 require "../src/wnapp/data/wnseed"
 
@@ -9,7 +11,7 @@ class Chtext
 
   V0_DIR = "var/texts/rgbks"
 
-  def initialize(@stem : WN::Wnsterm, @chap : WN::Chinfo)
+  def initialize(@stem : WN::Wnstem, @chap : WN::Chinfo)
     @wc_base = "#{WN_DIR}/#{stem.wn_id}/#{chap.ch_no}"
     chap.spath = "#{stem.sname}/#{stem.s_bid}/#{chap.ch_no}" if chap.spath.empty?
   end
@@ -98,20 +100,29 @@ class Chtext
   end
 end
 
-def convert(wnstem : WN::Wnsterm)
-  chlist = WN::Chinfo.get_all(db: wnstem.chap_list)
-  puts "- [#{wnstem.sname}/#{wnstem.s_bid}]: #{chlist.size} files"
+def convert(stem : WN::Wnstem, retry = 0)
+  db_path = WN::Chinfo.db_path(stem.sname, stem.s_bid)
+  return unless File.file?(db_path)
+
+  begin
+    chlist = WN::Chinfo.get_all(db: stem.chap_list)
+  rescue ex
+    File.delete?(db_path) if ex.message.try(&.includes?("no such table: chinfos"))
+    raise ex
+  end
+
+  puts "- [#{stem.sname}/#{stem.s_bid}]: #{chlist.size} files"
 
   output = [] of WN::Chinfo
 
   chlist.each do |chinfo|
-    chtext = Chtext.new(wnstem, chinfo)
+    chtext = Chtext.new(stem, chinfo)
     next if chtext.file_exists?
 
     if cksum = chtext.import_existing!
       output << chinfo
     else
-      puts "-- #{wnstem.s_bid}/#{chinfo.ch_no} is missing!".colorize.red
+      puts "-- #{stem.s_bid}/#{chinfo.ch_no} is missing!".colorize.red
     end
   end
 
@@ -119,7 +130,7 @@ def convert(wnstem : WN::Wnsterm)
 
   puts "-- #{output.size} converted!"
 
-  wnstem.chap_list.open_tx do |db|
+  stem.chap_list.open_tx do |db|
     output.each(&.upsert!(db: db))
   end
 end
@@ -128,11 +139,12 @@ LOG_DIR = "var/zroot/logged"
 
 def convert(sname : String)
   log_file = "#{LOG_DIR}/#{sname}-convert.log"
+  Dir.mkdir_p("var/zroot/wnchap/#{sname}")
 
   checked = Set(String).new
   checked.concat(File.read_lines(log_file)) if File.file?(log_file)
 
-  stems = WN::Wnsterm.get_all(sname, &.<< "where sname = $1")
+  stems = WN::Wnstem.get_all(sname, &.<< "where sname = $1")
   stems.each do |stem|
     next if checked.includes?(stem.s_bid)
     convert(stem)

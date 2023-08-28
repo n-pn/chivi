@@ -1,11 +1,11 @@
 require "crorm"
 
 require "../../_data/_data"
-require "../../zroot/html_parser/raw_rmcata"
+require "../../zroot/raw_html/raw_rmstem"
 
 require "./seed_type"
 
-class WN::Wnsterm
+class WN::Wnstem
   ############
 
   class_getter db : DB::Database = PGDB

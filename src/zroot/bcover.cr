@@ -1,25 +1,16 @@
 require "http/client"
+require "crorm"
 
-require "sqlite3"
-require "crorm/model"
+# require "../_util/r2_client"
+require "../_util/hash_util"
 
-require "../../_util/r2_client"
-require "../../_util/hash_util"
+class ZR::Bcover
+  class_getter db_path = "var/zroot/global/bcovers.db3"
 
-class ZH::Bcover
-  include Crorm::Model
-  schema "bcovers"
+  class_getter init_sql = <<-SQL
+    create table bcovers(
+      link varchar not null primary key,
 
-  def self.db_path
-    "var/zroot/bcovers.db"
-  end
-
-  def self.init_sql
-    <<-SQL
-    create table covers(
-      id primary key,
-
-      link varchar not null,
       name varchar not null,
       ext varchar not null default '.jpg',
 
@@ -28,25 +19,22 @@ class ZH::Bcover
 
       _flag integer default 0
     );
-
-    create unique index covers_uniq_idx on covers(link);
     SQL
-  end
+
+  include Crorm::Model
+  schema "bcovers", :sqlite
 
   def self.load(link : String, name : String = "") : self
-    @@repo.open do |db|
-      found = db.query_one?("select * from #{@@table} where link = ?", link, as: Bcover)
-      found || new(link, name)
-    end
+    self.get_by_pkey(link) || new(link, name)
   end
 
-  DIR = "var/books/covers"
+  DIR = "var/files/covers"
   Dir.mkdir_p(DIR)
 
   MAX_WIDTH = 300
 
+  field link : String
   field name : String = ""
-  field link : String = ""
   field ext : String = ".jpg" # original image extension
 
   field width : Int32 = 0 # image width
@@ -188,10 +176,5 @@ class ZH::Bcover
     end
 
     raise "upload to Cloudflare R2 unsucessful" unless _flag == 6
-  end
-
-  def save!
-    fields, changes = get_changes
-    @@repo.upsert(@@table, fields, changes)
   end
 end

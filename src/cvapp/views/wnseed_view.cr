@@ -1,9 +1,9 @@
 require "./_base_view"
 
-struct CV::WnstermView
+struct CV::WnstemView
   include BaseView
 
-  def initialize(@data : Wnsterm, @full = false, @fresh = true)
+  def initialize(@data : Wnstem, @full = false, @fresh = true)
   end
 
   def to_json(jb : JSON::Builder)

@@ -27,7 +27,7 @@ declare namespace CV {
     other: Array<Chroot>
   }
 
-  interface Wnsterm {
+  interface Wnstem {
     rlink: string
     rtime: number
 
@@ -39,7 +39,7 @@ declare namespace CV {
     gift_chaps: number
   }
 
-  interface WnstermPage {
+  interface WnstemPage {
     _main: CV.Chroot
     users: CV.Chroot[]
     backs: CV.Chroot[]

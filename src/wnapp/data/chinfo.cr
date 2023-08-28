@@ -234,7 +234,7 @@ class WN::Chinfo
   def self.init!(sname : String, sn_id : String, force : Bool = false) : Bool
     repo = self.load(sname, sn_id)
     return false if !force && self.chap_count(repo) > 0
-    import_old!(repo, sname, sn_id)
+    import_old!(repo, sname, sn_id) rescue false
   end
 
   def self.chap_count(db : Crorm::SQ3)
