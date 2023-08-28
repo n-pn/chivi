@@ -7,13 +7,14 @@ books = PGDB.query_all(query, as: {Int32, String, String}).to_h do |wn_id, btitl
   {wn_id, {btitle, author}}
 end
 
-inputs = WN::Wnstem.get_all(&.<< "where sname like '!%' and sname <> '!chivi'")
+inputs = WN::Wnstem.get_all(&.<< "where sname like '!%'")
 
-outputs = inputs.map do |input|
+outputs = inputs.compact_map do |input|
+  next if input.sname.in?("!chivi", "!zxcs_me")
+
   output = ZR::Rmstem.new(input.sname, input.s_bid)
 
-  conf = Rmconf.load!(input.sname)
-  output.rlink = conf.full_book_link(input.s_bid)
+  output.rlink = Rmhost.book_url(input.sname, input.s_bid)
   output.rtime = input.rtime
 
   output.btitle, output.author = books[input.wn_id]
@@ -22,10 +23,12 @@ outputs = inputs.map do |input|
   output.utime = input.mtime
   output.immut = input._flag > 0
 
-  output.count = input.chap_total
+  output.total = input.chap_total
   output.avail = input.chap_avail
 
   output
+rescue ex
+  puts ex
 end
 
 puts "to save: #{outputs.size}"

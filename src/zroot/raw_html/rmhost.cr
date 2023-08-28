@@ -273,7 +273,7 @@ class Rmhost
   #######
 
   CONF_DIR = "var/_conf/hosts"
-  Dir.mkdir_p(CONF_DIR)
+  # Dir.mkdir_p(CONF_DIR)
 
   class_getter mapping : Hash(String, String) do
     Hash(String, String).from_yaml File.read("#{CONF_DIR}/../hosts.yml")

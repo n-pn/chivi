@@ -62,7 +62,7 @@ class ZR::Rmstem
 
   field _flag : Int32 = 0 # multi purposes, if < 0 then the stem is inactive
 
-  @[DB::Field(ignore: true)]
+  @[DB::Field(ignore: true, auto: true)]
   getter repo : Crorm::SQ3 { Chinfo.db(sname, sn_id) }
 
   # @[DB::Field(ignore: true)]
