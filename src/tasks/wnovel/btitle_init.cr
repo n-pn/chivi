@@ -1,3 +1,5 @@
+ENV["CV_ENV"] = "production"
+
 require "../../_data/_data"
 require "../../zroot/author"
 require "../../zroot/btitle"
@@ -8,7 +10,7 @@ require "../../zroot/rmbook"
 author_flag = Hash(String, Int32).new(0)
 btitle_flag = Hash(String, Int32).new(0)
 
-ZR::Author.open_db do |db|
+ZR::Author.db.open_ro do |db|
   stmt = "select name_zh, _flag from authors where _flag > 0"
   db.query_each(stmt) do |rs|
     zname, _flag = rs.read(String, Int32)
@@ -18,15 +20,9 @@ end
 
 entries = {} of String => ZR::Btitle
 
-ZR::Btitle.all(OUT_DB).each do |btitle|
+ZR::Btitle.get_all.each do |btitle|
   entries[btitle.name_zh] = btitle
 end
-
-OUT_DB = ZR::Btitle.db
-
-# record Btitle, id : Int32, zname : String, vname : String, hname : String do
-#   include DB::Serializable
-# end
 
 (0..).each do |block|
   lower = block &* 1000
@@ -40,7 +36,7 @@ OUT_DB = ZR::Btitle.db
     total += 1
     zname, vname = rs.read(String, String)
 
-    entry = entries[zname] ||= ZR::Btitle.load(zname)
+    entry = entries[zname] ||= ZR::Btitle.new(zname)
     entry.name_mt = vname unless vname == zname || vname.empty?
   end
 
@@ -55,14 +51,14 @@ end
 
   stmt = "select author, btitle from ysbooks where id >= $1 and id <= $2"
 
-  ZR::Ysbook.open_db do |db|
+  ZR::Ysbook.db.open_ro do |db|
     db.query_each stmt, lower, upper do |rs|
       total += 1
 
       author, btitle = rs.read(String, String)
       author, btitle = BookUtil.fix_names(author, btitle)
 
-      entries[btitle] ||= ZR::Btitle.load(btitle, db: OUT_DB)
+      entries[btitle] ||= ZR::Btitle.new(btitle)
       btitle_flag[btitle] = {btitle_flag[btitle], author_flag[author]}.max
     end
   end
@@ -78,14 +74,14 @@ end
 
   stmt = "select author, btitle from tubooks where id >= $1 and id <= $2"
 
-  ZR::Tubook.open_db do |db|
+  ZR::Tubook.db.open_ro do |db|
     db.query_each stmt, lower, upper do |rs|
       total += 1
 
       author, btitle = rs.read(String, String)
       author, btitle = BookUtil.fix_names(author, btitle)
 
-      entries[btitle] ||= ZR::Btitle.load(btitle, db: OUT_DB)
+      entries[btitle] ||= ZR::Btitle.new(btitle)
       btitle_flag[btitle] = {btitle_flag[btitle], author_flag[author]}.max
     end
   end
@@ -117,7 +113,7 @@ TRUSTED_SEEDS.each do |sname|
     db.query_each stmt do |rs|
       author, btitle = rs.read(String, String)
       author, btitle = BookUtil.fix_names(author, btitle)
-      entries[btitle] ||= ZR::Btitle.load(btitle, db: OUT_DB)
+      entries[btitle] ||= ZR::Btitle.new(btitle)
     end
   end
 end
@@ -131,8 +127,8 @@ end
 
 puts "- assigned flags: #{flags}"
 
-OUT_DB.exec "begin"
-entries.each_value(&.upsert!(db: OUT_DB))
-OUT_DB.exec "commit"
+ZR::Btitle.db.open_tx do |db|
+  entries.each_value(&.upsert!(db: db))
+end
 
 puts "- saved entries: #{entries.size}"

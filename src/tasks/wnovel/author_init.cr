@@ -1,15 +1,17 @@
+# ENV["CV_ENV"] = "production"
+
 require "../../_data/_data"
 require "../../zroot/author"
 require "../../zroot/ysbook"
 require "../../zroot/tubook"
 require "../../zroot/rmbook"
 
-OUT_DB = ZR::Author.db
+OUT_DB = ZR::Author.db.open_rw
 
 entries = {} of String => ZR::Author
 scoring = Hash(String, Int32).new(0)
 
-ZR::Author.all(OUT_DB).each do |author|
+ZR::Author.get_all(db: OUT_DB).each do |author|
   entries[author.name_zh] = author
 end
 
@@ -24,7 +26,7 @@ end
     total += 1
     zname, vname = rs.read(String, String)
 
-    entry = entries[zname] ||= ZR::Author.load(zname)
+    entry = entries[zname] ||= ZR::Author.new(name_zh: zname)
     entry.name_vi = vname unless vname == zname
   end
 
@@ -40,14 +42,14 @@ end
   total = 0
 
   stmt = "select author, btitle, voters from ysbooks where id >= $1 and id <= $2"
-  ZR::Ysbook.open_db do |db|
+  ZR::Ysbook.db.open_ro do |db|
     db.query_each stmt, lower, upper do |rs|
       total += 1
 
       author, btitle, voters = rs.read(String, String, Int32)
       author, btitle = BookUtil.fix_names(author, btitle)
 
-      entries[author] ||= ZR::Author.load(author, db: OUT_DB)
+      entries[author] ||= ZR::Author.new(name_zh: author)
       scoring[author] = {scoring[author], voters}.max
     end
   end
@@ -63,14 +65,14 @@ end
   stmt = "select author, btitle, voters from tubooks where id >= $1 and id <= $2"
   total = 0
 
-  ZR::Tubook.open_db do |db|
+  ZR::Tubook.db.open_ro do |db|
     db.query_each stmt, lower, upper do |rs|
       total += 1
 
       author, btitle, voters = rs.read(String, String, Int32)
       author, btitle = BookUtil.fix_names(author, btitle)
 
-      entries[author] ||= ZR::Author.load(author, db: OUT_DB)
+      entries[author] ||= ZR::Author.new(name_zh: author)
       scoring[author] = {scoring[author], voters}.max
     end
   end
@@ -102,7 +104,7 @@ TRUSTED_SEEDS.each do |sname|
     db.query_each stmt do |rs|
       author, btitle = rs.read(String, String)
       author, _ = BookUtil.fix_names(author, btitle)
-      entries[author] ||= ZR::Author.load(author, db: OUT_DB)
+      entries[author] ||= ZR::Author.new(name_zh: author)
     end
   end
 end
@@ -136,5 +138,3 @@ entries.each_value(&.upsert!(db: OUT_DB))
 OUT_DB.exec "commit"
 
 puts "- saved entries: #{entries.size}"
-
-# puts OUT_DB.query_one("select count(*) from authors", as: Int32)
