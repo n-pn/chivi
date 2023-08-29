@@ -52,15 +52,6 @@ class ZR::Btitle
 
   ###
 
-  def self.load(name_zh : String)
-    open_db { |db| load(name_zh, db: db) }
-  end
-
-  def self.load(name_zh : String, db : DB::Database | DB::Connection)
-    stmt = self.schema.select_stmt { |stmt| stmt << " where name_zh = $1" }
-    db.query_one?(stmt, name_zh, as: self) || new(name_zh: name_zh)
-  end
-
   CACHE = {} of String => {String, String}
 
   def self.get_names(name_zh : String) : {String, String}

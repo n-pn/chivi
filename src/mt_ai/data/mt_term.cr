@@ -12,6 +12,9 @@ class AI::MtTerm
       uname varchar not null default '',
       mtime bigint not null default 0,
 
+      iptag int not null default 0,
+      iattr int not null default 0,
+
       _flag int not null default 0,
 
       primary key (zstr, ptag)
@@ -35,6 +38,9 @@ class AI::MtTerm
 
   field uname : String = ""
   field mtime : Int64 = 0
+
+  field iptag : Int32 = 0
+  field iattr : Int32 = 0
 
   field _flag : Int32 = 0
 

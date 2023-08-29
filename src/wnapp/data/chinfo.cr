@@ -2,7 +2,7 @@ require "crorm"
 require "./seed_util"
 
 require "../../_util/chap_util"
-require "../../zroot/html_parser/raw_rmchap"
+require "../../zroot/raw_html/raw_rmchap"
 
 class WN::OldChap
   include DB::Serializable

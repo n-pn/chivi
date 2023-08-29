@@ -1,4 +1,3 @@
-import { slugify } from '$utils/text_utils'
 import { writable, get } from 'svelte/store'
 import { make_vdict } from '../../utils/vpdict_utils'
 

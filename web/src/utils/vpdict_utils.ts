@@ -54,8 +54,8 @@ export function make_vdict(
   label?: string,
   brief?: string
 ): CV.Cvdict {
-  label = label || dict_labels[vd_id] || vd_id
-  brief = brief || dict_briefs[vd_id] || make_brief(vd_id, label)
+  label = label || dict_labels[vd_id] || vd_id || ''
+  brief = brief || dict_briefs[vd_id] || make_brief(vd_id, label) || ''
 
   const dslug = `${vd_id}-${slugify(label)}`
   return { vd_id, label, brief, dslug }

@@ -52,7 +52,7 @@ class ZR::Author
     self.db.open_ro { |db| load(name_zh, db: db) }
   end
 
-  def self.load(name_zh : String, db : DB::Database | DB::Connection)
+  def self.load(name_zh : String, db)
     query = self.schema.select_stmt { |stmt| stmt << " where name_zh = $1" }
     db.query_one?(query, name_zh, as: self) || new(name_zh: name_zh)
   end
