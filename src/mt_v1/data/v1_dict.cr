@@ -1,5 +1,4 @@
 require "crorm"
-require "crorm/sqlite"
 
 class M1::DbDict
   class_getter db_path = "var/mtapp/v1dic/dicts_v1.db"

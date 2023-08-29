@@ -28,6 +28,7 @@ class M1::DefnForm
     @key = @key.gsub(/[\p{C}\s]+/, " ").strip
     @key = CharUtil.to_canon(@key, upcase: true)
 
+    # TODO: correct vietnamese tone marks
     @val = @val.gsub(/[\p{C}\s]+/, " ").strip.unicode_normalize(:nfkc)
     @val = @val.split(/[|ǀ]/, remove_empty: true).map!(&.strip).join('\t')
 

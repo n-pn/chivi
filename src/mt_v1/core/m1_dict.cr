@@ -24,6 +24,7 @@ class M1::MtTrie
 
     input.each_char do |char|
       return unless trie = node.trie
+      char = char - 32 if 'ａ' <= char <= 'ｚ'
       return unless node = trie[char]?
     end
 
