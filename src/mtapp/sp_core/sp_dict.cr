@@ -22,6 +22,8 @@ class MT::SpDict
     node = @trie
     start.upto(chars.size &- 1) do |idx|
       char = chars.unsafe_fetch(idx)
+      char = char - 32 if 'ａ' <= char <= 'ｚ'
+
       break unless node = node.trie[char]?
 
       node.data.try { |data| output = data if output.len <= data.len }
@@ -32,21 +34,22 @@ class MT::SpDict
 
   def find_default_best(chars : Array(Char), start = 0)
     first_char = chars.unsafe_fetch(start)
+    first_char = first_char - 32 if 'ａ' <= first_char <= 'ｚ'
 
-    unless first_char.ascii_alphanumeric?
-      return SpTerm.new(first_char)
-    end
+    return SpTerm.new(first_char) unless first_char.alphanumeric?
 
     flag = FmtFlag::None
     index = start &+ 1
 
     while index < chars.size
       char = chars.unsafe_fetch(index)
-      break unless '!' <= char <= '~'
+      char = char - 32 if 'ａ' <= char <= 'ｚ'
 
-      if char.ascii_alphanumeric?
+      break unless '！' <= char <= '～'
+
+      if char.alphanumeric?
         index &+= 1
-      elsif chars[index &+ 1]?.try(&.ascii_alphanumeric?)
+      elsif chars[index &+ 1]?.try(&.alphanumeric?)
         flag |= :frozen
         index &+= 2
       else

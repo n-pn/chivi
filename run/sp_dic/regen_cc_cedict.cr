@@ -4,6 +4,7 @@ require "http/client"
 require "compress/zip"
 
 require "../../src/mt_sp/data/wd_defn"
+require "../../src/_util/char_util"
 
 URL = "https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.zip"
 DIR = "var/mtdic/spdic"
@@ -45,6 +46,7 @@ def parse_line(line : String)
   senses = clean_senses(senses).split('/').join("; ")
 
   defn = "[#{pinyin}] {#{trad}} #{senses}"
+  simp = CharUtil.to_canon(simp, true)
   SP::WdDefn.new(simp, defn)
 end
 
