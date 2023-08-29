@@ -146,8 +146,9 @@ module CharUtil
   # convert input to fullwidth form
   def to_canon(char : Char, upcase : Bool = false) : Char
     case
-    when 'a' <= char <= 'z' then to_fullwidth(upcase ? char - 32 : char)
     when '!' <= char <= '~' then to_fullwidth(char)
+    when 'a' <= char <= 'z' then to_fullwidth(upcase ? char - 32 : char)
+    when 'ａ' <= char <= 'ｚ' then upcase ? char - 32 : char
     else                         CANONICAL.fetch(char, char)
     end
   end

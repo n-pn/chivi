@@ -1,7 +1,7 @@
 require "../../src/mt_v1/core/m1_core"
 
-text = ARGV[0]? || "然而这是他唯一的机会"
-book = ARGV[1]?.try(&.to_i?) || 0
+text = ARGV[0]? || "苏简转头，今天的许陌陌穿着星黛露的ｃｏｓ服，看起来元气满满很是可爱。"
+book = ARGV[1]?.try(&.to_i?) || 550200
 user = ARGV[2]?
 
 time = Time.monotonic
