@@ -1,43 +1,58 @@
 require "../../src/_util/char_util"
 require "../../src/mt_ai/data/mt_term"
 
-DB_PATH = "var/mtdic/specs.db3"
+INP_PATH = "var/mtdic/fixed/common-main.dic"
 
-# DB.connect("sqlite3:#{DB_PATH}?immutable=1") do |db|
-#   db.query_each "select tok_gold, pos_gold from specs" do |rs|
-#     toks = rs.read(String).strip.split(' ')
-#     poss = rs.read(String).strip.split(' ')
+regular = [] of {String, String, String, Int32}
+suggest = [] of {String, String, String, Int32}
 
-#     raise "invalid" unless toks.size == poss.size
+DB.connect("sqlite3:#{INP_PATH}?immutable=1") do |db|
+  db.query_each "select zstr, vstr, vmap, xpos, _flag from defns" do |rs|
+    zstr, vstr, vmap, xpos, flag = rs.read(String, String, String, String, Int32)
 
-#     toks.zip(poss) do |tok, pos|
-#       tok = CharUtil.to_canon(tok, false)
-#       counts[tok] += 1
+    zstr = CharUtil.to_canon(zstr)
+    vstr = "" if vstr == "⛶"
 
-#       inputs << {tok, pos}
-#       allows << tok if essence?(pos: pos, tok: tok)
-#     end
-#   end
-# end
+    xpos = "_" if xpos.includes?(' ')
 
-# inputs = inputs.select { |tok, pos| allows.includes?(tok) }
-# inputs = inputs.to_a.sort_by! { |tok, pos| -counts[tok] }
-# puts inputs.size
+    if flag > 1
+      regular << {zstr, xpos, vstr, flag}
+    else
+      suggest << {zstr, xpos, vstr, flag}
+    end
 
-# File.open("var/mtdic/essence-2.tsv", "w") do |file|
-#   inputs.each do |tok, pos|
-#     file << tok << '\t' << pos << '\n'
-#   end
-# end
+    next if vmap.empty?
 
-# output = [] of AI::MtTerm
+    vmap.split('ǀ') do |item|
+      ptag, vstr = item.split(':')
+      regular << {zstr, ptag, vstr, flag}
+    end
+  end
+end
 
-# inputs.each do |tok, pos|
-#   term = AI::MtTerm.new(tok, pos)
-#   term._flag = -1
-#   output << term
-# end
+regular.uniq! { |x| {x[0], x[1]} }
+suggest.uniq! { |x| {x[0], x[1]} }
 
-# AI::MtTerm.db("essence").open_tx do |db|
-#   output.each(&.upsert!(db: db))
-# end
+puts regular.size, suggest.size
+
+regular_out = regular.map do |zstr, ptag, vstr, flag|
+  term = AI::MtTerm.new(zstr, ptag)
+  term.vstr = vstr
+  term._flag = flag
+  term
+end
+
+AI::MtTerm.db("base-main").open_tx do |db|
+  regular_out.each(&.upsert!(db: db))
+end
+
+suggest_out = suggest.map do |zstr, ptag, vstr, flag|
+  term = AI::MtTerm.new(zstr, ptag)
+  term.vstr = vstr
+  term._flag = flag
+  term
+end
+
+AI::MtTerm.db("base-init").open_tx do |db|
+  suggest_out.each(&.upsert!(db: db))
+end
