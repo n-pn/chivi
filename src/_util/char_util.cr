@@ -94,6 +94,7 @@ module CharUtil
     '﹐' => '，',
     '﹑' => '､',
     '、' => '､',
+    '·' => '･',
     '‧' => '･',
     '•' => '･',
     '‵' => '｀',
@@ -187,11 +188,11 @@ module CharUtil
     (char.ord &- 0xfee0).chr
   end
 
-  def is_number?(char : Char)
-    0x2F < char.ord < 0x3A
+  def number?(char : Char)
+    '0' <= char <= '9'
   end
 
-  def is_letter?(char : Char)
+  def letter?(char : Char)
     ('a' <= char <= 'z') || ('A' <= char <= 'Z')
   end
 
@@ -213,7 +214,7 @@ module CharUtil
     '亿' => 100_000_000, '兆' => 1_000_000_000_000,
   }
 
-  def is_hannum?(char : Char)
+  def hannum?(char : Char)
     HANNUM_CHARS.includes?(char)
   end
 

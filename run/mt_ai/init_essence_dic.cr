@@ -70,9 +70,21 @@ end
 
 output = [] of AI::MtTerm
 
-inputs.each do |tok, pos|
-  term = AI::MtTerm.new(tok, pos)
-  term._flag = -1
+senses = AI::MtTerm.all_defs("base-main")
+
+inputs.each do |zstr, cpos|
+  term = AI::MtTerm.new(zstr, cpos)
+
+  if sense = senses[zstr]?
+    term.vstr = sense[cpos]? || sense["_"]
+    term._flag = 1
+  elsif cpos == "PU"
+    term.vstr = CharUtil.normalize(zstr)
+    term._flag = 2
+  else
+    term._flag = -1
+  end
+
   output << term
 end
 
