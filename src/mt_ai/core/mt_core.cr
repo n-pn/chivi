@@ -1,7 +1,5 @@
-require "http/client"
-
-require "./core/*"
-require "./data/*"
+require "./mt_data"
+require "../data/*"
 
 class AI::MtCore
   getter dict : MtDict

@@ -1,5 +1,4 @@
-require "crorm/model"
-require "crorm/sqlite"
+require "crorm"
 
 struct WN::ChtextAnlzUlog
   class_getter db_path = ""

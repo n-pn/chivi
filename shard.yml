@@ -10,22 +10,24 @@ license: MIT
 
 targets:
   cvapp-srv:
-    main: src/cvapp-srv.cr
+    main: src/cvapp/cvapp-srv.cr
 
   ysapp-srv:
-    main: src/ysapp-srv.cr
+    main: src/ysapp/ysapp-srv.cr
 
   wnapp-srv:
-    main: src/wnapp-srv.cr
+    main: src/wnapp/wnapp-srv.cr
 
   mt_sp-srv:
-    main: src/mt_sp-srv.cr
+    main: src/mt_sp/mt_sp-srv.cr
 
   mt_v1-srv:
-    main: src/mt_v1-srv.cr
+    main: src/mt_v1/mt_v1-srv.cr
 
-  mt_v2-srv:
-    main: src/mt_v2-srv.cr
+  mt_ai-srv:
+    main: src/mt_ai/mt_ai-srv.cr
+
+  ###
 
   bcover_cli:
     main: cli/bcover_cli.cr
@@ -125,9 +127,6 @@ dependencies:
   # xxhash:
   #   github: zph/xxhash
   #   version: ~> 1.0.0
-
-  wordsmith:
-    github: luckyframework/wordsmith
 
   # zip:
   #   github: n-pn/libzip.cr

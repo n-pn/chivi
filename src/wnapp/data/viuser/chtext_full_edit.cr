@@ -1,5 +1,4 @@
-require "crorm/model"
-require "crorm/sqlite"
+require "crorm"
 
 struct WN::ChtextFullEdit
   class_getter db_path = "var/wnapp/chtext-full-edit.db"

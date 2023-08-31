@@ -1,5 +1,5 @@
 require "colorize"
-require "./mt_core"
+require "./core/mt_core"
 
 TEST1 = "(NP (DNP (NP (NR 家乐福) (CC 或) (NR 大润发)) (DEG 的)) (NP (NN 大卖场)))"
 TEST2 = "(NP\n  (QP (CD 很多))\n  (DNP (NP (NN 医学) (NN 领域) (PU 、) (NN 制药) (NN 领域)) (DEG 的))\n  (NP (NN 专家)))"

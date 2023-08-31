@@ -2,7 +2,7 @@ require "./chinfo"
 require "./wnseed"
 
 require "../../_util/chap_util"
-require "../../zroot/html_parser/raw_rmchap"
+require "../../zroot/raw_html/raw_rmchap"
 
 class WN::Chtext
   getter wc_base : String

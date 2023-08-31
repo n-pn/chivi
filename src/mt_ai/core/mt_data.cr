@@ -1,3 +1,4 @@
+require "http/client"
 require "./mt_node/*"
 require "../data/mt_dict"
 

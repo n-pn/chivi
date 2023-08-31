@@ -184,25 +184,6 @@ abstract class AC::Base
   end
 end
 
-# struct ConvertLimit
-#   def initialize(@min = 0, @max = 24)
-#   end
-
-#   def convert(raw : String)
-#     return @max unless int = raw.to_i?
-#     int > @max ? @max : int < @min ? @min : int
-#   end
-# end
-
-# struct ConvertArray
-#   def initialize(@delimit = ",")
-#   end
-
-#   def convert(raw : String)
-#     raw.split(@delimit, remove_empty: true).map(&.strip).uniq!
-#   end
-# end
-
 class ErrorHandler
   include HTTP::Handler
 

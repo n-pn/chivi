@@ -6,7 +6,7 @@ require "../../_util/tran_util"
 require "../../_data/wnovel/wninfo"
 require "../../_data/wnovel/wnlink"
 require "../../mt_v1/data/v1_dict"
-require "../../zroot/json_parser/raw_ysbook"
+require "../../zroot/raw_json/raw_ysbook"
 
 require "./wninfo_data"
 

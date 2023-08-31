@@ -15,7 +15,7 @@ do
   # then
   #   rsync-fast "src/hanlp-srv.py" $SSH/bin
   else
-    crystal build -s --release src/$target-srv.cr -o /2tb/app.chivi/bin/$target-srv
+    crystal build -s --release src/$target/$target-srv.cr -o /2tb/app.chivi/bin/$target-srv
   fi
 
   echo restarting $target service
