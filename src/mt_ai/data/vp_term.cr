@@ -1,6 +1,7 @@
 require "crorm"
+require "./vp_pecs"
 
-class AI::MtTerm
+class AI::VpTerm
   class_getter init_sql = <<-SQL
     create table terms(
       zstr varchar not null,
@@ -21,8 +22,8 @@ class AI::MtTerm
     )
     SQL
 
-  def self.db_path(dname : String)
-    "var/mtapp/mt_ai/#{dname}.db3"
+  def self.db_path(dname : String, type : String = "db3")
+    "var/mtdic/mt_ai/#{dname}.#{type}"
   end
 
   ###
@@ -45,26 +46,5 @@ class AI::MtTerm
   field _flag : Int32 = 0
 
   def initialize(@zstr, @cpos = "_", @vstr = "", @pecs = "")
-  end
-
-  ###
-
-  def self.all_defs(dname : String)
-    db(dname).open_ro do |db|
-      output = {} of String => Hash(String, String)
-
-      db.query_each("select zstr, cpos, vstr from terms") do |rs|
-        zstr = rs.read(String)
-        cpos = rs.read(String)
-        vstr = rs.read(String)
-
-        entry = output[zstr] ||= {} of String => String
-
-        entry[cpos] = vstr
-        entry["_"] ||= vstr
-      end
-
-      output
-    end
   end
 end

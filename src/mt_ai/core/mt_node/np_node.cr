@@ -5,20 +5,20 @@ class AI::NpNode
 
   getter data = [] of MtNode
 
-  def initialize(input : Array(MtNode), @ptag, @attr, @_idx)
+  def initialize(input : Array(MtNode), @cpos, @_idx)
     input.reverse_each do |node|
-      case node.ptag
+      case node.cpos
       when "QP"
         add_head(node)
       when "DP"
         left, right = split_dp(node)
         add_head(right)
-        add_node(left, at_head: is_left_dp?(left))
+        add_node(left, at_head: left_dp?(left))
       when "CLP"
         # FIXME: split phrase if first element is CD
         add_head(node)
       when "DNP"
-        add_node(node, node.attr.includes?("HEAD"))
+        add_node(node, at_head: node.pecs.prep?)
       else
         add_tail(node)
       end
@@ -45,11 +45,11 @@ class AI::NpNode
     raise "unsupported DP structure"
   end
 
-  def is_left_dp?(node : M0Node)
+  def left_dp?(node : M0Node)
     node.zstr.in?("")
   end
 
-  def is_left_dp?(node : MtNode)
+  def left_dp?(node : MtNode)
     false
   end
 

@@ -1,14 +1,11 @@
 require "./_base"
-require "../mt_term"
 
 class AI::M0Node
   include MtNode
 
   getter zstr : String
 
-  property term : MtTerm? = nil
-
-  def initialize(@zstr, @ptag, @attr, @_idx)
+  def initialize(@zstr, @cpos, @_idx)
   end
 
   def z_each(&)

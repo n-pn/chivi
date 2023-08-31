@@ -4,8 +4,8 @@ require "./core/*"
 require "./data/*"
 
 class AI::MtCore
-  def initialize(wn_id : Int32, uname : String = "")
-    @dict = MtDict.new(wn_id, uname)
+  def initialize(wn_id : Int32)
+    @dict = MtDict.new("book/#{wn_id}")
   end
 
   def translate(data : String, opts = MtOpts::Initial)

@@ -8,8 +8,8 @@ class AI::M2Node
 
   @flip = false
 
-  def initialize(@left, @right, @ptag, @attr, @_idx)
-    case ptag
+  def initialize(@left, @right, @cpos, @_idx)
+    case cpos
     when "DVP" then fix_dvp!
     when "DNP" then fix_dnp!
     when "LCP" then fix_lcp!
@@ -45,28 +45,26 @@ class AI::M2Node
   end
 
   def fix_dnp!
-    @attr = "TAIL"
+    @pecs |= :post
     @flip = true
 
-    if is_ktetic?(left)
-      right.ptag = "DEG2"
-      right.as(M0Node).term = MtTerm::DEG2
+    if ktetic?(left)
+      right.vstr = "của"
+      right.pecs = :none
     end
   end
 
-  def is_ktetic?(node : MtNode)
-    return true if node.attr.includes?("PN")
-
-    while node.ptag == "NP"
+  private def ktetic?(node : MtNode)
+    while node.cpos == "NP"
       # NOTE: remove recursion here?
       node = node.last
     end
 
-    case node.ptag
+    case node.cpos
     when "NP", "NR", "PN"
       true
-    when "NN"
-      !node.attr.includes?("ATTR") # TODO: add ATTR to node
+    when "NN", "NT"
+      !node.pecs.nadj?
     else
       false
     end

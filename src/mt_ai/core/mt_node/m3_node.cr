@@ -7,7 +7,7 @@ class AI::M3Node
   getter middle : MtNode
   getter right : MtNode
 
-  def initialize(@left, @middle, @right, @ptag, @attr, @_idx)
+  def initialize(@left, @middle, @right, @cpos, @_idx)
   end
 
   def z_each(&)

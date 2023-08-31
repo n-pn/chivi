@@ -27,8 +27,7 @@ class AI::MtData
       sbuf << char
     end
 
-    ptag, _, attr = sbuf.to_s.partition('-')
-
+    cpos = sbuf.to_s
     char = iter.next.as(Char)
 
     if char != '(' # core term
@@ -42,7 +41,7 @@ class AI::MtData
         size &+= 1
       end
 
-      return {M0Node.new(zstr.to_s, ptag, attr, _idx), _idx + size}
+      return {M0Node.new(zstr.to_s, cpos, _idx), _idx + size}
     end
 
     nodes = [] of MtNode
@@ -58,16 +57,16 @@ class AI::MtData
 
     # pp nodes
 
-    case ptag
-    when "NP" then return {NpNode.new(nodes, ptag, attr, from), _idx}
-    when "VP" then return {VpNode.new(nodes, ptag, attr, from), _idx}
+    case cpos
+    when "NP" then return {NpNode.new(nodes, cpos, from), _idx}
+    when "VP" then return {VpNode.new(nodes, cpos, from), _idx}
     end
 
     case nodes.size
-    when 1 then {M1Node.new(nodes[0], ptag, attr, from), _idx}
-    when 2 then {M2Node.new(nodes[0], nodes[1], ptag, attr, from), _idx}
-    when 3 then {M3Node.new(nodes[0], nodes[1], nodes[2], ptag, attr, from), _idx}
-    else        {MxNode.new(nodes, ptag, attr, from), _idx}
+    when 1 then {M1Node.new(nodes[0], cpos, from), _idx}
+    when 2 then {M2Node.new(nodes[0], nodes[1], cpos, from), _idx}
+      # when 3 then {M3Node.new(nodes[0], nodes[1], nodes[2], cpos, from), _idx}
+    else {MxNode.new(nodes, cpos, from), _idx}
     end
   end
 

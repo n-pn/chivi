@@ -1,136 +1,60 @@
 require "sqlite3"
-require "./mt_opts"
-require "../util/*"
+
 require "../../mtapp/sp_core"
-
-struct AI::MtDefn
-  getter vmap = {} of String => String
-  getter opts = MtOpts::None
-
-  def initialize(vmap : String = "")
-    @opts = MtOpts::None
-
-    vmap.split('ǀ') do |elem|
-      ptag, vstr = elem.split(':', 2)
-      @opts = MtOpts.for_punctuation(vstr) if ptag == "PU"
-      @vmap[ptag] = vstr
-      @vmap[""] ||= vstr
-    end
-  end
-
-  # EXTRA TAGS:
-  # N: all nouns
-  # V: all verbs/adjts
-  # _C: all content words
-  # _F: all function words
-
-  SUPERSETS = {
-    "VV" => {"V", "_C"},
-    "VA" => {"V", "_C"},
-    "NN" => {"N", "_C"},
-    "NT" => {"N", "_C"},
-  }
-
-  def add_defn(ptag : String, vstr : String)
-    @vmap[ptag] = vstr
-    return unless alts = SUPERSETS[ptag]?
-    alts.each { |alt| @vmap[alt] = vstr }
-  end
-
-  def get_defn(ptag : String) : String
-    case val = @vstr
-    when String then val
-    else             val.fetch(ptag) { val[""] }
-    end
-  end
-end
+require "../util/*"
+require "./vp_defn"
 
 class AI::MtDict
-  alias Defns = Hash(String, AI::MtDefn)
+  @main_dict : VpDefn
+  @auto_dict : VpDefn
 
-  def self.load_vmap_from_db(db_path : String)
-    defns = Defns.new
+  def initialize(pdict : String = "combined")
+    @main_dict = VpDefn.load(pdict)
+    @auto_dict = VpDefn.new(pdict, :autogen)
 
-    DB.open("sqlite3:#{db_path}") do |db|
-      db.query_each "select zstr, vstr, vmap, xpos from defns" do |rs|
-        zstr, vstr, vmap, ptag = rs.read(String, String, String, String)
-
-        vstr = "" if vstr == "⛶"
-        ptag = ptag.split(' ').first
-
-        data = "#{ptag}:#{vstr}"
-        data = "#{data}ǀ#{vmap}" unless vmap.blank?
-        defns[zstr] = MtDefn.new(data)
-      end
-    end
-
-    defns
+    @dict_list = {
+      VpDefn.essence,
+      @main_dict,
+      VpDefn.regular,
+      @auto_dict,
+      VpDefn.suggest,
+    }
   end
 
-  DIR = "var/mtdic/fixed"
-  class_getter generic : Defns { load_vmap_from_db("#{DIR}/common-main.dic") }
+  def find(zstr : String, cpos : String) : {String, VpPecs, Int32}
+    fallback = nil
 
-  class_getter fixture : Defns do
-    defns = Defns.new
-
-    File.each_line("./src/mt_ai/data/fixed.tsv") do |line|
-      next if line.blank?
-      zstr, vmap = line.split('\t')
-      defns[zstr] = MtDefn.new(vmap)
-    end
-
-    defns
-  end
-
-  getter dicts : Array(Defns)
-
-  def initialize(@wn_id : Int32, @uname = "")
-    # TODO: load overrides
-    @dicts = [
-      self.class.fixture,
-      Defns.new,
-      self.class.generic,
-    ]
-  end
-
-  def find(zstr : String, ptag : String) : {String, MtOpts}
-    vstr = opts = nil
-
-    @dicts.each do |dict|
-      next unless defn = dict[zstr]?
-      opts ||= defn.opts
-
-      if vstr = defn.vmap[ptag]?
-        opts = MtOpts::Hidden if vstr == ""
-        return {vstr, opts}
+    @dict_list.each do |dict|
+      if found = dict.get(zstr, cpos)
+        return found
       else
-        vstr ||= defn.vmap[""]?
+        fallback ||= dict.get_alt(zstr)
       end
     end
 
-    if vstr
-      {vstr, opts || MtOpts::None}
-    else
-      init(zstr, ptag)
-    end
+    fallback && !cpos.in?("CD", "OD") ? fallback : init(zstr, cpos)
   end
 
-  def init(zstr : String, ptag : String)
-    # FIXME: add simple translation machine here
-    # FIXME: cache translation
+  def init(zstr : String, cpos : String)
+    pecs = VpPecs::None
 
-    case ptag
+    case cpos
     when "PU"
       vstr = CharUtil.normalize(zstr)
-      {vstr, MtOpts.for_punctuation(vstr)}
+      pecs = VpPecs.parse_punct(zstr)
+      @auto_dict.add_defn(zstr, cpos, vstr, pecs)
     when "CD", "OD"
-      {QtNumber.translate(zstr), MtOpts::None}
+      vstr = QtNumber.translate(zstr)
+      @auto_dict.add_defn(zstr, cpos, vstr, :none)
     when "NR"
-      # TODO: call translate engine
-      {MT::SpCore.tl_hvname(zstr), MtOpts::None}
+      # TODO: call special name translation engine
+      vstr = MT::SpCore.tl_hvname(zstr)
+      @auto_dict.add_defn(zstr, cpos, vstr, :none)
     else
-      # pp [zstr, ptag]
-      {MT::SpCore.tl_sinovi(zstr), MtOpts::None}
+      vstr = MT::SpCore.tl_sinovi(zstr)
+      @auto_dict.add_defn(zstr, cpos, vstr, :none)
     end
+
+    {vstr, pecs, VpDefn::Dtype::Autogen.to_i}
   end
 end

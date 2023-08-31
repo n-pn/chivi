@@ -6,7 +6,7 @@ class AI::MxNode
   getter list : Array(MtNode)
   getter _ord : Array(Int32)? = nil
 
-  def initialize(@list, @ptag, @attr, @_idx, @_ord = nil)
+  def initialize(@list, @cpos, @_idx, @_ord = nil)
   end
 
   def z_each(&)

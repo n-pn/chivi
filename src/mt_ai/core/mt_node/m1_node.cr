@@ -5,7 +5,7 @@ class AI::M1Node
 
   getter node : MtNode
 
-  def initialize(@node, @ptag, @attr, @_idx)
+  def initialize(@node, @cpos, @_idx)
   end
 
   def z_each(&)

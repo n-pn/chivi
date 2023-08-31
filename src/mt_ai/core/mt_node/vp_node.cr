@@ -5,7 +5,7 @@ class AI::VpNode
 
   getter data : Array(MtNode)
 
-  def initialize(@data, @ptag, @attr, @_idx)
+  def initialize(@data, @cpos, @_idx)
   end
 
   def z_each(&)
