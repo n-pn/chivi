@@ -1,4 +1,4 @@
-require "./ent_mark"
+require "../data/entities"
 
 class MT::EntTerm
   getter bner = EntMark::None # mark begin

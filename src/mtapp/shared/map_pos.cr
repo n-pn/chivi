@@ -9,9 +9,9 @@ module MT::MapPos
     "VERB" => "VV",
     "MD"   => "VM", # modal verb
 
-    "PNR" => "PN_R", # personal pronoun
-    "PND" => "PN_D", # demonstrative pronoun
-    "WP"  => "PN_I", # interrogative pronoun
+    "PNR" => "PN", # personal pronoun
+    "PND" => "PN", # demonstrative pronoun
+    "WP"  => "PN", # interrogative pronoun
   }
 
   def ud_to_ctb(xpos : String, upos : String = "", feat = "")

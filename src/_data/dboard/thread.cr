@@ -174,7 +174,7 @@ class CV::Gdroot
     self
   end
 
-  def init_as_wnseed_thread
+  def init_as_wnstem_thread
     wn_id, sname = @ukey.split(':', 2)
     wninfo = Wninfo.load!(wn_id.to_i)
 
@@ -226,7 +226,7 @@ class CV::Gdroot
       ##
     in .author? then "trang tác giả"
     in .wninfo? then "bình luận truyện"
-    in .wnseed? then "bình luận nguồn"
+    in .wnstem? then "bình luận nguồn"
     in .wnchap? then "bình luận chương"
       ##
     in .vilist? then "thư đơn truyện"
@@ -247,7 +247,7 @@ class CV::Gdroot
       ##
     in .author? then "trang tác giả"
     in .wninfo? then "bộ truyện"
-    in .wnseed? then "danh sách chương"
+    in .wnstem? then "danh sách chương"
     in .wnchap? then "chương truyện"
       ##
     in .vilist? then "thư đơn"
@@ -279,7 +279,7 @@ class CV::Gdroot
     in .dtopic? then "dt:#{@ukey}"
     in .author? then "au:#{@ukey}"
     in .wninfo? then "wn:#{@ukey}"
-    in .wnseed? then "ns:#{@ukey}"
+    in .wnstem? then "ns:#{@ukey}"
     in .wnchap? then "ch:#{@ukey}"
     in .vicrit? then "vc:#{@ukey}"
     in .vilist? then "vl:#{@ukey}"
@@ -333,7 +333,7 @@ class CV::Gdroot
     when .vicrit? then gdroot.init_from(Vicrit.load!(ukey.to_i))
     when .vilist? then gdroot.init_from(Vilist.load!(ukey.to_i))
     when .viuser? then gdroot.init_from(Viuser.load!(ukey))
-    when .wnseed? then gdroot.init_as_wnseed_thread
+    when .wnstem? then gdroot.init_as_wnstem_thread
     when .wnchap? then gdroot.init_as_wnchap_thread
     else               gdroot
     end

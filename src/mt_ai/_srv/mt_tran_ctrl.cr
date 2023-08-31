@@ -1,7 +1,7 @@
 # require "../../../libcv/qtran_data"
 require "./_mt_ctrl_base"
 
-class AI::TranCtrl < AC::Base
+class MT::TranCtrl < AC::Base
   base "/_ai"
 
   # @[AC::Route::POST("/qtran")]
