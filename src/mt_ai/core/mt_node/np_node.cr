@@ -15,10 +15,26 @@ class AI::NpNode
       self.set_tl!(found)
       return
     end
+  end
 
+  @[AlwaysInline]
+  def tl_phrase!(dict : MtDict)
+    if found = dict.get?(@zstr, @cpos)
+      self.set_tl!(found)
+    else
+      @orig.each(&.tl_phrase!(dict))
+      fix_inner!(dict)
+    end
+  end
+
+  @[AlwaysInline]
+  def tl_word!(dict : MtDict) : Nil
+    @orig.each(&.tl_word!(dict))
+    fix_inner!(dict)
+  end
+
+  private def fix_inner!(dict : MtDict) : Nil
     @orig.reverse_each do |node|
-      node.translate!(dict)
-
       case node.cpos
       when "QP"
         add_head(node)
@@ -36,6 +52,8 @@ class AI::NpNode
       end
     end
   end
+
+  ###
 
   def add_node(node : MtNode, at_head = false) : Nil
     at_head ? add_head(node) : add_tail(node)

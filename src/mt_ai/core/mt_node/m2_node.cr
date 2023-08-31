@@ -12,15 +12,23 @@ class AI::M2Node
     @zstr = "#{@left.zstr}#{@right.zstr}"
   end
 
-  def translate!(dict : MtDict) : Nil
+  def tl_phrase!(dict : MtDict) : Nil
     if found = dict.get?(@zstr, @cpos)
       self.set_tl!(found)
-      return
+    else
+      {@left, @right}.each(&.tl_phrase!(dict))
+      fix_inner!(dict)
     end
+  end
 
-    @left.translate!(dict)
-    @right.translate!(dict)
+  @[AlwaysInline]
+  def tl_word!(dict : MtDict)
+    {@left, @right}.each(&.tl_word!(dict))
+    fix_inner!(dict)
+  end
 
+  @[AlwaysInline]
+  private def fix_inner!(dict : MtDict) : Nil
     case @cpos
     when "DVP" then fix_dvp!
     when "DNP" then fix_dnp!

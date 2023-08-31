@@ -9,13 +9,17 @@ class AI::M1Node
     @zstr = node.zstr
   end
 
-  def translate!(dict : MtDict)
+  def tl_phrase!(dict : MtDict)
     if found = dict.get?(@zstr, @cpos)
-      # pp [found, "m1_tl"]
       self.set_tl!(found)
     else
-      @node.translate!(dict)
+      node.tl_phrase!(dict: dict)
     end
+  end
+
+  @[AlwaysInline]
+  def tl_word!(dict : MtDict)
+    @node.tl_word!(dict)
   end
 
   ###

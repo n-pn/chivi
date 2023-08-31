@@ -1,15 +1,47 @@
 require "./mt_node/*"
+require "../data/mt_dict"
 
 # references:
 # - https://hanlp.hankcs.com/docs/annotations/pos/ctb.html
 # - https://hanlp.hankcs.com/docs/annotations/constituency/ctb.html
 
-module AI::MtData
+class AI::MtData
+  getter root : MtNode
+
+  delegate zstr, to: @root
+
+  def initialize(@root : MtNode)
+    @translated = false
+  end
+
+  def translate!(dict : MtDict, coarse : Bool = true)
+    return if @translated
+    @translated = true
+
+    if coarse
+      @root.tl_phrase!(dict)
+    else
+      @root.tl_word!(dict)
+    end
+  end
+
+  def to_txt(apply_cap = true, pad_space = false)
+    String.build { |io| to_txt(io, apply_cap, pad_space) }
+  end
+
+  def to_txt(io : IO, apply_cap : Bool, pad_space : Bool)
+    @root.to_txt(io, apply_cap, pad_space)
+  end
+
+  def inspect(io : IO)
+    @root.inspect(io)
+  end
+
   def self.parse_con_data(input : String)
     iter = input.each_char
     iter.next # remove first '(' character
     node, _idx = do_parse_con_data(iter, _idx: 0)
-    node
+    new(node)
   end
 
   private def self.do_parse_con_data(iter, _idx = 0)

@@ -8,16 +8,23 @@ class AI::MxNode
 
   def initialize(@list, @cpos, @_idx, @_ord = nil)
     @zstr = @list.join(&.zstr)
-    # pp [@zstr, "mx:#{cpos}"]
   end
 
-  def translate!(dict : MtDict) : Nil
+  @[AlwaysInline]
+  def tl_phrase!(dict : MtDict)
     if found = dict.get?(@zstr, @cpos)
       self.set_tl!(found)
     else
-      @list.each(&.translate!(dict))
+      @list.each(&.tl_phrase!(dict))
     end
   end
+
+  @[AlwaysInline]
+  def tl_word!(dict : MtDict) : Nil
+    @list.each(&.tl_word!(dict))
+  end
+
+  ###
 
   def z_each(&)
     @list.each { |node| yield node }

@@ -19,14 +19,8 @@ class AI::MtCore
     translate(mtdata, apply_cap: apply_cap, pad_space: pad_space)
   end
 
-  def translate(data : MtNode, apply_cap = true, pad_space = false)
+  def translate(data : MtData, apply_cap = true, pad_space = false)
     data.translate!(dict: @dict)
-    to_txt(data, apply_cap: apply_cap, pad_space: pad_space)
-  end
-
-  def to_txt(data : MtNode, apply_cap = true, pad_space = false)
-    String.build do |io|
-      TextRenderer.new(io, apply_cap, pad_space).render(data)
-    end
+    data.to_txt(apply_cap: apply_cap, pad_space: pad_space)
   end
 end

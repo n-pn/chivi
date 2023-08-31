@@ -113,12 +113,15 @@ def do_test(input : String)
   input = input.gsub(/\n[\t\s]+/, " ")
   data = AI::MtData.parse_con_data(input)
 
+  # data.root.tl_word!(dict: CORE.dict)
+  data.root.tl_phrase!(dict: CORE.dict)
+
   puts "--------------------------------".colorize.dark_gray
   puts data.zstr.colorize.cyan
   puts "--------------------------------".colorize.dark_gray
-  pp data.colorize.blue
+  pp data.root
   puts "--------------------------------".colorize.dark_gray
-  puts CORE.translate(data).colorize.yellow
+  puts data.to_txt.colorize.yellow
 end
 
 start = Time.monotonic

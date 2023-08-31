@@ -10,14 +10,24 @@ class AI::VpNode
     @zstr = orig.join(&.zstr)
   end
 
-  def translate!(dict : MtDict)
+  def tl_phrase!(dict : MtDict) : Nil
     if found = dict.get?(@zstr, @cpos)
       self.set_tl!(found)
-      return
+    else
+      @orig.each(&.tl_phrase!(dict))
+      fix_inner!(dict)
     end
+  end
 
-    @orig.each(&.translate!(dict))
-    # TODO: flip elements order accordingingly
+  @[AlwaysInline]
+  def tl_word!(dict : MtDict) : Nil
+    @orig.each(&.tl_word!(dict))
+    fix_inner!(dict)
+  end
+
+  @[AlwaysInline]
+  private def fix_inner!(dict : MtDict) : Nil
+    # TODO!
   end
 
   ###

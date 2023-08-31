@@ -1,65 +1,18 @@
 require "./vp_term"
 require "./vp_pecs"
 
-# struct AI::VpDefn
-#   getter vmap = {} of String => String
-#   getter opts = MtOpts::None
-
-#   def initialize(vmap : String = "")
-#     @opts = MtOpts::None
-
-#     vmap.split('ǀ') do |elem|
-#       cpos, vstr = elem.split(':', 2)
-#       @opts = MtOpts.for_punctuation(vstr) if cpos == "PU"
-#       @vmap[cpos] = vstr
-#       @vmap[""] ||= vstr
-#     end
-#   end
-
 #   # EXTRA TAGS:
 #   # N: all nouns
 #   # V: all verbs/adjts
-#   # _C: all content words
-#   # _F: all function words
+#   # C: all content words
+#   # F: all function words
 
 #   SUPERSETS = {
-#     "VV" => {"V", "_C"},
-#     "VA" => {"V", "_C"},
-#     "NN" => {"N", "_C"},
-#     "NT" => {"N", "_C"},
+#     "VV" => {"V", "C"},
+#     "VA" => {"V", "C"},
+#     "NN" => {"N", "C"},
+#     "NT" => {"N", "C"},
 #   }
-
-#   def add(cpos : String, vstr : String)
-#     @vmap[cpos] = vstr
-#     return unless alts = SUPERSETS[cpos]?
-#     alts.each { |alt| @vmap[alt] = vstr }
-#   end
-
-#   def get_defn(ptag : String) : String
-#     case val = @vstr
-#     when String then val
-#     else             val.fetch(ptag) { val[""] }
-#     end
-#   end
-# def self.load_vmap_from_db(db_path : String)
-#   defns = Defns.new
-
-#   DB.open("sqlite3:#{db_path}") do |db|
-#     db.query_each "select zstr, vstr, vmap, xpos from defns" do |rs|
-#       zstr, vstr, vmap, ptag = rs.read(String, String, String, String)
-
-#       vstr = "" if vstr == "⛶"
-#       ptag = ptag.split(' ').first
-
-#       data = "#{ptag}:#{vstr}"
-#       data = "#{data}ǀ#{vmap}" unless vmap.blank?
-#       defns[zstr] = VpDefn.new(data)
-#     end
-#   end
-
-#   defns
-# end
-# end
 
 class AI::VpDefn
   struct Entry

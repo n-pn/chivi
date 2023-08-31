@@ -20,6 +20,19 @@ class AI::M3Node
     {@left, @middle, @right}.each(&.translate!(dict))
   end
 
+  def tl_phrase!(dict : MtDict)
+    if found = dict.get?(@zstr, @cpos)
+      self.set_tl!(found)
+    else
+      {@left, @middle, @right}.each(&.tl_phrase!(dict))
+    end
+  end
+
+  @[AlwaysInline]
+  def tl_word!(dict : MtDict)
+    {@left, @middle, @right}.each(&.tl_word!(dict))
+  end
+
   ###
 
   def z_each(&)
