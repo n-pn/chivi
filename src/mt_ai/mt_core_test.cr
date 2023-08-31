@@ -105,15 +105,28 @@ TEST6 = <<-TXT
     (PU 。)))
 TXT
 
-CORE = AI::MtCore.new(0)
+def log_time(start, label)
+  puts "time #{label}: #{(Time.monotonic - start).total_milliseconds.round}ms"
+end
 
 def do_test(input : String)
-  input = input.strip
-  puts input
+  input = input.gsub(/\n[\t\s]+/, " ")
+  data = AI::MtData.parse_con_data(input)
+
   puts "--------------------------------".colorize.dark_gray
-  puts CORE.translate(input).colorize.yellow
+  puts data.zstr.colorize.cyan
   puts "--------------------------------".colorize.dark_gray
+  pp data.colorize.blue
+  puts "--------------------------------".colorize.dark_gray
+  puts CORE.translate(data).colorize.yellow
 end
+
+start = Time.monotonic
+
+CORE = AI::MtCore.new("fixture")
+# puts AI::VpDefn.fixture.data
+# puts AI::VpDefn.fixture["约定好", "VRD"]?
+puts CORE.dict.get?("约定好", "VRD")
 
 puts do_test(TEST1)
 puts do_test(TEST2)
@@ -122,24 +135,5 @@ puts do_test(TEST4)
 puts do_test(TEST5)
 puts do_test(TEST6)
 
-# def parse_file(input : String)
-#   url = "localhost:5555/mtl/electra_small/file?file=#{input}"
-#   HTTP::Client.get(url) do |res|
-#     raise "invalid: #{res.body_io.gets_to_end}" unless res.status.success?
-#     # puts File.read(input.sub(".txt", ".con"))
-#   end
-# end
-
-# # def parse_line(input : String)
-# #   url = "localhost:5555/con/rand"
-
-# #   HTTP::Client.post(url, body: input) do |res|
-# #     puts res.body_io.gets_to_end
-# #   end
-# # end
-# time = Time.measure do
-#   # parse_line " “浅川同学。”一花笑吟吟道，“昨天下午的提议你考虑的怎么样了？” "
-#   parse_file "/2tb/tmp.chivi/texts/1-f3mh03-1.txt"
-# end
-
 # puts time
+log_time(start, "translated")

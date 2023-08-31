@@ -7,6 +7,16 @@ class AI::MxNode
   getter _ord : Array(Int32)? = nil
 
   def initialize(@list, @cpos, @_idx, @_ord = nil)
+    @zstr = @list.join(&.zstr)
+    # pp [@zstr, "mx:#{cpos}"]
+  end
+
+  def translate!(dict : MtDict) : Nil
+    if found = dict.get?(@zstr, @cpos)
+      self.set_tl!(found)
+    else
+      @list.each(&.translate!(dict))
+    end
   end
 
   def z_each(&)

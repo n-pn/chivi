@@ -1,17 +1,25 @@
 require "../../data/vp_pecs"
+require "../../data/mt_dict"
 
 module AI::MtNode
-  property cpos : String = ""
-  # property attr : String = ""
+  getter cpos : String = ""
+  getter pecs : VpPecs = VpPecs::None
 
-  property vstr : String = ""
-  property pecs : VpPecs = VpPecs::None
-  property dpos : Int32 = 0
+  getter zstr : String = ""
+  getter vstr : String = ""
 
+  getter _dic : Int32 = 0
   getter _idx : Int32 = 0
 
   abstract def z_each(& : MtNode ->)
   abstract def v_each(& : MtNode ->)
+
+  def set_tl!(found : Tuple(String, VpPecs, Int32)) : Nil
+    @vstr, @pecs, @_dic = found
+  end
+
+  def set_tl!(@vstr, @pecs : VpPecs = VpPecs::None, @_dic : Int32 = 1) : Nil
+  end
 
   def inspect(io : IO)
     io << '(' << @cpos

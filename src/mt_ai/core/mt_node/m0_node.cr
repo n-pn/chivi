@@ -3,9 +3,11 @@ require "./_base"
 class AI::M0Node
   include MtNode
 
-  getter zstr : String
-
   def initialize(@zstr, @cpos, @_idx)
+  end
+
+  def translate!(dict : MtDict) : Nil
+    self.set_tl!(dict.get(@zstr, @cpos))
   end
 
   def z_each(&)

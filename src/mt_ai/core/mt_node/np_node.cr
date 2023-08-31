@@ -3,10 +3,22 @@ require "./_base"
 class AI::NpNode
   include MtNode
 
+  getter orig = [] of MtNode
   getter data = [] of MtNode
 
-  def initialize(input : Array(MtNode), @cpos, @_idx)
-    input.reverse_each do |node|
+  def initialize(@orig : Array(MtNode), @cpos, @_idx)
+    @zstr = orig.join(&.zstr)
+  end
+
+  def translate!(dict : MtDict)
+    if found = dict.get?(@zstr, @cpos)
+      self.set_tl!(found)
+      return
+    end
+
+    @orig.reverse_each do |node|
+      node.translate!(dict)
+
       case node.cpos
       when "QP"
         add_head(node)
@@ -53,15 +65,19 @@ class AI::NpNode
     false
   end
 
+  ###
+
   def z_each(&)
-    @data.sort_by(&._idx).each { |node| yield node }
+    @orig.each { |node| yield node }
   end
 
   def v_each(&)
-    @data.each { |node| yield node }
+    list = @data.empty? ? @orig : @data
+    list.each { |node| yield node }
   end
 
   def last
-    @data.max_by(&._idx)
+    # TODO: check for ETC node
+    @orig.last
   end
 end

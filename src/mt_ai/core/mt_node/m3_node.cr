@@ -8,7 +8,19 @@ class AI::M3Node
   getter right : MtNode
 
   def initialize(@left, @middle, @right, @cpos, @_idx)
+    @zstr = "#{@left.zstr}#{@middle.zstr}#{@right.zstr}"
   end
+
+  def translate!(dict : MtDict) : Nil
+    if found = dict.get?(@zstr, @cpos)
+      self.set_tl!(found)
+      return
+    end
+
+    {@left, @middle, @right}.each(&.translate!(dict))
+  end
+
+  ###
 
   def z_each(&)
     yield left

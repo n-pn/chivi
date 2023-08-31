@@ -4,6 +4,7 @@ require "../../_util/char_util"
 # word peculiarity
 enum AI::VpPecs
   # reusable flags
+  Void # ignore content
 
   Prep # put this in head position of a grammar structure
   Post # put this in tail position of a grammar structure
@@ -38,8 +39,6 @@ enum AI::VpPecs
   Vint # intransitive verb
   Vdit # ditransitive verb
 
-  Void = Capx | Nwsx
-
   ###
 
   @@known_chars = {} of Char => self
@@ -57,6 +56,7 @@ enum AI::VpPecs
     '）' => Capx | Nwsl,
     '＊' => Capx | Nwsl | Nwsr,
     '＋' => Capx | Nwsl | Nwsr,
+    ',' => Capx | Nwsl,
     '，' => Capx | Nwsl,
     '－' => Capx | Nwsl | Nwsr,
     '．' => Capr | Nwsl,
@@ -81,18 +81,20 @@ enum AI::VpPecs
     '｟' => Capx | Nwsr,
     '｠' => Capx | Nwsl,
     '｡' => Capr | Nwsl,
+    '。' => Capr | Nwsl,
     '｢' => Capr | Nwsr,
     '｣' => Capx | Nwsl,
     '､' => Capx | Nwsl,
+    '、' => Capx | Nwsl,
     '･' => Capx | Nwsl | Nwsr,
-
+    # extra 1
     '〈' => Capr | Nwsr,
     '〉' => Capx | Nwsl,
     '《' => Capr | Nwsr,
     '》' => Capx | Nwsl,
     '‹' => Capr | Nwsr,
     '›' => Capx | Nwsl,
-
+    # extra 2
     '“' => Capx | Nwsr,
     '‘' => Capx | Nwsr,
     '”' => Capx | Nwsl,
