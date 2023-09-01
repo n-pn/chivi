@@ -9,10 +9,13 @@ class MT::QtDict
   end
 
   def load_tsv!(dname : String = @dname)
-    File.each_line(MtDefn.db_path(dname, "tsv")) do |line|
+    tsv_path = MtDefn.db_path(dname, "tsv")
+    return self unless File.file?(tsv_path)
+
+    File.each_line(tsv_path) do |line|
       cols = line.split('\t')
       next if cols.size > 2
-      add_term(cols[0], cols[2], MtPecs.parse_line(ipecs))
+      add_term(cols[0], cols[2], MtPecs.parse_list(cols[3]?))
     end
 
     self
@@ -20,9 +23,9 @@ class MT::QtDict
 
   def load_db3!(dname : String = @dname)
     MtDefn.db(dname).open_ro do |db|
-      db.query_each("select zstr, vstr, ipecs from terms") do |rs|
+      db.query_each("select zstr, vstr, ipecs from defns") do |rs|
         zstr, vstr, ipecs = rs.read(String, String, Int32)
-        vstr = vstr.split('\t').first
+        # puts [zstr, vstr, ipecs]
         add_term(zstr, vstr, MtPecs.new(ipecs))
       end
     end
@@ -37,35 +40,39 @@ class MT::QtDict
 
   ###
 
-  def find_best(chars : Array(Char), start = 0) : MtTerm
-    output = find_default_best(chars, start)
+  def find(chars : Array(Char), start = 0) : {MtTerm, Int32}
+    best = init(chars, start)
+    d_id = 0
+    # puts [best]
 
     node = @data
     start.upto(chars.size &- 1) do |idx|
       char = chars.unsafe_fetch(idx)
       char = char - 32 if 'ａ' <= char <= 'ｚ'
-
       break unless node = node.trie[char]?
 
-      node.data.try { |data| output = data if output.len <= data.len }
+      next unless term = node.data
+      next if term._len < best._len
+
+      best = term
+      d_id = 2
     end
 
-    output
+    {best, d_id}
   end
 
-  def find_default_best(chars : Array(Char), start = 0)
+  def init(chars : Array(Char), start = 0)
     first_char = chars.unsafe_fetch(start)
-    first_char = first_char - 32 if 'ａ' <= first_char <= 'ｚ'
 
-    return MtTerm.from_char(first_char) unless first_char.alphanumeric?
+    unless first_char.alphanumeric?
+      return MtTerm.from_char(first_char)
+    end
 
     pecs = MtPecs::None
     index = start &+ 1
 
     while index < chars.size
       char = chars.unsafe_fetch(index)
-      char = char - 32 if 'ａ' <= char <= 'ｚ'
-
       break unless '！' <= char <= '～'
 
       if char.alphanumeric?
@@ -78,8 +85,13 @@ class MT::QtDict
       end
     end
 
-    vstr = chars[start...index].join
-    {MtTerm.new(vstr, pecs), 0, index &- start}
+    vstr = String.build(index &- start) do |io|
+      start.upto(index - 1) do |i|
+        io << CharUtil.normalize(chars.unsafe_fetch(i))
+      end
+    end
+
+    MtTerm.new(vstr, pecs, index &- start)
   end
 
   class Trie
@@ -97,7 +109,7 @@ class MT::QtDict
 
   ###
 
-  class_getter sino_vi : self { new("sino_vi") }
-  class_getter pin_yin : self { new("pin_yin") }
-  class_getter hv_name : self { new("hv_name") }
+  class_getter pin_yin : self { new("core/pin_yin").load_db3! }
+  class_getter hv_word : self { new("core/hv_word").load_db3! }
+  class_getter hv_name : self { new("core/hv_name").load_db3!.load_tsv! }
 end

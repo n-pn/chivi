@@ -46,9 +46,13 @@ class MT::M2Node
   end
 
   def fix_dnp!
-    @pecs |= :post
     @flip = true
-    right.set_term!(MtTerm.new("của")) if ktetic?(left)
+
+    if ktetic?(left)
+      right.set_term!(MtTerm.new("của"))
+      # else
+      # right.set_term!(MtTerm.new("", MtPecs[:void, :post]))
+    end
   end
 
   private def ktetic?(node : AiNode)

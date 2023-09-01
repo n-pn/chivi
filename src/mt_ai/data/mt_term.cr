@@ -37,7 +37,7 @@ struct MT::MtTerm
 
   ###
 
-  def self.from_char(char : String)
-    new(char.to_s, MtPecs.parse(char), 1)
+  def self.from_char(char : Char)
+    new(CharUtil.normalize(char).to_s, MtPecs.parse(char), 1)
   end
 end

@@ -1,5 +1,5 @@
 require "colorize"
-require "../../src/mtapp/sp_core"
+require "../../src/mt_ai/core/qt_core"
 
 time = Time.monotonic
 
@@ -16,11 +16,12 @@ tests = {
 }
 
 tests.each do |test|
-  puts test.colorize.blue
-  puts MT::SpCore.tl_hvname(test)
+  test = CharUtil.to_canon(test)
 
-  mtl = MT::SpCore.sino_vi
-  res = mtl.tokenize(test)
+  puts test.colorize.blue
+  puts MT::QtCore.tl_hvname(test)
+
+  res = MT::QtCore.hv_word.tokenize(test)
 
   puts res.to_txt.colorize.light_yellow
   puts "-----".colorize.dark_gray

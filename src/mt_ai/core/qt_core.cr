@@ -1,10 +1,11 @@
 require "../../_util/char_util"
 
 require "./qt_core/*"
+require "./qt_dict"
 
 class MT::QtCore
   class_getter hv_name : self { new(QtDict.hv_name) }
-  class_getter sino_vi : self { new(QtDict.sino_vi) }
+  class_getter hv_word : self { new(QtDict.hv_word) }
   class_getter pin_yin : self { new(QtDict.pin_yin) }
 
   def self.tl_hvname(str : String)
@@ -12,8 +13,8 @@ class MT::QtCore
     self.hv_name.tokenize(str).to_txt(cap: false)
   end
 
-  def self.tl_sinovi(str : String, cap : Bool = false)
-    self.sino_vi.tokenize(str).to_txt(cap: cap)
+  def self.tl_hvword(str : String, cap : Bool = false)
+    self.hv_word.tokenize(str).to_txt(cap: cap)
   end
 
   def self.tl_pinyin(str : String, cap : Bool = false)
@@ -24,17 +25,17 @@ class MT::QtCore
   end
 
   def tokenize(input : String)
-    chars = input.chars.map { |x| CharUtil.normalize(x) }
+    chars = input.chars
 
     index = 0
-    output = QtData.new
+    stack = QtData.new
 
     while index < chars.size
-      term = @dict.find_best(chars, start: index)
-      output << QtNode.new(term, index)
-      index &+= term.len
+      term, _dic = @dict.find(chars, start: index)
+      stack << QtNode.new(term, index, _dic)
+      index &+= term._len
     end
 
-    output
+    stack
   end
 end

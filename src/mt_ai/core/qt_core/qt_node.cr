@@ -12,7 +12,7 @@ struct MT::QtNode
 
   def to_txt(io : IO, cap : Bool, pad : Bool)
     io << ' ' if term.pad_space?(pad)
-    term.to_str(cap, pad)
+    term.to_str(io, cap, pad)
   end
 
   SEP = 'ǀ'

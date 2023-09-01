@@ -1,6 +1,7 @@
 # require "../util/*"
 require "../data/*"
 require "./qt_core"
+require "./tl_unit"
 
 class MT::AiDict
   @main_dict : Entry
@@ -60,7 +61,7 @@ class MT::AiDict
       vstr = QtCore.tl_hvname(zstr)
       @auto_dict.add(zstr, cpos, vstr, :none)
     else
-      vstr = QtCore.tl_sinovi(zstr)
+      vstr = QtCore.tl_hvword(zstr)
       @auto_dict.add(zstr, cpos, vstr, :none)
     end
   end
@@ -122,7 +123,7 @@ class MT::AiDict
 
     def load_db3!(dname : String = @dname)
       MtDefn.db(dname).open_ro do |db|
-        db.query_each("select zstr, cpos, vstr, pecs from terms") do |rs|
+        db.query_each("select zstr, cpos, vstr, pecs from defns") do |rs|
           zstr, cpos, vstr, pecs = rs.read(String, String, String, String)
           add(zstr, cpos, vstr, pecs)
         end

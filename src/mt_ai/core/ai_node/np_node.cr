@@ -46,7 +46,8 @@ class MT::NpNode
         # FIXME: split phrase if first element is CD
         add_head(node)
       when "DNP"
-        add_node(node, at_head: node.pecs.prep?)
+        pecs = node.last.term.try(&.pecs)
+        add_node(node, at_head: pecs && pecs.prep?)
       else
         add_tail(node)
       end

@@ -1,7 +1,7 @@
 require "./_mt_ctrl_base"
 
-class MT::SpecCtrl < AC::Base
-  base "/_ai"
+class MT::MtSpecCtrl < AC::Base
+  base "/_mt"
 
   # SPEC_DIR = "var/mt_v2/tests/"
 

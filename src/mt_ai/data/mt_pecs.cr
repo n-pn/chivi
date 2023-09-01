@@ -45,6 +45,7 @@ enum MT::MtPecs
   @@known_chars = {} of Char => self
 
   @@known_chars = {
+    ' ' => Capr | Nwsl | Nwsr,
     '　' => Capr | Nwsl | Nwsr,
     '！' => Capr | Nwsl,
     '＂' => Capx | Nwsl | Nwsr,
