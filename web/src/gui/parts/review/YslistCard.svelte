@@ -26,7 +26,7 @@
   </div>
 
   <div class="infos">
-    <a class="vname" href="/ul/y{list.id}{list.vslug}">{list.vname}</a>
+    <a class="vname" href="/wn/lists/y{list.id}{list.vslug}">{list.vname}</a>
 
     <div class="genres">
       {#each list.genres.slice(0, 4) as genre}
@@ -45,7 +45,8 @@
       <def class="left">
         <span class="entry">
           <SIcon name="user" />
-          <a class="uname" href="/ul?from=ys&user={user.id}">{user.uname}</a>
+          <a class="uname" href="/wn/lists?from=ys&user={user.id}"
+            >{user.uname}</a>
         </span>
 
         <span class="entry">

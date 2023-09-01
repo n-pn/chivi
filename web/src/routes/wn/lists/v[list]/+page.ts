@@ -24,10 +24,10 @@ export const load = (async ({ url, fetch, params }) => {
   const _meta: App.PageMeta = {
     left_nav: [
       home_nav('tm', ''),
-      nav_link('/ul', 'Thư đơn', 'bookmarks', { show: 'tm' }),
+      nav_link('/wn/lists', 'Thư đơn', 'bookmarks', { show: 'tm' }),
       nav_link(`v${tslug}`, title, null, { kind: 'title' }),
     ],
-    right_nav: [nav_link('/uc', 'Đánh giá', 'stars', { show: 'tm' })],
+    right_nav: [nav_link('/wn/crits', 'Đánh giá', 'stars', { show: 'tm' })],
   }
 
   const _board = `vl:${l_id}`

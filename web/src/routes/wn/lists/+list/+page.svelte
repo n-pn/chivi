@@ -42,7 +42,7 @@
   const delete_list = async (_: Event) => {
     const url = `/_db/lists/${data.lform.id}`
     await fetch(url, { method: 'DELETE' })
-    await goto('/ul')
+    await goto('/wn/lists')
   }
 </script>
 

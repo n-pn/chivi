@@ -16,16 +16,15 @@ export const load = (async ({ fetch, url }) => {
   const path = `/_db/lists/form?id=${id}`
   const data = await api_get<ListFormPage>(path, fetch)
 
+  const opts = { show: 'ts' }
+  const right_nav = `/wn/crits/+crit?wn=${wn}&ul=${id}`
+
   const _meta = {
     left_nav: [
-      nav_link('/ul', 'Thư đơn', 'stars', { show: 'ts' }),
-      nav_link(`/ul${url.search}`, 'Thêm thư đơn', 'ballpen', { show: 'ts' }),
+      nav_link('/wn/lists', 'Thư đơn', 'stars', opts),
+      nav_link(`/wn/lists${url.search}`, 'Thêm/Sửa', 'ballpen', opts),
     ],
-    right_nav: [
-      nav_link(`/uc/+crit?wn=${wn}&ul=${id}`, 'Thêm đánh giá', 'bookmarks', {
-        show: 'ts',
-      }),
-    ],
+    right_nav: [nav_link(right_nav, 'Thêm đánh giá', 'bookmarks', opts)],
   }
   return { ...data, _meta, _title: 'Tạo/sửa thư đơn' }
 }) satisfies PageLoad

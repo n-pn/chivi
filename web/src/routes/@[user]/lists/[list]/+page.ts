@@ -25,7 +25,6 @@ export const load = (async ({ url, fetch, params }) => {
         show: 'pl',
       }),
     ],
-    // right_nav: [nav_link('/uc', 'Đánh giá', 'stars', { show: 'tm' })],
   }
 
   const _board = `vl:${l_id}`

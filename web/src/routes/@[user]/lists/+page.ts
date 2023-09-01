@@ -15,9 +15,11 @@ export const load = (async ({ url, fetch, params }) => {
     left_nav: [
       home_nav('tm'),
       nav_link(`/@${user}`, `@${user}`, ''),
-      nav_link(`/@${user}/ul`, 'Thư đơn', 'bookmarks'),
+      nav_link(`/@${user}/lists`, 'Thư đơn', 'bookmarks'),
     ],
-    right_nav: [nav_link(`/@${user}/uc`, 'Đánh giá', 'stars', { show: 'tm' })],
+    right_nav: [
+      nav_link(`/@${user}/crits`, 'Đánh giá', 'stars', { show: 'tm' }),
+    ],
   }
 
   // const params = Object.fromEntries(url.searchParams)

@@ -18,14 +18,14 @@ const build_meta = (user: App.CurrentUser) => {
   const right_nav = []
 
   if (user.privi >= 0) {
-    const href = `/ul?from=vi&user=${user.uname}`
+    const href = `/wn/lists?from=vi&user=${user.uname}`
     right_nav.push(nav_link(href, 'Của bạn', 'at', { show: 'tm' }))
   }
 
   return {
     left_nav: [
       home_nav('tm'),
-      nav_link('/ul', 'Thư đơn', 'bookmarks', { show: 'ts' }),
+      nav_link('/wn/lists', 'Thư đơn', 'bookmarks', { show: 'ts' }),
     ],
     right_nav,
   }

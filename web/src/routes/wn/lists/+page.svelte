@@ -3,22 +3,22 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   import WnlistList from '$gui/parts/review/WnlistList.svelte'
-  import WnNavMenu from '../wn/WnNavMenu.svelte'
+  import WnNavMenu from '../WnNavMenu.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
 
-  const do_filter = async () => await goto(`/ul?qs=${data.filter.qs}`)
+  const do_filter = async () => await goto(`/wn/lists?qs=${data.filter.qs}`)
 </script>
 
-<WnNavMenu tab="/ul" />
+<WnNavMenu tab="/wn/lists" />
 
 <article class="article island">
   <header class="head">
     <form
       class="search-bar"
       method="get"
-      action="/ul"
+      action="/wn/lists"
       on:submit|preventDefault={do_filter}>
       <input
         type="search"
@@ -32,7 +32,7 @@
       </button>
     </form>
 
-    <a class="m-btn _primary _fill _sm" href="/ul/+list">
+    <a class="m-btn _primary _fill _sm" href="/wn/lists/+list">
       <SIcon name="ballpen" />
       <span class="-text show-ts">Tạo thư đơn</span>
     </a>

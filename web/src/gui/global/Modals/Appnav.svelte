@@ -87,9 +87,6 @@
 
   let full_genres = false
 
-  let all_seed = false
-  let all_from = false
-
   const triggers = {
     status: true,
     voters: true,
@@ -105,9 +102,9 @@
 
   const head_navs = [
     // ['/wn', 'books', 'Thư viện'],
-    ['/uc', 'stars', 'Đánh giá'],
-    ['/ul', 'bookmarks', 'Thư đơn'],
     ['/gd', 'messages', 'Diễn đàn'],
+    ['/wn/crits', 'stars', 'Đánh giá'],
+    ['/wn/lists', 'bookmarks', 'Thư đơn'],
     ['/mt/dicts', 'package', 'Từ điển'],
     ['/sp/qtran', 'bolt', 'Dịch nhanh'],
   ]

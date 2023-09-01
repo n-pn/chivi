@@ -22,7 +22,7 @@
     <form
       class="search-bar"
       method="get"
-      action="/ul"
+      action="/wn/lists"
       on:submit|preventDefault={do_filter}>
       <input
         type="search"
@@ -36,7 +36,7 @@
       </button>
     </form>
 
-    <a class="m-btn _primary _fill _sm" href="/ul/+list">
+    <a class="m-btn _primary _fill _sm" href="/wn/lists/+list">
       <SIcon name="ballpen" />
       <span class="-text show-ts">Tạo thư đơn</span>
     </a>

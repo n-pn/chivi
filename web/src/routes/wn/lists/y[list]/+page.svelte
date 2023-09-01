@@ -26,7 +26,8 @@
     <def class="left">
       <span class="entry">
         <SIcon name="user" />
-        <a class="uname" href="/ul?from=ys&user={yuser.id}">{yuser.uname}</a>
+        <a class="uname" href="/wn/lists?from=ys&user={yuser.id}"
+          >{yuser.uname}</a>
       </span>
 
       <span class="entry">

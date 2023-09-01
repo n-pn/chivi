@@ -1,12 +1,12 @@
 <script lang="ts">
   import WncritList from '$gui/parts/review/WncritList.svelte'
-  import WnNavMenu from '../wn/WnNavMenu.svelte'
+  import WnNavMenu from '../WnNavMenu.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
 </script>
 
-<WnNavMenu tab="/uc" />
+<WnNavMenu tab="/wn/crits" />
 
 <article class="article island">
   <WncritList

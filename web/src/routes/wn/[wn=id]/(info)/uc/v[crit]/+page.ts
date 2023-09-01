@@ -13,12 +13,12 @@ export const load = (async ({ fetch, params: { crit } }) => {
   const _meta = {
     left_nav: [
       home_nav('ts'),
-      nav_link('/uc', 'Đánh giá truyện', 'stars', { show: 'tm' }),
-      nav_link('/uc/v' + crit, `[@${vcdata.u_uname}]`, null, {
+      nav_link('/wn/crits', 'Đánh giá truyện', 'stars', { show: 'tm' }),
+      nav_link('/wn/crits/v' + crit, `[@${vcdata.u_uname}]`, null, {
         kind: 'zseed',
       }),
     ],
-    right_nav: [nav_link('/ul', 'Thư đơn', 'bookmarks', { show: 'tm' })],
+    right_nav: [nav_link('/wn/lists', 'Thư đơn', 'bookmarks', { show: 'tm' })],
   }
 
   return {

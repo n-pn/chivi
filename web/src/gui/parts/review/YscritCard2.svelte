@@ -57,7 +57,7 @@
 
 <crit-item class="island">
   <header>
-    <a class="m-meta _user" href="/uc?from=ys&user={ycrit.yu_id}"
+    <a class="m-meta _user" href="/wn/crits?from=ys&user={ycrit.yu_id}"
       >{ycrit.uname}</a>
     <span class="m-meta">&middot;</span>
     <a class="m-meta _time" href="/sp/qtran/crits/{ycrit.yc_id}">
@@ -74,7 +74,7 @@
 
   <div class="vtags">
     {#each ycrit.btags as label}
-      <a class="vtag" href="/uc?vtag={label}">
+      <a class="vtag" href="/wn/crits?vtag={label}">
         <SIcon name="hash" />
         <span>{label}</span>
       </a>
@@ -143,7 +143,7 @@
 
   {#if show_list && ycrit.yl_slug}
     <footer class="list">
-      <a class="link _list" href="/ul/y{ycrit.yl_slug}">
+      <a class="link _list" href="/wn/lists/y{ycrit.yl_slug}">
         <SIcon name="bookmarks" />
         <span>{ycrit.yl_name}</span>
         <span>({ycrit.yl_bnum} bộ truyện)</span>

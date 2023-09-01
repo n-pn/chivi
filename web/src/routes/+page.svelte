@@ -8,10 +8,10 @@
   $: ({ books } = data)
 
   const links = [
-    ['/wn', 'books', 'Thư viện'],
-    ['/uc', 'stars', 'Đánh giá'],
-    ['/ul', 'bookmarks', 'Thư đơn'],
     ['/gd', 'message', 'Diễn đàn'],
+    ['/wn', 'books', 'Truyện chữ'],
+    ['/wn/crits', 'stars', 'Đánh giá'],
+    ['/wn/lists', 'bookmarks', 'Thư đơn'],
     ['/sp/qtran', 'bolt', 'Dịch nhanh'],
   ]
 </script>
@@ -54,7 +54,7 @@
 <!-- <section class="list">
   <header class="head">
     <h3 class="text">Đánh giá mới nhất</h3>
-    <a class="link" href="/uc">Xem tất cả</a>
+    <a class="link" href="/wn/crits">Xem tất cả</a>
   </header>
 
   <div class="ycrit-list">
@@ -68,7 +68,7 @@
 <section class="list">
   <header class="head">
     <h3 class="text">Thư đơn mới nhất</h3>
-    <a class="link" href="/ul">Xem tất cả</a>
+    <a class="link" href="/wn/lists">Xem tất cả</a>
   </header>
 
   <div class="ylist-list">

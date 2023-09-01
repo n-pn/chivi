@@ -13,6 +13,8 @@
 
   $: ({ list } = data)
 
+  $: list_path = `/@${list.u_uname}/ul/${list.tslug}`
+
   const handle_like = (evt: Event) => {
     evt.preventDefault()
 
@@ -29,16 +31,14 @@
 </script>
 
 <svelte:head>
-  <meta property="og:url" content="https://chivi.app/ul/v{list.tslug}" />
+  <meta property="og:url" content="https://chivi.app/{list_path}" />
 </svelte:head>
 
 <section class="content">
   <header class="header">
     <def class="left">
-      <a
-        class="uname v"
-        href="/ul?from=vi&user={list.u_uname}"
-        data-privi={list.u_privi}>{list.u_uname}</a>
+      <a class="cv-user" href="/@{list.u_uname}" data-privi={list.u_privi}
+        >{list.u_uname}</a>
 
       <span class="u-fg-tert">&middot;</span>
 
@@ -48,7 +48,7 @@
 
       {#if $_user.uname == list.u_uname}
         <span class="u-fg-tert">&middot;</span>
-        <a class="m-meta fs-i" href="/ul/+list?id={list.vl_id}">Sửa</a>
+        <a class="m-meta fs-i" href="/wn/lists/+list?id={list.vl_id}">Sửa</a>
       {/if}
     </def>
 
@@ -90,7 +90,12 @@
 </section>
 
 <article class="article island">
-  <WncritList vi={data.books} ys={undefined} _sort="utime" show_list={false} />
+  <WncritList
+    vi={data.books}
+    ys={undefined}
+    _sort="utime"
+    show_list={false}
+    view_head={false} />
 </article>
 
 <style lang="scss">
@@ -126,11 +131,6 @@
 
   .left {
     flex: 1;
-  }
-
-  .uname {
-    font-weight: 500;
-    @include fgcolor(secd);
   }
 
   .vdesc :global(p) {

@@ -26,7 +26,7 @@
   <h3 class="repls-head">Phản hồi đánh giá ({ycrit.repl_count}):</h3>
 
   {#each repls as repl}
-    {@const user_href = `/uc?from=ys&user=${repl.yu_id}`}
+    {@const user_href = `/wn/crits?from=ys&user=${repl.yu_id}`}
     {@const repl_date = new Date(repl.ctime * 1000).toString()}
     <div class="repl">
       <header class="repl-head">

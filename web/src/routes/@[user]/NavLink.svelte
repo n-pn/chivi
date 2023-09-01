@@ -4,8 +4,8 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   const links = [
     ['/books', 'books', 'Tủ truyện'],
-    ['/uc', 'stars', 'Đánh giá'],
-    ['/ul', 'bookmarks', 'Thư đơn'],
+    ['/crits', 'stars', 'Đánh giá'],
+    ['/lists', 'bookmarks', 'Thư đơn'],
   ]
 
   export let user = $page.data.viuser.uname

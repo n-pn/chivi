@@ -1,8 +1,4 @@
-# require "../../mtapp/sp_core"
-
 require "../_base"
-
-# storing book names
 
 class CV::Btitle
   include Crorm::Model

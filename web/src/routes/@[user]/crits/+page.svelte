@@ -8,7 +8,7 @@
   $: ({ viuser, vi, sort = 'utime' } = data)
 </script>
 
-<NavLink curr="/uc" />
+<NavLink curr="/crits" />
 
 <article class="article island">
   <h2 class="title">Tổng hợp đánh giá truyện của @{viuser.uname}</h2>

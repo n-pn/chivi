@@ -34,7 +34,7 @@
 
   $: crit_path = `/wn/${crit.b_uslug}/uc/v${crit.vc_id}`
   $: edit_path = `/wn/${crit.b_uslug}/uc/+crit?id=${crit.vc_id}`
-  $: list_path = `/@${crit.u_uname}/ul/${crit.l_uslug}`
+  $: list_path = `/@${crit.u_uname}/lists/${crit.l_uslug}`
 </script>
 
 <article class="crit island">
@@ -42,7 +42,7 @@
     <a
       class="m-meta _user cv-user"
       data-privi={crit.u_privi}
-      href="/uc?from=vi&user={crit.u_uname}">{crit.u_uname}</a>
+      href="/wn/crits?from=vi&user={crit.u_uname}">{crit.u_uname}</a>
 
     <span class="u-fg-tert">&middot;</span>
     <span class="m-meta _time"
@@ -59,7 +59,7 @@
 
   <div class="vtags">
     {#each crit.btags as label}
-      <a class="vtag" href="/uc?vtag={label}">
+      <a class="vtag" href="/wn/crits?vtag={label}">
         <SIcon name="hash" />
         <span>{label}</span>
       </a>

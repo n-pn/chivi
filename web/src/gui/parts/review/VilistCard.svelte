@@ -71,7 +71,7 @@
 
         {#if $_user.uname == list.u_uname || $_user.privi > 3}
           <span class="u-fg-tert">&middot;</span>
-          <a class="m-meta _larger fs-i" href="/ul/+list?id={list.vl_id}"
+          <a class="m-meta _larger fs-i" href="/wn/lists/+list?id={list.vl_id}"
             >Sửa</a>
         {/if}
       </def>

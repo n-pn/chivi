@@ -29,17 +29,6 @@ _Chivi hiện không sống bằng quảng cáo, tiền ủng hộ của các b�
 - Các tính năng khác sẽ dần được bổ sung sau...
 
 <style>
-  .lead {
-    font-weight: 500;
-    font-size: rem(17px);
-  }
-
-  a {
-    font-weight: 500;
-  }
-
-  .em {
-    font-style: italic;
-    color: #d68010;
-  }
+  a { font-weight: 500; }
+  .em { font-style: italic; color: #d68010; }
 </style>

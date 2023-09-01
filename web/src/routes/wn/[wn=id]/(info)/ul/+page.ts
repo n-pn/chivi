@@ -22,7 +22,7 @@ const build_meta = (book: CV.Wninfo) => {
       nav_link('lists', 'Thư đơn', 'bookmarks', { show: 'pl' }),
     ],
     right_nav: [
-      nav_link('/ul/+list', 'Tạo mới', 'circle-plus', { show: 'tl' }),
+      nav_link('/wn/lists/+list', 'Tạo mới', 'circle-plus', { show: 'tl' }),
     ],
   }
 }

@@ -63,7 +63,8 @@
 
 <section class="crit island">
   <header>
-    <a class="m-meta _user" href="/uc?from=ys&user={user.id}">{user.uname}</a>
+    <a class="m-meta _user" href="/wn/crits?from=ys&user={user.id}"
+      >{user.uname}</a>
     <span class="m-meta">&middot;</span>
     <a class="m-meta" href="/sp/qtran/crits/{crit.id}">
       <span>{rel_time(crit.utime)}{crit.utime != crit.ctime ? '*' : ''}</span>
@@ -80,7 +81,7 @@
 
   <div class="vtags">
     {#each crit.vtags as label}
-      <a class="vtag" href="/uc?vtag={label}">
+      <a class="vtag" href="/wn/crits?vtag={label}">
         <SIcon name="hash" />
         <span>{label}</span>
       </a>
@@ -151,7 +152,7 @@
 
   {#if show_list && list}
     <footer class="list">
-      <a class="link _list" href="/ul/y{list.id}{list.vslug}">
+      <a class="link _list" href="/wn/lists/y{list.id}{list.vslug}">
         <SIcon name="bookmarks" />
         <span>{list.vname}</span>
         <span>({list.book_count} bộ truyện)</span>

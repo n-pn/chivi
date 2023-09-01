@@ -21,10 +21,10 @@ export const load = (async ({ url, fetch, params }) => {
   const _meta: App.PageMeta = {
     left_nav: [
       home_nav('tm', ''),
-      nav_link('/ul', 'Thư đơn', 'bookmarks', { show: 'tm' }),
-      nav_link(`/ul/y${id}${vslug}`, vname, null, { kind: 'title' }),
+      nav_link('/wn/lists', 'Thư đơn', 'bookmarks', { show: 'tm' }),
+      nav_link(`/wn/lists/y${id}${vslug}`, vname, null, { kind: 'title' }),
     ],
-    right_nav: [nav_link('/uc', 'Đánh giá', 'stars', { show: 'tm' })],
+    right_nav: [nav_link('/wn/crits', 'Đánh giá', 'stars', { show: 'tm' })],
   }
 
   return { ...data, _meta, _title: `Thư đơn: ${vname}`, _mdesc: vdesc }

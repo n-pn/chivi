@@ -31,11 +31,6 @@
       text: 'Tổng quan',
     },
     {
-      href: '/gd',
-      icon: 'message',
-      text: 'Thảo luận',
-    },
-    {
       href: '/uc',
       icon: 'stars',
       text: 'Đánh giá',
@@ -44,6 +39,11 @@
       href: '/ul',
       icon: 'bookmarks',
       text: 'Thư đơn',
+    },
+    {
+      href: '/gd',
+      icon: 'message',
+      text: 'Thảo luận',
     },
   ]
 </script>

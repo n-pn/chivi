@@ -1,5 +1,5 @@
 import { api_get } from '$lib/api_call'
-import { chap_path, _pgidx } from '$lib/kit_path'
+import { _pgidx } from '$lib/kit_path'
 // import { book_nav, seed_nav, nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
