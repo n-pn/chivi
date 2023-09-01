@@ -1,4 +1,4 @@
-require "../_raw/raw_yslist"
+require "./_raw/raw_yslist"
 
 require "./ysuser"
 require "./yscrit"

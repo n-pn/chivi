@@ -15,8 +15,7 @@ export const load = (async ({ parent, params, fetch }) => {
 }) satisfies PageLoad
 
 async function load_data(fetch: CV.Fetch, chap: CV.Chdata, part = 1, book = 0) {
-  const p_len = chap.sizes.length - 1
-  const label = p_len > 1 ? `[${part}/${p_len}]` : ''
+  const label = chap.psize > 1 ? `[${part}/${chap.psize}]` : ''
 
   const cpath = `${chap.cbase}-${part}`
   const mturl = `/_m1/qtran/wnchap?cpath=${cpath}&wn_id=${book}&label=${label}`

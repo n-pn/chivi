@@ -9,8 +9,9 @@
   const deactive = () => (active = false)
 </script>
 
-<menu-wrap
-  class={$$props.class || ''}
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div
+  class="gmenu {$$props.class || ''}"
   class:_active={active}
   on:blur={deactive}
   on:mouseleave={deactive}>
@@ -19,21 +20,21 @@
     <slot name="trigger" {trigger} />
   </div>
 
-  <menu-body class="{loc} {dir}">
+  <div class="gmenu-body {loc} {dir}">
     <div class="content">
       {#if lbl}<header class="header">{lbl}</header>{/if}
       <slot name="content" />
     </div>
-  </menu-body>
-</menu-wrap>
+  </div>
+</div>
 
 <style lang="scss">
-  menu-wrap {
+  .gmenu {
     display: block;
     position: relative;
   }
 
-  menu-body {
+  .gmenu-body {
     display: none;
     position: absolute;
     z-index: 99999;
@@ -58,8 +59,8 @@
     // prettier-ignore
     &.center { left: 50%; transform: translateX(-50%);}
 
-    menu-wrap:hover > &,
-    menu-wrap._active > & {
+    .gmenu:hover > &,
+    .gmenu._active > & {
       display: block;
     }
   }

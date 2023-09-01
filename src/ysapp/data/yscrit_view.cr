@@ -2,7 +2,7 @@ require "crorm/model"
 
 require "./_data"
 require "./_util"
-require "../_raw/raw_yscrit"
+require "./_raw/raw_yscrit"
 
 class YS::YscritForm
   class_getter db : DB::Database = PG_DB

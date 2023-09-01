@@ -28,25 +28,26 @@ declare namespace CV {
 
   interface Wnchap {
     ch_no: number
-
-    title: string
     uslug: string
 
+    title: string
     chdiv: string
 
-    sizes: number[]
-
+    psize: number
     mtime: number
-    uname: string
+
+    flags: string
   }
 
   interface Chdata {
     ch_no: number
-    rlink: string
-
     cbase: string
+
     cksum: string
-    sizes: number[]
+    psize: number
+
+    spath: string
+    rlink: string
 
     _next?: string
     _prev?: string

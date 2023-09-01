@@ -1,4 +1,4 @@
-require "../../mtapp/sp_core"
+# require "../../mtapp/sp_core"
 
 require "../_base"
 
@@ -28,7 +28,7 @@ class CV::Btitle
   end
 
   def self.upsert!(zname : String, vname : String?) : self
-    hname = MT::SpCore.tl_hvname(zname)
+    hname = MT::QtCore.tl_hvname(zname)
     xname = vname || hname
     ctime = Time.utc
 

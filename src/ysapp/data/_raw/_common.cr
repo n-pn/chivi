@@ -2,7 +2,7 @@ require "log"
 require "json"
 require "zstd"
 
-require "../../_util/text_util"
+require "../../../_util/text_util"
 
 def read_zstd(path : String)
   file = File.open(path, "r")

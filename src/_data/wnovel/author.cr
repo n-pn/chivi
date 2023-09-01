@@ -1,4 +1,4 @@
-require "../../mtapp/sp_core"
+# require "../../mt_ai/core/qt_core"
 
 require "../_base"
 require "./wninfo"
@@ -27,7 +27,7 @@ class CV::Author
   end
 
   def self.upsert!(zname : String, vname : String? = nil) : Author
-    xname = vname || MT::SpCore.tl_hvname(zname)
+    xname = vname || MT::QtCore.tl_hvname(zname)
     ctime = Time.utc
 
     PGDB.query_one <<-SQL, zname, xname, ctime, ctime, vname, as: Author

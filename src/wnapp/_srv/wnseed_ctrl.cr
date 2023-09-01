@@ -5,7 +5,7 @@ class WN::SeedCtrl < AC::Base
 
   @[AC::Route::GET("/")]
   def index(wn_id : Int32)
-    seeds = Wnstem.get_all(wn_id).sort_by!(&.mtime.-)
+    seeds = Wnstem.all_by_wn_id(wn_id).sort_by!(&.mtime.-)
 
     render json: {
       chivi: find_or_init(seeds, wn_id, "~chivi"),

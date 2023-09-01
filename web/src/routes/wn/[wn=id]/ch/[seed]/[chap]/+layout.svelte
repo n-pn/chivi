@@ -32,8 +32,6 @@
   export let data: LayoutData
 
   $: ({ nvinfo, curr_seed, chinfo, chdata } = data)
-  $: part_count = chdata.sizes.length - 1
-
   $: paths = gen_paths(data, $page.data.cpart || 1, $page.data.rmode || 'mt')
 
   function gen_paths(data: LayoutData, cpart: number, rmode: string) {
@@ -52,7 +50,7 @@
         : `${base}/${chap_tail(ch_no, cpart - 1, uslug, rmode)}`
 
     const next =
-      cpart < part_count
+      cpart < chdata.psize
         ? `${base}/${chap_tail(ch_no, cpart + 1, uslug, rmode)}`
         : chdata._next
         ? `${base}/${chdata._next}-${rmode}`
@@ -125,7 +123,7 @@
   {/each}
 </nav>
 
-{#if chdata.sizes.length > 0}
+{#if chdata.psize > 0}
   <slot />
 {:else}
   <Notext bind:data />

@@ -1,6 +1,7 @@
 require "./_ys_ctrl_base"
 require "../../_util/text_util"
-require "../_raw/raw_yslist"
+
+# require "../_raw/raw_yslist"
 
 class YS::ListCtrl < AC::Base
   base "/_ys"

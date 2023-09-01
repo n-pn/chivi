@@ -2,8 +2,9 @@ require "crorm/model"
 
 require "./_data"
 require "./_util"
-require "../_raw/raw_yscrit"
-require "../../mtapp/sp_core"
+require "./_raw/raw_yscrit"
+
+# require "../../mt_ai/core/qt_core"
 
 class YS::YsuserForm
   class_getter db : DB::Database = PG_DB
@@ -39,7 +40,7 @@ class YS::YsuserForm
       changed = @zname != raw.name
 
       @zname = raw.name
-      @vname = MT::SpCore.tl_hvname(@zname)
+      @vname = MT::QtCore.tl_hvname(@zname)
       @vslug = TextUtil.slugify(@vname)
     end
 

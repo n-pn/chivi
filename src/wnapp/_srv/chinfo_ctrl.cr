@@ -31,7 +31,7 @@ class WN::ChinfoCtrl < AC::Base
         privi: read_privi,
         rlink: chinfo.rlink,
 
-        sizes: chinfo.sizes,
+        psize: chinfo.psize,
         cbase: cbase,
 
         _prev: wnseed.find_prev(ch_no).try(&._href(-1)),

@@ -12,12 +12,13 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <div
   class="wrap"
   data-kbd="esc"
   on:click={() => (_active = false)}
   role="dialog">
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div class="main island" on:click={(e) => e.stopPropagation()}>
     <header class="head">
       <div class="title">Phản hồi bình luận</div>

@@ -127,9 +127,6 @@ end
 start = Time.monotonic
 
 CORE = MT::AiCore.new("fixture")
-# puts MT::VpDefn.fixture.data
-# puts MT::VpDefn.fixture["约定好", "VRD"]?
-puts CORE.dict.get?("约定好", "VRD")
 
 puts do_test(TEST1)
 puts do_test(TEST2)

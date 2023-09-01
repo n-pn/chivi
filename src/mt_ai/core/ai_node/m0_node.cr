@@ -32,9 +32,6 @@ class MT::M0Node
 
   def inspect_inner(io : IO)
     io << ' ' << @zstr.colorize.light_blue
-
-    if term = @term
-      io << ' ' << term.vstr.colorize(COLORS[@_dic])
-    end
+    @term.try { |x| io << ' ' << x.vstr.colorize(COLORS[@_dic]) }
   end
 end

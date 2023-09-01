@@ -1,7 +1,7 @@
 require "./_ys_ctrl_base"
 
-require "../_raw/*"
 require "../data/*"
+require "../data/_raw/*"
 
 class YS::InitCtrl < AC::Base
   base "/_ys"

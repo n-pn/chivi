@@ -12,8 +12,7 @@ export const load = (async ({ parent, params, fetch }) => {
   const cpart = parseInt((params.part || '').split('-').pop(), 10) || 1
   const cpath = `${chdata.cbase}_${cpart}`
 
-  const p_len = chdata.sizes.length - 1
-  const label = p_len > 1 ? `[${cpart}/${p_len}]` : ''
+  const label = chdata.psize > 1 ? `[${cpart}/${chdata.psize}]` : ''
 
   const qturl = `/_sp/tl_chap?cpath=${cpath}&wn_id=${nvinfo.id}&label=${label}`
   const { ztext, cvmtl } = await api_get<Data>(qturl, fetch)

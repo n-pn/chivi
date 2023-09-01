@@ -16,18 +16,22 @@ class WN::UploadCtrl < AC::Base
     getter mtl_json : String
     getter con_text : String
 
-    getter _algo = "electra_base"
+    getter _algo = "hmeb"
 
-    DIR = "var/wnapp/chtext"
+    @[JSON::Field(ignore: true)]
+    getter fpart = ""
 
-    def save_mtl!
-      path = "#{DIR}/#{@wn_id}/#{@ch_no}-#{@cksum}-#{p_idx}.#{@_algo}.mtl"
-      File.write(path, @mtl_json)
+    def after_initialize
+      @_algo = "hmeb" if @_algo == "electra_base"
     end
 
-    def save_con!
-      path = "#{DIR}/#{@wn_id}/#{@ch_no}-#{@cksum}-#{p_idx}.#{@_algo}.con"
-      File.write(path, @con_text)
+    def save_data!
+      wn_dir = "var/wnapp/nlp_wn/#{@wn_id}"
+      Dir.mkdir_p(wn_dir)
+
+      fbase = "#{wn_dir}/#{@ch_no}-#{@cksum}-#{p_idx}.#{@_algo}"
+      File.write("#{fbase}.mtl", @mtl_json)
+      File.write("#{fbase}.con", @con_text)
     end
 
     def save_log!(uname : String)
@@ -41,11 +45,8 @@ class WN::UploadCtrl < AC::Base
 
   @[AC::Route::POST("/anlzs/chaps", body: :form)]
   def upload_anlz_data(form : AnlzForm)
-    form.save_mtl!
-    form.save_con!
-
+    form.save_data!
     spawn form.save_log!(_uname)
-
     render text: "ok!"
   end
 end

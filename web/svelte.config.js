@@ -34,4 +34,8 @@ export default {
     adapter: adapter(),
     version: { pollInterval: 60000 },
   },
+  onwarn: (warning, handler) => {
+    if (warning.code.startsWith('a11y')) return
+    handler(warning)
+  },
 }

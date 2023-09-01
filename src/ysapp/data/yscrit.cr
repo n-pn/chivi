@@ -5,7 +5,7 @@ require "./yslist"
 require "./ysbook_data"
 require "./ysuser"
 
-require "../_raw/raw_yscrit"
+require "./_raw/raw_yscrit"
 
 class YS::Yscrit
   include Clear::Model

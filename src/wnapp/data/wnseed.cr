@@ -169,21 +169,21 @@ class WN::Wnstem
     stale = Time.utc - remote_reload_tspan(mode)
 
     if self.remote?
-      rmcata = ZR::RawRmcata.from_seed(@sname, @s_bid, stale: stale) rescue nil
+      rmstem = ZR::RawRmstem.from_stem(@sname, @s_bid, stale: stale) rescue nil
     elsif !@rlink.empty?
-      rmcata = ZR::RawRmcata.from_link(@rlink, stale: stale) rescue nil
+      rmstem = ZR::RawRmstem.from_link(@rlink, stale: stale) rescue nil
     else
       # Do nothing
     end
 
-    sync_with_remote!(rmcata, mode: mode) if rmcata && mode >= 0
+    sync_with_remote!(rmstem, mode: mode) if rmstem && mode >= 0
 
     # TODO: smart reload translation instead of force regen
     self.update_chap_vinfos!
   end
 
-  private def sync_with_remote!(rmcata : ZR::RawRmcata, mode : Int32 = 0)
-    chlist = rmcata.chap_list
+  private def sync_with_remote!(rmstem : ZR::RawRmstem, mode : Int32 = 0)
+    chlist = rmstem.chap_list
 
     return if chlist.empty?
     max_ch_no = chlist.size
@@ -196,7 +196,7 @@ class WN::Wnstem
     # @_flag = parser.status_int.to_i
 
     self.upsert_chap_zinfos!(chlist)
-    self.update_stats!(max_ch_no, rmcata.update_int)
+    self.update_stats!(max_ch_no, rmstem.update_int)
   end
 
   private def upsert_chap_zinfos!(chlist : Array(ZR::Chinfo))

@@ -1,6 +1,7 @@
 require "crorm"
-require "./seed_util"
 
+require "./chflag"
+require "./seed_util"
 require "../../_util/chap_util"
 require "../../zroot/raw_html/raw_rmchap"
 
@@ -89,18 +90,15 @@ class WN::Chinfo
   def to_json(jb : JSON::Builder)
     jb.object {
       jb.field "ch_no", @ch_no
-
-      # jb.field "rlink", @rlink
-      # jb.field "spath", @spath
+      jb.field "uslug", self.uslug
 
       jb.field "title", @vtitle.empty? ? @ztitle : @vtitle
       jb.field "chdiv", @vchdiv.empty? ? @zchdiv : @vchdiv
-      jb.field "uslug", self.uslug
 
-      # jb.field "sizes", self.sizes
       jb.field "psize", self.psize
       jb.field "mtime", @mtime
-      jb.field "uname", @uname
+
+      jb.field "flags", Chflag.new(@_flag).to_s
     }
   end
 
@@ -133,6 +131,14 @@ class WN::Chinfo
       io << @ch_no << '/' << self.uslug << '-'
       io << (cpart < 1 ? self.sizes.size &- 1 : cpart) if cpart != 1
     end
+  end
+
+  def add_flag!(flag : Chflag)
+    @_flag = (Chflag.new(@_flag) | flag).to_i
+  end
+
+  def off_flag!(flag : Chflag)
+    @_flag = (Chflag.new(@_flag) - flag).to_i
   end
 
   ###
