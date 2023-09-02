@@ -4,15 +4,21 @@ module MT::AiNode
   getter cpos : String = ""
 
   getter zstr : String = ""
-  getter term : MtTerm? = nil
 
-  getter _dic : Int32 = 0
+  getter vstr : String = ""
+  getter pecs : MtPecs = MtPecs::None
+
+  getter _dic : Int32 = -1
   getter _idx : Int32 = 0
+  getter _len : Int32 = 0
 
   abstract def z_each(& : AiNode ->)
   abstract def v_each(& : AiNode ->)
 
-  def set_term!(@term, @_dic : Int32 = 1) : Nil
+  def set_term!(term, @_dic : Int32 = 1) : Nil
+    @vstr = term.vstr
+    @pecs = term.pecs
+    @_len = term._len
   end
 
   ###
@@ -35,9 +41,9 @@ module MT::AiNode
   ###
 
   def to_txt(io : IO, cap : Bool, pad : Bool)
-    if term = @term
-      io << ' ' if term.pad_space?(pad)
-      term.to_str(io, cap, pad)
+    if @_dic >= 0
+      io << ' ' if @pecs.pad_space?(pad)
+      @pecs.to_str(io, @vstr, cap, pad)
     elsif self.is_a?(M0Node)
       raise "translation missing!"
     else
@@ -49,12 +55,12 @@ module MT::AiNode
   SEP = 'ǀ'
 
   def to_mtl(io : IO, cap : Bool, pad : Bool)
-    if term = @term
-      io << '\t' << ' ' if term.pad_space?(pad)
+    if @_dic >= 0
+      io << '\t' << ' ' if @pecs.pad_space?(pad)
       io << '\t'
 
-      cap, pad = term.to_str(io, cap, pad)
-      io << SEP << @_dic << SEP << @_idx << SEP << term._len
+      cap, pad = @pecs.to_str(io, @vstr, cap, pad)
+      io << SEP << @_dic << SEP << @_idx << SEP << @_len
       {cap, pad}
     elsif self.is_a?(M0Node)
       raise "translation missing!"

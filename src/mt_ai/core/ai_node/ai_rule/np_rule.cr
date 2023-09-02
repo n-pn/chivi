@@ -19,7 +19,7 @@ module MT::AiRule
         # FIXME: split phrase if first element is CD
         head.unshift(node)
       when "DNP"
-        if node.last.term.try(&.pecs.prep?)
+        if node.last.pecs.prep?
           base.unshift(node)
         else
           base.push(node)

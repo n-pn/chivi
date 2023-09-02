@@ -37,7 +37,7 @@ class MT::M2Node
   end
 
   def fix_lcp!
-    @flip = !right.term.try(&.pecs.post?)
+    @flip = !right.pecs.post?
   end
 
   def fix_dvp!
@@ -65,7 +65,7 @@ class MT::M2Node
     when "NP", "NR", "PN"
       true
     when "NN", "NT"
-      !node.term.try(&.pecs.nadj?)
+      !node.pecs.nadj?
     else
       false
     end

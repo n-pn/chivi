@@ -40,6 +40,28 @@ enum MT::MtPecs
   Vint # intransitive verb
   Vdit # ditransitive verb
 
+  @[AlwaysInline]
+  def pad_space?(pad : Bool)
+    pad && !(void? || nwsl?)
+  end
+
+  def to_str(io : IO, vstr : String, cap : Bool, pad : Bool)
+    case
+    when void?
+      # do nothing
+    when capx?
+      io << vstr
+    when !cap || ncap?
+      io << vstr
+      cap = capr?
+    else
+      vstr.each_char_with_index { |c, i| io << (i == 0 ? c.upcase : c) }
+      cap = capr?
+    end
+
+    {cap, void? ? pad : !nwsr?}
+  end
+
   ###
 
   @@known_chars = {} of Char => self
