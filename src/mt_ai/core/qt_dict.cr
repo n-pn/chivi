@@ -64,7 +64,7 @@ class MT::QtDict
   def init(chars : Array(Char), start = 0)
     first_char = chars.unsafe_fetch(start)
 
-    unless first_char.alphanumeric?
+    unless CharUtil.fw_number?(first_char) || CharUtil.fw_letter?(first_char)
       return MtTerm.from_char(first_char)
     end
 

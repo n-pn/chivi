@@ -20,7 +20,7 @@ struct MT::QtNode
   def to_mtl(io : IO, cap : Bool, pad : Bool)
     io << '\t'
     io << ' ' if term.pad_space?(pad)
-    cap, pad = term.to_str(cap, pad)
+    cap, pad = term.to_str(io, cap, pad)
 
     io << SEP << @_dic << SEP << @_idx << SEP << @term._len
     {cap, pad}

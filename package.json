@@ -4,7 +4,7 @@
   "scripts": {
     "qt": "crystal run --error-trace spec/manual/debug_qt.cr -- ",
     "m1": "crystal run --error-trace spec/manual/debug_v1.cr -- ",
-    "m2": "crystal run --error-trace spec/manual/debug_v2.cr -- ",
+    "ai": "crystal run --error-trace spec/manual/debug_ai.cr -- ",
     "test": "crystal spec --error-trace spec/engine/cvmtl_spec.cr",
     "push-dev": "bash priv/push-dev.sh",
     "push-app": "bash priv/push-app.sh",

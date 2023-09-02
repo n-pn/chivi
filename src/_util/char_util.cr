@@ -188,12 +188,20 @@ module CharUtil
     (char.ord &- 0xfee0).chr
   end
 
-  def number?(char : Char)
+  def hw_number?(char : Char)
     '0' <= char <= '9'
   end
 
-  def letter?(char : Char)
+  def hw_letter?(char : Char)
     ('a' <= char <= 'z') || ('A' <= char <= 'Z')
+  end
+
+  def fw_number?(char : Char)
+    '０' <= char <= '９'
+  end
+
+  def fw_letter?(char : Char)
+    ('a' <= char <= 'z') || ('Ａ' <= char <= 'Ｚ')
   end
 
   HANNUM_CHARS = {

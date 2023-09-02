@@ -37,7 +37,7 @@ class MT::M2Node
   end
 
   def fix_lcp!
-    @flip = true # unless ???
+    @flip = !right.term.try(&.pecs.post?)
   end
 
   def fix_dvp!

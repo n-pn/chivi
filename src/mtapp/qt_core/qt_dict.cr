@@ -1,4 +1,4 @@
-require "../mt_core/mt_defn"
+# require "../mt_core/mt_defn"
 require "./qt_node"
 
 class MT::QtDict
