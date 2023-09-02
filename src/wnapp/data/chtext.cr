@@ -12,9 +12,9 @@ class WN::Chtext
 
   V0_DIR = "var/texts/rgbks"
 
-  def initialize(@seed : Wnstem, @chap : Chinfo)
-    @wc_base = "#{WN_DIR}/#{seed.wn_id}/#{chap.ch_no}"
-    chap.spath = "#{seed.sname}/#{seed.s_bid}/#{chap.ch_no}" if chap.spath.empty?
+  def initialize(@stem : Wnstem, @chap : Chinfo)
+    @wc_base = "#{WN_DIR}/#{stem.wn_id}/#{chap.ch_no}"
+    chap.spath = "#{stem.sname}/#{stem.s_bid}/#{chap.ch_no}" if chap.spath.empty?
   end
 
   def wn_path(p_idx : Int32, cksum : String = @chap.cksum)
@@ -65,8 +65,8 @@ class WN::Chtext
 
     files = [self.zh_path]
 
-    if @seed.sname[0] != '!'
-      spath = "#{@seed.sname}/#{@seed.wn_id}/#{@chap.ch_no}"
+    if @stem.sname[0] != '!'
+      spath = "#{@stem.sname}/#{@stem.wn_id}/#{@chap.ch_no}"
       files << "#{V0_DIR}/#{spath}.gbk"
       files << "#{V0_DIR}/#{spath}.txt"
     end
@@ -115,7 +115,7 @@ class WN::Chtext
 
     self.save_backup!(parts)
 
-    @chap.upsert!(db: @seed.chap_list)
+    @chap.upsert!(db: @stem.chap_list)
     @chap.cksum
   end
 
@@ -149,5 +149,22 @@ class WN::Chtext
 
   def load_part!(p_idx : Int32 = 1)
     File.read(self.wn_path(p_idx))
+  end
+
+  def nlp_path(p_idx : Int32, alg = "hmeg", ext = "con")
+    self.class.nlp_path(
+      wn_id: @stem.wn_id, ch_no: @chap.ch_no,
+      cksum: @chap.cksum, p_idx: p_idx,
+      alg: alg, ext: ext)
+  end
+
+  ###
+
+  NLP_DIR = "var/wnapp/nlp_wn"
+
+  def self.nlp_path(wn_id : Int32, ch_no : Int32,
+                    cksum : String, p_idx : Int32,
+                    alg = "hmeg", ext = "con")
+    "#{NLP_DIR}/#{wn_id}/#{ch_no}-#{cksum}-#{p_idx}.#{alg}.#{ext}"
   end
 end

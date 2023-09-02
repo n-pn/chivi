@@ -122,6 +122,8 @@ def do_test(input : String)
   pp data.root
   puts "--------------------------------".colorize.dark_gray
   puts data.to_txt.colorize.yellow
+  puts "--------------------------------".colorize.dark_gray
+  puts data.to_mtl.colorize.blue
 end
 
 start = Time.monotonic

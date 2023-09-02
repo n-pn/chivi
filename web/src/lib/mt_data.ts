@@ -20,7 +20,11 @@ export default class MtData {
 
   static parse_lines(input = '') {
     if (!input) return []
-    return input.split('\n').map((x) => new MtData(x))
+
+    return input
+      .trim()
+      .split('\n')
+      .map((x) => new MtData(x))
   }
 
   constructor(input: string) {

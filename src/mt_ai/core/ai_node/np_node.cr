@@ -39,9 +39,14 @@ class MT::NpNode
       when "QP"
         add_head(node)
       when "DP"
-        left, right = split_dp(node)
-        add_head(right)
-        add_node(left, at_head: left_dp?(left))
+        if node.is_a?(M2Node)
+          left, right = split_dp(node)
+
+          add_head(right)
+          add_node(left, at_head: left_dp?(left))
+        else
+          add_head(node)
+        end
       when "CLP"
         # FIXME: split phrase if first element is CD
         add_head(node)
@@ -73,7 +78,8 @@ class MT::NpNode
   end
 
   def split_dp(node : AiNode)
-    raise "unsupported DP structure"
+    pp [node]
+    raise "unsupported DP structure: #{node.class}"
   end
 
   def left_dp?(node : M0Node)

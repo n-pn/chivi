@@ -1,14 +1,9 @@
 <script context="module" lang="ts">
   const links = [
-    [
-      'tl',
-      'language',
-      'Dịch tay',
-      'Bản dịch có chỉnh sửa bởi người dùng Chivi',
-    ],
-    ['bv', 'brand-bing', 'Dịch Bing', 'Xem kết quả dịch từ Binh Translator'],
-    ['mt', 'bolt', 'Dịch máy', 'Dịch máy bằng phiên bản máy dịch hiện tại'],
-    ['qt', 'bolt', 'Dịch QT+', 'Dịch máy bằng phiên bản máy dịch thử nghiệm'],
+    ['tl', 'Dịch tay', 'Bản dịch có chỉnh sửa bởi người dùng Chivi'],
+    ['bv', 'Dịch Bing', 'Xem kết quả dịch từ Binh Translator'],
+    ['mt', 'Dịch máy', 'Dịch máy bằng phiên bản máy dịch hiện tại'],
+    ['ai', 'Dịch máy (mới)', 'Dịch máy bằng phiên bản máy dịch thử nghiệm'],
   ]
 </script>
 
@@ -23,7 +18,6 @@
   import { seed_path, _pgidx, chap_tail } from '$lib/kit_path'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import Notext from './Notext.svelte'
   import Gmenu from '$gui/molds/Gmenu.svelte'
   import Footer from '$gui/sects/Footer.svelte'
 
@@ -111,23 +105,18 @@
 </nav>
 
 <nav class="nav-list">
-  {#each links as [mode, icon, text, dtip]}
+  {#each links as [mode, text, dtip]}
     <a
       href="{paths.curr}{mode}"
       class="nav-link"
       class:_active={mode == $page.data.rmode}
       data-tip={dtip}>
-      <SIcon class="show-ts" name={icon} />
       <span>{text}</span>
     </a>
   {/each}
 </nav>
 
-{#if chdata.psize > 0}
-  <slot />
-{:else}
-  <Notext bind:data />
-{/if}
+<slot />
 
 <Footer>
   <div class="navi">

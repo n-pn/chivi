@@ -73,9 +73,18 @@ class WN::ChtextCtrl < AC::Base
     chtext = Chtext.new(wnseed, chinfo)
 
     cksum = chtext.get_cksum!(_uname, _mode: 0)
-    parts = chinfo.sizes.map_with_index { |_, p_idx| chtext.load_part!(p_idx) }
 
-    render json: {cksum: cksum, parts: parts}
+    parts = [] of String
+    _hmeg = [] of Bool
+    _hmeb = [] of Bool
+
+    0.upto(chinfo.psize) do |p_idx|
+      parts << chtext.load_part!(p_idx)
+      _hmeg << File.file?(chtext.nlp_path(p_idx, alg: "hmeg"))
+      _hmeb << File.file?(chtext.nlp_path(p_idx, alg: "hmeb"))
+    end
+
+    render json: {cksum: cksum, parts: parts, _hmeg: _hmeg, _hmeb: _hmeb}
   end
 
   def guard_edit_privi(wn_id : Int32, sname : String)

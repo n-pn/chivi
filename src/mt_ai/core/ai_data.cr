@@ -11,20 +11,10 @@ class MT::AiData
   getter root : AiNode
 
   delegate zstr, to: @root
+  delegate tl_word!, to: @root
+  delegate tl_phrase!, to: @root
 
   def initialize(@root : AiNode)
-    @translated = false
-  end
-
-  def translate!(dict : MtDict, coarse : Bool = true)
-    return if @translated
-    @translated = true
-
-    if coarse
-      @root.tl_phrase!(dict)
-    else
-      @root.tl_word!(dict)
-    end
   end
 
   ###
@@ -37,8 +27,16 @@ class MT::AiData
     String.build { |io| to_txt(io, cap, pad) }
   end
 
-  def to_txt(io : IO, cap : Bool, pad : Bool)
+  def to_txt(io : IO, cap : Bool, pad : Bool) : Nil
     @root.to_txt(io, cap, pad)
+  end
+
+  def to_mtl(cap = true, pad = false)
+    String.build { |io| to_mtl(io, cap, pad) }
+  end
+
+  def to_mtl(io : IO, cap : Bool, pad : Bool) : Nil
+    @root.to_mtl(io: io, cap: cap, pad: pad)
   end
 
   ###

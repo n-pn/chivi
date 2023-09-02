@@ -46,12 +46,15 @@ module MT::AiNode
     end
   end
 
+  SEP = 'ǀ'
+
   def to_mtl(io : IO, cap : Bool, pad : Bool)
     if term = @term
+      io << '\t' << ' ' if term.pad_space?(pad)
       io << '\t'
-      io << ' ' if term.pad_space?(pad)
+
       cap, pad = term.to_str(io, cap, pad)
-      io << SEP << @_dic << SEP << @_idx << SEP << @term._len
+      io << SEP << @_dic << SEP << @_idx << SEP << term._len
       {cap, pad}
     elsif self.is_a?(M0Node)
       raise "translation missing!"

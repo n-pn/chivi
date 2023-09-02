@@ -2,7 +2,45 @@
 require "./_mt_ctrl_base"
 
 class MT::AiTranCtrl < AC::Base
-  base "/_ai"
+  base "/_ai/qtran"
+
+  WN_TXT_DIR = "var/wnapp/chtext"
+  WN_NLP_DIR = "var/wnapp/nlp_wn"
+
+  @[AC::Route::GET("/wnchap")]
+  def wn_chap(cpath : String,
+              pdict : String = "combined",
+              _mode : Int32 = 0)
+    con_path = "#{WN_NLP_DIR}/#{cpath}.hmeb.con"
+
+    unless File.file?(con_path)
+      # txt_path = "#{WN_TXT_DIR}/#{cpath}.txt"
+      # TODO: call hanlp_srv
+      render :not_found, "Chưa có dữ liệu trên hệ thống!"
+      return
+    end
+
+    engine = AiCore.new(pdict, true)
+
+    ztext = String::Builder.new
+    cvmtl = String::Builder.new
+
+    cdata = File.read(con_path)
+
+    cdata.each_line(con_path) do |line|
+      next if line.empty?
+      data = engine.tl_from_con_data(line)
+
+      ztext << data.zstr
+      data.to_mtl(io: cvmtl, cap: true, pad: false)
+
+      ztext << '\n'
+      cvmtl << '\n'
+    end
+
+    output = {cvmtl: cvmtl.to_s, ztext: ztext.to_s, cdata: cdata}
+    render json: output
+  end
 
   # @[AC::Route::POST("/qtran")]
   # def qtran(udict : Int32, format : String = "txt", apply_cap : Bool = true)

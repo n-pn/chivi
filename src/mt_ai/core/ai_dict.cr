@@ -112,6 +112,7 @@ class MT::AiDict
 
     def load_tsv!(dname : String = @dname)
       db_path = MtDefn.db_path(dname, "tsv")
+      return self unless File.file?(db_path)
 
       File.each_line(db_path) do |line|
         cols = line.split('\t')
