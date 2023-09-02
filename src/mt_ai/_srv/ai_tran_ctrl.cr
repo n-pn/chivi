@@ -10,7 +10,6 @@ class MT::AiTranCtrl < AC::Base
   @[AC::Route::GET("/wnchap")]
   def wn_chap(cpath : String, pdict : String = "combined", _mode : Int32 = 0)
     _algo = _read_cookie("c_algo") || "auto"
-    Log.info { _algo.colorize.red }
     cdata, _algo = read_con_data(cpath, _algo)
 
     ztext = String::Builder.new
