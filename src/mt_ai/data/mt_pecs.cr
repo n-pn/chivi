@@ -25,6 +25,7 @@ enum MT::MtPecs
   # noun characteristics
 
   Nadj # noun that acts like adjective in DNP construct
+  Npos
 
   Nper # noun that referering to human being
   Nloc # noun that referering to placement/location/organization

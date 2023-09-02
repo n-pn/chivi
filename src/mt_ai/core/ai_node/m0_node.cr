@@ -24,6 +24,10 @@ class MT::M0Node
     yield self
   end
 
+  def first
+    self
+  end
+
   def last
     self
   end

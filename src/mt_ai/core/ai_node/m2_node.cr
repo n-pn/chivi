@@ -33,6 +33,8 @@ class MT::M2Node
     when "DVP" then fix_dvp!
     when "DNP" then fix_dnp!
     when "LCP" then fix_lcp!
+    when "QP"
+      @flip = @left.cpos == "OD"
     end
   end
 
@@ -48,8 +50,9 @@ class MT::M2Node
   def fix_dnp!
     @flip = true
 
-    if ktetic?(left)
-      right.set_term!(MtTerm.new("của"))
+    if right.cpos == "DEG" && ktetic?(left)
+      right.set_vstr!("của")
+      right.off_pecs!(:void)
       # else
       # right.set_term!(MtTerm.new("", MtPecs[:void, :post]))
     end
@@ -62,8 +65,10 @@ class MT::M2Node
     end
 
     case node.cpos
-    when "NP", "NR", "PN"
+    when "NP", "NR"
       true
+    when "PN"
+      node.pecs.nper? || node.pecs.npos?
     when "NN", "NT"
       !node.pecs.nadj?
     else
@@ -86,6 +91,10 @@ class MT::M2Node
       yield left
       yield right
     end
+  end
+
+  def first
+    @left
   end
 
   def last

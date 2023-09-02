@@ -11,10 +11,11 @@ data.root.tl_phrase!(dict: dict)
 puts "--------------------------------".colorize.dark_gray
 puts data.zstr.colorize.cyan
 puts "--------------------------------".colorize.dark_gray
+puts MT::QtCore.tl_hvword(data.zstr, true).colorize.light_gray
+puts "--------------------------------".colorize.dark_gray
 pp data.root
 puts "--------------------------------".colorize.dark_gray
 puts data.to_txt.colorize.yellow
-puts "--------------------------------".colorize.dark_gray
-puts MT::QtCore.tl_hvword(data.zstr, true).colorize.light_gray
+
 puts "--------------------------------".colorize.dark_gray
 puts "Total time used (including loading dicts): #{(Time.monotonic - time).total_milliseconds.round}ms".colorize.red

@@ -25,12 +25,23 @@ class MT::M3Node
       self.set_term!(*found)
     else
       {@left, @middle, @right}.each(&.tl_phrase!(dict))
+      fix_inner!(dict)
     end
   end
 
   @[AlwaysInline]
   def tl_word!(dict : AiDict)
     {@left, @middle, @right}.each(&.tl_word!(dict))
+    fix_inner!(dict)
+  end
+
+  @[AlwaysInline]
+  private def fix_inner!(dict : AiDict) : Nil
+    case @cpos
+    when "VPT"
+      return unless @right.zstr == "住"
+      @right.set_vstr!(vstr: "nổi")
+    end
   end
 
   ###
@@ -45,6 +56,10 @@ class MT::M3Node
     yield left
     yield middle
     yield right
+  end
+
+  def first
+    @left
   end
 
   def last

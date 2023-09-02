@@ -14,11 +14,45 @@ module MT::AiNode
 
   abstract def z_each(& : AiNode ->)
   abstract def v_each(& : AiNode ->)
+  abstract def first
+  abstract def last
+
+  def find_by_cpos(cpos : String)
+    z_each do |node|
+      return node if node.cpos == cpos
+      unless node.is_a?(M0Node)
+        found = node.find_by_cpos(cpos)
+        return found if found
+      end
+    end
+  end
+
+  def find_by_cpos(*cpos : String)
+    z_each do |node|
+      return node if node.cpos.in?(*cpos)
+
+      unless node.is_a?(M0Node)
+        found = node.find_by_cpos(*cpos)
+        return found if found
+      end
+    end
+  end
 
   def set_term!(term, @_dic : Int32 = 1) : Nil
     @vstr = term.vstr
     @pecs = term.pecs
     @_len = term._len
+  end
+
+  def set_vstr!(@vstr : String, @_dic : Int32 = 1) : Nil
+  end
+
+  def add_pecs!(pecs : MtPecs)
+    @pecs |= pecs
+  end
+
+  def off_pecs!(pecs : MtPecs)
+    @pecs &= ~pecs
   end
 
   ###

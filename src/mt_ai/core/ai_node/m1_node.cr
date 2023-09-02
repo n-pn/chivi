@@ -32,7 +32,11 @@ class MT::M1Node
     yield @node
   end
 
+  def first
+    @node
+  end
+
   def last
-    node
+    @node
   end
 end

@@ -38,6 +38,10 @@ class MT::MxNode
     end
   end
 
+  def first
+    @list.first
+  end
+
   def last
     @list.last
   end

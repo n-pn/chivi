@@ -66,6 +66,10 @@ class MT::AiDict
     end
   end
 
+  def get_special?(astr : String, bstr : String)
+    Entry.special.get?(astr, bstr).try(&.[0])
+  end
+
   ###########
 
   enum Dtype
@@ -136,6 +140,7 @@ class MT::AiDict
     ###
 
     class_getter essence : self { new("essence", :essence).load_tsv! }
+    class_getter special : self { new("special", :essence).load_tsv! }
     class_getter regular : self { new("regular", :regular).load_db3! }
     class_getter suggest : self { new("suggest", :suggest).load_db3! }
 

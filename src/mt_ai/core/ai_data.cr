@@ -95,8 +95,8 @@ class MT::AiData
     case nodes.size
     when 1 then {M1Node.new(nodes[0], cpos, from), _idx}
     when 2 then {M2Node.new(nodes[0], nodes[1], cpos, from), _idx}
-      # when 3 then {M3Node.new(nodes[0], nodes[1], nodes[2], cpos, from), _idx}
-    else {MxNode.new(nodes, cpos, from), _idx}
+    when 3 then {M3Node.new(nodes[0], nodes[1], nodes[2], cpos, from), _idx}
+    else        {MxNode.new(nodes, cpos, from), _idx}
     end
   end
 

@@ -8,12 +8,16 @@ module MT::AiRule
 
     idx = orig.size &- 1
 
+    stem : String? = nil
+
     while idx >= 0
       node = orig.unsafe_fetch(idx)
       idx -= 1
 
       case node.cpos
-      when "QP" then base.unshift(node)
+      when "QP"
+        node = heal_qp!(dict, node, stem || "_")
+        base.unshift(node)
       when "DP" then add_dp_node(base, node)
       when "CLP"
         # FIXME: split phrase if first element is CD
@@ -34,6 +38,9 @@ module MT::AiRule
         next unless node.zstr[0] == '，'
         tail.unshift(node)
         idx -= 1
+      when "NN", "NP"
+        stem ||= node.last.zstr
+        base.push(node)
       else
         base.push(node)
       end

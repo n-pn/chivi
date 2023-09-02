@@ -45,8 +45,11 @@ class MT::NpNode
     list.each { |node| yield node }
   end
 
+  def first
+    @orig.first
+  end
+
   def last
-    # TODO: check for ETC node
     @orig.last
   end
 end

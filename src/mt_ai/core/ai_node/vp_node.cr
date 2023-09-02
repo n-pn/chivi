@@ -15,19 +15,14 @@ class MT::VpNode
       self.set_term!(*found)
     else
       @orig.each(&.tl_phrase!(dict))
-      fix_inner!(dict)
+      @data = AiRule.read_vp!(dict, orig)
     end
   end
 
   @[AlwaysInline]
   def tl_word!(dict : AiDict) : Nil
     @orig.each(&.tl_word!(dict))
-    fix_inner!(dict)
-  end
-
-  @[AlwaysInline]
-  private def fix_inner!(dict : AiDict) : Nil
-    # TODO!
+    @data = AiRule.read_vp!(dict, orig)
   end
 
   ###
@@ -39,6 +34,10 @@ class MT::VpNode
   def v_each(&)
     list = @data.empty? ? @orig : @data
     list.each { |node| yield node }
+  end
+
+  def first
+    @orig.first
   end
 
   def last
