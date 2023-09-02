@@ -16,7 +16,7 @@ const proxy = {
   '/_wn': `http://127.0.0.1:${env.VITE_WN_PORT}`,
 
   '/_m1': `http://127.0.0.1:${env.VITE_M1_PORT}`,
-  '/_m2': `http://127.0.0.1:${env.VITE_M2_PORT}`,
+  '/_ai': `http://127.0.0.1:${env.VITE_AI_PORT}`,
 
   '/_sp': `http://127.0.0.1:${env.VITE_SP_PORT}`,
   '/_ys': `http://127.0.0.1:${env.VITE_YS_PORT}`,

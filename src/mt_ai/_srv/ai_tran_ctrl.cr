@@ -8,28 +8,19 @@ class MT::AiTranCtrl < AC::Base
   WN_NLP_DIR = "var/wnapp/nlp_wn"
 
   @[AC::Route::GET("/wnchap")]
-  def wn_chap(cpath : String,
-              pdict : String = "combined",
-              _mode : Int32 = 0)
-    con_path = "#{WN_NLP_DIR}/#{cpath}.hmeb.con"
-
-    unless File.file?(con_path)
-      # txt_path = "#{WN_TXT_DIR}/#{cpath}.txt"
-      # TODO: call hanlp_srv
-      render :not_found, "Chưa có dữ liệu trên hệ thống!"
-      return
-    end
-
-    engine = AiCore.new(pdict, true)
+  def wn_chap(cpath : String, pdict : String = "combined", _mode : Int32 = 0)
+    _algo = _read_cookie("c_algo") || "auto"
+    Log.info { _algo.colorize.red }
+    cdata, _algo = read_con_data(cpath, _algo)
 
     ztext = String::Builder.new
     cvmtl = String::Builder.new
 
-    cdata = File.read(con_path)
+    ai_mt = AiCore.new(pdict, true)
 
-    cdata.each_line(con_path) do |line|
+    cdata.each_line do |line|
       next if line.empty?
-      data = engine.tl_from_con_data(line)
+      data = ai_mt.tl_from_con_data(line)
 
       ztext << data.zstr
       data.to_mtl(io: cvmtl, cap: true, pad: false)
@@ -38,8 +29,27 @@ class MT::AiTranCtrl < AC::Base
       cvmtl << '\n'
     end
 
-    output = {cvmtl: cvmtl.to_s, ztext: ztext.to_s, cdata: cdata}
+    output = {cvmtl: cvmtl.to_s, ztext: ztext.to_s, cdata: cdata, _algo: _algo}
     render json: output
+  rescue ex
+    puts ex
+    render 400, "Chương tiết không tồn tại!"
+  end
+
+  private def read_con_data(cpath : String, _algo = "auto")
+    hmeg_path = "#{WN_NLP_DIR}/#{cpath}.hmeg.con"
+    hmeb_path = "#{WN_NLP_DIR}/#{cpath}.hmeb.con"
+
+    case
+    when _algo == "hmeg"
+      {File.read(hmeg_path), _algo}
+    when _algo == "hmeb"
+      {File.read(hmeb_path), _algo}
+    when File.file?(hmeg_path)
+      {File.read(hmeg_path), "hmeg"}
+    else
+      {File.read(hmeb_path), "hmeb"}
+    end
   end
 
   # @[AC::Route::POST("/qtran")]

@@ -1,17 +1,18 @@
 <script context="module" lang="ts">
-  export function show_mtl(
+  export function show_txt(
     mode: number,
     lmax: number,
     l_index: number,
     l_hover: number,
     l_focus: number
   ) {
-    if (mode != 0) return mode > 0
-    if (l_index == l_hover) return true
+    if (mode == 1) return true
+    if (l_index == l_hover) return false
 
-    if (l_index > l_focus - 3 && l_index < l_focus + 3) return true
-    if (l_focus == 0) return l_index == lmax
-    return l_index == 0 && l_focus == lmax
+    if (l_index > l_focus - 3 && l_index < l_focus + 3) return false
+    if (l_focus == 0) return l_index != lmax
+
+    return l_index != 0 || l_focus != lmax
   }
 </script>
 
@@ -19,10 +20,10 @@
   import MtData from '$lib/mt_data'
 
   export let input: MtData = new MtData('')
-  export let focus = false
+  export let plain = false
 </script>
 
-<cv-line>{@html focus ? input.html : input.text}</cv-line>
+<cv-line>{@html plain ? input.text : input.html}</cv-line>
 
 <style lang="scss" global>
   @mixin cv-node($color: blue) {

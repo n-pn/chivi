@@ -3,7 +3,7 @@ import { _pgidx } from '$lib/kit_path'
 
 import type { PageLoad } from './$types'
 
-type Data = { cvmtl: string; ztext: string }
+type Data = { cvmtl: string; ztext: string; cdata: string; _algo: string }
 
 export const load = (async ({ parent, params, fetch }) => {
   const { nvinfo, chdata } = await parent()
@@ -12,6 +12,7 @@ export const load = (async ({ parent, params, fetch }) => {
   const cpath = `${chdata.cbase}-${cpart}`
 
   const qturl = `/_ai/qtran/wnchap?cpath=${cpath}&pdict=book/${nvinfo.id}`
-  const { ztext, cvmtl, cdata } = await api_get<Data>(qturl, fetch)
-  return { ztext, cvmtl, cdata, cpart, rmode: 'ai' }
+  const data = await api_get<Data>(qturl, fetch)
+
+  return { ...data, cpart, rmode: 'ai' }
 }) satisfies PageLoad

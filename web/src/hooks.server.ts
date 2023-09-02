@@ -22,7 +22,7 @@ const api_hosts = {
   _ai: `127.0.0.1:${import.meta.env.VITE_AI_PORT || 5120}`,
 
   _sp: `127.0.0.1:${import.meta.env.VITE_SP_PORT || 5300}`,
-  _ys: `127.0.0.1:${import.meta.env.VITE_YS_PORT || 5420}`,
+  _ys: `127.0.0.1:${import.meta.env.VITE_YS_PORT || 5400}`,
 }
 
 export const handleFetch = (({ event, request, fetch }) => {

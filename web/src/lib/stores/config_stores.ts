@@ -5,15 +5,19 @@ const storage_key = '_pref'
 
 class ConfigData {
   wtheme = ''
+
   ftsize = 3
   ftface = 1
   textlh = 150
-  render = 0
-  showzh = false
-  tosimp = false
-  engine = 1
+
+  r_mode = 0
+  show_z = false
+  show_c = false
+
   w_udic = false
   w_init = false
+
+  c_algo = 'auto'
 }
 
 function load_config(): ConfigData {
@@ -39,13 +43,10 @@ export const config = {
     config.update((x: ConfigData) => ({ ...x, [key]: fn(x[key]) }))
   },
   toggle: (key: string) => config.put_fn(key, (val) => !val),
-  set_render: (val: number) => {
+  set_r_mode: (val: number) => {
     config.update((x: ConfigData) => {
-      return { ...x, render: val == x.render ? 0 : val }
+      return { ...x, r_mode: val == x.r_mode ? 0 : val }
     })
-  },
-  set_engine: (engine: number) => {
-    config.update((x: ConfigData) => ({ ...x, engine }))
   },
 }
 

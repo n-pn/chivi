@@ -14,7 +14,13 @@
 
   // const textlhs = [150, 150, 150, 150]
   // prettier-ignore
-  const renders = [['Thường', 0], ['Zen', -1], ['Dev', 1]]
+  const r_modes = [['Thường', 0], ['Zen', 1], ['Dev', 2]]
+
+  const c_algos = [
+    ['Auto', 'auto'],
+    ['M_eb', 'hmeb'],
+    ['H_eg', 'hmeg'],
+  ]
 </script>
 
 <script lang="ts">
@@ -39,9 +45,11 @@
   }
 
   $: if (browser && $data) {
-    write_cookie('showzh', $data.showzh ? 't' : 'f')
+    write_cookie('show_z', $data.show_z ? 't' : 'f')
+    write_cookie('show_c', $data.show_c ? 't' : 'f')
     write_cookie('w_udic', $data.w_udic ? 't' : 'f')
-    write_cookie('w_init', $data.w_init ? 't' : 'f')
+
+    write_cookie('c_algo', $data.c_algo)
     write_cookie('theme', $data.wtheme)
   }
 
@@ -126,11 +134,11 @@
   <config-sep />
 
   <config-item>
-    <field-label class="small">Chế độ:</field-label>
+    <field-label class="small">Chế độ đọc:</field-label>
     <field-input>
-      {#each renders as [label, value]}
-        <label class:_active={value == $data.render}>
-          <input type="radio" name="render" {value} bind:group={$data.render} />
+      {#each r_modes as [label, value]}
+        <label class:_active={value == $data.r_mode}>
+          <input type="radio" name="r_mode" {value} bind:group={$data.r_mode} />
           <span>{label}</span>
         </label>
       {/each}
@@ -139,17 +147,10 @@
 
   <config-item>
     <label class="switch">
-      <input type="checkbox" bind:checked={$data.showzh} />
+      <input type="checkbox" bind:checked={$data.show_z} />
       <span class="switch-label">Hiển thị tiếng Trung gốc:</span>
     </label>
   </config-item>
-
-  <!-- <config-item>
-    <label class="switch">
-      <input type="checkbox" bind:checked={$data.tosimp} />
-      <span class="switch-label">Phồn thể sang giản thể:</span>
-    </label>
-  </config-item> -->
 
   <config-item>
     <label class="switch">
@@ -160,16 +161,30 @@
 
   <config-item>
     <label class="switch">
-      <input type="checkbox" bind:checked={$data.w_init} />
-      <span class="switch-label">Hiển thị từ điển thử nghiệm:</span>
+      <input type="checkbox" bind:checked={$lookup.enabled} />
+      <span class="switch-label">Luôn bật ô giải nghĩa:</span>
+    </label>
+  </config-item>
+
+  <config-sep />
+
+  <config-item>
+    <label class="switch">
+      <input type="checkbox" bind:checked={$data.show_c} />
+      <span class="switch-label">Hiển thị cây ngữ pháp:</span>
     </label>
   </config-item>
 
   <config-item>
-    <label class="switch">
-      <input type="checkbox" bind:checked={$lookup.enabled} />
-      <span class="switch-label">Luôn bật ô giải nghĩa:</span>
-    </label>
+    <field-label class="small">Thuật toán:</field-label>
+    <field-input>
+      {#each c_algos as [label, value]}
+        <label class:_active={value == $data.c_algo}>
+          <input type="radio" name="c_algo" {value} bind:group={$data.c_algo} />
+          <span>{label}</span>
+        </label>
+      {/each}
+    </field-input>
   </config-item>
 </Slider>
 
@@ -188,7 +203,7 @@
 
   field-label {
     display: inline-block;
-    width: 33%;
+    min-width: 33%;
     // @include ftsize(sm);
     font-weight: 500;
 
@@ -199,6 +214,7 @@
 
   field-input {
     flex: 1;
+    margin-left: auto;
     @include flex-cy($gap: 0.5rem);
   }
 

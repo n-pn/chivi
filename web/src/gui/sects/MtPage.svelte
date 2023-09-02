@@ -7,7 +7,7 @@
   import Mtmenu, { ctrl as mtmenu } from './MtPage/Mtmenu.svelte'
 
   import Zhline from './MtPage/Zhline.svelte'
-  import Cvline, { show_mtl } from './MtPage/Cvline.svelte'
+  import Cvline, { show_txt } from './MtPage/Cvline.svelte'
 
   import LineEdit from './MtPage/LineEdit.svelte'
 
@@ -64,16 +64,6 @@
     dname = data[3]
   }
 
-  // async function render_v2(body: string, cv_title = '') {
-  //   if ($config.render != 1) {
-  //     datav2 = []
-  //   } else {
-  //     const url = `/_m2/qtran?udict=-${wn_id}&format=txt&cv_title=${cv_title}`
-  //     const res = await fetch(url, { method: 'POST', body })
-  //     if (res.ok) datav2 = (await res.text()).split('\n')
-  //   }
-  // }
-
   const on_fixraw = async (line_no: number, orig: string, edit: string) => {
     const message = await do_fixraw(line_no, orig, edit)
 
@@ -98,7 +88,7 @@
     <span class="stats" data-tip="Phiên bản máy dịch">
       <span class="stats-label">Máy dịch:</span>
       <SIcon name="versions" />
-      <span class="stats-value">v{$config.engine || 1}</span>
+      <span class="stats-value">V1</span>
     </span>
 
     <span class="stats" data-tip="Thời gian chạy máy dịch">
@@ -135,8 +125,8 @@
       {@const elem = index > 0 || $$props.no_title ? 'p' : 'h1'}
       {@const mtlv1 = datav1[index]}
       {@const mtlv2 = datav2[index]}
-      {@const view_mtl = show_mtl(
-        $config.render,
+      {@const plain = show_txt(
+        $config.r_mode,
         zlines.length - 1,
         index,
         l_hover,
@@ -149,22 +139,16 @@
         class:focus={index == l_focus}
         on:mouseenter={() => (l_hover = index)}
         role="tooltip">
-        {#if $config.showzh}
-          <Zhline ztext={input} plain={!view_mtl} />
-        {/if}
+        {#if $config.show_z}<Zhline ztext={input} {plain} />{/if}
 
         {#if mtlv1}
-          <Cvline input={mtlv1} focus={view_mtl} />
-        {/if}
-
-        {#if mtlv2}
-          <p class="v2">{mtlv2}</p>
+          <Cvline input={mtlv1} {plain} />
         {/if}
       </svelte:element>
     {/each}
   </section>
 
-  {#if $config.render >= 0}
+  {#if $config.r_mode != 1}
     <Mtmenu
       {article}
       lines={zlines}
@@ -188,11 +172,9 @@
 </article>
 
 <div hidden>
-  <button data-kbd="s" on:click={() => config.toggle('showzh')}>A</button>
-  <button data-kbd="z" on:click={() => config.set_render(-1)}>Z</button>
-  <button data-kbd="g" on:click={() => config.set_render(1)}>G</button>
-  <!-- <button data-kbd="⌃1" on:click={() => change_engine(1)}>1</button>
-  <button data-kbd="⌃2" on:click={() => change_engine(2)}>2</button> -->
+  <button data-kbd="z" on:click={() => config.set_r_mode(1)}>Z</button>
+  <button data-kbd="d" on:click={() => config.set_r_mode(2)}>D</button>
+  <button data-kbd="a" on:click={() => config.toggle('show_z')}>A</button>
 </div>
 
 <style lang="scss">

@@ -1,32 +1,39 @@
 <script context="module" lang="ts">
+  const algos = {
+    hmeg: 'Ernie Gram',
+    hmeb: 'Electra Base',
+    hmes: 'Electra Small',
+  }
+</script>
+
+<script lang="ts">
   import { config, vdict, zfrom } from '$lib/stores'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import MtData from '$lib/mt_data'
 
   import Zhline from './MtPage/Zhline.svelte'
-  import Cvline, { show_mtl } from './MtPage/Cvline.svelte'
-</script>
+  import Cvline from './MtPage/Cvline.svelte'
 
-<script lang="ts">
-  export let data: { cvmtl: string; ztext: string; cdata: string }
+  type Data = { cvmtl: string; ztext: string; cdata: string; _algo: string }
+  export let data: Data
 
-  let l_hover = 0
   let l_focus = 0
 
   $: [cvmtl] = MtData.parse_cvmtl(data.cvmtl)
   $: ztext = data.ztext.trim().split('\n')
   $: cdata = data.cdata.trim().split('\n')
+
+  $: zen_mode = $config.r_mode == 1
 </script>
 
 <article
   class="article island reader app-fs-{$config.ftsize} app-ff-{$config.ftface}"
   style:--textlh="{$config.textlh}%">
   <header>
-    <span class="stats" data-tip="Phiên bản máy dịch">
-      <span class="stats-label">Máy dịch:</span>
-      <SIcon name="versions" />
-      <span class="stats-value">v2</span>
+    <span class="stats" data-tip="Thuật toán phân tích">
+      <span class="stats-label">Thuật toán:</span>
+      <span class="stats-value _caps">{algos[data._algo] || 'N/A'}</span>
     </span>
 
     <div class="header-right">
@@ -40,27 +47,16 @@
 
   <section>
     {#each ztext as input, index (index)}
-      {@const elem = index > 0 || $$props.no_title ? 'p' : 'h1'}
-      {@const mtlv1 = cvmtl[index]}
-      {@const view_mtl = show_mtl(
-        $config.render,
-        ztext.length - 1,
-        index,
-        l_hover,
-        l_focus
-      )}
       <svelte:element
-        this={elem}
+        this={index > 0 || $$props.no_title ? 'p' : 'h1'}
         id="L{index}"
         class="cv-line"
         class:focus={index == l_focus}
-        on:mouseenter={() => (l_hover = index)}
+        class:debug={$config.r_mode == 2}
         role="tooltip">
-        {#if $config.showzh}
-          <Zhline ztext={input} plain={!view_mtl} />
-          <div class="cdata">{cdata[index]}</div>
-        {/if}
-        <Cvline input={mtlv1} focus={view_mtl} />
+        {#if $config.show_z}<Zhline ztext={input} plain={zen_mode} />{/if}
+        {#if $config.show_c}<div class="cdata">{cdata[index]}</div>{/if}
+        <Cvline input={cvmtl[index]} plain={zen_mode} />
       </svelte:element>
     {/each}
   </section>
@@ -69,9 +65,10 @@
 </article>
 
 <div hidden>
-  <button data-kbd="s" on:click={() => config.toggle('showzh')}>A</button>
-  <button data-kbd="z" on:click={() => config.set_render(-1)}>Z</button>
-  <button data-kbd="g" on:click={() => config.set_render(1)}>G</button>
+  <button data-kbd="z" on:click={() => config.set_r_mode(1)}>Z</button>
+  <button data-kbd="d" on:click={() => config.set_r_mode(2)}>D</button>
+  <button data-kbd="a" on:click={() => config.toggle('show_z')}>A</button>
+  <button data-kbd="q" on:click={() => config.toggle('show_c')}>Q</button>
 </div>
 
 <style lang="scss">
@@ -127,5 +124,37 @@
     font-size: 1rem;
     line-height: 1.4;
     margin-bottom: 0.25rem;
+  }
+
+  .stats {
+    display: inline-flex;
+    align-items: center;
+
+    @include ftsize(sm);
+    @include fgcolor(mute);
+  }
+
+  .stats-label {
+    display: none;
+    // font-style: italic;
+
+    @include bp-min(ts) {
+      display: inline-block;
+
+      .stats-value + & {
+        margin-left: 0.125rem;
+      }
+      & + :global(svg) {
+        display: none;
+      }
+    }
+  }
+
+  .stats-value {
+    margin-left: 0.125rem;
+    &._caps {
+      text-transform: uppercase;
+      font-size: 0.85em;
+    }
   }
 </style>
