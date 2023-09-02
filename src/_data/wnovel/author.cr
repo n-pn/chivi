@@ -1,4 +1,4 @@
-# require "../../mt_ai/core/qt_core"
+require "../../mt_ai/core/qt_core"
 
 require "../_base"
 require "./wninfo"

@@ -1,4 +1,5 @@
 require "../_base"
+require "../../mt_ai/core/qt_core"
 
 class CV::Btitle
   include Crorm::Model

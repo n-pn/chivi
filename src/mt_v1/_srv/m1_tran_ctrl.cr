@@ -1,7 +1,6 @@
 require "./_m1_ctrl_base"
 require "./m1_tran_data"
 
-require "../../mtapp/sp_core"
 require "../../_data/logger/qtran_xlog"
 
 class M1::TranCtrl < AC::Base
@@ -117,7 +116,7 @@ class M1::TranCtrl < AC::Base
     output = String.build do |io|
       cv_mt.cv_plain(input, w_cap).to_txt(io)
       io << '\n'
-      io << MT::SpCore.tl_sinovi(input, cap: w_cap)
+      io << MT::QtCore.tl_hvword(input, cap: w_cap)
     end
 
     render text: output

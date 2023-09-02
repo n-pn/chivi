@@ -176,7 +176,9 @@ class WN::Wnstem
       # Do nothing
     end
 
-    sync_with_remote!(rmstem, mode: mode) if rmstem && mode >= 0
+    if rmstem && mode >= 0
+      sync_with_remote!(rmstem, mode: mode) rescue nil
+    end
 
     # TODO: smart reload translation instead of force regen
     self.update_chap_vinfos!

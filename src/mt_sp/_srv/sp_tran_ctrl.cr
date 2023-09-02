@@ -1,6 +1,6 @@
 require "./_sp_ctrl_base"
 
-require "../../mtapp/sp_core"
+require "../../mt_ai/core/qt_core"
 require "../../mtapp/qt_core"
 
 require "../../mtapp/service/*"
@@ -20,7 +20,7 @@ class SP::TranCtrl < AC::Base
 
   @[AC::Route::PUT("/hanviet")]
   def hanviet(mode : String = "mtl", cap_first : Bool = true)
-    sp_mt = MT::SpCore.sino_vi
+    sp_mt = MT::QtCore.hv_word
     plain = mode != "mtl"
 
     output = String.build do |io|
