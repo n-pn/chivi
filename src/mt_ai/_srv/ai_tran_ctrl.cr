@@ -32,23 +32,36 @@ class MT::AiTranCtrl < AC::Base
     render json: output
   rescue ex
     puts ex
-    render 400, "Chương tiết không tồn tại!"
+    render 455, "Chương tiết chưa được phân tích!"
   end
 
-  private def read_con_data(cpath : String, _algo = "auto")
-    hmeg_path = "#{WN_NLP_DIR}/#{cpath}.hmeg.con"
-    hmeb_path = "#{WN_NLP_DIR}/#{cpath}.hmeb.con"
-
-    case
-    when _algo == "hmeg"
-      {File.read(hmeg_path), _algo}
-    when _algo == "hmeb"
-      {File.read(hmeb_path), _algo}
-    when File.file?(hmeg_path)
-      {File.read(hmeg_path), "hmeg"}
-    else
-      {File.read(hmeb_path), "hmeb"}
+  private def read_con_data(cpath : String, _algo : String = "auto")
+    if _algo == "auto"
+      path = "#{WN_NLP_DIR}/#{cpath}.hmeg.con"
+      return {File.read(path), "hmeg"} if File.file?(path)
+      _algo = "hmeb"
+    elsif !_algo.in?("hmeg", "hmeb")
+      _algo = "hmeb"
     end
+
+    con_path = "#{WN_NLP_DIR}/#{cpath}.#{_algo}.con"
+
+    unless File.file?(con_path)
+      Dir.mkdir_p(File.dirname(con_path))
+      _auto = _cfg_enabled?("c_auto") && _privi > 1
+      raise "not found" unless _auto
+      call_hanlp_srv(cpath, _algo)
+    end
+
+    {File.read(con_path), _algo}
+  end
+
+  private def call_hanlp_srv(cpath : String, _algo : String)
+    file = "#{WN_TXT_DIR}/#{cpath}.txt"
+
+    link = "http://localhost:5555/#{_algo}/file?file=#{file}"
+    res = HTTP::Client.get(link)
+    raise "error: #{res.body}" unless res.status.success?
   end
 
   # @[AC::Route::POST("/qtran")]

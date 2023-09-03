@@ -53,9 +53,7 @@ module MT::AiRule
 
   private def add_dp_node(data : Array(AiNode), node : AiNode) : Nil
     if node.is_a?(M2Node)
-      left, right = {node.left, node.right}
       data.unshift(node.right)
-
       left_dp?(node.left) ? data.unshift(node.left) : data.push(node.left)
     else
       # TODO: check pecs

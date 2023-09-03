@@ -54,7 +54,7 @@ class MT::AiDict
       vstr = CharUtil.normalize(zstr)
       @auto_dict.add(zstr, cpos, vstr, MtPecs[Ncap])
     when "CD", "OD"
-      vstr = TlUnit.translate(zstr)
+      vstr = TlUnit.translate(zstr) rescue QtCore.tl_hvword(zstr)
       @auto_dict.add(zstr, cpos, vstr, :none)
     when "NR"
       # TODO: call special name translation engine

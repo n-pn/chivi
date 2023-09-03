@@ -17,9 +17,9 @@
   const r_modes = [['Thường', 0], ['Zen', 1], ['Dev', 2]]
 
   const c_algos = [
-    ['Auto', 'auto'],
-    ['M_eb', 'hmeb'],
-    ['H_eg', 'hmeg'],
+    ['Hmeg', 'hmeg', 'Chọn mô-dun Ernie Gram'],
+    ['Hmeb', 'hmeb', 'Chọn mô-đun Electra Base'],
+    ['Auto', 'auto', 'Tự động chọn dữ liệu đang có sẵn'],
   ]
 </script>
 
@@ -45,11 +45,14 @@
   }
 
   $: if (browser && $data) {
-    write_cookie('show_z', $data.show_z ? 't' : 'f')
-    write_cookie('show_c', $data.show_c ? 't' : 'f')
     write_cookie('w_udic', $data.w_udic ? 't' : 'f')
 
+    write_cookie('show_z', $data.show_z ? 't' : 'f')
+    write_cookie('show_c', $data.show_c ? 't' : 'f')
+
     write_cookie('c_algo', $data.c_algo)
+    write_cookie('c_auto', $data.c_auto ? 't' : 'f')
+
     write_cookie('theme', $data.wtheme)
   }
 
@@ -178,19 +181,35 @@
   <config-item>
     <field-label class="small">Thuật toán:</field-label>
     <field-input>
-      {#each c_algos as [label, value]}
-        <label class:_active={value == $data.c_algo}>
+      {#each c_algos as [label, value, chint]}
+        <label class:_active={value == $data.c_algo} data-tip={chint}>
           <input type="radio" name="c_algo" {value} bind:group={$data.c_algo} />
           <span>{label}</span>
         </label>
       {/each}
     </field-input>
   </config-item>
+
+  <config-item>
+    <label class="switch">
+      <input type="checkbox" bind:checked={$data.c_auto} />
+      <span class="switch-label">Tự động phân tích ngữ pháp:</span>
+    </label>
+  </config-item>
+
+  <div class="config-hint">
+    * Chỉ áp dụng cho người dùng quyền hạn 2 trở lên!
+  </div>
 </Slider>
 
 <style lang="scss">
   config-item {
     @include flex-cy($gap: 0.5rem);
+    padding: 0 1rem;
+    margin-top: 1rem;
+  }
+
+  .config-hint {
     padding: 0 1rem;
     margin-top: 1rem;
   }

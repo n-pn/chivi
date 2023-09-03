@@ -18,6 +18,7 @@ class ConfigData {
   w_init = false
 
   c_algo = 'auto'
+  c_auto = false
 }
 
 function load_config(): ConfigData {

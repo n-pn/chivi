@@ -2,6 +2,7 @@
 set -euo pipefail
 
 export GC_INITIAL_HEAP_SIZE=4G
+export OUT=/2tb/app.chivi
 
 for target in "$@"
 do
@@ -9,13 +10,13 @@ do
 
   if [[ $target == "cvweb" ]]
   then
-    cd web && pnpm run build && rsync -ai --no-p build/ /2tb/app.chivi/web/
+    cd web && pnpm run build && rsync -ai --no-p build/ $OUT/web/
     cd ..
-  # elif [[ $target == "hanlp" ]]
-  # then
-  #   rsync-fast "src/hanlp-srv.py" $SSH/bin
+  elif [[ $target == "hanlp" ]]
+  then
+    cp -f src/hanlp/hanlp-srv.py $OUT/bin
   else
-    crystal build -s --release src/$target/$target-srv.cr -o /2tb/app.chivi/bin/$target-srv
+    crystal build -s --release src/$target/$target-srv.cr -o $OUT/bin/$target-srv
   fi
 
   echo restarting $target service
