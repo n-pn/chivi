@@ -74,50 +74,18 @@ class SP::TranCtrl < AC::Base
     render json: {btran: btran, ztext: ztext, mtime: mtime}
   end
 
-  # @[AC::Route::GET("/tl_chap")]
-  # def tl_chap(cpath : String, wn_id : Int32 = 0, format = "mtl", label : String? = nil)
-  #   zpath = "#{TEXT_DIR}/#{cpath}.txt"
-  #   ztext = File.read(zpath)
+  @[AC::Route::GET("/btran/wntext")]
+  def btran_wntext(cpath : String)
+    bzv_path = "#{TRAN_DIR}/#{cpath}.bzv.txt"
 
-  #   plain = format == "txt"
-  #   qt_mt = MT::QtCore.new(wn_id, user: @w_user)
+    if File.file?(bzv_path)
+      btran = File.read(bzv_path)
+    else
+      ztext = File.read_lines("#{TEXT_DIR}/#{cpath}.txt")
+      btran = Btran.free_translate(ztext, target: "vi").join('\n')
+      File.write(bzv_path, btran)
+    end
 
-  #   # spawn do
-  #   #   ihash = HashUtil.decode32(hash).to_u32.unsafe_as(Int32)
-  #   #   isize = ztext.size
-  #   #   log_tran_stats(ihash, isize, wn_id, w_udic: !@w_user.empty?)
-  #   # end
-
-  #   cvmtl = String.build do |io|
-  #     start = Time.monotonic
-
-  #     ztext.each_line do |line|
-  #       data = qt_mt.tokenize(line)
-  #       plain ? data.to_txt(io) : data.to_mtl(io)
-  #       io << '\n'
-  #     end
-
-  #     io << "\n$\t$\t$\n"
-
-  #     tspan = Time.monotonic - start
-  #     tspan = tspan.total_milliseconds.round.to_i
-  #     io << tspan << '\t' << "-" << '\t' << "-"
-  #   end
-
-  #   render json: {cvmtl: cvmtl, ztext: ztext}
-  # end
-
-  # private def log_tran_stats(ihash : Int32, isize : Int32, wn_dic : Int32, w_udic = true)
-  #   xlog = CV::QtranXlog.new(
-  #     input_hash: ihash, char_count: isize, viuser_id: _vu_id,
-  #     wn_dic: wn_dic, w_udic: w_udic,
-  #     mt_ver: 0_i16, cv_ner: false,
-  #     ts_sdk: false, ts_acc: false,
-  #   ).create!
-
-  #   time_now = Time.local
-  #   log_file = "var/ulogs/qtlog/#{time_now.to_s("%F")}.log"
-
-  #   File.open(log_file, "a", &.puts(xlog.to_json))
-  # end
+    render text: btran
+  end
 end

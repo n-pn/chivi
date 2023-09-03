@@ -15,14 +15,24 @@
   import Zhline from './MtPage/Zhline.svelte'
   import Cvline from './MtPage/Cvline.svelte'
 
-  type Data = { cvmtl: string; ztext: string; cdata: string; _algo: string }
+  interface Data {
+    ztext: string
+
+    mtl_1: string
+    txt_2: string
+
+    cdata: string
+    _algo: string
+  }
   export let data: Data
 
   let l_focus = 0
 
-  $: [cvmtl] = MtData.parse_cvmtl(data.cvmtl)
   $: ztext = data.ztext.trim().split('\n')
   $: cdata = data.cdata.trim().split('\n')
+
+  $: mtl_1 = MtData.parse_lines(data.mtl_1)
+  $: txt_2 = data.txt_2.trim().split('\n')
 
   $: zen_mode = $config.r_mode == 1
 </script>
@@ -56,7 +66,8 @@
         role="tooltip">
         {#if $config.show_z}<Zhline ztext={input} plain={zen_mode} />{/if}
         {#if $config.show_c}<div class="cdata">{cdata[index]}</div>{/if}
-        <Cvline input={cvmtl[index]} plain={zen_mode} />
+        <Cvline input={mtl_1[index]} plain={zen_mode} />
+        {#if $config.view_dual}<div class="txt_2">{txt_2[index]}</div>{/if}
       </svelte:element>
     {/each}
   </section>
@@ -65,10 +76,10 @@
 </article>
 
 <div hidden>
-  <button data-kbd="z" on:click={() => config.set_r_mode(1)}>Z</button>
+  <button data-kbd="f" on:click={() => config.set_r_mode(1)}>Z</button>
   <button data-kbd="d" on:click={() => config.set_r_mode(2)}>D</button>
-  <button data-kbd="a" on:click={() => config.toggle('show_z')}>A</button>
-  <button data-kbd="q" on:click={() => config.toggle('show_c')}>Q</button>
+  <button data-kbd="z" on:click={() => config.toggle('show_z')}>A</button>
+  <button data-kbd="c" on:click={() => config.toggle('show_c')}>Q</button>
 </div>
 
 <style lang="scss">
@@ -124,6 +135,14 @@
     font-size: 1rem;
     line-height: 1.4;
     margin-bottom: 0.25rem;
+  }
+
+  .txt_2 {
+    @include fgcolor(teal);
+    font-size: 0.85em;
+    line-height: 1.4;
+    margin-top: 0.25rem;
+    font-style: italic;
   }
 
   .stats {

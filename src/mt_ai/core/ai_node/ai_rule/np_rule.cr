@@ -41,8 +41,6 @@ module MT::AiRule
       when "NN", "NP"
         stem ||= node.last.zstr
         base.push(node)
-      when "ADVP"
-        base.insert(-2, node)
       else
         base.push(node)
       end

@@ -8,6 +8,10 @@ class M1::TranData
 
   TEXT_DIR = "var/wnapp/chtext"
 
+  def self.wntext_path(cpath : String)
+    "#{TEXT_DIR}/#{cpath}.txt"
+  end
+
   def self.load_cached(type : String, name : String, wn_id : Int32, format : String = "mtl")
     case type
     when "crits"

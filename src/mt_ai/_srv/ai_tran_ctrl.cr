@@ -28,11 +28,39 @@ class MT::AiTranCtrl < AC::Base
       cvmtl << '\n'
     end
 
-    output = {cvmtl: cvmtl.to_s, ztext: ztext.to_s, cdata: cdata, _algo: _algo}
+    if _cfg_enabled?("view_dual")
+      txt_2 = read_dual_txt(cpath, _read_cookie("dual_kind") || "bzv")
+    else
+      txt_2 = ""
+    end
+
+    output = {
+      ztext: ztext.to_s,
+
+      mtl_1: cvmtl.to_s,
+      txt_2: txt_2,
+
+      cdata: cdata,
+      _algo: _algo,
+
+    }
     render json: output
   rescue ex
-    puts ex
+    Log.error(exception: ex) { [cpath, _algo] }
     render 455, "Chương tiết chưa được phân tích!"
+  end
+
+  private def read_dual_txt(cpath : String, _kind : String = "bzv") : String
+    case _kind
+    when "bzv"
+      url = "#{CV_ENV.sp_host}/_sp/btran/wntext?cpath=#{cpath}"
+    when "old"
+      url = "#{CV_ENV.m1_host}/_m1/qtran/wntext?cpath=#{cpath}"
+    else
+      raise "invalid dual_kind #{_kind}"
+    end
+
+    HTTP::Client.get(url, &.body_io.gets_to_end)
   end
 
   private def read_con_data(cpath : String, _algo : String = "auto")

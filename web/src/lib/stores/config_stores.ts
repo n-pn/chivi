@@ -19,6 +19,9 @@ class ConfigData {
 
   c_algo = 'auto'
   c_auto = false
+
+  view_dual = false
+  dual_kind = 'bzv'
 }
 
 function load_config(): ConfigData {

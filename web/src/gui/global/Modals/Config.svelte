@@ -13,13 +13,21 @@
   ]
 
   // const textlhs = [150, 150, 150, 150]
-  // prettier-ignore
-  const r_modes = [['Thường', 0], ['Zen', 1], ['Dev', 2]]
+  const r_modes = [
+    ['Thường', 0],
+    ['Zen', 1],
+    ['Dev', 2],
+  ]
 
   const c_algos = [
     ['Hmeg', 'hmeg', 'Chọn mô-dun Ernie Gram'],
     ['Hmeb', 'hmeb', 'Chọn mô-đun Electra Base'],
     ['Auto', 'auto', 'Tự động chọn dữ liệu đang có sẵn'],
+  ]
+
+  const dual_kinds = [
+    ['MS Bing', 'bzv', 'Dịch máy từ Bing'],
+    ['Máy dịch V1', 'old', 'Dịch máy từ thuật toán cũ'],
   ]
 </script>
 
@@ -52,6 +60,9 @@
 
     write_cookie('c_algo', $data.c_algo)
     write_cookie('c_auto', $data.c_auto ? 't' : 'f')
+
+    write_cookie('view_dual', $data.view_dual ? 't' : 'f')
+    write_cookie('dual_kind', $data.dual_kind)
 
     write_cookie('theme', $data.wtheme)
   }
@@ -168,6 +179,33 @@
       <span class="switch-label">Luôn bật ô giải nghĩa:</span>
     </label>
   </config-item>
+
+  {#if $_user.privi > 2}
+    <config-sep />
+
+    <config-item>
+      <label class="switch">
+        <input type="checkbox" bind:checked={$data.view_dual} />
+        <span class="switch-label">Hiển thị song song nhiều kết quả:</span>
+      </label>
+    </config-item>
+
+    <config-item>
+      <field-label class="small">Lựa chọn:</field-label>
+      <field-input>
+        {#each dual_kinds as [label, value, chint]}
+          <label class:_active={value == $data.dual_kind} data-tip={chint}>
+            <input
+              type="radio"
+              name="dual_kind"
+              {value}
+              bind:group={$data.dual_kind} />
+            <span>{label}</span>
+          </label>
+        {/each}
+      </field-input>
+    </config-item>
+  {/if}
 
   <config-sep />
 

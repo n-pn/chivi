@@ -44,18 +44,30 @@ class M1::TranCtrl < AC::Base
   @[AC::Route::GET("/wnchap")]
   def tl_wnchap(cpath : String, wn_id : Int32 = 0, format = "mtl", label : String? = nil)
     qtran = TranData.load_cached("chaps", cpath, wn_id, format)
-
-    # spawn do
-    #   ihash = HashUtil.decode32(hash).to_u32.unsafe_as(Int32)
-    #   isize = qtran.input.size
-    #   log_tran_stats(ihash, isize, wn_id, w_udic: !@w_user.empty?)
-    # end
-
     cvmtl = qtran.cv_wrap(w_user: @w_user, w_init: @w_init) do |io, engine|
       cv_chap(io, engine, w_title: true, label: label)
     end
 
     render json: {cvmtl: cvmtl, ztext: qtran.input}
+  end
+
+  @[AC::Route::GET("/wntext")]
+  def qtran_wntext(cpath : String)
+    vtext = String.build do |io|
+      txt_path = TranData.wntext_path(cpath)
+
+      mt_v1 = MtCore.init(cpath.split('/').first.to_i)
+      first = true
+
+      File.each_line(txt_path) do |line|
+        io << '\n' unless first
+        data = first ? mt_v1.cv_title(line) : mt_v1.cv_plain(line)
+        data.to_txt(io)
+        first = false
+      end
+    end
+
+    render text: vtext
   end
 
   @[AC::Route::GET("/tl_btitle")]

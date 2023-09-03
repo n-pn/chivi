@@ -3,7 +3,15 @@ import { _pgidx } from '$lib/kit_path'
 
 import type { PageLoad } from './$types'
 
-type Data = { cvmtl: string; ztext: string; cdata: string; _algo: string }
+interface Data {
+  ztext: string
+
+  mtl_1: string
+  txt_2: string
+
+  cdata: string
+  _algo: string
+}
 
 export const load = (async ({ parent, params, fetch }) => {
   const { nvinfo, chdata } = await parent()
