@@ -40,4 +40,6 @@ module CV_ENV
   class_getter m1_host = "http://localhost:#{m1_port}"
   class_getter ai_host = "http://localhost:#{ai_port}"
   class_getter sp_host = "http://localhost:#{sp_port}"
+
+  class_getter lp_host = "http://localhost:5555"
 end

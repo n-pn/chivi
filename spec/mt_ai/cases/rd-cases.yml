@@ -1,0 +1,8 @@
+---
+- con: >-
+    (TOP (IP (PU “) (CP (IP (IP (VP (VNV (VV 说) (CD 一) (VV 说)))) (NP (PN 这)) (VP (ADVP (AD 已经)) (ADVP (AD 都)) (VP (VC 是) (QP (OD 第几) (CLP (M 次)))))) (SP 了)) (PU ！) (IP (NP (PN 我)) (VP (ADVP (AD 已经)) (PP (P 跟) (NP (PN 你))) (VP (VV 说过) (QP (CD 多少) (CLP (M 遍))))) (SP 了)) (PU ！) (IP (VP (IP (VP (ADVP (AD 不要)) (VP (VV 带) (NP (NN 人)) (IP (VP (VV 去) (VP (VV 看) (NP (NN 日出)))))))) (PU ！) (IP (VP (ADVP (AD 不要)) (VP (VV 带) (NP (NN 人)) (IP (VP (VV 去) (VP (VV 看) (NP (NN 日出)))))))))) (PU ！) (CP (IP (NP (NP (PN 你)) (NP (NN 孩子))) (VP (ADVP (AD 怎么)) (ADVP (AD 就)) (ADVP (AD 这么)) (ADVP (AD 不)) (VP (VV 听话)))) (SP 呢)) (PU ！) (PU ”)))
+  txt: >-
+    “Nói một nói đây đã đều là lần thứ mấy rồi!
+    Ta đã đã nói nhiều ít biến cùng ngươi rồi! Không cần mang người đi xem mặt trời mọc!
+    Không cần mang người đi xem mặt trời mọc! Hài tử ngươi thế nào liền không nghe lời như thế nè!”
+  pdict: fixture

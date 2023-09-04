@@ -87,16 +87,15 @@ class MT::AiData
 
     # pp nodes
 
-    case cpos
-    when "NP" then return {NpNode.new(nodes, cpos, from), _idx}
-    when "VP" then return {VpNode.new(nodes, cpos, from), _idx}
-    end
+    size = nodes.size
 
-    case nodes.size
-    when 1 then {M1Node.new(nodes[0], cpos, from), _idx}
-    when 2 then {M2Node.new(nodes[0], nodes[1], cpos, from), _idx}
-    when 3 then {M3Node.new(nodes[0], nodes[1], nodes[2], cpos, from), _idx}
-    else        {MxNode.new(nodes, cpos, from), _idx}
+    case
+    when size == 1    then {M1Node.new(nodes[0], cpos, from), _idx}
+    when cpos == "NP" then {NpNode.new(nodes, cpos, from), _idx}
+    when cpos == "VP" then {VpNode.new(nodes, cpos, from), _idx}
+    when size == 2    then {M2Node.new(nodes[0], nodes[1], cpos, from), _idx}
+    when size == 3    then {M3Node.new(nodes[0], nodes[1], nodes[2], cpos, from), _idx}
+    else                   {MxNode.new(nodes, cpos, from), _idx}
     end
   end
 end

@@ -17,10 +17,11 @@ module MT::TlUnit
   }
 
   EXTRA_STR = {
-    '来' => "chừng ",
-    '余' => "trên ",
-    '多' => "hơn ",
-    '第' => "thứ ",
+    '来' => "chừng",
+    '余' => "trên",
+    '多' => "hơn",
+    '第' => "thứ",
+    '几' => "mấy",
   }
 
   class Digit
@@ -106,6 +107,7 @@ module MT::TlUnit
 
     no_unit = true
     pre_str = ""
+    suf_str = ""
 
     zstr.each_char do |char|
       if char.in?('0'..'9')
@@ -113,9 +115,10 @@ module MT::TlUnit
       elsif char.in?('０'..'９')
         digits << Digit.new(char - 0xfee0) # to half width
       elsif extra = EXTRA_STR[char]?
-        pre_str = extra + pre_str
+        pre_str = pre_str.empty? ? extra : "#{pre_str} #{extra}"
       elsif !(int = HAN_TO_INT[char]?)
         Log.error { "#{char} not match any known type" }
+        pre_str = pre_str.empty? ? char.to_s : "#{pre_str} #{char}"
       elsif int >= 0
         digits << Digit.new('０' + int) # convert to full width form
       else
@@ -138,6 +141,8 @@ module MT::TlUnit
       end
     end
 
+    return pre_str if digits.empty?
+
     if digit_only
       render_pure_digit(digits, pre_str)
     elsif no_unit
@@ -149,7 +154,7 @@ module MT::TlUnit
 
   private def render_no_unit(digits : Array(Digit), pre_str : String)
     String.build do |io|
-      io << pre_str
+      io << pre_str << ' ' unless pre_str.empty?
       was_digit = false
 
       digits.each_with_index do |digit, index|

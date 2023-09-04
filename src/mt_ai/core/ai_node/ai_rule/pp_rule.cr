@@ -3,7 +3,7 @@ module MT::AiRule
     return node unless p_node = node.find_by_cpos("P")
     node.add_pecs!(p_node.pecs)
 
-    if term = dict.get_special?(p_node.zstr, stem)
+    if term = AiDict.get_special?(p_node.zstr, stem)
       p_node.set_vstr!(term.vstr)
       p_node.add_pecs!(term.pecs)
     end

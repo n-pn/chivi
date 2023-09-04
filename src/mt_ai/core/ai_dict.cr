@@ -66,8 +66,12 @@ class MT::AiDict
     end
   end
 
-  def get_special?(astr : String, bstr : String)
+  def self.get_special?(astr : String, bstr : String)
     Entry.special.get?(astr, bstr).try(&.[0])
+  end
+
+  def self.get_special?(astr : String, *bstr : String)
+    Entry.special.get?(astr, *bstr).try(&.[0])
   end
 
   ###########
@@ -94,6 +98,15 @@ class MT::AiDict
       return unless entry = @data[zstr]?
       return unless found = entry[cpos]?
       {found, @dtype.to_i}
+    end
+
+    def get?(zstr : String, *cpos_list : String)
+      return unless entry = @data[zstr]?
+
+      cpos_list.each do |cpos|
+        next unless found = entry[cpos]
+        return found
+      end
     end
 
     def any?(zstr : String)

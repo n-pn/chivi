@@ -20,11 +20,6 @@ class M1::TranCtrl < AC::Base
   def convert(wn_id : Int32 = 0, format = "mtl")
     input = request.body.try(&.gets_to_end) || ""
 
-    # if input.size > limit
-    #   render :bad_request, "Nội dung vượt quá giới hạn cho phép (#{input.size}/#{limit})"
-    #   return
-    # end
-
     qtran = TranData.new(input, wn_id, format)
     cvmtl = qtran.cv_wrap(_uname, w_init: @w_init, w_stat: false) do |io, engine|
       cv_post(io, engine)

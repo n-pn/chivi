@@ -13,7 +13,8 @@ puts data.zstr.colorize.cyan
 puts "--------------------------------".colorize.dark_gray
 puts MT::QtCore.tl_hvword(data.zstr, true).colorize.light_gray
 puts "--------------------------------".colorize.dark_gray
-pp data.root
+data.root.inspect(STDOUT)
+puts
 puts "--------------------------------".colorize.dark_gray
 puts data.to_txt.colorize.yellow
 

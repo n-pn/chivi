@@ -41,6 +41,9 @@ class MT::M3Node
     when "VPT"
       return unless @right.zstr == "住"
       @right.set_vstr!(vstr: "nổi")
+    when "VNV"
+      return unless @left.zstr == @right.zstr
+      @right.set_vstr!(vstr: "chút")
     end
   end
 

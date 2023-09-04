@@ -50,7 +50,7 @@ class MT::M2Node
   def fix_dnp!
     @flip = true
 
-    if right.cpos == "DEG" && ktetic?(left)
+    if right.cpos == "DEG" && possessive?(left)
       right.set_vstr!("của")
       right.off_pecs!(:void)
       # else
@@ -58,21 +58,19 @@ class MT::M2Node
     end
   end
 
-  private def ktetic?(node : AiNode)
+  private def possessive?(node : AiNode)
+    return true if node.pecs.npos? || node.pecs.nper?
+
     while node.cpos == "NP"
       # NOTE: remove recursion here?
       node = node.last
     end
 
     case node.cpos
-    when "NP", "NR"
-      true
-    when "PN"
-      node.pecs.nper? || node.pecs.npos?
-    when "NN", "NT"
-      !node.pecs.nadj?
-    else
-      false
+    when "NP", "NR" then true
+    when "PN"       then node.pecs.npos? || node.pecs.nper?
+    when "NN", "NT" then !node.pecs.ndes?
+    else                 false
     end
   end
 
