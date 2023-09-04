@@ -21,6 +21,10 @@ class M1::SpDict
     end
   end
 
+  def size
+    @hash.size
+  end
+
   def has?(key : String)
     @hash.has_key?(key)
   end
@@ -39,6 +43,10 @@ class M1::SpDict
     open_db do |db|
       db.query_each(sql, dict_id) do |rs|
         key, val, tag = rs.read(String, String, String)
+        File.open("var/mtdic/mt_ai/gold/temp/qverb.tsv", "a") do |file|
+          file << key << "\tM\t" << val << '\n'
+        end
+
         upsert(key, val, tag)
       end
     end

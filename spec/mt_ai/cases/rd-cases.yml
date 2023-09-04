@@ -15,3 +15,6 @@
     cởi bỏ quần áo của trên người, cụ thân thể này…… không có vết đạn. Mở vui đùa cái gì? Bản thân rõ ràng nhớ được viên đạn như vậy nhiều đối với bản thân bắn qua tới, tiền tiền hậu hậu đều có ah, chẳng lẽ lại là làm phẫu thuật chỉnh hình? , cụ thân thể này đều không là của bản thân, đặc thù tất cả đều đang biểu hiện ra dấu hiệu này, đặc biệt ở về sau hắn chiếu gương đồng là, trông thấy hình ảnh kia trong cái gương, liền có thể càng thêm xác nhận này một chút.
 
   pdict: fixture
+
+- con: >-
+    (TOP (IP (PU “) (IP (NP (PN 我们)) (VP (VV 能) (VP (VV 打赢) (NP (NN ＢＯＳＳ))))) (PU ，) (IP (ADVP (AD 但是)) (NP (DNP (NP (DP (DT 有些)) (NP (NN 路段))) (DEG 的)) (NP (NN 机制))) (VP (ADVP (AD 很)) (VP (VV 克制) (NP (DNP (NP (PN 我们)) (DEG 的)) (NP (NN 阵容)))))) (PU ，) (IP (NP (PN 我们)) (VP (VV 得) (VP (VP (VV 找) (NP (QP (CD 一) (CLP (M 条))) (CP (CP (IP (VP (ADVP (AD 更)) (VP (VA 稳)))) (DEC 的))) (NP (NN 路径)))) (VP (VV 进入) (NP (NN ＢＯＳＳ) (NN 房)))))) (PU 。) (PU ”)))
