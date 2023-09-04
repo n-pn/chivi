@@ -18,3 +18,6 @@
 
 - con: >-
     (TOP (IP (PU “) (IP (NP (PN 我们)) (VP (VV 能) (VP (VV 打赢) (NP (NN ＢＯＳＳ))))) (PU ，) (IP (ADVP (AD 但是)) (NP (DNP (NP (DP (DT 有些)) (NP (NN 路段))) (DEG 的)) (NP (NN 机制))) (VP (ADVP (AD 很)) (VP (VV 克制) (NP (DNP (NP (PN 我们)) (DEG 的)) (NP (NN 阵容)))))) (PU ，) (IP (NP (PN 我们)) (VP (VV 得) (VP (VP (VV 找) (NP (QP (CD 一) (CLP (M 条))) (CP (CP (IP (VP (ADVP (AD 更)) (VP (VA 稳)))) (DEC 的))) (NP (NN 路径)))) (VP (VV 进入) (NP (NN ＢＯＳＳ) (NN 房)))))) (PU 。) (PU ”)))
+
+- con: >-
+    (TOP (IP (PU “) (IP (VP (ADVP (AD 别)) (VP (VV 岔开) (NP (NN 话))))) (PU ，) (IP (NP (PN 别人)) (VP (VV 能) (VP (VV 做到)))) (PU ，) (IP (ADVP (AD 为什么)) (NP (PN 你)) (VP (ADVP (AD 不)) (VP (VV 能)))) (PU ，) (IP (NP (DNP (NP (PN 我们)) (DEG 的)) (NP (NN 团队) (NN 配置))) (VP (ADVP (AD 又)) (PP (P 不比) (NP (PN 他们))) (VP (VA 弱)))) (PU 。) (PU ”)))

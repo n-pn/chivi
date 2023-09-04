@@ -13,7 +13,7 @@ class MT::AiDict
     @@cache[pdict] ||= new(pdict)
   end
 
-  def initialize(pdict : String = "combined")
+  def initialize(pdict : String = "fixture")
     @main_dict = Entry.load(pdict)
     @auto_dict = Entry.new(pdict, :autogen)
 
@@ -134,6 +134,7 @@ class MT::AiDict
       File.each_line(db_path) do |line|
         cols = line.split('\t')
         next if cols.size < 3
+        # puts cols
         add(cols[0], cols[1], cols[2], cols[3]?)
       end
 
@@ -148,6 +149,9 @@ class MT::AiDict
         end
       end
 
+      self
+    rescue ex
+      pp [dname, ex]
       self
     end
 

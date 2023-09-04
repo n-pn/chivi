@@ -31,17 +31,20 @@ def import_gold_data
 
     MT::MtDefn.db("regular").open_tx do |db|
       query = <<-SQL
-      update defns set vstr = $1, pecs = $2, ipecs = $3
-      where zstr = $4 and cpos = $5
+        insert into defns(zstr, cpos, vstr, pecs, ipecs, _lock)
+        values ($1, $2, $3, $4, $5, 2)
+        on conflict(zstr, cpos) do update set vstr = $3, pecs = $4, ipecs = $5
       SQL
 
       input.each do |cols|
+        # pp cols
         zstr, cpos, vstr = cols
         pecs = cols[3]? || ""
 
         zstr = CharUtil.to_canon(zstr, true)
-        vstr = VietUtil.fix_tones(vstr)
-        db.exec query, vstr, pecs, MT::MtPecs.parse_list(pecs).to_i, zstr, cpos
+        vstr = vstr.empty? ? "" : VietUtil.fix_tones(vstr)
+        ipecs = pecs.empty? ? 0 : MT::MtPecs.parse_list(pecs).to_i
+        db.exec query, zstr, cpos, vstr, pecs, ipecs
       end
     end
   end
