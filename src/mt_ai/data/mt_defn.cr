@@ -10,13 +10,14 @@ class MT::MtDefn
       vstr varchar not null default '',
       pecs varchar not null default '',
 
-      uname varchar not null default '',
-      mtime bigint not null default 0,
-
       icpos int not null default 0,
       ipecs int not null default 0,
 
+      uname varchar not null default '',
+      mtime bigint not null default 0,
+
       _flag int not null default 0,
+      _lock int not null default 0,
 
       primary key (zstr, cpos)
     )
@@ -44,8 +45,10 @@ class MT::MtDefn
   field ipecs : Int32 = 0
 
   field _flag : Int32 = 0
+  field _lock : Int32 = 0
 
-  def initialize(@zstr, @cpos = "_", @vstr = "", @pecs = "")
+  def initialize(@zstr, @cpos = "_", @vstr = "", @pecs = "",
+                 @uname = "", @mtime = 0, @_flag = 0, @_lock = 0)
   end
 
   def before_upsert

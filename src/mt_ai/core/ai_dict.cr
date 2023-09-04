@@ -22,7 +22,7 @@ class MT::AiDict
       @main_dict,
       Entry.regular,
       @auto_dict,
-      Entry.suggest,
+      # Entry.suggest,
     }
   end
 
@@ -119,12 +119,12 @@ class MT::AiDict
 
     def add(zstr : String, cpos : String, vstr : String, pecs : String | Nil) : MtTerm
       entry = @data[zstr] ||= {} of String => MtTerm
-      entry[cpos] = MtTerm.new(vstr, MtPecs.parse_list(pecs), zstr.size)
+      entry[cpos] = MtTerm.new(vstr, pecs: MtPecs.parse_list(pecs))
     end
 
     def add(zstr : String, cpos : String, vstr : String, pecs : MtPecs = :none) : MtTerm
       entry = @data[zstr] ||= {} of String => MtTerm
-      entry[cpos] = MtTerm.new(vstr, pecs, zstr.size)
+      entry[cpos] = MtTerm.new(vstr, pecs)
     end
 
     def load_tsv!(dname : String = @dname)
@@ -133,7 +133,8 @@ class MT::AiDict
 
       File.each_line(db_path) do |line|
         cols = line.split('\t')
-        add(cols[0], cols[1], cols[2], cols[3]?) if cols.size > 2
+        next if cols.size < 3
+        add(cols[0], cols[1], cols[2], cols[3]?)
       end
 
       self
@@ -141,9 +142,9 @@ class MT::AiDict
 
     def load_db3!(dname : String = @dname)
       MtDefn.db(dname).open_ro do |db|
-        db.query_each("select zstr, cpos, vstr, pecs from defns") do |rs|
-          zstr, cpos, vstr, pecs = rs.read(String, String, String, String)
-          add(zstr, cpos, vstr, pecs)
+        db.query_each("select zstr, cpos, vstr, ipecs from defns") do |rs|
+          zstr, cpos, vstr, pecs = rs.read(String, String, String, Int32)
+          add(zstr, cpos, vstr, MtPecs.new(pecs))
         end
       end
 

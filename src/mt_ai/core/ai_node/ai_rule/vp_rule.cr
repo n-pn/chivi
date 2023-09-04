@@ -27,7 +27,7 @@ module MT::AiRule
         node = heal_advp!(dict, node)
         if after_obj
           base.push(node)
-        elsif node.pecs.post?
+        elsif node.pecs.at_t?
           tail.unshift(node)
         else
           head.push(node)
@@ -37,7 +37,7 @@ module MT::AiRule
 
         if after_obj
           base.push(node)
-        elsif node.pecs.post?
+        elsif node.pecs.at_t?
           tail.unshift(node)
         else
           head.push(node)

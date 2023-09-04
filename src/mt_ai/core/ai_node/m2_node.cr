@@ -33,13 +33,15 @@ class MT::M2Node
     when "DVP" then fix_dvp!
     when "DNP" then fix_dnp!
     when "LCP" then fix_lcp!
+    when "DP"
+      @flip = !@left.pecs.at_h?
     when "QP"
       @flip = @left.cpos == "OD"
     end
   end
 
   def fix_lcp!
-    @flip = !right.pecs.post?
+    @flip = !right.pecs.at_t?
   end
 
   def fix_dvp!
@@ -48,13 +50,14 @@ class MT::M2Node
   end
 
   def fix_dnp!
+    @pecs = :at_h if @left.pecs.at_h?
     @flip = true
 
     if right.cpos == "DEG" && possessive?(left)
       right.set_vstr!("của")
       right.off_pecs!(:void)
       # else
-      # right.set_term!(MtTerm.new("", MtPecs[:void, :post]))
+      # right.set_term!(MtTerm.new("", MtPecs[:void, :at_t]))
     end
   end
 

@@ -77,14 +77,19 @@ class MT::NpNode
         # TODO: check special case
         data.insert(i_hd, node)
         i_hd &+= 1
+      when "CD"
+        data.insert(i_hd, node)
+        i_hd &+= 1
+      when "OD"
+        data.insert(i_tl, node)
+        i_tl &-= 1
       when "QP"
         q_node = node.find_by_cpos("M")
         data.insert(i_hd, node)
         i_hd &+= 1
       when "DP"
         dt_node, mq_node = AiRule.split_dp(node)
-
-        if dt_node.pecs.prep?
+        if dt_node.pecs.at_h?
           data.insert(i_hd, dt_node)
           i_hd &+= 1
         else
@@ -100,8 +105,9 @@ class MT::NpNode
         # FIXME: split phrase if first element is CD
         data.insert(i_hd, node)
       when "DNP"
-        if node.pecs.prep?
+        if node.pecs.at_h?
           data.insert(i_hd, node)
+          i_hd &+= 1
         else
           data.insert(i_tl, node)
           i_tl &-= 1
@@ -122,7 +128,7 @@ class MT::NpNode
       when "CC"
         data.insert(i_tl, node)
         i_hd = data.size &+ i_tl &+ 1
-      when "PRN", "ETC"
+      when "PRN", "ETC", "FLR"
         data.insert(i_tl, node)
         i_hd = data.size &+ i_tl &+ 1
       when "NN", "NP", "NR"

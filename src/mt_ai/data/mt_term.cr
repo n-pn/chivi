@@ -9,7 +9,7 @@ struct MT::MtTerm
   end
 
   # def to_txt(io : IO, apply_cap : Bool, pad_space : Bool)
-  #   io << ' ' if pad_space && !(@pecs.void? || @pecs.nwsl?)
+  #   io << ' ' if pad_space && !(@pecs.void? || @pecs.padb?)
   #   render(io, apply_cap, pad_space)
   # end
 
@@ -21,13 +21,13 @@ struct MT::MtTerm
   #     io << @vstr
   #   when !cap || @pecs.ncap?
   #     io << @vstr
-  #     cap = @pecs.capr?
+  #     cap = @pecs.capn?
   #   else
   #     @vstr.each_char_with_index { |c, i| io << (i == 0 ? c.upcase : c) }
-  #     cap = @pecs.capr?
+  #     cap = @pecs.capn?
   #   end
 
-  #   {cap, @pecs.void? ? pad : !@pecs.nwsr?}
+  #   {cap, @pecs.void? ? pad : !@pecs.padn?}
   # end
 
   ###

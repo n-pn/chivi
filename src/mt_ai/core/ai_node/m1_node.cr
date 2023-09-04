@@ -13,13 +13,15 @@ class MT::M1Node
     if found = dict.get?(@zstr, @cpos)
       self.set_term!(*found)
     else
-      node.tl_phrase!(dict: dict)
+      @node.tl_phrase!(dict: dict)
+      @pecs = @node.pecs
     end
   end
 
   @[AlwaysInline]
   def tl_word!(dict : AiDict)
     @node.tl_word!(dict)
+    @pecs = @node.pecs
   end
 
   ###

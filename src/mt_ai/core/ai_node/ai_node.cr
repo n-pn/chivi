@@ -10,7 +10,6 @@ module MT::AiNode
 
   getter _dic : Int32 = -1
   getter _idx : Int32 = 0
-  getter _len : Int32 = 0
 
   abstract def z_each(& : AiNode ->)
   abstract def v_each(& : AiNode ->)
@@ -41,7 +40,6 @@ module MT::AiNode
   def set_term!(term, @_dic : Int32 = 1) : Nil
     @vstr = term.vstr
     @pecs = term.pecs
-    @_len = term._len
   end
 
   def set_vstr!(@vstr : String, @_dic : Int32 = 1) : Nil
@@ -62,6 +60,8 @@ module MT::AiNode
     io << @cpos.colorize.bold
     # io << ':' << @_idx
     inspect_inner(io)
+
+    io << ' ' << @pecs unless @pecs.none?
     io << ')'.colorize.dark_gray
   end
 
@@ -94,7 +94,7 @@ module MT::AiNode
       io << '\t'
 
       cap, pad = @pecs.to_str(io, @vstr, cap, pad)
-      io << SEP << @_dic << SEP << @_idx << SEP << @_len
+      io << SEP << @_dic << SEP << @_idx << SEP << @zstr.size
       {cap, pad}
     elsif self.is_a?(M0Node)
       raise "translation missing!"

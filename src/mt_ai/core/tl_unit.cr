@@ -172,7 +172,7 @@ module MT::TlUnit
     # pp digits.colorize.blue
 
     String.build do |io|
-      io << pre_str
+      io << pre_str << ' ' unless pre_str.empty?
       prev_unit = 0
 
       digits.each do |digit|
@@ -189,7 +189,7 @@ module MT::TlUnit
     # pp digits
 
     String.build do |io|
-      io << pre_str
+      io << pre_str << ' ' unless pre_str.empty?
 
       prev = digits.unsafe_fetch(0)
       was_digit = prev.pure_digit?
