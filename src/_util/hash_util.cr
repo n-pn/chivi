@@ -91,6 +91,10 @@ module HashUtil
   PRIME_32 =   16777619_u32
   MASK_32  = 4294967295_u32
 
+  BASIS_64 =   0xcbf29ce484222325_u64
+  PRIME_64 =            1099511628211
+  MASK_64  = 18446744073709551615_u64
+
   def fnv_1a(inp : String) : UInt32
     hash = BASIS_32
 
@@ -98,6 +102,18 @@ module HashUtil
       hash ^= byte
       hash = hash &* PRIME_32
       hash &= MASK_32
+    end
+
+    hash
+  end
+
+  def fnv_1a_64(inp : String) : UInt64
+    hash = BASIS_64
+
+    inp.each_byte do |byte|
+      hash ^= byte
+      hash = hash &* PRIME_64
+      hash &= MASK_64
     end
 
     hash

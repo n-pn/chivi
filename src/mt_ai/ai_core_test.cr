@@ -128,7 +128,7 @@ end
 
 start = Time.monotonic
 
-CORE = MT::AiCore.new("fixture")
+CORE = MT::AiCore.new("rand/fixture")
 
 puts do_test(TEST1)
 puts do_test(TEST2)

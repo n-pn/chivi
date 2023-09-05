@@ -13,16 +13,15 @@ class MT::AiDict
     @@cache[pdict] ||= new(pdict)
   end
 
-  def initialize(pdict : String = "fixture")
+  def initialize(pdict : String = "combined")
     @main_dict = Entry.load(pdict)
     @auto_dict = Entry.new(pdict, :autogen)
 
     @dict_list = {
-      Entry.essence,
       @main_dict,
       Entry.regular,
       @auto_dict,
-      # Entry.suggest,
+      Entry.suggest,
     }
   end
 
@@ -151,7 +150,6 @@ class MT::AiDict
 
       self
     rescue ex
-      pp [dname, ex]
       self
     end
 

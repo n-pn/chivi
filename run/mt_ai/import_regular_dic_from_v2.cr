@@ -21,9 +21,6 @@ struct Input
   getter mtime : Int64
   getter _flag : Int32
 
-  def fix_input!
-  end
-
   def to_terms(_lock = 2)
     @zstr = CharUtil.to_canon(@zstr, true)
     @vstr = @vstr == "⛶" ? "" : @vstr.strip

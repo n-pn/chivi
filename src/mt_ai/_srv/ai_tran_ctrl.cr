@@ -52,7 +52,7 @@ class MT::AiTranCtrl < AC::Base
   end
 
   @[AC::Route::GET("/debug/ztext")]
-  def debug(ztext : String, pdict : String = "fixture")
+  def debug(ztext : String, pdict : String = "rand/fixture")
     _algo = _read_cookie("c_algo") || "auto"
     cdata = AiTranUtil.get_con_data_from_hanlp(ztext, _algo)
 
@@ -71,7 +71,7 @@ class MT::AiTranCtrl < AC::Base
   end
 
   @[AC::Route::GET("/debug/cdata")]
-  def debug(cdata : String, pdict : String = "fixture")
+  def debug(cdata : String, pdict : String = "rand/fixture")
     aidata = AiCore.new(pdict, true).tl_from_con_data(cdata)
 
     output = {

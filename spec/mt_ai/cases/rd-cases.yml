@@ -5,7 +5,7 @@
     “Nói một nói đây đã đều là lần thứ mấy rồi!
     Ta đã đã nói nhiều ít biến cùng ngươi rồi! Không cần mang người đi xem mặt trời mọc!
     Không cần mang người đi xem mặt trời mọc! Hài tử ngươi thế nào liền không nghe lời như thế nè!”
-  pdict: fixture
+  pdict: rand/fixture
 
 - con: >-
     (TOP (IP (IP (NP (PN 他)) (VP (VV 看) (AS 了) (VV 看) (NP (QP (CD 两) (CLP (M 只))) (CP (CP (IP (VP (VV 显得) (VP (VA 苍白)))) (DEC 的))) (NP (NN 手))))) (PU ，) (IP (NP (NT 片刻)) (PU ，) (ADVP (AD 才)) (VP (VP (PP (P 在) (LCP (NP (NN 桌椅)) (LC 前))) (VP (VV 坐下))) (PU ，) (VP (VV 解开) (NP (DNP (NP (NN 身上)) (DEG 的)) (NP (NN 衣服)))))) (PU ，) (NP (DP (DT 这) (CLP (M 具))) (NP (NN 身体))) (PU ……) (IP (VP (VE 没有) (NP (NN 弹孔)))) (PU 。) (IP (VP (VV 开) (NP (DP (DT 什么)) (NP (NN 玩笑))))) (PU ？) (IP (NP (PN 自己)) (VP (ADVP (AD 明明)) (VP (VV 记得) (CP (IP (NP (ADJP (ADVP (AD 那么)) (ADJP (JJ 多))) (NP (NN 子弹))) (VP (PP (P 对着) (NP (PN 自己))) (VP (VRD (VV 射) (VV 过来))))) (SP 的))))) (PU ，) (CP (IP (ADVP (NN 前前后后)) (ADVP (AD 都)) (VP (VE 有))) (SP 啊)) (PU ，) (IP (VP (ADVP (AD 难不成)) (VP (VC 是) (VP (VV 做) (AS 了) (NP (NN 整形) (NN 手术)))))) (PU ？) (IP (ADVP (VA 不对)) (PU ，) (NP (DP (DT 这) (CLP (M 具))) (NP (NN 身体))) (VP (ADVP (AD 都)) (ADVP (AD 不)) (VP (VC 是) (NP (DNP (NP (PN 自己)) (DEG 的)))))) (PU ，) (IP (NP (DNP (DP (DT 所有)) (DEG 的)) (NP (NN 特征))) (VP (ADVP (AD 都)) (ADVP (AD 在)) (VP (VRD (VV 表现) (VV 出)) (NP (DP (DT 这个)) (NP (NN 迹象)))))) (PU ，) (IP (PP (ADVP (AD 特别)) (LCP (VC 是) (PP (P 在) (LCP (IP (NP (PN 他)) (VP (VV 照) (AS 了) (NP (NN 铜镜)))) (LC 之后))))) (PU ，) (VP (IP (VP (VV 看见) (NP (DNP (LCP (NP (NN 镜子)) (LC 里)) (DEG 的)) (DP (DT 那个)) (NP (NN 影像))))) (PU ，) (ADVP (AD 就)) (VP (VV 能) (VP (ADVP (AD 更加)) (VP (VV 确认) (DP (DT 这) (QP (CD 一点)))))))) (PU 。)))
@@ -14,7 +14,7 @@
     Hắn xem xem hai chỉ bàn tay lộ ra tái nhợt, khoảnh khắc, mới ở bàn ghế trước ngồi xuống,
     cởi bỏ quần áo của trên người, cụ thân thể này…… không có vết đạn. Mở vui đùa cái gì? Bản thân rõ ràng nhớ được viên đạn như vậy nhiều đối với bản thân bắn qua tới, tiền tiền hậu hậu đều có ah, chẳng lẽ lại là làm phẫu thuật chỉnh hình? , cụ thân thể này đều không là của bản thân, đặc thù tất cả đều đang biểu hiện ra dấu hiệu này, đặc biệt ở về sau hắn chiếu gương đồng là, trông thấy hình ảnh kia trong cái gương, liền có thể càng thêm xác nhận này một chút.
 
-  pdict: fixture
+  pdict: rand/fixture
 
 - con: >-
     (TOP (IP (PU “) (IP (NP (PN 我们)) (VP (VV 能) (VP (VV 打赢) (NP (NN ＢＯＳＳ))))) (PU ，) (IP (ADVP (AD 但是)) (NP (DNP (NP (DP (DT 有些)) (NP (NN 路段))) (DEG 的)) (NP (NN 机制))) (VP (ADVP (AD 很)) (VP (VV 克制) (NP (DNP (NP (PN 我们)) (DEG 的)) (NP (NN 阵容)))))) (PU ，) (IP (NP (PN 我们)) (VP (VV 得) (VP (VP (VV 找) (NP (QP (CD 一) (CLP (M 条))) (CP (CP (IP (VP (ADVP (AD 更)) (VP (VA 稳)))) (DEC 的))) (NP (NN 路径)))) (VP (VV 进入) (NP (NN ＢＯＳＳ) (NN 房)))))) (PU 。) (PU ”)))

@@ -13,7 +13,7 @@
   import MtData from '$lib/mt_data'
 
   import Zhline from './MtPage/Zhline.svelte'
-  import Cvline from './MtPage/Cvline.svelte'
+  import Cvline from './MtPage/Cvline2.svelte'
 
   interface Data {
     ztext: string
