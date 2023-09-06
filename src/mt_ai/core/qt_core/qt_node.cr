@@ -1,5 +1,5 @@
 # require "../shared/mt_output"
-require "../../data/db_term"
+require "../../data/vi_term"
 
 struct MT::QtNode
   getter vstr : String

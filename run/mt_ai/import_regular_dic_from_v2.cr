@@ -1,6 +1,6 @@
 require "../../src/_util/char_util"
 require "../../src/_util/viet_util"
-require "../../src/mt_ai/data/db_term"
+require "../../src/mt_ai/data/vi_term"
 
 INP_PATH = "var/mtdic/fixed/common-main.dic"
 
@@ -45,7 +45,7 @@ struct Input
   end
 
   def gen_term(cpos : String, vstr : String, privi = 2)
-    term = MT::DbTerm.new(
+    term = MT::ViTerm.new(
       zstr: @zstr, cpos: cpos,
       vstr: vstr, prop: map_prop(cpos),
     )
@@ -111,10 +111,10 @@ output.uniq! { |x| {x.zstr, x.cpos} }
 regular, suggest = output.partition(&.privi.> 1)
 puts output.size, regular.size, suggest.size
 
-MT::DbTerm.db("regular").open_tx do |db|
+MT::ViTerm.db("regular").open_tx do |db|
   regular.each(&.upsert!(db: db))
 end
 
-MT::DbTerm.db("suggest").open_tx do |db|
+MT::ViTerm.db("suggest").open_tx do |db|
   suggest.each(&.upsert!(db: db))
 end

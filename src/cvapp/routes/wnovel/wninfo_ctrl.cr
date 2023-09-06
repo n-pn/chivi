@@ -116,7 +116,7 @@ class CV::WninfoCtrl < CV::BaseCtrl
     _log_action("wninfo-upsert", form)
 
     Wnlink.upsert!(nvinfo.id, form.origins)
-    spawn M1::DbDict.init_wn_dict!(nvinfo.id, nvinfo.bslug, nvinfo.btitle_vi)
+    spawn M1::ViDict.init_wn_dict!(nvinfo.id, nvinfo.bslug, nvinfo.btitle_vi)
 
     render json: {id: nvinfo.id, bslug: nvinfo.bslug}
   rescue ex

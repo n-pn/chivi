@@ -29,9 +29,9 @@ pages.times do |block|
 
   PGDB.exec "commit"
 
-  M1::DbDict.open_tx do |db|
+  M1::ViDict.open_tx do |db|
     outputs.each do |_yb_id, wn_id, bslug, vname|
-      M1::DbDict.upsert_wn_dict(db, wn_id, bslug, vname) rescue nil
+      M1::ViDict.upsert_wn_dict(db, wn_id, bslug, vname) rescue nil
     end
   end
 

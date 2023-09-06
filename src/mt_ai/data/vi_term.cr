@@ -5,7 +5,7 @@ require "../../_util/viet_util"
 require "./mt_cpos"
 require "./mt_prop"
 
-class MT::DbTerm
+class MT::ViTerm
   class_getter init_sql = <<-SQL
     create table terms(
       zstr varchar not null,
@@ -100,7 +100,7 @@ class MT::DbTerm
       jb.field "prop", @prop
 
       jb.field "uname", @uname
-      jb.field "mtime", self.class.rtime(@mtime)
+      jb.field "mtime", self.class.utime(@mtime)
       jb.field "privi", @privi
     end
   end

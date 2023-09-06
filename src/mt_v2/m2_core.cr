@@ -9,7 +9,7 @@
 
 # class M2::Engine
 #   def self.new(udict : String, user : String? = nil, temp : Bool = false)
-#     new(-DbDict.get_id(udict), user: user, temp: temp)
+#     new(-ViDict.get_id(udict), user: user, temp: temp)
 #   end
 
 #   def initialize(udict : Int32 = 0, user : String? = nil, temp : Bool = false)

@@ -86,7 +86,7 @@ class M1::DbDefn
   end
 
   def dic=(dname : String)
-    @dic = DbDict.get_id(dname)
+    @dic = ViDict.get_id(dname)
   end
 
   def val=(vals : Array(String))

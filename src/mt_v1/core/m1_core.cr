@@ -21,7 +21,7 @@ class M1::MtCore
   end
 
   def self.init(dname : String, user : String = "") : self
-    init(DbDict.get_id(dname), user: user)
+    init(ViDict.get_id(dname), user: user)
   end
 
   def initialize(@dicts : Array(MtDict))

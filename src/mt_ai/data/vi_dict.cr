@@ -1,6 +1,6 @@
 require "crorm"
 
-class MT::DbDict
+class MT::ViDict
   enum Dtype
     None = 0
     Core = 1
@@ -13,13 +13,14 @@ class MT::DbDict
       case dname
       when .starts_with?("book") then Book
       when .starts_with?("priv") then Priv
-      when .starts_with?("Rand") then Rand
+      when .starts_with?("rand") then Rand
       else                            Uniq
       end
     end
   end
 
-  class_getter db_path = "var/mtapp/ai_dicts.db3"
+  class_getter db_path = "var/mtapp/mt_ai/vi_dicts.db3"
+
   class_getter init_sql : String = <<-SQL
     CREATE TABLE IF NOT EXISTS dicts (
       dname varchar NOT NULL primary key,
@@ -50,9 +51,11 @@ class MT::DbDict
   field label : String = ""
   field descs : String = ""
 
-  field users : String = ""
   field total : Int32 = 0
-  field mtime : Int64 = 0
+  field mtime : Int32 = 0
+  field users : String = ""
+
+  field _flag : Int32 = 0
 
   def initialize(@dname, dtype : Dtype = Dtype.from_name(dname))
     @dtype = dtype.to_i
@@ -116,7 +119,7 @@ class MT::DbDict
     end
   end
 
-  def self.init(wn_id : Int32, bname : String, db = self.db)
+  def self.init_book_dict!(wn_id : Int32, bname : String, db = self.db)
     query = @@schema.upsert_stmt(keep_fields: %w(label descs))
 
     self.new(

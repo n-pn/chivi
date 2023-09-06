@@ -6,7 +6,7 @@ class MT::AiTranCtrl < AC::Base
   base "/_ai/qtran"
 
   @[AC::Route::GET("/wnchap")]
-  def wn_chap(cpath : String, pdict : String = "combined", _mode : Int32 = 0)
+  def wn_chap(cpath : String, pdict : String = "combine", _mode : Int32 = 0)
     _algo = _read_cookie("c_algo") || "auto"
     _auto = _cfg_enabled?("c_auto") && _privi > 1
 
@@ -22,7 +22,7 @@ class MT::AiTranCtrl < AC::Base
       data = ai_mt.tl_from_con_data(line)
 
       ztext << data.zstr
-      data.to_mtl(io: cvmtl, cap: true, udt: true)
+      data.to_mtl(io: cvmtl, cap: true, und: true)
 
       ztext << '\n'
       cvmtl << '\n'

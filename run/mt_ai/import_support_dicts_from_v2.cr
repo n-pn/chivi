@@ -1,4 +1,4 @@
-require "../../src/mt_ai/data/db_term"
+require "../../src/mt_ai/data/vi_term"
 
 struct Input
   include DB::Serializable
@@ -15,7 +15,7 @@ struct Input
   def to_term(privi = 3)
     vstr = @vstr.split(SPLIT).first.strip
 
-    term = MT::DbTerm.new(
+    term = MT::ViTerm.new(
       zstr: @zstr, cpos: "_",
       vstr: vstr, prop: MT::MtProp::None,
     )
@@ -34,7 +34,7 @@ end
 
 puts hv_names.size
 
-MT::DbTerm.db("core/hv_name").open_tx do |db|
+MT::ViTerm.db("hv_name").open_tx do |db|
   hv_names.each(&.to_term.upsert!(db: db))
 end
 
@@ -44,7 +44,7 @@ end
 
 puts hv_words.size
 
-MT::DbTerm.db("core/hv_word").open_tx do |db|
+MT::ViTerm.db("hv_word").open_tx do |db|
   hv_words.each(&.to_term.upsert!(db: db))
 end
 
@@ -54,6 +54,6 @@ end
 
 puts pin_yins.size
 
-MT::DbTerm.db("core/pin_yin").open_tx do |db|
+MT::ViTerm.db("pin_yin").open_tx do |db|
   pin_yins.each(&.to_term.upsert!(db: db))
 end

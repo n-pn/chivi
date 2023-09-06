@@ -10,9 +10,9 @@ class M1::DictCtrl < AC::Base
   def index
     pg_no, limit, offset = _paginate(min: 20, max: 50)
 
-    cores = DbDict.all_cores
-    books = DbDict.all_books(limit: limit, offset: offset)
-    total = DbDict.books_count
+    cores = ViDict.all_cores
+    books = ViDict.all_books(limit: limit, offset: offset)
+    total = ViDict.books_count
 
     output = {
       cores: cores,
@@ -26,7 +26,7 @@ class M1::DictCtrl < AC::Base
   end
 
   private def get_dict(dname : String)
-    DbDict.find(dname) || raise NotFound.new("Từ điển không tồn tại!")
+    ViDict.find(dname) || raise NotFound.new("Từ điển không tồn tại!")
   end
 
   @[AC::Route::GET("/:name")]
@@ -51,7 +51,7 @@ class M1::DictCtrl < AC::Base
 
   @[AC::Route::PUT("/")]
   def upsert(wn_id : Int32, bslug : String, bname : String)
-    DbDict.init_wn_dict!(wn_id, bslug, bname)
+    ViDict.init_wn_dict!(wn_id, bslug, bname)
     render text: wn_id
   end
 

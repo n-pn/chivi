@@ -1,6 +1,6 @@
 require "crorm"
 
-class M1::DbDict
+class M1::ViDict
   class_getter db_path = "var/mtapp/v1dic/dicts_v1.db"
   class_getter init_sql : String = {{ read_file("#{__DIR__}/sql/dicts_v1.sql") }}
 

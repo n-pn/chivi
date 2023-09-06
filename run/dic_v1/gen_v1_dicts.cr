@@ -11,9 +11,7 @@ require "../../src/mt_v1/data/v1_dict"
 # }
 
 # others = {
-#   {-10, "hanviet", "Hán việt", "Từ điển phiên âm Hán Việt", 3},
-#   {-11, "pin_yin", "Bính âm", "Từ điển bính âm (pinyin)", 3},
-#   {-12, "surname", "Họ tiếng Trung", "Từ điển họ phổ biến tiếng Trung", 3},
+
 # }
 
 # cvmtls = {
@@ -31,23 +29,22 @@ require "../../src/mt_v1/data/v1_dict"
 #   {-31, "verb_obj", "Động từ ly hợp", "Cụm động tân có thể tạo thành cấu trúc ly hợp, biểu hiện kỹ năng", 3},
 # }
 
-# basics.each { |x| M1::DbDict.new(*x, dtype: 0).save! }
-# others.each { |x| M1::DbDict.new(*x, dtype: 1).save! }
-# cvmtls.each { |x| M1::DbDict.new(*x, dtype: 2).save! }
+# basics.each { |x| M1::ViDict.new(*x, dtype: 0).save! }
+# others.each { |x| M1::ViDict.new(*x, dtype: 1).save! }
+# cvmtls.each { |x| M1::ViDict.new(*x, dtype: 2).save! }
 
-dicts = [] of M1::DbDict
+dicts = [] of M1::ViDict
 
 select_sql = <<-SQL
   select id::int, bslug, btitle_vi as vname from wninfos where id > 0 order by id asc
 SQL
 
-DB.open(CV_ENV.database_url) do |db|
-  db.query_each(select_sql) do |rs|
-    id, bslug, bname = rs.read(Int32, String, String)
-    dicts << M1::DbDict.init_wn_dict(id, bslug, bname)
-  end
+inputs = DB.open(CV_ENV.database_url) do |db|
+  db.query_all(select_sql, as: {Int32, String, String})
 end
 
-M1::DbDict.open_tx do |db|
-  dicts.each(&.tap { |x| puts x.dname }.upsert!(db))
+M1::ViDict.db.open_tx do |db|
+  inputs.each do |wn_id, bslug, bname|
+    M1::ViDict.init_wn_dict!(wn_id, bslug, bname, db)
+  end
 end

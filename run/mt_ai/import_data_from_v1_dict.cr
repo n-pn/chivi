@@ -1,4 +1,4 @@
-require "../../src/mt_ai/data/db_term"
+require "../../src/mt_ai/data/vi_term"
 
 INP_PATH = "/2tb/app.chivi/var/mtapp/v1dic/v1_defns.dic"
 
@@ -24,7 +24,7 @@ struct Input
     vstr = @val.split(SPLIT).first.strip
     cpos, prop = map_tag(@ptag)
 
-    term = MT::DbTerm.new(
+    term = MT::ViTerm.new(
       zstr: @key, cpos: cpos,
       vstr: vstr, prop: prop,
     )
@@ -172,7 +172,7 @@ inputs.keys.sort!.each do |d_id|
   entries.uniq! { |x| {x.key, x.ptag} }.reject!(&.rank.== 0)
   entries.sort_by!(&.mtime)
 
-  MT::DbTerm.db("book/#{d_id}").open_tx do |db|
+  MT::ViTerm.db("book/#{d_id}").open_tx do |db|
     entries.each(&.to_term.upsert!(db: db))
   end
 

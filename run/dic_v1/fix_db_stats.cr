@@ -1,7 +1,7 @@
 require "../../src/mt_v1/data/v1_dict"
 require "../../src/mt_v1/data/v1_defn"
 
-dict_ids = M1::DbDict.repo.open_db(&.query_all "select id from dicts", as: Int32)
+dict_ids = M1::ViDict.repo.open_db(&.query_all "select id from dicts", as: Int32)
 
 output = [] of Array(DB::Any)
 M1::DbDefn.repo.open_db do |db|
@@ -23,7 +23,7 @@ M1::DbDefn.repo.open_db do |db|
   end
 end
 
-M1::DbDict.repo.open_tx do |db|
+M1::ViDict.repo.open_tx do |db|
   query = <<-SQL
     update dicts set
       term_total = ?, term_avail = ?,

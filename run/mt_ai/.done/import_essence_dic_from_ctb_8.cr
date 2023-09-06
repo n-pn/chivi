@@ -1,5 +1,5 @@
 # require "../../src/_util/char_util"
-# require "../../src/mt_ai/data/db_term"
+# require "../../src/mt_ai/data/vi_term"
 
 # DB_PATH = "var/mtdic/specs.db3"
 
@@ -68,12 +68,12 @@
 #   end
 # end
 
-# output = [] of MT::DbTerm
+# output = [] of MT::ViTerm
 
-# senses = MT::DbTerm.all_defs("base-main")
+# senses = MT::ViTerm.all_defs("base-main")
 
 # inputs.each do |zstr, cpos|
-#   term = MT::DbTerm.new(zstr, cpos)
+#   term = MT::ViTerm.new(zstr, cpos)
 
 #   if sense = senses[zstr]?
 #     term.vstr = sense[cpos]? || sense["_"]
@@ -88,6 +88,6 @@
 #   output << term
 # end
 
-# MT::DbTerm.db("essence").open_tx do |db|
+# MT::ViTerm.db("essence").open_tx do |db|
 #   output.each(&.upsert!(db: db))
 # end

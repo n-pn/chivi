@@ -44,7 +44,7 @@ class M1::DefnCtrl < AC::Base
 
       if dic = _get_str("dic")
         sql << " and dic = ?"
-        args << DbDict.get_id(dic)
+        args << ViDict.get_id(dic)
       end
 
       if tab = _get_int("tab")
@@ -118,7 +118,7 @@ class M1::DefnCtrl < AC::Base
   end
 
   private def update_stats(defn : DbDefn)
-    dict = DbDict.load(defn.dic)
+    dict = ViDict.load(defn.dic)
     dict.update_after_term_added!(defn.mtime)
   rescue ex
     Log.error { ex.message }

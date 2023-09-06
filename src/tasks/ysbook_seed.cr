@@ -27,9 +27,9 @@ SELECT_SQL = ZR::Ysbook.schema.select_stmt { |stmt| stmt << "where id >= $1 and 
 
   PGDB.exec "commit"
 
-  M1::DbDict.db.open_tx do |db|
+  M1::ViDict.db.open_tx do |db|
     outputs.each do |_yb_id, wn_id, bslug, vname|
-      M1::DbDict.init_wn_dict!(wn_id, bslug, vname, db: db) rescue nil
+      M1::ViDict.init_wn_dict!(wn_id, bslug, vname, db: db) rescue nil
     end
   end
 

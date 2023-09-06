@@ -1,33 +1,33 @@
-require "../../src/mt_ai/data/db_term"
+require "../../src/mt_ai/data/vi_term"
 
 def import_from_old_regular
-  existed = MT::DbTerm.db("regular").open_ro do |db|
+  existed = MT::ViTerm.db("regular").open_ro do |db|
     query = "select zstr, cpos from terms"
     db.query_all(query, as: {String, String}).to_set
   end
 
-  entries = [] of MT::DbTerm
+  entries = [] of MT::ViTerm
 
-  MT::DbTerm.db("_old/-1").open_ro do |db|
+  MT::ViTerm.db("_old/-1").open_ro do |db|
     db.query_each("select * from terms") do |rs|
-      entry = rs.read(MT::DbTerm)
+      entry = rs.read(MT::ViTerm)
       entries << entry unless existed.includes?({entry.zstr, entry.cpos})
     end
   end
 
   puts entries.size
 
-  MT::DbTerm.db("regular").open_tx do |db|
+  MT::ViTerm.db("regular").open_tx do |db|
     entries.each(&.upsert!(db: db))
   end
 end
 
 def import_from_old_noun_dic
-  entries = [] of MT::DbTerm
+  entries = [] of MT::ViTerm
 
-  MT::DbTerm.db("_old/-20").open_ro do |db|
+  MT::ViTerm.db("_old/-20").open_ro do |db|
     db.query_each("select * from terms") do |rs|
-      entry = rs.read(MT::DbTerm)
+      entry = rs.read(MT::ViTerm)
 
       if entry.cpos == "_"
         entry.cpos = "NN"
@@ -41,17 +41,17 @@ def import_from_old_noun_dic
 
   puts entries.size
 
-  MT::DbTerm.db("regular").open_tx do |db|
+  MT::ViTerm.db("regular").open_tx do |db|
     entries.each(&.upsert!(db: db))
   end
 end
 
 def import_from_old_verb_dic
-  entries = [] of MT::DbTerm
+  entries = [] of MT::ViTerm
 
-  MT::DbTerm.db("_old/-21").open_ro do |db|
+  MT::ViTerm.db("_old/-21").open_ro do |db|
     db.query_each("select * from terms") do |rs|
-      entry = rs.read(MT::DbTerm)
+      entry = rs.read(MT::ViTerm)
 
       if entry.cpos == "_"
         entry.cpos = "VV"
@@ -64,17 +64,17 @@ def import_from_old_verb_dic
 
   puts entries.size
 
-  MT::DbTerm.db("regular").open_tx do |db|
+  MT::ViTerm.db("regular").open_tx do |db|
     entries.each(&.upsert!(db: db))
   end
 end
 
 def import_from_old_adjt_dic
-  entries = [] of MT::DbTerm
+  entries = [] of MT::ViTerm
 
-  MT::DbTerm.db("_old/-22").open_ro do |db|
+  MT::ViTerm.db("_old/-22").open_ro do |db|
     db.query_each("select * from terms") do |rs|
-      entry = rs.read(MT::DbTerm)
+      entry = rs.read(MT::ViTerm)
 
       if entry.cpos == "_"
         entry.cpos = "VA"
@@ -87,17 +87,17 @@ def import_from_old_adjt_dic
 
   puts entries.size
 
-  MT::DbTerm.db("regular").open_tx do |db|
+  MT::ViTerm.db("regular").open_tx do |db|
     entries.each(&.upsert!(db: db))
   end
 end
 
 def import_from_old_advb_dic
-  entries = [] of MT::DbTerm
+  entries = [] of MT::ViTerm
 
-  MT::DbTerm.db("_old/-23").open_ro do |db|
+  MT::ViTerm.db("_old/-23").open_ro do |db|
     db.query_each("select * from terms") do |rs|
-      entry = rs.read(MT::DbTerm)
+      entry = rs.read(MT::ViTerm)
 
       entry.cpos = "AD"
       entry.fix_enums!
@@ -108,17 +108,17 @@ def import_from_old_advb_dic
 
   puts entries.size
 
-  MT::DbTerm.db("regular").open_tx do |db|
+  MT::ViTerm.db("regular").open_tx do |db|
     entries.each(&.upsert!(db: db))
   end
 end
 
 def import_from_old_uzhi_dic
-  entries = [] of MT::DbTerm
+  entries = [] of MT::ViTerm
 
-  MT::DbTerm.db("_old/-24").open_ro do |db|
+  MT::ViTerm.db("_old/-24").open_ro do |db|
     db.query_each("select * from terms") do |rs|
-      entry = rs.read(MT::DbTerm)
+      entry = rs.read(MT::ViTerm)
 
       entry.cpos = "NP"
       entry.fix_enums!
@@ -129,7 +129,7 @@ def import_from_old_uzhi_dic
 
   puts entries.size
 
-  MT::DbTerm.db("regular").open_tx do |db|
+  MT::ViTerm.db("regular").open_tx do |db|
     entries.each(&.upsert!(db: db))
   end
 end

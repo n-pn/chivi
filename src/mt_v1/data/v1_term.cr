@@ -1,7 +1,7 @@
 # require "sqlite3"
 # require "crorm/model"
 
-# class M1::DbTerm
+# class M1::ViTerm
 #   @[AlwaysInline]
 #   def self.db_path(name : String)
 #     "var/mtapp/v1dic/#{name}_v1.dic"

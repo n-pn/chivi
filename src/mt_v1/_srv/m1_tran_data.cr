@@ -42,10 +42,10 @@ class M1::TranData
   end
 
   getter input : String
-  getter udict : DbDict
+  getter udict : ViDict
 
   def initialize(@input, @wn_id : Int32, format : String)
-    @udict = DbDict.load(wn_id) rescue DbDict.load(0)
+    @udict = ViDict.load(wn_id) rescue ViDict.load(0)
     @to_mtl = format == "mtl"
   end
 

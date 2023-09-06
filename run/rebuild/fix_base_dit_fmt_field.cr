@@ -1,6 +1,6 @@
 require "./_shared"
 
-DIC = DB.open("sqlite3:#{MT::DbTerm.db_path("common-main")}")
+DIC = DB.open("sqlite3:#{MT::ViTerm.db_path("common-main")}")
 at_exit { DIC.close }
 
 entries = [] of {String, String, Int32}

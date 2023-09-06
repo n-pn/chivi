@@ -122,7 +122,7 @@ class MT::AiDict
     end
 
     def load_tsv!(dname : String = @dname)
-      db_path = DbTerm.db_path(dname, "tsv")
+      db_path = ViTerm.db_path(dname, "tsv")
       return self unless File.file?(db_path)
 
       File.each_line(db_path) do |line|
@@ -136,9 +136,9 @@ class MT::AiDict
     end
 
     def load_db3!(dname : String = @dname)
-      query = "select zstr, cpos, vstr, iprop from #{DbTerm.schema.table}"
+      query = "select zstr, cpos, vstr, iprop from #{ViTerm.schema.table}"
 
-      DbTerm.db(dname).open_ro do |db|
+      ViTerm.db(dname).open_ro do |db|
         db.query_each(query) do |rs|
           zstr, cpos, vstr, prop = rs.read(String, String, String, Int32)
           add(zstr, cpos, vstr, MtProp.new(prop))
