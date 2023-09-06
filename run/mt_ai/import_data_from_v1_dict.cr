@@ -13,6 +13,7 @@ struct Input
   getter val : String = ""
 
   getter ptag : String = ""
+  getter rank : Int32 = 2
 
   getter uname : String = ""
   getter mtime : Int32 = 0
@@ -160,12 +161,17 @@ struct Input
 end
 
 inputs = DB.open("sqlite3:#{INP_PATH}?immutable=1") do |db|
-  db.query_all("select * from defns where _flag >= 0 and val <> '' order by mtime asc", as: Input)
+  query = "select * from defns where _flag >= 0 and val <> '' order by mtime desc"
+  db.query_all(query, as: Input)
 end
 
 inputs = inputs.group_by(&.dic)
 
-inputs.each do |d_id, entries|
+inputs.keys.sort!.each do |d_id|
+  entries = inputs[d_id]
+  entries.uniq! { |x| {x.key, x.ptag} }.reject!(&.rank.== 0)
+  entries.sort_by!(&.mtime)
+
   MT::DbTerm.db("book/#{d_id}").open_tx do |db|
     entries.each(&.to_term.upsert!(db: db))
   end
