@@ -11,15 +11,6 @@ class MT::M3Node
     @zstr = "#{@left.zstr}#{@middle.zstr}#{@right.zstr}"
   end
 
-  def translate!(dict : AiDict) : Nil
-    if found = dict.get?(@zstr, @cpos)
-      self.set_term!(*found)
-      return
-    end
-
-    {@left, @middle, @right}.each(&.translate!(dict))
-  end
-
   def tl_phrase!(dict : AiDict)
     if found = dict.get?(@zstr, @cpos)
       self.set_term!(*found)
@@ -43,9 +34,15 @@ class MT::M3Node
       @right.set_vstr!(vstr: "nổi")
     when "VNV"
       return unless @left.zstr == @right.zstr
-      @right.set_vstr!(vstr: "chút")
+      # if vstr = MAP_VND_INFIX[@middle.zstr]?
+      #   @middle.set_vstr!(vstr: vstr)
+      # end
     end
   end
+
+  # MAP_VND_INFIX = {
+  #   "一" => "chút",
+  # }
 
   ###
 

@@ -50,7 +50,11 @@ class MT::M2Node
   end
 
   def fix_dnp!
-    @pecs = :at_h if @left.pecs.at_h?
+    if @left.pecs.at_h?
+      @pecs = :at_h
+      return
+    end
+
     @flip = true
 
     if right.cpos == "DEG" && possessive?(left)

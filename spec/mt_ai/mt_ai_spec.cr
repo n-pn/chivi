@@ -2,12 +2,14 @@ require "../../src/mt_ai/core/*"
 require "yaml"
 
 struct Case
+  include YAML::Serializable
+
   getter con : String
   getter txt : String = ""
   getter alt : String = ""
+
   getter focus : Bool = false
-  getter pdict : String = ""
-  include YAML::Serializable
+  getter pdict : String = "rand/fixture"
 
   def self.from_file(path : String)
     File.open(path, "r") { |file| Array(self).from_yaml(file) }

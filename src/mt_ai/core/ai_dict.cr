@@ -17,12 +17,7 @@ class MT::AiDict
     @main_dict = Entry.load(pdict)
     @auto_dict = Entry.new(pdict, :autogen)
 
-    @dict_list = {
-      @main_dict,
-      Entry.regular,
-      @auto_dict,
-      Entry.suggest,
-    }
+    @dict_list = {@main_dict, Entry.regular, @auto_dict, Entry.suggest}
   end
 
   def get(zstr : String, cpos : String) : {MtTerm, Int32}
@@ -155,10 +150,14 @@ class MT::AiDict
 
     ###
 
-    class_getter essence : self { new("essence", :essence).load_tsv! }
     class_getter special : self { new("special", :essence).load_tsv! }
-    class_getter regular : self { new("regular", :regular).load_db3! }
-    class_getter suggest : self { new("suggest", :suggest).load_db3! }
+    class_getter regular : self { new("regular", :regular).load_db3!.load_tsv! }
+
+    {% if flag?(:release) %}
+      class_getter suggest : self { new("suggest", :suggest).load_db3! }
+    {% else %}
+      class_getter suggest : self { new("suggest", :suggest) }
+    {% end %}
 
     # @@expire = {} of String => Time
     @@cached = {} of String => self

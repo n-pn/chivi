@@ -37,21 +37,21 @@ class MT::NpNode
       self.set_term!(*found)
     else
       @orig.each(&.tl_phrase!(dict))
-      @data = read_np!(_max: @orig.size)
+      @data = read_np!(dict, _max: @orig.size)
     end
   end
 
   @[AlwaysInline]
   def tl_word!(dict : AiDict) : Nil
     @orig.each(&.tl_word!(dict))
-    @data = read_np!(_max: @orig.size)
+    @data = read_np!(dict, _max: @orig.size)
   end
 
   ###
 
   @[AlwaysInline]
-  private def peak_node
-    @orig.unsafe_fetch(@_idx)
+  private def peak_node(_idx = @_idx)
+    @orig.unsafe_fetch(_idx)
   end
 
   @[AlwaysInline]
@@ -61,7 +61,7 @@ class MT::NpNode
     node
   end
 
-  private def read_np!(_max = @orig.size) : Array(AiNode)
+  private def read_np!(dict : AiDict, _max = @orig.size) : Array(AiNode)
     data = Array(AiNode).new
 
     i_hd = 0
@@ -115,11 +115,11 @@ class MT::NpNode
       when "PU"
         if match_found = AiRule.find_matching_pu(orig, node, _idx: @_idx, _max: _max)
           # TODO: check flipping
-          data.insert(i_tl, node)
           match_tail, match_max = match_found
-          nest = read_np!(_max = match_max)
-          nest.each { |node| data.insert(i_tl, node) }
-          data.insert(i_tl, match_tail)
+          node = read_pu!(dict, node, match_tail, match_max)
+          pp [node]
+          data.insert(i_hd, node)
+          @_idx = match_max
         else
           i_tl = -1
           data.insert(i_tl, node)
@@ -139,5 +139,22 @@ class MT::NpNode
     end
 
     data
+  end
+
+  def skip_node!
+    @_idx += 1
+  end
+
+  private def read_pu!(dict : AiDict, head : AiNode, tail : AiNode, _max : Int32)
+    inner_list = [] of AiNode
+    @_idx.upto(_max &- 2) { |_idx| inner_list << peak_node(_idx) }
+
+    inner_cpos = inner_list.last.cpos == "PU" ? "IP" : "NP"
+    inner_node = NpNode.new(inner_list, inner_cpos, _idx: inner_list.first._idx)
+    inner_node.tl_phrase!(dict)
+
+    outer_node = M3Node.new(head, inner_node, tail, "NP", _idx: head._idx)
+    outer_node.tl_phrase!(dict)
+    outer_node
   end
 end
