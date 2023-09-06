@@ -18,8 +18,8 @@ module MT::MtStem
     hash
   end
 
-  class_getter map_noun_stem : Hash(String, String) { load_tsv("core/noun_stem") }
-  class_getter map_verb_stem : Hash(String, String) { load_tsv("core/verb_stem") }
+  class_getter map_noun_stem : Hash(String, String) { load_tsv("noun_stem") }
+  class_getter map_verb_stem : Hash(String, String) { load_tsv("verb_stem") }
 
   def self.noun_stem(zstr : String)
     self.map_noun_stem[zstr] ||= zstr.size < 2 ? zstr : init_noun_stem(zstr)
@@ -27,7 +27,8 @@ module MT::MtStem
 
   def self.init_noun_stem(zstr : String)
     # TODO: check for common suffixes
-    zstr[-1].to_s
+    lchar = zstr[-1]
+    lchar == '子' ? zstr[-2].to_s : lchar.to_s
   end
 
   def self.verb_stem(zstr : String)

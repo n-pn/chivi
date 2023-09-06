@@ -75,7 +75,7 @@ class MT::NpNode
       i_hd &+= 1
     end
 
-    q_node : AiNode? = nil # hold quantifier for correction
+    qp_node : AiNode? = nil # hold quantifier for correction
 
     while @_pos < _max
       node = self.read_node
@@ -88,11 +88,11 @@ class MT::NpNode
         data.insert(i_tl, node)
         i_tl &-= 1
       when "QP"
-        q_node = node.find_by_cpos("M")
+        qp_node = node
         data.insert(i_hd, node)
         i_hd &+= 1
       when "DP"
-        dt_node, mq_node = AiRule.split_dp(node)
+        dt_node, qp_node = AiRule.split_dp(node)
         if dt_node.prop.at_h?
           data.insert(i_hd, dt_node)
           i_hd &+= 1
@@ -101,8 +101,8 @@ class MT::NpNode
           i_tl &-= 1
         end
 
-        if mq_node
-          data.insert(i_hd, mq_node)
+        if qp_node
+          data.insert(i_hd, qp_node)
           i_hd &+= 1
         end
       when "CLP"
@@ -137,9 +137,9 @@ class MT::NpNode
       when "NN", "NP", "NR"
         # TODO: consume node
 
-        if q_node
-          MtDefn.fix_m_n_pair!(q_node, node)
-          q_node = nil
+        if qp_node
+          MtDefn.fix_m_n_pair!(qp_node, node)
+          qp_node = nil
         end
 
         data.insert(i_hd, node)

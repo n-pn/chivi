@@ -54,6 +54,7 @@ class MT::MtDefn
 
   def fix_if_match!(a_node : AiNode, b_node : AiNode, b_stem = b_node.zstr) : Nil
     return unless found = self.get?(a_node.zstr, b_stem, "_")
+
     a_node.set_vstr!(found.a_vstr)
 
     return unless a_prop = found.a_prop
@@ -68,15 +69,15 @@ class MT::MtDefn
 
   ###
 
-  class_getter m_n_pair : self { new("core/m_n_pair").load_tsv! }
-  class_getter p_v_pair : self { new("core/p_v_pair").load_tsv! }
-  class_getter v_n_pair : self { new("core/v_n_pair").load_tsv! }
+  class_getter m_n_pair : self { new("m_n_pair").load_tsv! }
+  class_getter p_v_pair : self { new("p_v_pair").load_tsv! }
+  class_getter v_n_pair : self { new("v_n_pair").load_tsv! }
 
-  class_getter vcd_pair : self { new("core/vcd_pair").load_tsv! }
-  class_getter vcp_pair : self { new("core/vcp_pair").load_tsv! }
-  class_getter vrd_pair : self { new("core/vrd_pair").load_tsv! }
+  class_getter vcd_pair : self { new("vcd_pair").load_tsv! }
+  class_getter vcp_pair : self { new("vcp_pair").load_tsv! }
+  class_getter vrd_pair : self { new("vrd_pair").load_tsv! }
 
-  # class_getter v_r_pair : self { new("core/v_d_pair") }
+  # class_getter v_r_pair : self { new("v_d_pair") }
 
   def self.fix_m_n_pair!(q_node : AiNode, n_node : AiNode) : Void
     return unless m_node = q_node.find_by_cpos("M")
