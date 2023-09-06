@@ -6,7 +6,7 @@ class MT::MxNode
   getter list : Array(AiNode)
   getter _ord : Array(Int32)? = nil
 
-  def initialize(@list, @cpos, @_idx, @_ord = nil)
+  def initialize(@list, @cpos, @_idx, @prop = :none)
     @zstr = @list.join(&.zstr)
   end
 

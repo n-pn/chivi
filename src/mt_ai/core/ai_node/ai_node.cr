@@ -39,7 +39,7 @@ module MT::AiNode
 
   def set_term!(term, @_dic : Int32 = 1) : Nil
     @vstr = term.vstr
-    @prop = term.prop
+    @prop |= term.prop
   end
 
   def set_vstr!(@vstr : String, @_dic : Int32 = 1) : Nil

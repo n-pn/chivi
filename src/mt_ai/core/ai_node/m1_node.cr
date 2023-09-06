@@ -5,7 +5,7 @@ class MT::M1Node
 
   getter node : AiNode
 
-  def initialize(@node, @cpos, @_idx)
+  def initialize(@node, @cpos, @_idx, @prop = :none)
     @zstr = node.zstr
   end
 

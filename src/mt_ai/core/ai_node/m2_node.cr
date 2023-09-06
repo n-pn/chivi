@@ -8,7 +8,7 @@ class MT::M2Node
 
   @flip = false
 
-  def initialize(@left, @right, @cpos, @_idx)
+  def initialize(@left, @right, @cpos, @_idx, @prop = :none)
     @zstr = "#{@left.zstr}#{@right.zstr}"
   end
 
@@ -33,6 +33,9 @@ class MT::M2Node
     when "DVP" then fix_dvp!
     when "DNP" then fix_dnp!
     when "LCP" then fix_lcp!
+    when "VRD" then fix_vrd!
+    when "VCD" then fix_vcd!
+    when "VCP" then fix_vcp!
     when "DP"
       @flip = !@left.prop.at_h?
     when "QP"
@@ -68,6 +71,7 @@ class MT::M2Node
 
   private def possessive?(node : AiNode)
     return true if node.prop.npos? || node.prop.nper?
+    return false if node.prop.ndes? || node.prop.ntmp?
 
     while node.cpos == "NP"
       # NOTE: remove recursion here?
@@ -80,6 +84,19 @@ class MT::M2Node
     when "NN", "NT" then !node.prop.ndes?
     else                 false
     end
+  end
+
+  def fix_vcd!
+    MtDefn.vcd_pair.fix_if_match!(@right, @left, MtStem.verb_stem(@left.zstr))
+  end
+
+  def fix_vcp!
+    MtDefn.vcp_pair.fix_if_match!(@right, @left, MtStem.verb_stem(@left.zstr))
+  end
+
+  def fix_vrd!
+    @left.find_by_cpos("AS").try(&.add_prop!(MtProp[Asis, Hide]))
+    MtDefn.vrd_pair.fix_if_match!(@right, @left, MtStem.verb_stem(@left.zstr))
   end
 
   ###

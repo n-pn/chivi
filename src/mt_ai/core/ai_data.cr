@@ -71,7 +71,8 @@ class MT::AiData
         size &+= 1
       end
 
-      return {M0Node.new(zstr.to_s, cpos, _idx), _idx + size}
+      cpos, prop = init_prop_from_cpos(cpos)
+      return {M0Node.new(zstr.to_s, cpos, _idx, prop), _idx + size}
     end
 
     nodes = [] of AiNode
@@ -88,14 +89,34 @@ class MT::AiData
     # pp nodes
 
     size = nodes.size
+    cpos, prop = init_prop_from_cpos(cpos)
 
     case
-    when size == 1    then {M1Node.new(nodes[0], cpos, from), _idx}
-    when cpos == "NP" then {NpNode.new(nodes, cpos, from), _idx}
-    when cpos == "VP" then {VpNode.new(nodes, cpos, from), _idx}
-    when size == 2    then {M2Node.new(nodes[0], nodes[1], cpos, from), _idx}
-    when size == 3    then {M3Node.new(nodes[0], nodes[1], nodes[2], cpos, from), _idx}
-    else                   {MxNode.new(nodes, cpos, from), _idx}
+    when size == 1    then {M1Node.new(nodes[0], cpos, from, prop), _idx}
+    when cpos == "NP" then {NpNode.new(nodes, cpos, from, prop), _idx}
+    when cpos == "VP" then {VpNode.new(nodes, cpos, from, prop), _idx}
+    when size == 2    then {M2Node.new(nodes[0], nodes[1], cpos, from, prop), _idx}
+    when size == 3    then {M3Node.new(nodes[0], nodes[1], nodes[2], cpos, from, prop), _idx}
+    else                   {MxNode.new(nodes, cpos, from, prop), _idx}
     end
+  end
+
+  def self.init_prop_from_cpos(cpos)
+    cpos, *tags = cpos.split('-')
+
+    prop = case cpos
+           when "NR" then MtProp::Npos
+           when "NT" then MtProp::Ntmp
+           else           MtProp::None
+           end
+
+    tags.each do |ctag|
+      case ctag
+      when "PN"  then prop |= MtProp[Nper, Npos]
+      when "TMP" then prop |= MtProp[Ntmp]
+      end
+    end
+
+    {cpos, prop}
   end
 end

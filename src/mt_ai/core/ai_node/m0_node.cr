@@ -3,7 +3,7 @@ require "./ai_node"
 class MT::M0Node
   include AiNode
 
-  def initialize(@zstr, @cpos, @_idx)
+  def initialize(@zstr, @cpos, @_idx, @prop = :none)
   end
 
   @[AlwaysInline]
