@@ -24,7 +24,7 @@ class M1::MtTrie
 
     input.each_char do |char|
       return unless trie = node.trie
-      char = char - 32 if 'ａ' <= char <= 'ｚ'
+      char = CharUtil.to_canon(char, true)
       return unless node = trie[char]?
     end
 
@@ -38,7 +38,7 @@ class M1::MtTrie
       break unless trie = node.trie
 
       char = chars.unsafe_fetch(i)
-      char = char - 32 if 'ａ' <= char <= 'ｚ'
+      char = CharUtil.to_canon(char, true)
 
       break unless node = trie[char]?
       node.term.try { |term| yield term }

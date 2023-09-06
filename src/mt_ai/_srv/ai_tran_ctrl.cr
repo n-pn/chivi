@@ -22,7 +22,7 @@ class MT::AiTranCtrl < AC::Base
       data = ai_mt.tl_from_con_data(line)
 
       ztext << data.zstr
-      data.to_mtl(io: cvmtl, cap: true, pad: false)
+      data.to_mtl(io: cvmtl, cap: true, udt: true)
 
       ztext << '\n'
       cvmtl << '\n'

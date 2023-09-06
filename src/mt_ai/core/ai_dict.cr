@@ -40,13 +40,13 @@ class MT::AiDict
     case cpos
     when "PU"
       vstr = CharUtil.normalize(zstr)
-      pecs = MtPecs.parse_punct(zstr)
-      @auto_dict.add(zstr, cpos, vstr, pecs)
+      prop = MtProp.parse_punct(zstr)
+      @auto_dict.add(zstr, cpos, vstr, prop)
     when "EM"
-      @auto_dict.add(zstr, cpos, zstr, MtPecs[Ncap, Capx])
+      @auto_dict.add(zstr, cpos, zstr, MtProp[Asis, Capx])
     when "URL"
       vstr = CharUtil.normalize(zstr)
-      @auto_dict.add(zstr, cpos, vstr, MtPecs[Ncap])
+      @auto_dict.add(zstr, cpos, vstr, MtProp[Asis, Npos])
     when "CD", "OD"
       vstr = TlUnit.translate(zstr) rescue QtCore.tl_hvword(zstr)
       @auto_dict.add(zstr, cpos, vstr, :none)
@@ -111,18 +111,18 @@ class MT::AiDict
 
     ####
 
-    def add(zstr : String, cpos : String, vstr : String, pecs : String | Nil) : MtTerm
+    def add(zstr : String, cpos : String, vstr : String, prop : String | Nil) : MtTerm
       entry = @data[zstr] ||= {} of String => MtTerm
-      entry[cpos] = MtTerm.new(vstr, pecs: MtPecs.parse_list(pecs))
+      entry[cpos] = MtTerm.new(vstr, prop: MtProp.parse_list(prop))
     end
 
-    def add(zstr : String, cpos : String, vstr : String, pecs : MtPecs = :none) : MtTerm
+    def add(zstr : String, cpos : String, vstr : String, prop : MtProp = :none) : MtTerm
       entry = @data[zstr] ||= {} of String => MtTerm
-      entry[cpos] = MtTerm.new(vstr, pecs)
+      entry[cpos] = MtTerm.new(vstr, prop)
     end
 
     def load_tsv!(dname : String = @dname)
-      db_path = MtDefn.db_path(dname, "tsv")
+      db_path = DbTerm.db_path(dname, "tsv")
       return self unless File.file?(db_path)
 
       File.each_line(db_path) do |line|
@@ -136,10 +136,12 @@ class MT::AiDict
     end
 
     def load_db3!(dname : String = @dname)
-      MtDefn.db(dname).open_ro do |db|
-        db.query_each("select zstr, cpos, vstr, ipecs from defns") do |rs|
-          zstr, cpos, vstr, pecs = rs.read(String, String, String, Int32)
-          add(zstr, cpos, vstr, MtPecs.new(pecs))
+      query = "select zstr, cpos, vstr, iprop from #{DbTerm.schema.table}"
+
+      DbTerm.db(dname).open_ro do |db|
+        db.query_each(query) do |rs|
+          zstr, cpos, vstr, prop = rs.read(String, String, String, Int32)
+          add(zstr, cpos, vstr, MtProp.new(prop))
         end
       end
 

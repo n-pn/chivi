@@ -26,7 +26,7 @@ class SP::TranCtrl < AC::Base
     output = String.build do |io|
       _read_body.each_line do |line|
         data = sp_mt.tokenize(line)
-        plain ? data.to_txt(io, cap: cap_first, pad: false) : data.to_mtl(io, cap: cap_first, pad: false)
+        plain ? data.to_txt(io, cap: cap_first) : data.to_mtl(io, cap: cap_first)
         io << '\n'
       end
     end

@@ -2,7 +2,7 @@ pragma journal_mode = WAL;
 
 pragma synchronous = normal;
 
-CREATE TABLE specs (
+CREATE TABLE specs(
   id integer PRIMARY KEY,
   --
   udict varchar NOT NULL DEFAULT '',
@@ -29,8 +29,8 @@ CREATE TABLE specs (
   mtime integer NOT NULL DEFAULT 0
 );
 
-CREATE INDEX specs_tags_idx ON specs (tags);
+CREATE INDEX specs_tags_idx ON specs(tags);
 
-CREATE INDEX specs_prio_idx ON specs (prio);
+CREATE INDEX specs_prio_idx ON specs(prio);
 
-CREATE INDEX specs_user_idx ON specs (uname);
+CREATE INDEX specs_user_idx ON specs(uname);

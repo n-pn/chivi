@@ -1,6 +1,6 @@
 require "../../src/_util/char_util"
 require "../../src/_util/viet_util"
-require "../../src/mt_ai/data/mt_defn"
+require "../../src/mt_ai/data/db_term"
 
 INP_PATH = "var/mtdic/fixed/common-main.dic"
 
@@ -18,66 +18,72 @@ struct Input
   getter feat : String
 
   getter uname : String
-  getter mtime : Int64
+  getter mtime : Int32
   getter _flag : Int32
 
-  def to_terms(_lock = 2)
+  def to_terms(privi = 2)
     @zstr = CharUtil.to_canon(@zstr, true)
     @vstr = @vstr == "⛶" ? "" : @vstr.strip
 
-    _lock = 1 if @_flag < 2
+    privi = 1 if @_flag < 2
 
     cpos_list = xpos.split(' ')
     cpos_list = ["_"] if cpos_list.size > 3
 
     terms = cpos_list.map do |cpos|
-      gen_term(cpos, @vstr, _lock)
+      gen_term(cpos, @vstr, privi)
     end
 
     unless @vmap.blank?
       @vmap.split('ǀ') do |item|
         cpos, vstr = item.split(':')
-        terms << gen_term(cpos, vstr.strip, _lock)
+        terms << gen_term(cpos, vstr.strip, privi)
       end
     end
 
     terms # .uniq!(&.cpos)
   end
 
-  def gen_term(cpos : String, vstr : String, _lock = 2)
-    MT::MtDefn.new(
-      zstr: @zstr,
-      cpos: cpos,
-      vstr: VietUtil.fix_tones(vstr),
-      pecs: map_pecs(cpos),
-      uname: @uname,
-      mtime: @mtime,
-      _lock: @_flag < _lock ? 1 : _lock,
-      _flag: @_flag
+  def gen_term(cpos : String, vstr : String, privi = 2)
+    term = MT::DbTerm.new(
+      zstr: @zstr, cpos: cpos,
+      vstr: vstr, prop: map_prop(cpos),
     )
+
+    term.uname = @uname
+    term.mtime = @mtime
+    term.privi = @_flag < privi ? 1 : privi
+    term._flag = @_flag
+
+    term
   end
 
-  def map_pecs(cpos : String)
+  def map_prop(cpos : String)
     case cpos
     when "PU"
-      MT::MtPecs.parse_punct(@zstr).to_s.gsub(" | ", " ")
+      MT::MtProp.parse_punct(@zstr)
     else
       return "" if @feat.empty?
-      @feat.split(' ').map { |x| MAP_FEAT[x] }.join(' ')
+      prop = MT::MtProp::None
+
+      @feat.split(' ') do |feat|
+        MAP_FEAT[feat]?.try { |x| prop |= x }
+      end
+      prop
     end
   end
 
   MAP_FEAT = {
-    "plural" => "Nplr",
-    "attrib" => "Ndes",
-    "person" => "Nper",
-    "locati" => "Nloc",
-    "perprn" => "Pn_p",
-    "demprn" => "Pn_d",
-    "intprn" => "Pn_i",
-    "vditra" => "Vdit",
-    "vintra" => "Vint",
-    "vmodal" => "Vmod",
+    # "plural" => MT::MtProp::Nplr,
+    "attrib" => MT::MtProp::Ndes,
+    "perprn" => MT::MtProp[Nper, Npos],
+    "person" => MT::MtProp[Nper, Npos],
+    "locati" => MT::MtProp[Nloc, Npos],
+    "demprn" => MT::MtProp::Pn_d,
+    "intprn" => MT::MtProp::Pn_i,
+    "vditra" => MT::MtProp::Vdit,
+    "vintra" => MT::MtProp::Vint,
+    "vmodal" => MT::MtProp::Vmod,
   }
 
   def map_flag(flag = @_flag)
@@ -102,13 +108,13 @@ end
 output = inputs.flat_map(&.to_terms(2))
 output.uniq! { |x| {x.zstr, x.cpos} }
 
-regular, suggest = output.partition(&._lock.> 1)
+regular, suggest = output.partition(&.privi.> 1)
 puts output.size, regular.size, suggest.size
 
-MT::MtDefn.db("regular").open_tx do |db|
+MT::DbTerm.db("regular").open_tx do |db|
   regular.each(&.upsert!(db: db))
 end
 
-MT::MtDefn.db("suggest").open_tx do |db|
+MT::DbTerm.db("suggest").open_tx do |db|
   suggest.each(&.upsert!(db: db))
 end

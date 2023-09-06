@@ -72,10 +72,10 @@ def transfer(db_path : String, where_dic : String)
   end
 end
 
-transfer(MT::MtDefn.db_path("common-main"), "dic = -2")
-transfer(MT::MtDefn.db_path("common-main"), "dic = -1 and tab = 1")
-transfer(MT::MtDefn.db_path("common-main"), "dic = -3")
-transfer(MT::MtDefn.db_path("common-user"), "dic = -1 and tab > 1")
+transfer(MT::DbTerm.db_path("common-main"), "dic = -2")
+transfer(MT::DbTerm.db_path("common-main"), "dic = -1 and tab = 1")
+transfer(MT::DbTerm.db_path("common-main"), "dic = -3")
+transfer(MT::DbTerm.db_path("common-user"), "dic = -1 and tab > 1")
 
-transfer(MT::MtDefn.db_path("wnovel-main"), "dic > 0 and tab = 1")
-transfer(MT::MtDefn.db_path("wnovel-user"), "dic > 0 and tab > 1")
+transfer(MT::DbTerm.db_path("wnovel-main"), "dic > 0 and tab = 1")
+transfer(MT::DbTerm.db_path("wnovel-user"), "dic > 0 and tab > 1")

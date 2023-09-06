@@ -23,20 +23,20 @@ class MT::AiData
     @root.inspect(io)
   end
 
-  def to_txt(cap = true, pad = false)
-    String.build { |io| to_txt(io, cap, pad) }
+  def to_txt(cap : Bool = true, und : Bool = true)
+    String.build { |io| to_txt(io, cap: cap, und: und) }
   end
 
-  def to_txt(io : IO, cap : Bool, pad : Bool) : Nil
-    @root.to_txt(io, cap, pad)
+  def to_txt(io : IO, cap : Bool, und : Bool) : Nil
+    @root.to_txt(io, cap: cap, und: und)
   end
 
-  def to_mtl(cap = true, pad = false)
-    String.build { |io| to_mtl(io, cap, pad) }
+  def to_mtl(cap : Bool = true, und : Bool = true)
+    String.build { |io| to_mtl(io, cap: cap, und: und) }
   end
 
-  def to_mtl(io : IO, cap : Bool, pad : Bool) : Nil
-    @root.to_mtl(io: io, cap: cap, pad: pad)
+  def to_mtl(io : IO, cap : Bool, und : Bool) : Nil
+    @root.to_mtl(io: io, cap: cap, und: und)
   end
 
   ###
@@ -62,12 +62,12 @@ class MT::AiData
 
     if char != '(' # core term
       zstr = String::Builder.new
-      zstr << char
+      zstr << CharUtil.to_canon(char, true)
       size = 1
 
       while char = iter.next.as(Char)
         break if char == ')'
-        zstr << char
+        zstr << CharUtil.to_canon(char, true)
         size &+= 1
       end
 

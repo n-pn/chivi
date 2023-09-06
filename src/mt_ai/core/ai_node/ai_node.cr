@@ -6,7 +6,7 @@ module MT::AiNode
   getter zstr : String = ""
 
   getter vstr : String = ""
-  getter pecs : MtPecs = MtPecs::None
+  getter prop : MtProp = MtProp::None
 
   getter _dic : Int32 = -1
   getter _idx : Int32 = 0
@@ -39,18 +39,18 @@ module MT::AiNode
 
   def set_term!(term, @_dic : Int32 = 1) : Nil
     @vstr = term.vstr
-    @pecs = term.pecs
+    @prop = term.prop
   end
 
   def set_vstr!(@vstr : String, @_dic : Int32 = 1) : Nil
   end
 
-  def add_pecs!(pecs : MtPecs)
-    @pecs |= pecs
+  def add_prop!(prop : MtProp)
+    @prop |= prop
   end
 
-  def off_pecs!(pecs : MtPecs)
-    @pecs &= ~pecs
+  def off_prop!(prop : MtProp)
+    @prop &= ~prop
   end
 
   ###
@@ -61,7 +61,7 @@ module MT::AiNode
     # io << ':' << @_idx
     inspect_inner(io)
 
-    io << ' ' << @pecs unless @pecs.none?
+    io << ' ' << @prop unless @prop.none?
     io << ')'.colorize.dark_gray
   end
 
@@ -74,33 +74,33 @@ module MT::AiNode
 
   ###
 
-  def to_txt(io : IO, cap : Bool, pad : Bool)
+  def to_txt(io : IO, cap : Bool, und : Bool)
     if @_dic >= 0
-      io << ' ' if @pecs.pad_space?(pad)
-      @pecs.to_str(io, @vstr, cap, pad)
+      io << ' ' unless @prop.undent?(und: und)
+      @prop.render_vstr(io, @vstr, cap: cap, und: und)
     elsif self.is_a?(M0Node)
       raise "translation missing!"
     else
-      self.v_each { |node| cap, pad = node.to_txt(io, cap, pad) }
-      {cap, pad}
+      self.v_each { |node| cap, und = node.to_txt(io, cap: cap, und: und) }
+      {cap, und}
     end
   end
 
   SEP = 'ǀ'
 
-  def to_mtl(io : IO, cap : Bool, pad : Bool)
+  def to_mtl(io : IO, cap : Bool, und : Bool)
     if @_dic >= 0
-      io << '\t' << ' ' if @pecs.pad_space?(pad)
+      io << '\t' << ' ' unless @prop.undent?(und: und)
       io << '\t'
 
-      cap, pad = @pecs.to_str(io, @vstr, cap, pad)
+      cap, und = @prop.render_vstr(io, @vstr, cap: cap, und: und)
       io << SEP << @_dic << SEP << @_idx << SEP << @zstr.size
-      {cap, pad}
+      {cap, und}
     elsif self.is_a?(M0Node)
       raise "translation missing!"
     else
-      self.v_each { |node| cap, pad = node.to_mtl(io, cap, pad) }
-      {cap, pad}
+      self.v_each { |node| cap, und = node.to_mtl(io, cap: cap, und: und) }
+      {cap, und}
     end
   end
 end

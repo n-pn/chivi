@@ -14,14 +14,14 @@ class MT::M1Node
       self.set_term!(*found)
     else
       @node.tl_phrase!(dict: dict)
-      @pecs = @node.pecs
+      @prop = @node.prop
     end
   end
 
   @[AlwaysInline]
   def tl_word!(dict : AiDict)
     @node.tl_word!(dict)
-    @pecs = @node.pecs
+    @prop = @node.prop
   end
 
   ###

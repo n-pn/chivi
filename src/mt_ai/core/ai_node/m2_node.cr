@@ -34,14 +34,14 @@ class MT::M2Node
     when "DNP" then fix_dnp!
     when "LCP" then fix_lcp!
     when "DP"
-      @flip = !@left.pecs.at_h?
+      @flip = !@left.prop.at_h?
     when "QP"
       @flip = @left.cpos == "OD"
     end
   end
 
   def fix_lcp!
-    @flip = !right.pecs.at_t?
+    @flip = !right.prop.at_t?
   end
 
   def fix_dvp!
@@ -50,23 +50,24 @@ class MT::M2Node
   end
 
   def fix_dnp!
-    if @left.pecs.at_h?
-      @pecs = :at_h
+    if @left.prop.at_h?
+      @prop = :at_h
       return
     end
 
     @flip = true
+    return unless right.zstr == "的" && right.cpos == "DEG"
 
-    if right.cpos == "DEG" && possessive?(left)
+    if possessive?(left)
       right.set_vstr!("của")
-      right.off_pecs!(:void)
-      # else
-      # right.set_term!(MtTerm.new("", MtPecs[:void, :at_t]))
+      right.off_prop!(:hide)
+    else
+      right.set_term!(MtTerm.new("", MtProp[:hide, :at_t]))
     end
   end
 
   private def possessive?(node : AiNode)
-    return true if node.pecs.npos? || node.pecs.nper?
+    return true if node.prop.npos? || node.prop.nper?
 
     while node.cpos == "NP"
       # NOTE: remove recursion here?
@@ -75,8 +76,8 @@ class MT::M2Node
 
     case node.cpos
     when "NP", "NR" then true
-    when "PN"       then node.pecs.npos? || node.pecs.nper?
-    when "NN", "NT" then !node.pecs.ndes?
+    when "PN"       then node.prop.npos? || node.prop.nper?
+    when "NN", "NT" then !node.prop.ndes?
     else                 false
     end
   end

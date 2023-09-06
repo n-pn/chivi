@@ -25,6 +25,7 @@ class M1::DefnForm
   getter _ctx : Ctx | Nil = nil
 
   def after_initialize
+    old_key = key
     @key = @key.gsub(/[\p{C}\s]+/, " ").strip
     @key = CharUtil.to_canon(@key, upcase: true)
 

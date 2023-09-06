@@ -89,7 +89,7 @@ class MT::NpNode
         i_hd &+= 1
       when "DP"
         dt_node, mq_node = AiRule.split_dp(node)
-        if dt_node.pecs.at_h?
+        if dt_node.prop.at_h?
           data.insert(i_hd, dt_node)
           i_hd &+= 1
         else
@@ -105,7 +105,7 @@ class MT::NpNode
         # FIXME: split phrase if first element is CD
         data.insert(i_hd, node)
       when "DNP"
-        if node.pecs.at_h?
+        if node.prop.at_h?
           data.insert(i_hd, node)
           i_hd &+= 1
         else
