@@ -173,3 +173,133 @@ input::-webkit-inner-spin-button {
 input[type='number'] {
   appearance: textfield;
 }
+
+@mixin cv-node($color: blue) {
+  cursor: pointer;
+  // position: relative;
+
+  @include tm-light(false) {
+    --active: #{color($color, 6)};
+    --border: #{color($color, 4)};
+  }
+
+  @include tm-dark(false) {
+    --active: #{color($color, 4)};
+    --border: #{color($color, 6)};
+  }
+}
+
+x-n {
+  background-position: bottom bottom;
+
+  .cv-line:hover &,
+  .cv-line.focus &,
+  .cv-line.debug &,
+  &:hover {
+    background: linear-gradient(to top, var(--border) 0.75px, transparent 0);
+  }
+
+  // &:hover {
+  //   position: relative;
+  //   &::after {
+  //     @include fgcolor(tert);
+  //     @include bgcolor(tert, 0.5);
+
+  //     position: absolute;
+  //     top: -40%;
+  //     left: 0;
+  //     right: 0;
+  //     display: inline-flex;
+  //     flex-wrap: nowrap;
+  //     justify-content: center;
+  //     min-width: 4em;
+  //     line-height: 1em;
+  //     font-size: 0.6em;
+
+  //     content: attr(z) ' (' attr(p) ')';
+  //   }
+  // }
+
+  // essence + fixture
+  &[d='1'] {
+    @include cv-node(purple);
+  }
+
+  // unique
+  &[d='2'] {
+    @include cv-node(teal);
+  }
+
+  // regular
+  &[d='3'] {
+    @include cv-node(primary);
+  }
+
+  // suggest
+  &[d='4'] {
+    @include cv-node(success);
+  }
+
+  // autogen
+  &[data-d='5'] {
+    @include cv-node(warning);
+  }
+
+  &:hover,
+  &.hover {
+    color: var(--active);
+  }
+
+  // prettier-ignore
+  &.focus {
+    @include fgcolor(secd);
+    background: color(success, 5, 2) !important;
+    .tm-dark & { background: color(purple, 4, 3) !important; }
+    .tm-oled & { background: color(purple, 4, 4) !important; }
+  }
+
+  // c-g & {
+  //   cursor: pointer;
+  //   // prettier-ignore
+  //   &:hover, &.hover, &.focus { color: var(--active); }
+  // }
+}
+
+// prettier-ignore
+// @mixin vg-wrap($left: '{', $right: '}') {
+//   &:before, &:after { font-style: normal; }
+//   &:before { content: $left; }
+//   &:after { content: $right; }
+// }
+
+// v-g {
+//   --vgcolor: var(--fgmain);
+
+//   .cv-line.debug & {
+//     background: none !important;
+
+//     // prettier-ignore
+//     &:before, &:after { color: var(--vgcolor); }
+//     @include vg-wrap('[', ']');
+
+//     v-n {
+//       color: var(--vgcolor);
+//       // prettier-ignore
+//       &:hover { color: var(--active); }
+//     }
+//   }
+
+//   &[d='0'],
+//   &[d='1'] {
+//     @include vg-wrap('', '');
+//   }
+
+//   $colors: (gray, green, blue, teal, orange, fuchsia, purple, pink, red);
+
+//   @for $i from 1 through 9 {
+//     &[d='#{$i}'] {
+//       $color: list.nth($colors, $i);
+//       --vgcolor: #{color($color, 5)};
+//     }
+//   }
+// }

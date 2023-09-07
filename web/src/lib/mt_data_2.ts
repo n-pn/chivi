@@ -4,184 +4,95 @@ function escape_html(str: string | null) {
   return str && str.replace(/[&<>]/g, (x) => escape_tags[x] || x)
 }
 
-export default class MtData2 {
-  data: any[]
-  _html: string
-  _text: string
+export type Cdata = [
+  string,
+  number,
+  number,
+  string,
+  number | Array<Cdata>,
+  string | null,
+  string | null
+]
 
-  static parse_lines(input = ''): MtData2[] {
-    if (!input) return []
+function no_pad_ws(und = false, attr = '') {
+  return und || attr.match(/Hide|Undb/)
+}
 
-    return input
-      .trim()
-      .split('\n')
-      .map((x) => new MtData2(x))
+function capitalize(str: String) {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
+function apply_cap(vstr: string, cap = false, attr = ''): [string, boolean] {
+  if (attr.includes('Hide')) return ['', cap]
+  if (attr.includes('Capx')) return [vstr, cap]
+  if (attr.includes('Asis') || !cap) return [vstr, attr.includes('Capn')]
+  return [capitalize(vstr), attr.includes('Capn')]
+}
+
+function render_vstr(vstr: string, cpos: string) {
+  const safe_vstr = escape_html(vstr)
+
+  switch (cpos) {
+    case 'EM':
+      return `<pre>${safe_vstr}</pre>`
+    case 'URL':
+      return `<a href="${safe_vstr}" target=_blank rel=noreferrer>${safe_vstr}</a>`
+    default:
+      return safe_vstr
   }
+}
 
-  constructor(input: string) {
-    this.data = this.parse(Array.from(input), 0)[0]
-  }
+export function render_cdata(input: Cdata, plain = true, lvl = 0) {
+  const queue = [input]
 
-  parse(chars: string[], i = 0): any[] {
-    const data = []
-    let term = []
-    let word = ''
+  let out = ''
+  let cap = true
+  let und = true
 
-    while (i < chars.length) {
-      const char = chars[i]
-      i += 1
+  while (true) {
+    const node = queue.pop()
+    if (!node) break
 
-      switch (char) {
-        case '〉':
-          if (word) term.push(word)
-          if (term.length > 0) data.push(term)
-          return [data, i]
+    const [cpos, _idx, _len, attr, body, vstr, zstr] = node
+    if (Array.isArray(body)) {
+      for (let i = body.length - 1; i >= 0; i--) queue.push(body[i])
+    } else {
+      if (!no_pad_ws(und, attr)) out += ' '
+      const [vstr2, cap2] = apply_cap(vstr || '', cap, attr)
+      cap = cap2
+      und = attr.includes('Hide') ? und : attr.includes('Undn')
 
-        case '〈':
-          if (word) term.push(word)
-          if (term.length > 0) data.push(term)
-          const fold = chars[i]
-          const [child, j] = this.parse(chars, i + 1)
-          data.push([child, fold])
-          i = j
+      const fchar = vstr.charAt(0)
 
-          word = ''
-          term = []
-
-          break
-
-        case '\t':
-          if (word) term.push(word)
-          if (term.length > 0) data.push(term)
-
-          word = ''
-          term = []
-
-          break
-
-        case 'ǀ':
-          term.push(word)
-          word = ''
-          break
-
-        default:
-          word += char
-      }
-    }
-
-    if (word) term.push(word)
-    if (term.length > 0) data.push(term)
-
-    return [data, i]
-  }
-
-  get html() {
-    this._html = this._html || this.render_cv(this.data, false)
-    return this._html
-  }
-
-  get text() {
-    this._text = this._text || this.render_cv(this.data, true)
-    return this._text
-  }
-
-  render_cv(data = this.data, text = true, lvl = 0) {
-    let res = ''
-
-    for (const [val, dic, idx, len] of data) {
-      if (Array.isArray(val)) {
-        const inner = this.render_cv(val, text, lvl)
-
-        if (text) res += inner
-        else res += `<v-g data-d=${dic}>${inner}</v-g>`
-        continue
+      if (fchar == '“' || fchar == '‘') {
+        out += '<em>'
+        lvl += 1
+      } else if (fchar == '⟨') {
+        out += '<cite>'
       }
 
-      if (val == ' ') {
-        res += ' '
-        continue
+      if (plain) {
+        out += render_vstr(vstr2, cpos)
+      } else {
+        const u = _idx + _len
+        out += `<x-n d=${body} b=${_idx} e=${u}>`
+        out += render_vstr(vstr2, cpos)
+        out += `</x-n>`
       }
 
-      const esc = escape_html(val)
+      const lchar = vstr.charAt(vstr.length - 1)
 
-      if (text) res += esc
-      else {
-        const l = idx
-        const u = +idx + +len
-        res += `<v-n data-d=${dic} data-l=${l} data-u=${u}>${esc}</v-n>`
-      }
-    }
-
-    const first_val = data[0][0]
-
-    if (typeof first_val == 'string') {
-      const fval = first_val[0]
-
-      if (fval == '“' || fval == '‘') {
-        return '<em>' + res + '</em>'
-      } else if (fval == '⟨') {
-        return '<cite>' + res + '</cite>'
-      }
-    }
-
-    const last_val = data[data.length - 1][0]
-    if (typeof last_val == 'string') {
-      const lval = last_val[last_val.length - 1]
-
-      if (lval == '”' || lval == '’') {
+      if (lchar == '”' || lchar == '’') {
         lvl -= 1
-        res += '</em>'
-      } else if (lval == '⟩') {
-        res += '</cite>'
+        out += '</em>'
+      } else if (lchar == '⟩') {
+        out += '</cite>'
       }
     }
-
-    return res
   }
 
-  render_hv() {
-    let res = ''
+  if (lvl > 0) for (; lvl; lvl--) out += '</em>'
+  if (lvl < 0) for (; lvl; lvl++) out = '<em>' + out
 
-    for (const [val, dic, idx, len] of this.data) {
-      if (val == ' ') {
-        res += ' '
-        continue
-      }
-
-      let chars = val.split(' ')
-
-      res += `<c-g data-d=${dic}>`
-      for (let j = 0; j < chars.length; j++) {
-        if (j > 0) res += ' '
-
-        const v = escape_html(chars[j])
-        const l = +idx + j
-        const u = l + 1
-        res += `<x-n data-d=2 data-l=${l} data-u=${u}>${v}</x-n>`
-      }
-      res += '</c-g>'
-    }
-
-    return res
-  }
-
-  static render_zh(input: string) {
-    let res = ''
-    let idx = 0
-
-    for (const chars of Array.from(input)) {
-      res += `<c-g data-d=1>`
-
-      for (let j = 0; j < chars.length; j++) {
-        const v = escape_html(chars[j])
-        const u = idx + 1
-        res += `<x-n data-d=2 data-l=${idx} data-u=${u}>${v}</x-n>`
-        idx += 1
-      }
-
-      res += '</c-g>'
-    }
-
-    return res
-  }
+  return out
 }

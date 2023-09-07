@@ -2,16 +2,8 @@ import { api_get } from '$lib/api_call'
 import { _pgidx } from '$lib/kit_path'
 
 import type { PageLoad } from './$types'
-
-interface Data {
-  ztext: string
-
-  mtl_1: string
-  txt_2: string
-
-  cdata: string
-  _algo: string
-}
+import type { Cdata } from '$lib/mt_data_2'
+import { error } from '@sveltejs/kit'
 
 export const load = (async ({ parent, params, fetch }) => {
   const { nvinfo, chdata } = await parent()
@@ -19,8 +11,15 @@ export const load = (async ({ parent, params, fetch }) => {
   const cpart = parseInt((params.part || '').split('-').pop(), 10) || 1
   const cpath = `${chdata.cbase}-${cpart}`
 
-  const qturl = `/_ai/qtran/wnchap?cpath=${cpath}&pdict=book/${nvinfo.id}`
-  const data = await api_get<Data>(qturl, fetch)
+  const url = `/_ai/qtran/wnchap?cpath=${cpath}&pdict=book/${nvinfo.id}`
+  const res = await fetch(url, {
+    headers: { 'Content-Type': 'application/json' },
+  })
 
-  return { ...data, cpart, rmode: 'ai' }
+  if (!res.ok) throw error(res.status, await res.text())
+
+  const cdata = (await res.json()) as Array<Cdata>
+  const _algo = res.headers['_ALGO'] || ''
+
+  return { cdata, _algo, cpart, rmode: 'ai' }
 }) satisfies PageLoad

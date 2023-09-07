@@ -12,63 +12,41 @@ class MT::AiTranCtrl < AC::Base
 
     cdata, _algo = AiTranUtil.load_chap_con_data(cpath, _algo, _auto)
 
-    ztext = String::Builder.new
-    cvmtl = String::Builder.new
-
     ai_mt = AiCore.new(pdict, true)
 
-    cdata.each_line do |line|
-      next if line.empty?
-      data = ai_mt.tl_from_con_data(line)
-
-      ztext << data.zstr
-      data.to_cjo(io: cvcjo, cap: true, und: true)
-
-      ztext << '\n'
-      cvcjo << '\n'
+    output = JSON.build do |jb|
+      jb.array do
+        cdata.each_line do |line|
+          ai_mt.tl_from_con_data(line).to_cjo(jb: jb) unless line.empty?
+        end
+      end
     end
 
-    if _cfg_enabled?("view_dual")
-      kind = _read_cookie("dual_kind") || "bzv"
-      txt_2 = AiTranUtil.read_dual_wntext(cpath, kind)
-    else
-      txt_2 = ""
-    end
-
-    output = {
-      ztext: ztext.to_s,
-
-      cjo_1: cvcjo.to_s,
-      txt_2: txt_2,
-
-      cdata: cdata,
-      _algo: _algo,
-    }
-
-    render json: output
+    response.headers["_ALGO"] = _algo
+    render text: output
   rescue ex
-    Log.error(exception: ex) { [cpath, _algo] }
-    render 455, "Chương tiết chưa được phân tích!"
+    Log.error(exception: ex) { [cpath, pdict] }
+    render 455, ex.message
   end
 
-  @[AC::Route::GET("/debug/ztext")]
-  def debug(ztext : String, pdict : String = "rand/fixture")
-    _algo = _read_cookie("c_algo") || "auto"
-    cdata = AiTranUtil.get_con_data_from_hanlp(ztext, _algo)
+  # @[AC::Route::GET("/debug/ztext")]
+  # def debug(ztext : String, pdict : String = "rand/fixture")
+  #   _algo = _read_cookie("c_algo") || "auto"
+  #   cdata = AiTranUtil.get_con_data_from_hanlp(ztext, _algo)
 
-    aidata = AiCore.new(pdict, true).tl_from_con_data(cdata)
+  #   aidata = AiCore.new(pdict, true).tl_from_con_data(cdata)
 
-    output = {
-      ztext: ztext,
-      cdata: cdata,
+  #   output = {
+  #     ztext: ztext,
+  #     cdata: cdata,
 
-      cjo_a: aidata.to_cjo(true, false),
-      mtl_b: AiTranUtil.get_v1_qtran_mtl(ztext, pdict),
-      txt_b: AiTranUtil.call_free_btran(ztext, "bzv"),
-    }
+  #     cjo_a: aidata.to_cjo(true, false),
+  #     mtl_b: AiTranUtil.get_v1_qtran_mtl(ztext, pdict),
+  #     txt_b: AiTranUtil.call_free_btran(ztext, "bzv"),
+  #   }
 
-    render json: output
-  end
+  #   render json: output
+  # end
 
   # TODO: reimplement this
   # @[AC::Route::POST("/preview")]
