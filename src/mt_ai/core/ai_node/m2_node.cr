@@ -87,16 +87,16 @@ class MT::M2Node
   end
 
   def fix_vcd!
-    MtDefn.vcd_pair.fix_if_match!(@right, @left, MtStem.verb_stem(@left.zstr))
+    MtPair.vcd_pair.fix_if_match!(@right, @left, MtStem.verb_stem(@left.zstr))
   end
 
   def fix_vcp!
-    MtDefn.vcp_pair.fix_if_match!(@right, @left, MtStem.verb_stem(@left.zstr))
+    MtPair.vcp_pair.fix_if_match!(@right, @left, MtStem.verb_stem(@left.zstr))
   end
 
   def fix_vrd!
     @left.find_by_cpos("AS").try(&.add_prop!(MtProp[Asis, Hide]))
-    MtDefn.vrd_pair.fix_if_match!(@right, @left, MtStem.verb_stem(@left.zstr))
+    MtPair.vrd_pair.fix_if_match!(@right, @left, MtStem.verb_stem(@left.zstr))
   end
 
   ###

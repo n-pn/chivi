@@ -1,7 +1,7 @@
 module MT::MtStem
   extend self
 
-  DIR = "var/mtdic/mt_ai/core"
+  DIR = "var/mtdic/mt_ai"
 
   def self.load_tsv(dname : String)
     db_path = "#{DIR}/#{dname}.tsv"

@@ -138,7 +138,7 @@ class MT::NpNode
         # TODO: consume node
 
         if qp_node
-          MtDefn.fix_m_n_pair!(qp_node, node)
+          MtPair.fix_m_n_pair!(qp_node, node)
           qp_node = nil
         end
 

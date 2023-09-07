@@ -1,7 +1,7 @@
 require "./mt_prop"
 
-class MT::MtDefn
-  struct Defn
+class MT::MtPair
+  struct Pair
     getter a_vstr : String
     getter a_prop : MtProp?
 
@@ -22,10 +22,10 @@ class MT::MtDefn
   end
 
   def initialize(@dname : String)
-    @hash = {} of String => Hash(String, Defn)
+    @hash = {} of String => Hash(String, Pair)
   end
 
-  DIR = "var/mtdic/mt_ai/core"
+  DIR = "var/mtdic/mt_ai"
 
   def load_tsv!(dname : String = @dname)
     db_path = "#{DIR}/#{dname}.tsv"
@@ -36,8 +36,8 @@ class MT::MtDefn
       next if cols.size < 3
       a_zstr, b_zstr, *cols = cols
 
-      hash = @hash[a_zstr] ||= {} of String => Defn
-      hash[b_zstr] = Defn.new(cols)
+      hash = @hash[a_zstr] ||= {} of String => Pair
+      hash[b_zstr] = Pair.new(cols)
     end
 
     self
@@ -82,6 +82,6 @@ class MT::MtDefn
   def self.fix_m_n_pair!(q_node : AiNode, n_node : AiNode) : Void
     return unless m_node = q_node.find_by_cpos("M")
     n_stem = MtStem.noun_stem(n_node.last.zstr)
-    MtDefn.m_n_pair.fix_if_match!(m_node, n_node, n_stem)
+    self.m_n_pair.fix_if_match!(m_node, n_node, n_stem)
   end
 end
