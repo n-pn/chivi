@@ -1,9 +1,3 @@
-const escape_tags = { '&': '&amp;', '"': '&quot;', "'": '&apos;' }
-
-function escape_html(str: string | null) {
-  return str && str.replace(/[&<>]/g, (x) => escape_tags[x] || x)
-}
-
 export type Cdata = [
   string,
   number,
@@ -14,12 +8,18 @@ export type Cdata = [
   string | null
 ]
 
-function no_pad_ws(und = false, attr = '') {
-  return und || attr.match(/Hide|Undb/)
+const escape_tags = { '&': '&amp;', '"': '&quot;', "'": '&apos;' }
+
+function escape_htm(str: string) {
+  return str.replace(/[&<>]/g, (x) => escape_tags[x] || x)
 }
 
 function capitalize(str: String) {
   return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
+function skip_space(und = false, attr = '') {
+  return und || attr.match(/Hide|Undb/)
 }
 
 function apply_cap(vstr: string, cap = false, attr = ''): [string, boolean] {
@@ -30,7 +30,7 @@ function apply_cap(vstr: string, cap = false, attr = ''): [string, boolean] {
 }
 
 function render_vstr(vstr: string, cpos: string) {
-  const safe_vstr = escape_html(vstr)
+  const safe_vstr = escape_htm(vstr)
 
   switch (cpos) {
     case 'EM':
@@ -42,57 +42,60 @@ function render_vstr(vstr: string, cpos: string) {
   }
 }
 
-export function render_cdata(input: Cdata, plain = true, lvl = 0) {
-  const queue = [input]
-
+export function render_cdata(input: Cdata, rmode = 1, cap = true) {
   let out = ''
-  let cap = true
   let und = true
+  let lvl = 0
 
+  const queue = [input]
   while (true) {
     const node = queue.pop()
     if (!node) break
 
-    const [cpos, _idx, _len, attr, body, vstr, zstr] = node
+    const [cpos, _idx, _len, attr, body, vstr] = node
     if (Array.isArray(body)) {
       for (let i = body.length - 1; i >= 0; i--) queue.push(body[i])
     } else {
-      if (!no_pad_ws(und, attr)) out += ' '
+      if (!skip_space(und, attr)) out += ' '
       const [vstr2, cap2] = apply_cap(vstr || '', cap, attr)
       cap = cap2
       und = attr.includes('Hide') ? und : attr.includes('Undn')
 
-      const fchar = vstr.charAt(0)
-
-      if (fchar == '“' || fchar == '‘') {
-        out += '<em>'
-        lvl += 1
-      } else if (fchar == '⟨') {
-        out += '<cite>'
-      }
-
-      if (plain) {
-        out += render_vstr(vstr2, cpos)
-      } else {
-        const u = _idx + _len
-        out += `<x-n d=${body} b=${_idx} e=${u}>`
+      if (rmode == 2) {
+        out += `<x-n d=${body} b=${_idx} e=${_idx + _len}>`
         out += render_vstr(vstr2, cpos)
         out += `</x-n>`
+      } else if (rmode == 1) {
+        out += render_vstr(vstr2, cpos)
+      } else {
+        out += escape_htm(vstr2)
       }
 
-      const lchar = vstr.charAt(vstr.length - 1)
+      if (rmode > 0) {
+        const fchar = vstr.charAt(0)
+        if (fchar == '“' || fchar == '‘') {
+          out = '<em>' + out
+          lvl += 1
+        } else if (fchar == '⟨') {
+          out = '<cite>' + out
+        }
 
-      if (lchar == '”' || lchar == '’') {
-        lvl -= 1
-        out += '</em>'
-      } else if (lchar == '⟩') {
-        out += '</cite>'
+        const lchar = vstr.charAt(vstr.length - 1)
+
+        if (lchar == '”' || lchar == '’') {
+          lvl -= 1
+          out += '</em>'
+        } else if (lchar == '⟩') {
+          out += '</cite>'
+        }
       }
     }
   }
 
-  if (lvl > 0) for (; lvl; lvl--) out += '</em>'
-  if (lvl < 0) for (; lvl; lvl++) out = '<em>' + out
+  if (rmode > 0) {
+    if (lvl < 0) for (; lvl; lvl++) out = '<em>' + out
+    else if (lvl > 0) for (; lvl; lvl--) out += '</em>'
+  }
 
   return out
 }
