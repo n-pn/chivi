@@ -31,12 +31,16 @@ class MT::AiData
     @root.to_txt(io, cap: cap, und: und)
   end
 
-  def to_mtl(cap : Bool = true, und : Bool = true)
-    String.build { |io| to_mtl(io, cap: cap, und: und) }
+  def to_cjo
+    JSON.build { |jb| to_cjo(jb) }
   end
 
-  def to_mtl(io : IO, cap : Bool, und : Bool) : Nil
-    @root.to_mtl(io: io, cap: cap, und: und)
+  def to_cjo(io : IO) : Nil
+    JSON.build(io) { |jb| @root.to_cjo(jb: jb) }
+  end
+
+  def to_cjo(jb : JSON::Builder) : Nil
+    @root.to_cjo(jb: jb)
   end
 
   ###
@@ -104,11 +108,11 @@ class MT::AiData
   def self.init_attr_from_cpos(cpos)
     cpos, *tags = cpos.split('-')
 
-    attr = case cpos
-           when "NR" then MtAttr::Npos
-           when "NT" then MtAttr::Ntmp
-           else           MtAttr::None
-           end
+    case cpos
+    when "NR" then attr = MtAttr::Npos
+    when "NT" then attr = MtAttr::Ntmp
+    else           attr = MtAttr::None
+    end
 
     tags.each do |ctag|
       case ctag

@@ -22,10 +22,10 @@ class MT::AiTranCtrl < AC::Base
       data = ai_mt.tl_from_con_data(line)
 
       ztext << data.zstr
-      data.to_mtl(io: cvmtl, cap: true, und: true)
+      data.to_cjo(io: cvcjo, cap: true, und: true)
 
       ztext << '\n'
-      cvmtl << '\n'
+      cvcjo << '\n'
     end
 
     if _cfg_enabled?("view_dual")
@@ -38,13 +38,13 @@ class MT::AiTranCtrl < AC::Base
     output = {
       ztext: ztext.to_s,
 
-      mtl_1: cvmtl.to_s,
+      cjo_1: cvcjo.to_s,
       txt_2: txt_2,
 
       cdata: cdata,
       _algo: _algo,
-
     }
+
     render json: output
   rescue ex
     Log.error(exception: ex) { [cpath, _algo] }
@@ -62,7 +62,7 @@ class MT::AiTranCtrl < AC::Base
       ztext: ztext,
       cdata: cdata,
 
-      mtl_a: aidata.to_mtl(true, false),
+      cjo_a: aidata.to_cjo(true, false),
       mtl_b: AiTranUtil.get_v1_qtran_mtl(ztext, pdict),
       txt_b: AiTranUtil.call_free_btran(ztext, "bzv"),
     }
@@ -70,19 +70,20 @@ class MT::AiTranCtrl < AC::Base
     render json: output
   end
 
-  @[AC::Route::GET("/debug/cdata")]
-  def debug(cdata : String, pdict : String = "rand/fixture")
-    aidata = AiCore.new(pdict, true).tl_from_con_data(cdata)
+  # TODO: reimplement this
+  # @[AC::Route::POST("/preview")]
+  # def preview(cdata : String, pdict : String = "rand/fixture")
+  #   aidata = AiCore.new(pdict, true).tl_from_con_data(cdata)
 
-    output = {
-      ztext: aidata.zstr,
-      cdata: cdata,
+  #   output = {
+  #     ztext: aidata.zstr,
+  #     cdata: cdata,
 
-      mtl_a: aidata.to_mtl(true, false),
-      mtl_b: AiTranUtil.get_v1_qtran_mtl(aidata.zstr, pdict),
-      txt_b: AiTranUtil.call_free_btran(aidata.zstr),
-    }
+  #     mtl_a: aidata.to_mtl(true, false),
+  #     mtl_b: AiTranUtil.get_v1_qtran_mtl(aidata.zstr, pdict),
+  #     txt_b: AiTranUtil.call_free_btran(aidata.zstr),
+  #   }
 
-    render json: output
-  end
+  #   render json: output
+  # end
 end

@@ -17,6 +17,7 @@ data.root.inspect(STDOUT)
 puts
 puts "--------------------------------".colorize.dark_gray
 puts data.to_txt.colorize.yellow
-
+puts "--------------------------------".colorize.dark_gray
+puts data.to_cjo.colorize.cyan
 puts "--------------------------------".colorize.dark_gray
 puts "Total time used (including loading dicts): #{(Time.monotonic - time).total_milliseconds.round}ms".colorize.red

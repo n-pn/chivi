@@ -1,4 +1,5 @@
 require "../../_util/char_util"
+require "../../_util/text_util"
 
 @[Flags]
 # word peculiarity
@@ -109,6 +110,15 @@ enum MT::MtAttr
     end
 
     {cap, self.hide? ? und : self.undn?}
+  end
+
+  def fix_vstr(vstr : String, cap : Bool) : {String, Bool}
+    case
+    when self.hide?         then {"", cap || self.capn?}
+    when self.capx?         then {vstr, cap}
+    when self.asis? || !cap then {vstr, self.capn?}
+    else                         {TextUtil.capitalize(vstr), self.capn?}
+    end
   end
 
   ###

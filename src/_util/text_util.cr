@@ -67,20 +67,14 @@ module TextUtil
   # - don't downcase extra characters
   # - treat unicode alphanumeric chars as upcase-able
   def capitalize(input : String) : String
-    # TODO: handle punctuations?
-    res = String::Builder.new(input.size)
-    uncap = true
+    String.build(input.size) do |io|
+      uncap = true
 
-    input.each_char do |char|
-      if uncap && char.alphanumeric?
-        res << char.upcase
+      input.each_char do |char|
+        io << (uncap && char.alphanumeric? ? char.upcase : char)
         uncap = false
-      else
-        res << char
       end
     end
-
-    res.to_s
   end
 
   # make url friendly string

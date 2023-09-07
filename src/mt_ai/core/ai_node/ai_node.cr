@@ -7,7 +7,7 @@ module MT::AiNode
   getter vstr : String = ""
   getter attr : MtAttr = MtAttr::None
 
-  getter _dic : Int32 = -1
+  getter _dic : Int8 = -1_i8
   getter _idx : Int32 = 0
 
   abstract def z_each(& : AiNode ->)
@@ -36,12 +36,12 @@ module MT::AiNode
     end
   end
 
-  def set_term!(term, @_dic : Int32 = 1) : Nil
+  def set_term!(term, @_dic : Int8 = 1) : Nil
     @vstr = term.vstr
     @attr |= term.attr
   end
 
-  def set_vstr!(@vstr : String, @_dic : Int32 = 1) : Nil
+  def set_vstr!(@vstr : String, @_dic : Int8 = 1) : Nil
   end
 
   def add_attr!(attr : MtAttr)
@@ -85,21 +85,22 @@ module MT::AiNode
     end
   end
 
-  SEP = 'ǀ'
+  def to_cjo(jb : JSON::Builder) : Nil
+    jb.array do
+      jb.string @cpos
+      jb.number @_idx
+      jb.number @zstr.size
+      jb.string(@attr.none? ? "" : @attr.to_str)
 
-  def to_mtl(io : IO, cap : Bool, und : Bool)
-    if @_dic >= 0
-      io << '\t' << ' ' unless @attr.undent?(und: und)
-      io << '\t'
-
-      cap, und = @attr.render_vstr(io, @vstr, cap: cap, und: und)
-      io << SEP << @_dic << SEP << @_idx << SEP << @zstr.size
-      {cap, und}
-    elsif self.is_a?(M0Node)
-      raise "translation missing!"
-    else
-      self.v_each { |node| cap, und = node.to_mtl(io, cap: cap, und: und) }
-      {cap, und}
+      if @_dic >= 0 || self.is_a?(M0Node)
+        jb.number @_dic
+        jb.string @vstr
+        jb.string @zstr
+      else
+        jb.array do
+          self.v_each { |node| node.to_cjo(jb) }
+        end
+      end
     end
   end
 end

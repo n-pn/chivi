@@ -123,7 +123,7 @@ def do_test(input : String)
   puts "--------------------------------".colorize.dark_gray
   puts data.to_txt.colorize.yellow
   puts "--------------------------------".colorize.dark_gray
-  puts data.to_mtl.colorize.blue
+  puts data.to_cjo.colorize.blue
 end
 
 start = Time.monotonic

@@ -80,7 +80,7 @@ class MT::ViTerm
     @iattr = MtAttr.parse_list!(@attr).to_i
   end
 
-  def to_json(jb : JSON::Builder)
+  def to_cjo(jb : JSON::Builder)
     jb.object do
       jb.field "zstr", @zstr
       jb.field "cpos", @cpos

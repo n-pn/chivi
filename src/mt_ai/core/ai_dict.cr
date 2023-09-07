@@ -20,8 +20,9 @@ class MT::AiDict
     @dict_list = {@main_dict, Entry.regular, @auto_dict, Entry.suggest}
   end
 
-  def get(zstr : String, cpos : String) : {MtTerm, Int32}
-    get?(zstr, cpos) || get_alt?(zstr) || {init(zstr, cpos), Dtype::Autogen.to_i}
+  def get(zstr : String, cpos : String) : {MtTerm, Int8}
+    get?(zstr, cpos) || get_alt?(zstr) ||
+      {init(zstr, cpos), Dtype::Autogen.to_i8}
   end
 
   def get?(zstr : String, cpos : String)
@@ -70,7 +71,7 @@ class MT::AiDict
 
   ###########
 
-  enum Dtype
+  enum Dtype : Int8
     Unknown = 0 # reserved
     Essence = 1 # top most level definitions, triumph all, for unique terms only
     Primary = 2 # book dict/priv dict/fixture dict that override regular terms
@@ -91,22 +92,13 @@ class MT::AiDict
     def get?(zstr : String, cpos : String)
       return unless entry = @data[zstr]?
       return unless found = entry[cpos]?
-      {found, @dtype.to_i}
-    end
-
-    def get?(zstr : String, *cpos_list : String)
-      return unless entry = @data[zstr]?
-
-      cpos_list.each do |cpos|
-        next unless found = entry[cpos]
-        return found
-      end
+      {found, @dtype.to_i8}
     end
 
     def any?(zstr : String)
       return unless entry = @data[zstr]?
       return unless found = entry["_"]? || entry.first_value?
-      {found, @dtype.to_i}
+      {found, @dtype.to_i8}
     end
 
     ####
