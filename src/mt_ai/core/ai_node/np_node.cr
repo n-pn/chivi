@@ -7,7 +7,7 @@ class MT::NpNode
   getter orig = [] of AiNode
   getter data = [] of AiNode
 
-  def initialize(@orig : Array(AiNode), @cpos, @_idx, @prop = :none)
+  def initialize(@orig : Array(AiNode), @cpos, @_idx, @attr = :none)
     @_pos = 0
     @zstr = orig.join(&.zstr)
   end
@@ -93,7 +93,7 @@ class MT::NpNode
         i_hd &+= 1
       when "DP"
         dt_node, qp_node = AiRule.split_dp(node)
-        if dt_node.prop.at_h?
+        if dt_node.attr.at_h?
           data.insert(i_hd, dt_node)
           i_hd &+= 1
         else
@@ -109,7 +109,7 @@ class MT::NpNode
         # FIXME: split phrase if first element is CD
         data.insert(i_hd, node)
       when "DNP"
-        if node.prop.at_h?
+        if node.attr.at_h?
           data.insert(i_hd, node)
           i_hd &+= 1
         else

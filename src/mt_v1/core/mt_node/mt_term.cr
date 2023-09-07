@@ -33,7 +33,8 @@ class M1::MtTerm < M1::MtNode
   end
 
   def initialize(char : Char, @idx = 0)
-    @key = @val = char.to_s
+    @key = char.to_s
+    @val = CharUtil.normalize(char).to_s
 
     @tag =
       case char
@@ -121,7 +122,7 @@ class M1::MtTerm < M1::MtNode
   end
 
   def space_before?(prev : MtTerm) : Bool
-    return false if @val.blank? || prev.val == "　"
+    return false if @val.blank? || prev.val == " "
     return space_before?(prev.prev?) if prev.val.empty?
 
     case

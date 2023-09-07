@@ -1,5 +1,5 @@
 @[Flags]
-enum M2::MtProp
+enum M2::MtAttr
   Void # for word that marked empty
 
   NoSpaceL # no space before

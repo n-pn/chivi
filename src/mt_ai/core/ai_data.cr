@@ -71,8 +71,8 @@ class MT::AiData
         size &+= 1
       end
 
-      cpos, prop = init_prop_from_cpos(cpos)
-      return {M0Node.new(zstr.to_s, cpos, _idx, prop), _idx + size}
+      cpos, attr = init_attr_from_cpos(cpos)
+      return {M0Node.new(zstr.to_s, cpos, _idx, attr), _idx + size}
     end
 
     nodes = [] of AiNode
@@ -89,34 +89,34 @@ class MT::AiData
     # pp nodes
 
     size = nodes.size
-    cpos, prop = init_prop_from_cpos(cpos)
+    cpos, attr = init_attr_from_cpos(cpos)
 
     case
-    when size == 1    then {M1Node.new(nodes[0], cpos, from, prop), _idx}
-    when cpos == "NP" then {NpNode.new(nodes, cpos, from, prop), _idx}
-    when cpos == "VP" then {VpNode.new(nodes, cpos, from, prop), _idx}
-    when size == 2    then {M2Node.new(nodes[0], nodes[1], cpos, from, prop), _idx}
-    when size == 3    then {M3Node.new(nodes[0], nodes[1], nodes[2], cpos, from, prop), _idx}
-    else                   {MxNode.new(nodes, cpos, from, prop), _idx}
+    when size == 1    then {M1Node.new(nodes[0], cpos, from, attr), _idx}
+    when cpos == "NP" then {NpNode.new(nodes, cpos, from, attr), _idx}
+    when cpos == "VP" then {VpNode.new(nodes, cpos, from, attr), _idx}
+    when size == 2    then {M2Node.new(nodes[0], nodes[1], cpos, from, attr), _idx}
+    when size == 3    then {M3Node.new(nodes[0], nodes[1], nodes[2], cpos, from, attr), _idx}
+    else                   {MxNode.new(nodes, cpos, from, attr), _idx}
     end
   end
 
-  def self.init_prop_from_cpos(cpos)
+  def self.init_attr_from_cpos(cpos)
     cpos, *tags = cpos.split('-')
 
-    prop = case cpos
-           when "NR" then MtProp::Npos
-           when "NT" then MtProp::Ntmp
-           else           MtProp::None
+    attr = case cpos
+           when "NR" then MtAttr::Npos
+           when "NT" then MtAttr::Ntmp
+           else           MtAttr::None
            end
 
     tags.each do |ctag|
       case ctag
-      when "PN"  then prop |= MtProp[Nper, Npos]
-      when "TMP" then prop |= MtProp[Ntmp]
+      when "PN"  then attr |= MtAttr[Nper, Npos]
+      when "TMP" then attr |= MtAttr[Ntmp]
       end
     end
 
-    {cpos, prop}
+    {cpos, attr}
   end
 end

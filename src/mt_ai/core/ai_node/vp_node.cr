@@ -6,7 +6,7 @@ class MT::VpNode
   getter orig = [] of AiNode
   getter data = [] of AiNode
 
-  def initialize(@orig, @cpos, @_idx, @prop = :none)
+  def initialize(@orig, @cpos, @_idx, @attr = :none)
     @_pos = 0
     @zstr = orig.join(&.zstr)
   end
@@ -79,19 +79,19 @@ class MT::VpNode
       when "ADVP"
         node = AiRule.heal_advp!(dict, node)
         data.insert(i_tl, node)
-        i_tl -= 1 if node._idx < v_node._idx && node.prop.at_t?
+        i_tl -= 1 if node._idx < v_node._idx && node.attr.at_t?
       when "PP"
         if node._idx < v_node._idx
           node = AiRule.heal_pp!(dict, node, v_stem || "_")
           data.insert(i_tl, node)
-          i_tl -= 1 if node.prop.at_t?
+          i_tl -= 1 if node.attr.at_t?
         else
           data.insert(i_tl, node)
         end
       when "AS"
-        if node.zstr == "了" && @_pos == _max && !node.prop.asis?
+        if node.zstr == "了" && @_pos == _max && !node.attr.asis?
           node.set_vstr!("rồi")
-          node.off_prop!(:hide)
+          node.off_attr!(:hide)
           data.insert(i_tl, node)
         else
           # TODO: add tense if no adverb
@@ -106,7 +106,7 @@ class MT::VpNode
         data.insert(i_tl, node)
       when "NP"
         # TODO: fix meaning
-        if node.prop.nper? && v_stem == "想"
+        if node.attr.nper? && v_stem == "想"
           v_node.set_vstr!("nhớ")
         end
 

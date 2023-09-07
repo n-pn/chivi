@@ -15,6 +15,20 @@ def import_from_old_regular
     end
   end
 
+  MT::ViTerm.db("_old/-2").open_ro do |db|
+    db.query_each("select * from terms") do |rs|
+      entry = rs.read(MT::ViTerm)
+      entries << entry unless existed.includes?({entry.zstr, entry.cpos})
+    end
+  end
+
+  MT::ViTerm.db("_old/-3").open_ro do |db|
+    db.query_each("select * from terms") do |rs|
+      entry = rs.read(MT::ViTerm)
+      entries << entry unless existed.includes?({entry.zstr, entry.cpos})
+    end
+  end
+
   puts entries.size
 
   MT::ViTerm.db("regular").open_tx do |db|
@@ -31,7 +45,7 @@ def import_from_old_noun_dic
 
       if entry.cpos == "_"
         entry.cpos = "NN"
-        entry.prop = "Npos"
+        entry.attr = "Npos"
         entry.fix_enums!
       end
 
@@ -134,4 +148,9 @@ def import_from_old_uzhi_dic
   end
 end
 
-# import_from_old_uzhi_dic
+import_from_old_regular
+import_from_old_noun_dic
+import_from_old_verb_dic
+import_from_old_adjt_dic
+import_from_old_advb_dic
+import_from_old_uzhi_dic

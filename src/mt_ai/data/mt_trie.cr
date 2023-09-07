@@ -9,18 +9,18 @@ class MT::MtTrie
 
   ###
 
-  getter data = Node.new
+  getter root = Node.new
 
   def initialize(@dname : String)
   end
 
   @[AlwaysInline]
-  def add(zstr : String, vstr : String, prop : MtProp)
-    @data[zstr] = MtTerm.new(vstr, prop)
+  def add(zstr : String, vstr : String, attr : MtAttr)
+    @root[zstr] = MtTerm.new(vstr: vstr, attr: attr)
   end
 
   def find_best(chars : Array(Char), start = 0, dpos = 2)
-    node = @data
+    node = @root
     size = 0
 
     best_term = nil
@@ -49,7 +49,7 @@ class MT::MtTrie
     File.each_line(tsv_path) do |line|
       cols = line.split('\t')
       next if cols.size < 3
-      add(cols[0], cols[2], MtProp.parse_list(cols[3]?))
+      add(cols[0], cols[2], MtAttr.parse_list(cols[3]?))
     end
 
     self
@@ -57,9 +57,9 @@ class MT::MtTrie
 
   def load_db3!(dname : String = @dname)
     ViTerm.db(dname).open_ro do |db|
-      db.query_each("select zstr, vstr, iprop from terms") do |rs|
-        zstr, vstr, iprop = rs.read(String, String, Int32)
-        add(zstr, vstr, MtProp.new(iprop))
+      db.query_each("select zstr, vstr, iattr from terms") do |rs|
+        zstr, vstr, iattr = rs.read(String, String, Int32)
+        add(zstr, vstr, MtAttr.new(iattr))
       end
     end
 

@@ -5,7 +5,7 @@ class MT::M1Node
 
   getter node : AiNode
 
-  def initialize(@node, @cpos, @_idx, @prop = :none)
+  def initialize(@node, @cpos, @_idx, @attr = :none)
     @zstr = node.zstr
   end
 
@@ -14,14 +14,14 @@ class MT::M1Node
       self.set_term!(*found)
     else
       @node.tl_phrase!(dict: dict)
-      @prop = @node.prop
+      @attr = @node.attr
     end
   end
 
   @[AlwaysInline]
   def tl_word!(dict : AiDict)
     @node.tl_word!(dict)
-    @prop = @node.prop
+    @attr = @node.attr
   end
 
   ###

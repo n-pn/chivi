@@ -9,7 +9,7 @@ class M2::MtTerm
   def initialize(@key, @val, @dic, @prio = 3)
   end
 
-  def print_val(io : IO, prop : MtProp, apply_cap : Bool = val) : Bool
+  def print_val(io : IO, prop : MtAttr, apply_cap : Bool = val) : Bool
     if prop.cap_relay? # for punctuation
       io << @val
       apply_cap || prop.cap_after?

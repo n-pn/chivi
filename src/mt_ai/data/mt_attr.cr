@@ -2,7 +2,7 @@ require "../../_util/char_util"
 
 @[Flags]
 # word peculiarity
-enum MT::MtProp
+enum MT::MtAttr
   # reusable flags
   Hide # ignore content
   Asis # do not add cap
@@ -80,6 +80,11 @@ enum MT::MtProp
   # Qmon
 
   ###
+
+  @[AlwaysInline]
+  def to_str
+    self.to_s.gsub(" | ", ' ')
+  end
 
   @[AlwaysInline]
   def undent?(und : Bool)
@@ -175,8 +180,8 @@ enum MT::MtProp
   end
 
   def self.parse_punct(zstr : String)
-    prop = @@known_chars.fetch(zstr[0], Capx)
-    prop | (@@known_chars[zstr[-1]]? || None)
+    attr = @@known_chars.fetch(zstr[0], Capx)
+    attr | (@@known_chars[zstr[-1]]? || None)
   end
 
   def self.parse_list(input : String?) : self
@@ -190,4 +195,4 @@ enum MT::MtProp
   end
 end
 
-# puts MT::MtProp.parse_list("")
+# puts MT::MtAttr.parse_list("")

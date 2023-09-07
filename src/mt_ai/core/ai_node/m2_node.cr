@@ -8,7 +8,7 @@ class MT::M2Node
 
   @flip = false
 
-  def initialize(@left, @right, @cpos, @_idx, @prop = :none)
+  def initialize(@left, @right, @cpos, @_idx, @attr = :none)
     @zstr = "#{@left.zstr}#{@right.zstr}"
   end
 
@@ -37,14 +37,14 @@ class MT::M2Node
     when "VCD" then fix_vcd!
     when "VCP" then fix_vcp!
     when "DP"
-      @flip = !@left.prop.at_h?
+      @flip = !@left.attr.at_h?
     when "QP"
       @flip = @left.cpos == "OD"
     end
   end
 
   def fix_lcp!
-    @flip = !right.prop.at_t?
+    @flip = !right.attr.at_t?
   end
 
   def fix_dvp!
@@ -53,8 +53,8 @@ class MT::M2Node
   end
 
   def fix_dnp!
-    if @left.prop.at_h?
-      @prop = :at_h
+    if @left.attr.at_h?
+      @attr = :at_h
       return
     end
 
@@ -63,15 +63,15 @@ class MT::M2Node
 
     if possessive?(left)
       right.set_vstr!("của")
-      right.off_prop!(:hide)
+      right.off_attr!(:hide)
     else
-      right.set_term!(MtTerm.new("", MtProp[:hide, :at_t]))
+      right.set_term!(MtTerm.new("", MtAttr[:hide, :at_t]))
     end
   end
 
   private def possessive?(node : AiNode)
-    return true if node.prop.npos? || node.prop.nper?
-    return false if node.prop.ndes? || node.prop.ntmp?
+    return true if node.attr.npos? || node.attr.nper?
+    return false if node.attr.ndes? || node.attr.ntmp?
 
     while node.cpos == "NP"
       # NOTE: remove recursion here?
@@ -80,8 +80,8 @@ class MT::M2Node
 
     case node.cpos
     when "NP", "NR" then true
-    when "PN"       then node.prop.npos? || node.prop.nper?
-    when "NN", "NT" then !node.prop.ndes?
+    when "PN"       then node.attr.npos? || node.attr.nper?
+    when "NN", "NT" then !node.attr.ndes?
     else                 false
     end
   end
@@ -95,7 +95,7 @@ class MT::M2Node
   end
 
   def fix_vrd!
-    @left.find_by_cpos("AS").try(&.add_prop!(MtProp[Asis, Hide]))
+    @left.find_by_cpos("AS").try(&.add_attr!(MtAttr[Asis, Hide]))
     MtPair.vrd_pair.fix_if_match!(@right, @left, MtStem.verb_stem(@left.zstr))
   end
 

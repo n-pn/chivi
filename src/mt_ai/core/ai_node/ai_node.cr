@@ -1,12 +1,11 @@
 require "../ai_dict"
 
 module MT::AiNode
+  getter zstr : String = ""
   getter cpos : String = ""
 
-  getter zstr : String = ""
-
   getter vstr : String = ""
-  getter prop : MtProp = MtProp::None
+  getter attr : MtAttr = MtAttr::None
 
   getter _dic : Int32 = -1
   getter _idx : Int32 = 0
@@ -39,18 +38,18 @@ module MT::AiNode
 
   def set_term!(term, @_dic : Int32 = 1) : Nil
     @vstr = term.vstr
-    @prop |= term.prop
+    @attr |= term.attr
   end
 
   def set_vstr!(@vstr : String, @_dic : Int32 = 1) : Nil
   end
 
-  def add_prop!(prop : MtProp)
-    @prop |= prop
+  def add_attr!(attr : MtAttr)
+    @attr |= attr
   end
 
-  def off_prop!(prop : MtProp)
-    @prop &= ~prop
+  def off_attr!(attr : MtAttr)
+    @attr &= ~attr
   end
 
   ###
@@ -61,7 +60,7 @@ module MT::AiNode
     # io << ':' << @_idx
     inspect_inner(io)
 
-    io << ' ' << @prop unless @prop.none?
+    io << ' ' << @attr unless @attr.none?
     io << ')'.colorize.dark_gray
   end
 
@@ -76,8 +75,8 @@ module MT::AiNode
 
   def to_txt(io : IO, cap : Bool, und : Bool)
     if @_dic >= 0
-      io << ' ' unless @prop.undent?(und: und)
-      @prop.render_vstr(io, @vstr, cap: cap, und: und)
+      io << ' ' unless @attr.undent?(und: und)
+      @attr.render_vstr(io, @vstr, cap: cap, und: und)
     elsif self.is_a?(M0Node)
       raise "translation missing!"
     else
@@ -90,10 +89,10 @@ module MT::AiNode
 
   def to_mtl(io : IO, cap : Bool, und : Bool)
     if @_dic >= 0
-      io << '\t' << ' ' unless @prop.undent?(und: und)
+      io << '\t' << ' ' unless @attr.undent?(und: und)
       io << '\t'
 
-      cap, und = @prop.render_vstr(io, @vstr, cap: cap, und: und)
+      cap, und = @attr.render_vstr(io, @vstr, cap: cap, und: und)
       io << SEP << @_dic << SEP << @_idx << SEP << @zstr.size
       {cap, und}
     elsif self.is_a?(M0Node)

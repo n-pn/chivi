@@ -3,7 +3,7 @@ require "./mt_term"
 
 module M2::MtNode
   getter ptag : Symbol
-  getter prop : MtProp = MtProp::None
+  getter attr : MtAttr = MtAttr::None
 
   getter size : Int32
   getter cost : Int32
@@ -106,7 +106,7 @@ class M2::MtAtom
 
   @[AlwaysInline]
   def to_txt(io : IO, apply_cap : Bool) : Bool
-    @term.print_val(io, prop: @prop, apply_cap: apply_cap)
+    @term.print_val(io, prop: @attr, apply_cap: apply_cap)
   end
 
   def to_mtl(io : IO, apply_cap : Bool) : Bool
@@ -128,7 +128,7 @@ class M2::MtPair
   getter head : MtNode
   getter tail : MtNode
 
-  def initialize(@head, @tail, @ptag = tail.ptag, @prop = tail.prop, rank = 3, @flip = false)
+  def initialize(@head, @tail, @ptag = tail.ptag, @attr = tail.attr, rank = 3, @flip = false)
     @size = @head.size &+ @tail.size
     @cost = MtNode.rule_cost(@head.cost &+ @tail.cost, @size, rank)
   end

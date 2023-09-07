@@ -49,14 +49,14 @@ module M2::MtRule
     # - space names + space (org/loc) suffix
     # - human names + title/honorific (suffix)
 
-    if head.prop.human? && secd.prop.hsuff?
+    if head.attr.human? && secd.attr.hsuff?
       ptag = :NR
-      prop = head.prop
+      prop = head.attr
       rank = 5
       flip = false
     else
       ptag = :NP
-      prop = secd.prop
+      prop = secd.attr
       rank = 3
       flip = true
     end
@@ -73,16 +73,16 @@ module M2::MtRule
     # reject
     # - human names + space names
 
-    if head.prop.human?
-      return unless secd.prop.human?
+    if head.attr.human?
+      return unless secd.attr.human?
 
       ptag = :NR
-      prop = head.prop
+      prop = head.attr
       rank = 5
       flip = false
     else
       ptag = secd.ptag
-      prop = secd.prop
+      prop = secd.attr
       rank = 3
       flip = true
     end
@@ -117,7 +117,7 @@ module M2::MtRule
     # ADJPs are projected by JJs and the noun head modified by ADJPs
     # always project to an NP.
 
-    flip = !head.prop.xflip?
+    flip = !head.attr.xflip?
     noun = MtPair.new(head, secd, rank: 4, flip: flip)
     add_node(root, noun, idx: idx)
   end
@@ -127,7 +127,7 @@ module M2::MtRule
     # the head and all the preceding NPs are considered to be modifiers.
     # Semantically such NP modifiers are often the possessor of the head noun:
 
-    flip = !head.prop.xflip?
+    flip = !head.attr.xflip?
     tail_idx = idx &+ head.size &+ secd.size
 
     root.each_tail_node(tail_idx, :NP) do |tail|
@@ -142,7 +142,7 @@ module M2::MtRule
     # occur in the context of NP. (DEG 的) has no content other than marking the
     # preceding phrase as an NP modifier.
 
-    flip = !head.prop.xflip? # almost always flip, except for some special case
+    flip = !head.attr.xflip? # almost always flip, except for some special case
     noun = MtPair.new(head, secd, rank: 3, flip: flip)
     add_node(root, noun, idx: idx)
   end
@@ -186,8 +186,8 @@ module M2::MtRule
   def_rule :IP, :DEC do
     # TODO: check for matching condition
 
-    # return unless head.prop.ip_no_obj?
-    # return unless head.prop.in?(:TIME, :SPACE, :REASON, :MANNER)
+    # return unless head.attr.ip_no_obj?
+    # return unless head.attr.in?(:TIME, :SPACE, :REASON, :MANNER)
 
     nmod = MtPair.new(head, secd, rank: 2, flip: true)
 

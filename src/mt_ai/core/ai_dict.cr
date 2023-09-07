@@ -40,13 +40,13 @@ class MT::AiDict
     case cpos
     when "PU"
       vstr = CharUtil.normalize(zstr)
-      prop = MtProp.parse_punct(zstr)
-      @auto_dict.add(zstr, cpos, vstr, prop)
+      attr = MtAttr.parse_punct(zstr)
+      @auto_dict.add(zstr, cpos, vstr, attr)
     when "EM"
-      @auto_dict.add(zstr, cpos, zstr, MtProp[Asis, Capx])
+      @auto_dict.add(zstr, cpos, zstr, MtAttr[Asis, Capx])
     when "URL"
       vstr = CharUtil.normalize(zstr)
-      @auto_dict.add(zstr, cpos, vstr, MtProp[Asis, Npos])
+      @auto_dict.add(zstr, cpos, vstr, MtAttr[Asis, Npos])
     when "CD", "OD"
       vstr = TlUnit.translate(zstr) rescue QtCore.tl_hvword(zstr)
       @auto_dict.add(zstr, cpos, vstr, :none)
@@ -111,14 +111,14 @@ class MT::AiDict
 
     ####
 
-    def add(zstr : String, cpos : String, vstr : String, prop : String | Nil) : MtTerm
+    def add(zstr : String, cpos : String, vstr : String, attr : String | Nil) : MtTerm
       entry = @data[zstr] ||= {} of String => MtTerm
-      entry[cpos] = MtTerm.new(vstr, prop: MtProp.parse_list(prop))
+      entry[cpos] = MtTerm.new(vstr, attr: MtAttr.parse_list(attr))
     end
 
-    def add(zstr : String, cpos : String, vstr : String, prop : MtProp = :none) : MtTerm
+    def add(zstr : String, cpos : String, vstr : String, attr : MtAttr = :none) : MtTerm
       entry = @data[zstr] ||= {} of String => MtTerm
-      entry[cpos] = MtTerm.new(vstr, prop)
+      entry[cpos] = MtTerm.new(vstr, attr)
     end
 
     def load_tsv!(dname : String = @dname)
@@ -136,12 +136,12 @@ class MT::AiDict
     end
 
     def load_db3!(dname : String = @dname)
-      query = "select zstr, cpos, vstr, iprop from #{ViTerm.schema.table}"
+      query = "select zstr, cpos, vstr, iattr from #{ViTerm.schema.table}"
 
       ViTerm.db(dname).open_ro do |db|
         db.query_each(query) do |rs|
-          zstr, cpos, vstr, prop = rs.read(String, String, String, Int32)
-          add(zstr, cpos, vstr, MtProp.new(prop))
+          zstr, cpos, vstr, attr = rs.read(String, String, String, Int32)
+          add(zstr, cpos, vstr, MtAttr.new(attr))
         end
       end
 

@@ -10,7 +10,7 @@ module M2::MtRule
   # seen as a short-hand of
   # (VP (VP V1 (NP-OBJ (-NONE- *RNR*-1))) (VP V2 (NP-OBJ ..)))
   def_rule :V_CD, :VV do
-    return if secd.prop.no_vcd?
+    return if secd.attr.no_vcd?
 
     verb = MtPair.new(head, secd, ptag: :VCD, rank: 4, flip: false)
     add_node(root, verb, idx: idx)
@@ -21,8 +21,8 @@ module M2::MtRule
   # constituents with the second constituent indicating the direction result
   # of the first constituent.
   def_rule :VV, :V_RD do
-    return if secd.prop.no_vrd?
-    prop = head.prop | MtProp::NO_VRD
+    return if secd.attr.no_vrd?
+    prop = head.attr | MtAttr::NO_VRD
 
     verb = MtPair.new(head, secd, ptag: :VCD, prop: prop, rank: 4, flip: false)
     add_node(root, verb, idx: idx)

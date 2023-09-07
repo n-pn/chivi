@@ -26,7 +26,7 @@ class MT::QtDict
 
     vstr = String::Builder.new
     vstr << CharUtil.normalize(first_char)
-    prop = MtProp::None
+    attr = MtAttr::None
 
     index = start &+ 1
 
@@ -35,11 +35,11 @@ class MT::QtDict
       break unless '！' <= char <= '～'
 
       vstr << CharUtil.normalize(char)
-      prop = MtProp::Asis unless CharUtil.fw_alnum?(char)
+      attr = MtAttr::Asis unless CharUtil.fw_alnum?(char)
 
       index &+= 1
     end
 
-    {MtTerm.new(vstr.to_s, prop), index &- start, 5}
+    {MtTerm.new(vstr.to_s, attr), index &- start, 5}
   end
 end

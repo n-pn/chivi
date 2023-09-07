@@ -1,22 +1,22 @@
-require "./mt_prop"
+require "./mt_attr"
 
 class MT::MtPair
   struct Pair
     getter a_vstr : String
-    getter a_prop : MtProp?
+    getter a_attr : MtAttr?
 
     getter b_vstr : String?
-    getter b_prop : MtProp?
+    getter b_attr : MtAttr?
 
-    def initialize(@a_vstr, @a_prop, @b_vstr, @b_prop)
+    def initialize(@a_vstr, @a_attr, @b_vstr, @b_attr)
     end
 
     def self.new(cols : Array(String))
       new(
         a_vstr: cols[0],
-        a_prop: cols[1]?.try { |x| MtProp.parse_list(x) },
+        a_attr: cols[1]?.try { |x| MtAttr.parse_list(x) },
         b_vstr: cols[2]?,
-        b_prop: cols[3]?.try { |x| MtProp.parse_list(x) },
+        b_attr: cols[3]?.try { |x| MtAttr.parse_list(x) },
       )
     end
   end
@@ -57,14 +57,14 @@ class MT::MtPair
 
     a_node.set_vstr!(found.a_vstr)
 
-    return unless a_prop = found.a_prop
-    a_node.add_prop!(a_prop)
+    return unless a_attr = found.a_attr
+    a_node.add_attr!(a_attr)
 
     return unless b_vstr = found.b_vstr
     a_node.set_vstr!(b_vstr)
 
-    return unless b_prop = found.b_prop
-    b_node.add_prop!(b_prop)
+    return unless b_attr = found.b_attr
+    b_node.add_attr!(b_attr)
   end
 
   ###

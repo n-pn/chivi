@@ -1,37 +1,37 @@
-require "./mt_prop"
+require "./mt_attr"
 
 struct MT::MtTerm
   getter vstr : String
-  getter prop : MtProp
+  getter attr : MtAttr
 
-  def initialize(@vstr, @prop = :none)
+  def initialize(@vstr, @attr = :none)
   end
 
   # def to_txt(io : IO, apply_cap : Bool, pad_space : Bool)
-  #   io << ' ' if pad_space && !(@prop.hide? || @prop.padb?)
+  #   io << ' ' if pad_space && !(@attr.hide? || @attr.padb?)
   #   render(io, apply_cap, pad_space)
   # end
 
   # def to_str(io : IO, cap : Bool, pad : Bool)
   #   case
-  #   when @prop.hide?
+  #   when @attr.hide?
   #     # do nothing
-  #   when @prop.capx?
+  #   when @attr.capx?
   #     io << @vstr
-  #   when !cap || @prop.asis?
+  #   when !cap || @attr.asis?
   #     io << @vstr
-  #     cap = @prop.capn?
+  #     cap = @attr.capn?
   #   else
   #     @vstr.each_char_with_index { |c, i| io << (i == 0 ? c.upcase : c) }
-  #     cap = @prop.capn?
+  #     cap = @attr.capn?
   #   end
 
-  #   {cap, @prop.hide? ? pad : !@prop.padn?}
+  #   {cap, @attr.hide? ? pad : !@attr.padn?}
   # end
 
   ###
 
   def self.from_char(char : Char)
-    new(CharUtil.normalize(char).to_s, MtProp.parse(char))
+    new(CharUtil.normalize(char).to_s, MtAttr.parse(char))
   end
 end

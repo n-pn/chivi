@@ -7,7 +7,7 @@ class MT::M3Node
   getter middle : AiNode
   getter right : AiNode
 
-  def initialize(@left, @middle, @right, @cpos, @_idx, @prop = :none)
+  def initialize(@left, @middle, @right, @cpos, @_idx, @attr = :none)
     @zstr = "#{@left.zstr}#{@middle.zstr}#{@right.zstr}"
   end
 
