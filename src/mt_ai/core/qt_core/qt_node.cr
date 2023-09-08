@@ -1,4 +1,5 @@
 # require "../shared/mt_output"
+require "json"
 require "../../data/vi_term"
 
 struct MT::QtNode
@@ -28,5 +29,20 @@ struct MT::QtNode
 
     io << SEP << @_dic << SEP << @_idx << SEP << @_len
     {cap, und}
+  end
+
+  include JSON::Serializable
+
+  def to_json(jb : JSON::Builder) : Nil
+    jb.array do
+      jb.string @cpos
+      jb.number @_idx
+      jb.number @zstr.size
+      jb.string(@attr.none? ? "" : @attr.to_str)
+
+      jb.number @_dic
+      jb.string @vstr
+      jb.string @zstr
+    end
   end
 end

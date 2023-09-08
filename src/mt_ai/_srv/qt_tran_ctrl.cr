@@ -3,7 +3,7 @@ require "./_mt_ctrl_base"
 require "./ai_tran_util"
 
 class MT::AiTranCtrl < AC::Base
-  base "/_mt/ai"
+  base "/_mt/qt"
 
   @[AC::Route::GET("/wnchap")]
   def wn_chap(cpath : String, pdict : String = "combine", _mode : Int32 = 0)

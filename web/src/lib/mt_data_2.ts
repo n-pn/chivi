@@ -99,3 +99,26 @@ export function render_cdata(input: Cdata, rmode = 1, cap = true) {
 
   return out
 }
+
+export function find_node(input: Cdata, q_idx = 0, q_len = 0) {
+  const queue = [input]
+
+  while (true) {
+    const node = queue.pop()
+    if (!node) break
+
+    const [_cpos, n_idx, n_len, _attr, body] = node
+
+    if (n_idx < q_idx) continue
+    if (n_idx > q_idx || n_len < q_len) break
+
+    if (!Array.isArray(body)) {
+      if (n_len == q_len) return node
+    } else {
+      if (n_len == q_len && body.length > 1) return node
+      for (let i = body.length - 1; i >= 0; i--) queue.push(body[i])
+    }
+  }
+
+  return null
+}
