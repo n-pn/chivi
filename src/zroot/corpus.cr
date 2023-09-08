@@ -42,26 +42,38 @@ class ZR::Corpus
 
   ###
 
+  getter zhead_db : DB::Connection { Zhead.db(@ctype).open_rw }
+  getter zline_db : DB::Connection { Zline.db(@ctype).open_rw }
+
   def initialize(@ctype : String)
     Dir.mkdir_p(File.dirname("#{DIR}/#{ctype}"))
-    @zhead_db = Zhead.db(ctype).open_rw
-    @zline_db = Zline.db(ctype).open_rw
+  end
+
+  def init_zdata!
+    puts self.zhead_db.scalar "select 'init zhead'"
+    puts self.zline_db.scalar "select 'init zline'"
+  end
+
+  def open_tx(&)
+    open_tx
+    yield
+    close_tx
   end
 
   def open_tx
-    @zhead_db.exec "begin"
-    @zline_db.exec "begin"
+    @zhead_db.try(&.exec("begin"))
+    @zline_db.try(&.exec("begin"))
   end
 
   def close_tx
-    @zhead_db.exec "commit"
-    @zline_db.exec "commit"
+    @zhead_db.try(&.exec("commit"))
+    @zline_db.try(&.exec("commit"))
   end
 
   def finalize
     close_tx rescue nil
-    @zhead_db.close rescue nil
-    @zline_db.close rescue nil
+    @zhead_db.try(&.close) rescue nil
+    @zline_db.try(&.close) rescue nil
   end
 
   ZLINE_UPSERT_QUERY = <<-SQL
@@ -90,14 +102,14 @@ class ZR::Corpus
     saved_zorig = begin
       head_cksum = Corpus.head_cksum(lines).unsafe_as(Int64)
       head_r_ids = Corpus.head_r_ids(r_ids)
-      @zhead_db.query_one?(ZHEAD_UPSERT_QUERY, zorig, head_cksum, head_r_ids, as: String)
+      self.zhead_db.query_one?(ZHEAD_UPSERT_QUERY, zorig, head_cksum, head_r_ids, as: String)
     end
 
     return false unless force_redo || saved_zorig
 
     lines.each_with_index do |line, idx|
       r_id = r_ids.unsafe_fetch(idx)
-      @zline_db.exec(ZLINE_UPSERT_QUERY, line, r_id.unsafe_as(Int64))
+      self.zline_db.exec(ZLINE_UPSERT_QUERY, line, r_id.unsafe_as(Int64))
     end
 
     true
