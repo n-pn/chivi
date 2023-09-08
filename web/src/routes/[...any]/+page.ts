@@ -17,16 +17,16 @@ export const load = (async ({ fetch, url, params }) => {
 
   if (root == 'books') {
     if (!cols[1].startsWith('@'))
-      throw redirect(302, replace_url('books', 'wn'))
+      throw redirect(302, replace_url(url, 'books', 'wn'))
     const user = cols[1]
-    throw redirect(301, replace_url(`books/${user}`, `${user}/books`))
+    throw redirect(301, replace_url(url, `books/${user}`, `${user}/books`))
   }
 
   throw error(404, 'Đường dẫn không tồn tại')
 }) satisfies PageLoad
 
-const replace_url = (url: URL, old_path: string, new_path: String) => {
-  return url.pathname.replace(old_path, new_path + url.search)
+const replace_url = (url: URL, old_path: string, new_path: string) => {
+  return url.pathname.replace(old_path, new_path) + url.search
 }
 
 const load_old_book = async (bslug: string, fetch: CV.Fetch, url: URL) => {

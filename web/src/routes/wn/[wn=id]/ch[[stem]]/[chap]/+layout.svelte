@@ -25,29 +25,29 @@
   import { recrawl_chap } from './shared'
   export let data: LayoutData
 
-  $: ({ nvinfo, curr_seed, chinfo, chdata } = data)
+  $: ({ nvinfo, curr_seed, cinfo, rdata } = data)
   $: paths = gen_paths(data, $page.data.cpart || 1, $page.data.rmode || 'mt')
 
   function gen_paths(data: LayoutData, cpart: number, rmode: string) {
     const sname = data.curr_seed.sname
 
-    const { ch_no, uslug } = chinfo
+    const { ch_no, uslug } = cinfo
 
     const base = seed_path(nvinfo.bslug, sname)
-    const list = seed_path(nvinfo.bslug, sname, _pgidx(chinfo.ch_no))
+    const list = seed_path(nvinfo.bslug, sname, _pgidx(cinfo.ch_no))
 
     const curr = `${base}/${chap_tail(ch_no, cpart - 1, uslug, '')}`
 
     const prev =
       cpart < 2
-        ? `${base}/${chdata._prev}-${rmode}`
+        ? `${base}/${rdata._prev}-${rmode}`
         : `${base}/${chap_tail(ch_no, cpart - 1, uslug, rmode)}`
 
     const next =
-      cpart < chdata.psize
+      cpart < rdata.psize
         ? `${base}/${chap_tail(ch_no, cpart + 1, uslug, rmode)}`
-        : chdata._next
-        ? `${base}/${chdata._next}-${rmode}`
+        : rdata._next
+        ? `${base}/${rdata._next}-${rmode}`
         : base
 
     return { base, list, curr, prev, next }
@@ -60,7 +60,7 @@
   async function update_memo(locking: boolean) {
     if ($_user.privi < 0) return
 
-    const { ch_no, title, uslug } = chinfo
+    const { ch_no, title, uslug } = cinfo
     const { sname } = curr_seed
 
     const path = `/_db/_self/books/${nvinfo.id}/access`
@@ -78,7 +78,7 @@
   function check_memo(ubmemo: CV.Ubmemo): [boolean, string] {
     let on_memory = false
     if (ubmemo.sname == curr_seed.sname) {
-      on_memory = ubmemo.chidx == chinfo.ch_no && ubmemo.cpart == data.cpart
+      on_memory = ubmemo.chidx == cinfo.ch_no && ubmemo.cpart == data.cpart
     }
 
     if (!ubmemo.locked) return [on_memory, 'menu-2']
@@ -101,10 +101,10 @@
     <span>{nvinfo.vtitle}</span>
   </a>
   <span>/</span>
-  <span class="crumb _text">{chinfo.chdiv || 'Chính văn'}</span>
+  <span class="crumb _text">{cinfo.chdiv || 'Chính văn'}</span>
 </nav>
 
-<nav class="nav-list">
+<!-- <nav class="nav-list">
   {#each links as [mode, text, dtip]}
     <a
       href="{paths.curr}{mode}"
@@ -114,7 +114,7 @@
       <span>{text}</span>
     </a>
   {/each}
-</nav>
+</nav> -->
 
 <slot />
 
@@ -123,7 +123,7 @@
     <a
       href={paths.prev}
       class="m-btn navi-item"
-      class:_disable={!chdata._prev}
+      class:_disable={!rdata._prev}
       data-key="74"
       data-kbd="←">
       <SIcon name="chevron-left" />
@@ -133,21 +133,21 @@
     <Gmenu class="navi-item" loc="top">
       <button class="m-btn" slot="trigger">
         <SIcon name={_onload ? 'reload' : memo_icon} spin={_onload} />
-        <span>{chinfo.ch_no}/{curr_seed.chmax}</span>
+        <span>{cinfo.ch_no}/{curr_seed.chmax}</span>
       </button>
 
       <svelte:fragment slot="content">
         <a
           class="gmenu-item"
           class:_disable={$_user.privi < 1}
-          href="{paths.base}/+text?ch_no={chinfo.ch_no}">
+          href="{paths.base}/+text?ch_no={cinfo.ch_no}">
           <SIcon name="pencil" />
           <span>Sửa text gốc</span>
         </a>
 
         <button
           class="gmenu-item"
-          disabled={$_user.privi < chinfo.privi}
+          disabled={$_user.privi < cinfo.privi}
           on:click={reload_chap}>
           <SIcon name="rotate-rectangle" spin={_onload} />
           <span>Tải lại nguồn</span>
@@ -183,7 +183,7 @@
     <a
       href={paths.next}
       class="m-btn _fill navi-item"
-      class:_primary={chdata._next}
+      class:_primary={rdata._next}
       data-key="75"
       data-kbd="→">
       <span>Kế tiếp</span>

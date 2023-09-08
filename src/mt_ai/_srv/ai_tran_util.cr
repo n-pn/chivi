@@ -13,8 +13,7 @@ module MT::AiTranUtil
     link = "#{CV_ENV.lp_host}/#{_algo}/file?file=#{file}"
 
     res = HTTP::Client.get(link)
-    raise "error: #{res.body}" unless res.status.success?
-    true
+    res.status.success?
   end
 
   def get_con_data_from_hanlp(ztext : String, _algo : String)
@@ -24,7 +23,7 @@ module MT::AiTranUtil
     res = HTTP::Client.post(link, body: ztext)
     raise "error: #{res.body}" unless res.status.success?
 
-    res.body_io.gets_to_end
+    res.body_io.gets_to_end.lines(chomp: true)
   end
 
   def load_chap_con_data(cpath : String, _algo : String = "auto", _auto = false)
@@ -36,16 +35,22 @@ module MT::AiTranUtil
       _algo = "hmeb"
     end
 
+    txt_path = "#{WN_TXT_DIR}/#{cpath}."
     con_path = "#{WN_NLP_DIR}/#{cpath}.#{_algo}.con"
 
     unless File.file?(con_path)
       Dir.mkdir_p(File.dirname(con_path))
 
       raise "not found" unless _auto
-      call_hanlp_file_api(cpath, _algo)
+      raise "can't call api" unless call_hanlp_file_api(cpath, _algo)
     end
 
-    {File.read(con_path), _algo}
+    lines = File.read_lines(con_path, chomp: true)
+    gtime = File.info(con_path).modification_time.to_unix
+
+    ztime = File.info?(txt_path).try(&.modification_time.to_unix) || 0_i64
+
+    {lines, gtime, ztime, _algo}
   end
 
   def read_dual_wntext(cpath : String, _kind : String = "bzv") : String

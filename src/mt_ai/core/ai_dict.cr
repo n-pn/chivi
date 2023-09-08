@@ -13,11 +13,18 @@ class MT::AiDict
     @@cache[pdict] ||= new(pdict)
   end
 
-  def initialize(pdict : String = "combined")
+  def initialize(@pdict : String = "combined")
     @main_dict = Entry.load(pdict)
     @auto_dict = Entry.new(pdict, :autogen)
 
-    @dict_list = {@main_dict, Entry.regular, @auto_dict, Entry.suggest}
+    @dict_list = {@main_dict, Entry.regular, @auto_dict}
+  end
+
+  def to_json(jb : JSON::Builder)
+    jb.object {
+      jb.field "pdict", @pdict.sub('/', ':')
+      jb.field "sizes", {@main_dict.size, Entry.regular.size, @auto_dict.size}
+    }
   end
 
   def get(zstr : String, cpos : String) : {MtTerm, Int8}
@@ -85,6 +92,8 @@ class MT::AiDict
 
     getter dname : String
     getter dtype : Dtype
+
+    delegate size, to: @data
 
     def initialize(@dname : String, @dtype : Dtype = :primary)
     end

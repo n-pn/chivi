@@ -33,3 +33,43 @@
   @include bps(width, rem(18px), $ts: rem(17px), $tm: 1rem);
   @include bps(height, rem(18px), $ts: rem(17px), $tm: 1rem);
 }
+
+.chip-list {
+  @include flex-ca($gap: 0.5em);
+
+  line-height: 1em;
+  @include ftsize(sm);
+
+  // @include bps(font-size, rem(13px), $pl: rem(14px), $ts: rem(15px), $tm: 1rem);
+  // @include bps(height, 1.75rem, $pl: 2rem);
+}
+
+.chip-link {
+  display: inline-flex;
+
+  @include fgcolor(tert);
+  gap: 0.25rem;
+
+  padding: 0.5em 0.75em;
+  font-weight: 500;
+  border-radius: 1em;
+
+  @include linesd(--bd-main);
+  &._active,
+  &:hover {
+    @include fgcolor(primary, 6);
+    @include linesd(primary, 5, $ndef: false);
+  }
+}
+
+.chip-text {
+  display: inline-flex;
+  @include fgcolor(tert);
+  text-transform: uppercase;
+  font-size: 0.875em;
+}
+
+.chip-icon {
+  @include bps(width, rem(18px), $ts: rem(17px), $tm: 1rem);
+  @include bps(height, rem(18px), $ts: rem(17px), $tm: 1rem);
+}

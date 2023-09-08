@@ -13,12 +13,8 @@ export function book_path(bslug: string, child: string = '') {
   return child ? `/wn/${bslug}/${child}` : `/wn/${bslug}`
 }
 
-export function seed_path(
-  bslug: string,
-  sname: string,
-  pg_no: number = 0
-): string {
-  const path = `/wn/${bslug}/ch/${sname}`
+export function seed_path(bslug: string, sname: string, pg_no = 0): string {
+  const path = `/wn/${bslug}/ch${sname}`
   return pg_no > 1 ? path + `?pg=${pg_no}` : path
 }
 

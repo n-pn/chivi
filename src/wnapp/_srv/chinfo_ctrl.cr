@@ -26,17 +26,16 @@ class WN::ChinfoCtrl < AC::Base
     cbase = "#{wnseed.wn_id}/#{chinfo.ch_no}-#{cksum}" unless cksum.empty?
 
     render json: {
-      chinfo: chinfo,
-      chdata: {
+      cinfo: chinfo,
+      rdata: {
         privi: read_privi,
         rlink: chinfo.rlink,
 
-        psize: chinfo.psize,
+        sizes: chinfo.sizes,
         cbase: cbase,
-
-        _prev: wnseed.find_prev(ch_no).try(&._href(-1)),
-        _next: wnseed.find_succ(ch_no).try(&._href(1)),
       },
+      _prev: wnseed.find_prev(ch_no),
+      _succ: wnseed.find_succ(ch_no),
     }
   end
 end
