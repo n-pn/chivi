@@ -99,9 +99,7 @@ module MT::AiNode
         jb.string @vstr
         jb.number @_dic
       else
-        jb.array do
-          self.v_each { |node| node.to_json(jb) }
-        end
+        jb.array { self.v_each(&.to_json(jb)) }
       end
     end
   end

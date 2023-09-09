@@ -2,26 +2,23 @@ require "http/client"
 require "../../cv_env"
 require "../../mt_sp/util/*"
 
-module MT::AiTranUtil
+module MT::MtTranUtil
   extend self
 
   WN_TXT_DIR = "var/wnapp/chtext"
   WN_NLP_DIR = "var/wnapp/nlp_wn"
+  WN_VTL_DIR = "var/wnapp/chtran"
 
-  def get_con_data_from_hanlp(ztext : String, _algo : String)
-    case _algo
-    when "hm_eb", "hmeb"
-      _algo = "hceb"
-    else
-      _algo = "hceg"
-    end
+  def txt_path(cpath : String)
+    "#{WN_TXT_DIR}/#{cpath}.txt"
+  end
 
-    link = "#{CV_ENV.lp_host}/#{_algo}/text"
+  def read_txt(cpath : String)
+    File.read_lines(self.txt_path(cpath), chomp: true)
+  end
 
-    res = HTTP::Client.post(link, body: ztext)
-    raise "error: #{res.body}" unless res.status.success?
-
-    res.body_io.gets_to_end.lines(chomp: true)
+  def vtl_path(cpath : String, _kind : String = "be_zv")
+    "#{WN_VTL_DIR}/#{cpath}.#{_kind}.txt"
   end
 
   def con_path(cpath : String, _algo : String)
@@ -59,31 +56,44 @@ module MT::AiTranUtil
 
   def call_hanlp_file_api(txt_path : String, con_path : String, _algo : String)
     link = "#{CV_ENV.lp_host}/#{_algo}/file?file=#{txt_path}"
-    Log.info { "CALL: #{link.colorize.magenta}" }
 
-    HTTP::Client.get(link) do |res|
-      raise res.body unless res.status.success?
-      cdata = res.body_io.gets_to_end
+    res = HTTP::Client.get(link)
+    raise "error: #{res.body}" unless res.status.success?
 
-      spawn do
-        Dir.mkdir_p(File.dirname(con_path))
-        File.write(con_path, cdata)
-      end
+    cdata = res.body_io.gets_to_end
 
-      {cdata.lines, _algo}
+    spawn do
+      Dir.mkdir_p(File.dirname(con_path))
+      File.write(con_path, cdata)
     end
+
+    {cdata.lines, _algo}
   end
 
-  def read_dual_wntext(cpath : String, _kind : String = "bzv") : String
-    case _kind
-    when "bzv"
-      url = "#{CV_ENV.sp_host}/_sp/btran/wntext?cpath=#{cpath}"
-    when "old"
-      url = "#{CV_ENV.m1_host}/_m1/qtran/wntext?cpath=#{cpath}"
-    else
-      raise "invalid dual_kind #{_kind}"
-    end
+  def call_hanlp_text_api(ztext : String, _algo : String)
+    link = "#{CV_ENV.lp_host}/#{_algo}/text"
 
+    res = HTTP::Client.post(link, body: ztext)
+    raise "error: #{res.body}" unless res.status.success?
+
+    cdata = res.body_io.gets_to_end
+    # TODO: save to disk?
+
+    cdata.lines(chomp: true)
+  end
+
+  def get_wntext_btran_data(cpath : String, name = "be_zv")
+    vtl_path = self.vtl_path(cpath, "bzv")
+    return File.read_lines(vtl_path, chomp: true) if File.file?(vtl_path)
+
+    btran = SP::Btran.free_translate(read_txt(cpath), target: "vi")
+    spawn File.write(vtl_path, btran.join('\n'))
+
+    return btran
+  end
+
+  def get_wntext_oldmt_data(cpath : String)
+    url = "#{CV_ENV.m1_host}/_m1/qtran/wntext?cpath=#{cpath}"
     HTTP::Client.get(url, &.body_io.gets_to_end)
   end
 

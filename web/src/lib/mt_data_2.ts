@@ -42,6 +42,41 @@ function render_vstr(vstr: string, cpos: string) {
   }
 }
 
+const sort = (a: Cdata, b: Cdata) => a[1] - b[1]
+
+export function render_ztext(input: Cdata, rmode = 1) {
+  let out = ''
+
+  const queue = [input]
+  while (true) {
+    const node = queue.pop()
+    if (!node) break
+
+    const [_cpos, zidx, zlen, _attr, body, _vstr, vdic] = node
+
+    if (rmode > 1) out += `<x-g data-b=${zidx} data-e=${zidx + zlen}>`
+
+    if (Array.isArray(body)) {
+      const orig = body.sort(sort)
+      for (let i = orig.length - 1; i >= 0; i--) queue.push(orig[i])
+    } else {
+      if (rmode == 0) {
+        out += body
+      } else {
+        for (let x = 0; x < body.length; x++) {
+          const idx = zidx + x
+          out += `<x-n data-d=${vdic} data-b=${idx} data-e=${idx + 1}>`
+          out += escape_htm(body.charAt(x))
+          out += `</x-n>`
+        }
+      }
+    }
+    if (rmode > 1) out += '</x-g>'
+  }
+
+  return out
+}
+
 export function render_ctree(input: Cdata, rmode = 1) {
   let out = ''
 
@@ -50,26 +85,26 @@ export function render_ctree(input: Cdata, rmode = 1) {
     const node = queue.pop()
     if (!node) break
 
-    const [cpos, cidx, size, _attr, body, _vstr, vdic] = node
+    const [cpos, zidx, zlen, _attr, body, _vstr, vdic] = node
 
-    if (rmode > 0) out += `<x-g i=${cidx} u=${cidx + size}>`
+    if (rmode > 0) out += `<x-g data-b=${zidx} data-e=${zidx + zlen}>`
 
     out += `(${cpos} `
 
     if (Array.isArray(body)) {
-      for (let i = body.length - 1; i >= 0; i--) queue.push(body[i])
+      const orig = body.sort(sort)
+      for (let i = orig.length - 1; i >= 0; i--) queue.push(orig[i])
     } else {
-      out += body
-
-      // if (rmode == 2) {
-      //   out += `<x-n d=${body} b=${_idx} e=${_idx + _len}>`
-      //   out += render_vstr(vstr2, cpos)
-      //   out += `</x-n>`
-      // } else if (rmode == 1) {
-      //   out += render_vstr(vstr2, cpos)
-      // } else {
-      //   out += escape_htm(vstr2)
-      // }
+      if (rmode == 2) {
+        for (let x = 0; x < body.length; x++) {
+          const b = zidx + x
+          out += `<x-n data-d=${vdic} data-b=${b} data-e=${b + 1}>`
+          out += escape_htm(body.charAt(x))
+          out += `</x-n>`
+        }
+      } else {
+        out += escape_htm(body)
+      }
     }
     out += `)`
 
@@ -89,7 +124,8 @@ export function render_cdata(input: Cdata, rmode = 1, cap = true) {
     const node = queue.pop()
     if (!node) break
 
-    const [cpos, _idx, _len, attr, body, vstr, _dic] = node
+    const [cpos, zidx, zlen, attr, body, vstr, vdic] = node
+
     if (Array.isArray(body)) {
       for (let i = body.length - 1; i >= 0; i--) queue.push(body[i])
     } else {
@@ -99,7 +135,7 @@ export function render_cdata(input: Cdata, rmode = 1, cap = true) {
       und = attr.includes('Hide') ? und : attr.includes('Undn')
 
       if (rmode == 2) {
-        out += `<x-n d=${_dic} b=${_idx} e=${_idx + _len}>`
+        out += `<x-n data-d=${vdic} data-b=${zidx} data-e=${zidx + zlen}>`
         out += render_vstr(vstr2, cpos)
         out += `</x-n>`
       } else if (rmode == 1) {

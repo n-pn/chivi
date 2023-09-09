@@ -35,14 +35,14 @@ struct MT::QtNode
 
   def to_json(jb : JSON::Builder) : Nil
     jb.array do
-      jb.string @cpos
+      jb.string "_"
       jb.number @_idx
-      jb.number @zstr.size
+      jb.number @_len
       jb.string(@attr.none? ? "" : @attr.to_str)
 
-      jb.number @_dic
+      jb.string ""
       jb.string @vstr
-      jb.string @zstr
+      jb.number @_dic
     end
   end
 end

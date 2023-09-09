@@ -1,6 +1,4 @@
-# require "../../../libcv/qtran_data"
 require "./_mt_ctrl_base"
-require "./ai_tran_util"
 
 class MT::AiTranCtrl < AC::Base
   base "/_ai/mt"
@@ -9,7 +7,7 @@ class MT::AiTranCtrl < AC::Base
   def wnchap(cpath : String, pdict : String = "combine", _algo : String = "avail")
     start = Time.monotonic
     _auto_gen = _privi > 1 && _cfg_enabled?("c_auto")
-    input, _algo = AiTranUtil.get_wntext_con_data(cpath, _algo, _auto_gen)
+    input, _algo = MtTranUtil.get_wntext_con_data(cpath, _algo, _auto_gen)
 
     ai_mt = AiCore.new(pdict)
     lines = input.map { |line| ai_mt.tl_from_con_data(line) }

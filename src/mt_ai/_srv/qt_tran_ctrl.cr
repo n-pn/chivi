@@ -1,31 +1,31 @@
 # require "../../../libcv/qtran_data"
 require "./_mt_ctrl_base"
-require "./ai_tran_util"
 
 class MT::QtTranCtrl < AC::Base
   base "/_ai/qt"
 
-  # @[AC::Route::GET("/wnchap")]
-  # def wn_chap(cpath : String, pdict : String = "combine", _mode : Int32 = 0)
-  #   _algo = _read_cookie("c_algo") || "auto"
-  #   _auto = _cfg_enabled?("c_auto") && _privi > 1
+  @[AC::Route::GET("/hviet")]
+  def hviet(zpath : String)
+    start = Time.monotonic
 
-  #   cdata, _algo = AiTranUtil.load_chap_con_data(cpath, _algo, _auto)
+    lines = MtTranUtil.read_txt(zpath)
+    cdata = lines.map { |line| MT::QtCore.hv_word.tokenize(line) }
 
-  #   ai_mt = AiCore.new(pdict, true)
+    tspan = (Time.monotonic - start).total_milliseconds.to_i
+    render json: {cdata: cdata, tspan: tspan}
+  rescue ex
+    Log.error(exception: ex) { ex.message }
+    render 455, ex.message
+  end
 
-  #   output = JSON.build do |jb|
-  #     jb.array do
-  #       cdata.each_line do |line|
-  #         ai_mt.tl_from_con_data(line).to_cjo(jb: jb) unless line.empty?
-  #       end
-  #     end
-  #   end
+  @[AC::Route::GET("/btran")]
+  def btran(zpath : String)
+    start = Time.monotonic
+    btran = MtTranUtil.get_wntext_btran_data(zpath)
 
-  #   response.headers["_ALGO"] = _algo
-  #   render text: output
-  # rescue ex
-  #   Log.error(exception: ex) { [cpath, pdict] }
-  #   render 455, ex.message
-  # end
+    tspan = (Time.monotonic - start).total_milliseconds.to_i
+    render json: {cdata: btran, tspan: tspan}
+  rescue ex
+    render 455, ex.message
+  end
 end

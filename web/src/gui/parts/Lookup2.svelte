@@ -1,13 +1,108 @@
 <script context="module" lang="ts">
   import { writable, get } from 'svelte/store'
-  import { api_call, api_get } from '$lib/api_call'
+  // import { api_call, api_get } from '$lib/api_call'
+
+  import {
+    type Cdata,
+    render_cdata,
+    render_ztext,
+    render_ctree,
+  } from '$lib/mt_data_2'
 
   export const ctrl = {
-    ...writable({ actived: false, enabled: false }),
+    ...writable({ actived: false, enabled: true }),
     hide: (enabled = true) => ctrl.set({ enabled, actived: false }),
     show(forced = true) {
       const { enabled, actived } = get(ctrl)
       if (actived || forced || enabled) ctrl.set({ enabled, actived: true })
+    },
+  }
+
+  const hviet_cache = new Map<string, Array<Cdata>>()
+  const btran_cache = new Map<string, Array<string>>()
+
+  // const headers = { 'Content-Type': 'application/json' }
+
+  async function get_hviet(zpath: string, l_idx: number) {
+    const cached = hviet_cache.get(zpath)
+    if (cached) return cached[l_idx]
+
+    const url = `/_ai/qt/hviet?zpath=${zpath}`
+    const res = await fetch(url, { method: 'GET' })
+
+    const { cdata } = await res.json()
+    console.log(cdata)
+
+    hviet_cache.set(zpath, cdata)
+    return cdata[l_idx]
+  }
+
+  async function get_btran(zpath: string, l_idx: number) {
+    const cached = btran_cache.get(zpath)
+    if (cached) return cached[l_idx]
+
+    const url = `/_ai/qt/btran?zpath=${zpath}`
+    const res = await fetch(url, { method: 'GET' })
+
+    const { cdata } = await res.json()
+
+    btran_cache.set(zpath, cdata)
+    return cdata[l_idx]
+  }
+
+  export interface Data {
+    zpath: string
+    pdict: string
+
+    l_idx: number
+    l_max: number
+
+    ztext: string
+    btran: string
+
+    cdata: Cdata
+    hviet: Cdata
+  }
+
+  export const data = {
+    ...writable<Data>({
+      zpath: '',
+      pdict: '',
+      l_idx: 0,
+      l_max: 0,
+      ztext: '',
+      btran: '',
+      cdata: undefined,
+      hviet: undefined,
+    }),
+
+    async from_cdata(
+      lines: Array<Cdata>,
+      l_idx: number,
+      zpath = '',
+      pdict = ''
+    ) {
+      const l_max = lines.length
+      if (l_idx >= l_max) l_idx = l_max - 1
+
+      const cdata = lines[l_idx]
+      const ztext = render_ztext(cdata, 0)
+
+      console.log(zpath)
+
+      const hviet = await get_hviet(zpath, l_idx)
+      const btran = await get_btran(zpath, l_idx)
+
+      data.set({
+        zpath,
+        pdict,
+        l_idx,
+        l_max,
+        ztext,
+        btran,
+        cdata,
+        hviet,
+      })
     },
   }
 </script>
@@ -16,84 +111,14 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Slider from '$gui/molds/Slider.svelte'
 
-  import { Cdata, render_cdata } from '$lib/mt_data_2'
+  let zfrom = 0
+  let zupto = 1
 
-  export let ztext_list: Array<string> = []
-  export let btran_list: Array<string> = []
+  function handle_click({ target }) {
+    if (target.nodeName == 'X-N') zfrom = +target.dataset.b
+  }
 
-  export let cdata_list: Array<Cdata> = []
-  export let hviet_list: Array<Cdata> = []
-
-  // type Entry = [number, Record<string, string>]
-  // let entries_cache: Record<string, Entry[]> = {}
-
-  // let hv_html_cache: Record<string, any> = {}
-  // let zh_html_cache: Record<string, any> = {}
-
-  // let entries = []
-  // let current: Entry[] = []
-
-  // let hv_html = ''
-  // let zh_html = ''
-
-  // $: if ($ctrl.actived) {
-  //   zh_html = zh_html_cache[$ztext] ||= MtData.render_zh($ztext)
-  //   get_hanviet($ztext)
-  //   fetch_terms($ztext, $zfrom)
-  //   if ($zfrom >= 0) update_focus()
-  // }
-
-  // async function fetch_terms(input: string, zfrom: number) {
-  //   entries = entries_cache[$ztext] ||= []
-
-  //   const range = []
-  //   if (!entries[zfrom]) range.push(zfrom)
-
-  //   let z_max = input.length
-  //   if (z_max > 10) z_max = 10
-
-  //   for (let index = 1; index < z_max; index++) {
-  //     const lower = zfrom - index
-  //     if (lower >= 0 && !entries[lower]) range.push(lower)
-
-  //     const upper = zfrom + index
-  //     if (upper < z_max && !entries[upper]) range.push(upper)
-
-  //     if (range.length > 10) break
-  //   }
-
-  //   if (range.length != 0) {
-  //     try {
-  //       const url = `/_sp/lookup?vd_id=${$vdict.vd_id}`
-  //       const res = await api_call(url, { input, range }, 'PUT')
-  //       for (let index in res) entries[index] = res[index]
-  //     } catch (ex) {
-  //       console.log(ex)
-  //     }
-  //   }
-
-  //   setTimeout(update_focus, 20)
-  // }
-
-  // async function get_hanviet(input: string) {
-  //   hv_html = hv_html_cache[input]
-  //   if (hv_html) return
-
-  //   const url = `/_sp/hanviet?mode=mtl`
-  //   const headers = { 'content-type': 'text/plain' }
-
-  //   const res = await fetch(url, { method: 'PUT', headers, body: input })
-  //   const res_text = await res.text()
-
-  //   if (!res.ok) console.log(res_text)
-  //   else hv_html_cache[input] = hv_html = new MtData(res_text).render_hv()
-  // }
-
-  // function handle_click({ target }) {
-  //   if (target.nodeName == 'X-N') $zfrom = +target.dataset.l
-  // }
-
-  // let viewer = null
+  let viewer = null
   // const focused = []
 
   // function update_focus() {
@@ -136,19 +161,41 @@
     </button>
   </svelte:fragment>
 
-  <section class="input" bind:this={viewer}>
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div class="input-nav _zh" on:click={handle_click} lang="zh">
-      {@html zh_html}
-    </div>
+  {#if $data.ztext}
+    <section class="cbody" bind:this={viewer}>
+      <h4 class="type">Tiếng Trung:</h4>
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div class="input _zh" on:click={handle_click} lang="zh">
+        {@html render_ztext($data.cdata, 2)}
+      </div>
 
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div class="input-nav _hv" on:click={handle_click}>
-      {@html hv_html}
-    </div>
-  </section>
+      <h4 class="type">Hán Việt:</h4>
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div class="input _hv" on:click={handle_click}>
+        {@html render_cdata($data.hviet, 2)}
+      </div>
 
-  <section class="terms">
+      <h4 class="type">Dịch máy:</h4>
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div class="input _mt" on:click={handle_click}>
+        {@html render_cdata($data.cdata, 2)}
+      </div>
+
+      <h4 class="type">Bing Edge:</h4>
+      <div class="input _tl">{$data.btran}</div>
+
+      <h4 class="type">Cây ngữ pháp:</h4>
+      <div class="input _ct">
+        {@html render_ctree($data.cdata, 2)}
+      </div>
+    </section>
+  {:else}
+    <div class="empty">Bấm vào đoạn văn để xem giải nghĩa!</div>
+  {/if}
+  <!-- <section class="terms">
     {#each current as [size, terms]}
       <div class="entry">
         <h3 class="word" lang="zh">
@@ -175,14 +222,18 @@
         {/each}
       </div>
     {/each}
-  </section>
+  </section> -->
 </Slider>
 
 <style lang="scss">
-  .input-nav {
+  .cbody {
     padding: 0.375rem 0.75rem;
-    margin-top: 0.5rem;
-    @include border($loc: top);
+  }
+
+  .input {
+    padding: 0.25rem 0.5rem;
+    @include border();
+    @include bdradi;
     @include bgcolor(tert);
     @include scroll;
 
@@ -195,93 +246,40 @@
     }
 
     &._hv {
+      $line: 1.125rem;
+      line-height: $line;
+      max-height: $line * 4 + 0.75rem;
+      @include ftsize(sm);
+    }
+
+    &._mt {
       $line: 1.25rem;
       line-height: $line;
-      max-height: $line * 3 + 0.75rem;
+      max-height: $line * 6 + 0.75rem;
+    }
+
+    &._tl {
+      $line: 1.125rem;
+      line-height: $line;
+      max-height: $line * 5 + 0.75rem;
+      @include ftsize(sm);
+    }
+
+    &._ct {
+      $line: 1.25rem;
+      line-height: $line;
+      @include ftsize(sm);
+      max-height: $line * 10 + 0.75rem;
     }
   }
 
-  :global {
-    x-n {
-      --color: #{color(primary, 5)};
-      cursor: pointer;
-
-      &:hover {
-        background: linear-gradient(to top, var(--color) 0.75px, transparent 0);
-      }
-
-      &.focus {
-        color: var(--color);
-      }
-    }
-  }
-
-  .terms {
-    @include scroll;
-    flex: 1;
-  }
-
-  .word {
-    font-weight: 600;
-    line-height: 2rem;
-    @include ftsize(md);
-  }
-
-  h3 {
+  .type {
     display: flex;
-  }
-
-  .btn-edit {
-    margin-left: auto;
-    background: transparent;
-  }
-
-  h4 {
-    font-weight: 500;
-    text-transform: uppercase;
-    @include fgcolor(tert);
     @include ftsize(sm);
+    // font-weight: bold;
+    line-height: 1rem;
+
+    margin-top: 0.5rem;
+    margin-bottom: 0.25rem;
   }
-
-  .entry {
-    @include fgcolor(secd);
-    padding: 0.5rem 0.75rem;
-    // padding-top: 0;
-    @include border($loc: top);
-  }
-
-  .item {
-    margin-top: 0.25rem;
-
-    & + & {
-      margin-top: 0.5rem;
-    }
-
-    p + p {
-      margin-top: 0.25rem;
-    }
-  }
-
-  .term {
-    @include flex($gap: 0.25rem);
-    flex-wrap: wrap;
-    line-height: 1.5rem;
-  }
-
-  // term-tag {
-  //   display: inline-block;
-  //   @include bdradi(0.75rem);
-  //   @include ftsize(sm);
-  //   @include linesd(--bd-main);
-  //   @include fgcolor(tert);
-  //   font-weight: 500;
-  //   padding: 0 0.5rem;
-  // }
-
-  // term-dic {
-  //   display: inline-flex;
-  //   @include ftsize(sm);
-  //   @include fgcolor(tert);
-  //   padding: 0.25rem 0;
-  // }
 </style>

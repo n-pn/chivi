@@ -21,8 +21,10 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Footer from '$gui/sects/Footer.svelte'
 
-  import type { LayoutData } from './$types'
   import Crumb from '$gui/molds/Crumb.svelte'
+  import Lookup2 from '$gui/parts/Lookup2.svelte'
+
+  import type { LayoutData } from './$types'
   export let data: LayoutData
 
   $: ({ nvinfo, curr_seed, cinfo, xargs } = data)
@@ -189,6 +191,8 @@
     </a>
   </div>
 </Footer>
+
+<Lookup2 />
 
 <style lang="scss">
   .article {

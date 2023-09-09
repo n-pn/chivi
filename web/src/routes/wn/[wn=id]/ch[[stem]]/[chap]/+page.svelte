@@ -1,8 +1,8 @@
 <script context="module" lang="ts">
   const modes = {
     avail: {
-      text: 'Có sẵn',
-      desc: 'Chọn kết quả phân tích ngữ pháp có sẵn, ưu tiên Ernie Gram',
+      text: 'Đã có sẵn',
+      desc: 'Chọn kết quả phân tích ngữ pháp có sẵn, ưu tiên Ernie G',
     },
     hm_eg: {
       text: 'Ernie Gram',
@@ -15,23 +15,6 @@
   }
 
   // const secd_tabs = {
-  //   mt: [
-  //     {
-  //       mode: 'avail',
-  //       text: 'Có sẵn',
-  //       desc: 'Chọn kết quả phân tích ngữ pháp có sẵn, ưu tiên Ernie Gram',
-  //     },
-  //     {
-  //       mode: 'hm_eg',
-  //       text: 'Ernie Gram',
-  //       desc: 'HanLP Closed-source MTL ERNIE_GRAM_ZH',
-  //     },
-  //     {
-  //       mode: 'hm_eb',
-  //       text: 'Electra Base',
-  //       desc: 'HanLP Closed-source MTL ELECTRA_BASE_ZH',
-  //     },
-  //   ],
   //   qt: [
   //     {
   //       mode: 'qt_v1',
@@ -75,28 +58,60 @@
   import { config } from '$lib/stores'
   import { render_cdata } from '$lib/mt_data_2'
 
-  import { rel_time } from '$utils/time_utils'
+  import {
+    ctrl as lookup_ctrl,
+    data as lookup_data,
+  } from '$gui/parts/Lookup2.svelte'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
+
+  // let error = ''
+  let l_idx = -1
+
+  afterNavigate(() => {
+    $lookup_ctrl.actived = false
+    l_idx = -1
+  })
 
   // import { get_user } from '$lib/stores'
   // const _user = get_user()
 
   import type { PageData } from './$types'
+  import { afterNavigate } from '$app/navigation'
   export let data: PageData
 
   $: pager = new Pager($page.url, { part: 1, mode: 'avail' })
 
   $: cinfo = data.cinfo
+  $: rdata = data.rdata
   $: xargs = data.xargs
 
   $: tspan = data.tspan
   $: zsize = data.rdata.sizes[xargs.cpart]
 
-  // let error = ''
-  let l_idx = -1
-
+  let reader: HTMLDivElement
   let change_mode = false
+
+  const change_focus = async (evt: Event, idx: number) => {
+    if (!reader) return
+
+    const prev = reader.querySelector('.cdata.focus')
+    if (prev) prev.classList.remove('focus')
+
+    const curr = document.getElementById('L' + idx)
+    curr.classList.add('focus')
+
+    l_idx = idx
+
+    await lookup_data.from_cdata(
+      data.lines,
+      l_idx,
+      `${rdata.cbase}-${xargs.cpart}`,
+      `book/${xargs.wn_id}`
+    )
+
+    lookup_ctrl.show()
+  }
 </script>
 
 <section class="mode-nav">
@@ -141,24 +156,22 @@
   </nav>
 {/if}
 
-<div class="content">
-  <div
-    class="reader app-fs-{$config.ftsize} app-ff-{$config.ftface}"
-    style:--textlh="{$config.textlh}%">
-    {#each data.lines as line, _idx}
-      <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <svelte:element
-        this={_idx > 0 ? 'p' : 'h1'}
-        id="L{_idx}"
-        class="cdata"
-        class:focus={_idx == l_idx}
-        on:click={() => (l_idx = _idx)}>
-        {@html render_cdata(line, 1)}
-        {#if _idx == 0 && cinfo.psize > 1}[{xargs.cpart}/{cinfo.psize}]{/if}
-      </svelte:element>
-    {/each}
-  </div>
+<div
+  bind:this={reader}
+  class="reader app-fs-{$config.ftsize} app-ff-{$config.ftface}"
+  style:--textlh="{$config.textlh}%">
+  {#each data.lines as line, _idx}
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <svelte:element
+      this={_idx > 0 ? 'p' : 'h1'}
+      id="L{_idx}"
+      class="cdata"
+      on:click={(e) => change_focus(e, _idx)}>
+      {@html render_cdata(line, 1)}
+      {#if _idx == 0 && cinfo.psize > 1}[{xargs.cpart}/{cinfo.psize}]{/if}
+    </svelte:element>
+  {/each}
 </div>
 
 <style lang="scss">

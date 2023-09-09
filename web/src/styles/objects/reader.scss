@@ -192,22 +192,22 @@ x-n {
   // }
 
   // essence + fixture
-  &[d='1'] {
+  &[data-d='1'] {
     @include cv-node(purple);
   }
 
   // unique
-  &[d='2'] {
+  &[data-d='2'] {
     @include cv-node(teal);
   }
 
   // regular
-  &[d='3'] {
+  &[data-d='3'] {
     @include cv-node(primary);
   }
 
   // suggest
-  &[d='4'] {
+  &[data-d='4'] {
     @include cv-node(success);
   }
 
