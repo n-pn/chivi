@@ -5,12 +5,12 @@ class MT::M1Node
 
   getter node : AiNode
 
-  def initialize(@node, @cpos, @_idx, @attr = :none)
+  def initialize(@node, @cpos, @_idx, @attr = :none, @ipos = MtCpos[cpos])
     @zstr = node.zstr
   end
 
   def tl_phrase!(dict : AiDict)
-    if found = dict.get?(@zstr, @cpos)
+    if found = dict.get?(@zstr, @ipos)
       self.set_term!(*found)
     else
       @node.tl_phrase!(dict: dict)

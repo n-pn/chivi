@@ -6,13 +6,13 @@ class MT::MxNode
   getter list : Array(AiNode)
   getter _ord : Array(Int32)? = nil
 
-  def initialize(@list, @cpos, @_idx, @attr = :none)
+  def initialize(@list, @cpos, @_idx, @attr = :none, @ipos = MtCpos[cpos])
     @zstr = @list.join(&.zstr)
   end
 
   @[AlwaysInline]
   def tl_phrase!(dict : AiDict)
-    if found = dict.get?(@zstr, @cpos)
+    if found = dict.get?(@zstr, @ipos)
       self.set_term!(*found)
     else
       @list.each(&.tl_phrase!(dict))

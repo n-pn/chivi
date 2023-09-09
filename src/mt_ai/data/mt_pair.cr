@@ -80,7 +80,7 @@ class MT::MtPair
   # class_getter v_r_pair : self { new("v_d_pair") }
 
   def self.fix_m_n_pair!(q_node : AiNode, n_node : AiNode) : Void
-    return unless m_node = q_node.find_by_cpos("M")
+    return unless m_node = q_node.find_by_ipos(MtCpos::M)
     n_stem = MtStem.noun_stem(n_node.last.zstr)
     self.m_n_pair.fix_if_match!(m_node, n_node, n_stem)
   end

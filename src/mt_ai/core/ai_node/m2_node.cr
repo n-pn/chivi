@@ -8,12 +8,12 @@ class MT::M2Node
 
   @flip = false
 
-  def initialize(@left, @right, @cpos, @_idx, @attr = :none)
+  def initialize(@left, @right, @cpos, @_idx, @attr = :none, @ipos = MtCpos[cpos])
     @zstr = "#{@left.zstr}#{@right.zstr}"
   end
 
   def tl_phrase!(dict : AiDict) : Nil
-    if found = dict.get?(@zstr, @cpos)
+    if found = dict.get?(@zstr, @ipos)
       self.set_term!(*found)
     else
       {@left, @right}.each(&.tl_phrase!(dict))
@@ -29,17 +29,17 @@ class MT::M2Node
 
   @[AlwaysInline]
   private def fix_inner!(dict : AiDict) : Nil
-    case @cpos
-    when "DVP" then fix_dvp!
-    when "DNP" then fix_dnp!
-    when "LCP" then fix_lcp!
-    when "VRD" then fix_vrd!
-    when "VCD" then fix_vcd!
-    when "VCP" then fix_vcp!
-    when "DP"
+    case @ipos
+    when MtCpos["DVP"] then fix_dvp!
+    when MtCpos["DNP"] then fix_dnp!
+    when MtCpos["LCP"] then fix_lcp!
+    when MtCpos["VRD"] then fix_vrd!
+    when MtCpos["VCD"] then fix_vcd!
+    when MtCpos["VCP"] then fix_vcp!
+    when MtCpos["DP"]
       @flip = !@left.attr.at_h?
-    when "QP"
-      @flip = @left.cpos == "OD"
+    when MtCpos["QP"]
+      @flip = @left.ipos == MtCpos["OD"]
     end
   end
 
@@ -95,7 +95,7 @@ class MT::M2Node
   end
 
   def fix_vrd!
-    @left.find_by_cpos("AS").try(&.add_attr!(MtAttr[Asis, Hide]))
+    @left.find_by_ipos(MtCpos::AS).try(&.add_attr!(MtAttr[Asis, Hide]))
     MtPair.vrd_pair.fix_if_match!(@right, @left, MtStem.verb_stem(@left.zstr))
   end
 

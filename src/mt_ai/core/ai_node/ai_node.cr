@@ -2,7 +2,9 @@ require "../ai_dict"
 
 module MT::AiNode
   getter zstr : String = ""
+
   getter cpos : String = ""
+  getter ipos : Int8 = 0_i8
 
   getter vstr : String = ""
   getter attr : MtAttr = MtAttr::None
@@ -15,22 +17,22 @@ module MT::AiNode
   abstract def first
   abstract def last
 
-  def find_by_cpos(cpos : String)
+  def find_by_ipos(ipos : Int8)
     z_each do |node|
-      return node if node.cpos == cpos
+      return node if node.ipos == ipos
       unless node.is_a?(M0Node)
-        found = node.find_by_cpos(cpos)
+        found = node.find_by_ipos(ipos)
         return found if found
       end
     end
   end
 
-  def find_by_cpos(*cpos : String)
+  def find_by_ipos(*ipos : Int8)
     z_each do |node|
-      return node if node.cpos.in?(*cpos)
+      return node if node.ipos.in?(*ipos)
 
       unless node.is_a?(M0Node)
-        found = node.find_by_cpos(*cpos)
+        found = node.find_by_ipos(*ipos)
         return found if found
       end
     end
@@ -93,9 +95,9 @@ module MT::AiNode
       jb.string(@attr.none? ? "" : @attr.to_str)
 
       if @_dic >= 0 || self.is_a?(M0Node)
-        jb.number @_dic
-        jb.string @vstr
         jb.string @zstr
+        jb.string @vstr
+        jb.number @_dic
       else
         jb.array do
           self.v_each { |node| node.to_json(jb) }

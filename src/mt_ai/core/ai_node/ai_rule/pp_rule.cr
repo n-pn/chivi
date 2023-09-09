@@ -1,13 +1,9 @@
 module MT::AiRule
-  def heal_pp!(dict : AiDict, node : AiNode, stem : String) : AiNode
-    return node unless p_node = node.find_by_cpos("P")
+  def heal_pp!(dict : AiDict, node : AiNode, v_node : AiNode) : AiNode
+    return node unless p_node = node.find_by_ipos(MtCpos::P)
+    MtPair.p_v_pair.fix_if_match!(p_node, v_node)
+
     node.add_attr!(p_node.attr)
-
-    if term = AiDict.get_special?(p_node.zstr, stem)
-      p_node.set_vstr!(term.vstr)
-      p_node.add_attr!(term.attr)
-    end
-
     node
   end
 end

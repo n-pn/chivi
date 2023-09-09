@@ -6,7 +6,7 @@ class MT::VpNode
   getter orig = [] of AiNode
   getter data = [] of AiNode
 
-  def initialize(@orig, @cpos, @_idx, @attr = :none)
+  def initialize(@orig, @cpos, @_idx, @attr = :none, @ipos = MtCpos[cpos])
     @_pos = 0
     @zstr = orig.join(&.zstr)
   end
@@ -33,7 +33,7 @@ class MT::VpNode
   ###
 
   def tl_phrase!(dict : AiDict) : Nil
-    if found = dict.get?(@zstr, @cpos)
+    if found = dict.get?(@zstr, @ipos)
       self.set_term!(*found)
     else
       @orig.each(&.tl_phrase!(dict))
@@ -67,7 +67,7 @@ class MT::VpNode
     i_hd = 0
     i_tl = -1
 
-    v_node = @orig.reverse_each.find(&.cpos.in?("VP", "VV")) || @orig.last
+    v_node = @orig.reverse_each.find(@orig.last) { |x| MtCpos.verb?(x.ipos) }
     v_stem = v_node.first.zstr
 
     n_node = nil
@@ -82,7 +82,7 @@ class MT::VpNode
         i_tl -= 1 if node._idx < v_node._idx && node.attr.at_t?
       when "PP"
         if node._idx < v_node._idx
-          node = AiRule.heal_pp!(dict, node, v_stem || "_")
+          node = AiRule.heal_pp!(dict, node, v_node)
           data.insert(i_tl, node)
           i_tl -= 1 if node.attr.at_t?
         else

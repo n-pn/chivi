@@ -3,7 +3,7 @@ require "./ai_node"
 class MT::M0Node
   include AiNode
 
-  def initialize(@zstr, @cpos, @_idx, @attr = :none)
+  def initialize(@zstr, @cpos, @_idx, @attr = :none, @ipos = MtCpos[cpos])
   end
 
   @[AlwaysInline]
@@ -13,7 +13,7 @@ class MT::M0Node
 
   @[AlwaysInline]
   def tl_word!(dict : AiDict) : Nil
-    self.set_term!(*dict.get(@zstr, @cpos))
+    self.set_term!(*dict.get(@zstr, @ipos))
   end
 
   def z_each(&)

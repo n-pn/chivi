@@ -27,14 +27,14 @@ class MT::AiDict
     }
   end
 
-  def get(zstr : String, cpos : String) : {MtTerm, Int8}
-    get?(zstr, cpos) || get_alt?(zstr) ||
-      {init(zstr, cpos), Dtype::Autogen.to_i8}
+  def get(zstr : String, ipos : Int8) : {MtTerm, Int8}
+    get?(zstr, ipos) || get_alt?(zstr) ||
+      {init(zstr, ipos), Dtype::Autogen.to_i8}
   end
 
-  def get?(zstr : String, cpos : String)
+  def get?(zstr : String, ipos : Int8)
     @dict_list.each do |dict|
-      dict.get?(zstr, cpos).try { |found| return found }
+      dict.get?(zstr, ipos).try { |found| return found }
     end
   end
 
@@ -44,37 +44,37 @@ class MT::AiDict
     end
   end
 
-  def init(zstr : String, cpos : String) : MtTerm
-    case cpos
-    when "PU"
+  def init(zstr : String, ipos : Int8) : MtTerm
+    case ipos
+    when MtCpos::PU
       vstr = CharUtil.normalize(zstr)
       attr = MtAttr.parse_punct(zstr)
-      @auto_dict.add(zstr, cpos, vstr, attr)
-    when "EM"
-      @auto_dict.add(zstr, cpos, zstr, MtAttr[Asis, Capx])
-    when "URL"
+      @auto_dict.add(zstr, ipos, vstr, attr)
+    when MtCpos::EM
+      @auto_dict.add(zstr, ipos, zstr, MtAttr[Asis, Capx])
+    when MtCpos["URL"]
       vstr = CharUtil.normalize(zstr)
-      @auto_dict.add(zstr, cpos, vstr, MtAttr[Asis, Npos])
-    when "CD", "OD"
+      @auto_dict.add(zstr, ipos, vstr, MtAttr[Asis, Npos])
+    when MtCpos::CD, MtCpos::OD
       vstr = TlUnit.translate(zstr) rescue QtCore.tl_hvword(zstr)
-      @auto_dict.add(zstr, cpos, vstr, :none)
-    when "NR"
+      @auto_dict.add(zstr, ipos, vstr, :none)
+    when MtCpos::NR
       # TODO: call special name translation engine
       vstr = QtCore.tl_hvname(zstr)
-      @auto_dict.add(zstr, cpos, vstr, :none)
+      @auto_dict.add(zstr, ipos, vstr, :none)
     else
       vstr = QtCore.tl_hvword(zstr)
-      @auto_dict.add(zstr, cpos, vstr, :none)
+      @auto_dict.add(zstr, ipos, vstr, :none)
     end
   end
 
-  def self.get_special?(astr : String, bstr : String)
-    Entry.special.get?(astr, bstr).try(&.[0])
-  end
+  # def self.get_special?(astr : String, bstr : String)
+  #   Entry.special.get?(astr, bstr).try(&.[0])
+  # end
 
-  def self.get_special?(astr : String, *bstr : String)
-    Entry.special.get?(astr, *bstr).try(&.[0])
-  end
+  # def self.get_special?(astr : String, *bstr : String)
+  #   Entry.special.get?(astr, *bstr).try(&.[0])
+  # end
 
   ###########
 
@@ -88,7 +88,7 @@ class MT::AiDict
   end
 
   class Entry
-    getter data = {} of String => Hash(String, MtTerm)
+    getter data = {} of String => Hash(Int8, MtTerm)
 
     getter dname : String
     getter dtype : Dtype
@@ -98,28 +98,40 @@ class MT::AiDict
     def initialize(@dname : String, @dtype : Dtype = :primary)
     end
 
-    def get?(zstr : String, cpos : String)
+    # def get?(zstr : String, cpos : String)
+    #   get?(zstr, MtCpos[cpos])
+    # end
+
+    def get?(zstr : String, ipos : Int8)
       return unless entry = @data[zstr]?
-      return unless found = entry[cpos]?
+      return unless found = entry[ipos]?
       {found, @dtype.to_i8}
     end
 
     def any?(zstr : String)
       return unless entry = @data[zstr]?
-      return unless found = entry["_"]? || entry.first_value?
+      return unless found = entry[0]? || entry.first_value?
       {found, @dtype.to_i8}
     end
 
     ####
 
-    def add(zstr : String, cpos : String, vstr : String, attr : String | Nil) : MtTerm
-      entry = @data[zstr] ||= {} of String => MtTerm
-      entry[cpos] = MtTerm.new(vstr, attr: MtAttr.parse_list(attr))
+    def add(zstr : String, cpos : String, vstr : String, attr : String) : MtTerm
+      add(zstr, ipos: MtCpos[cpos], vstr: vstr, attr: attr)
+    end
+
+    def add(zstr : String, ipos : Int8, vstr : String, attr : String) : MtTerm
+      entry = @data[zstr] ||= {} of Int8 => MtTerm
+      entry[ipos] = MtTerm.new(vstr, attr: MtAttr.parse_list(attr))
     end
 
     def add(zstr : String, cpos : String, vstr : String, attr : MtAttr = :none) : MtTerm
-      entry = @data[zstr] ||= {} of String => MtTerm
-      entry[cpos] = MtTerm.new(vstr, attr)
+      add(zstr, MtCpos[cpos], vstr, attr)
+    end
+
+    def add(zstr : String, ipos : Int8, vstr : String, attr : MtAttr = :none) : MtTerm
+      entry = @data[zstr] ||= {} of Int8 => MtTerm
+      entry[ipos] = MtTerm.new(vstr, attr)
     end
 
     def load_tsv!(dname : String = @dname)
@@ -129,20 +141,30 @@ class MT::AiDict
       File.each_line(db_path) do |line|
         cols = line.split('\t')
         next if cols.size < 3
-        # puts cols
-        add(cols[0], cols[1], cols[2], cols[3]?)
+        attr = MtAttr.parse_list(cols[3]?)
+        add(cols[0], cols[1], cols[2], attr: attr)
       end
 
       self
     end
 
     def load_db3!(dname : String = @dname)
-      query = "select zstr, cpos, vstr, iattr from #{ViTerm.schema.table}"
+      # ViTerm.db(dname).open_ro do |db|
+      #   query = "select zstr, icpos, vstr, iattr from #{ViTerm.schema.table}"
+
+      #   db.query_each(query) do |rs|
+      #     zstr, ipos, vstr, iattr = rs.read(String, Int32, String, Int32)
+      #     add(zstr, ipos: ipos.to_i8, vstr: vstr, attr: MtAttr.new(iattr))
+
+      #   end
+      # end
 
       ViTerm.db(dname).open_ro do |db|
+        query = "select zstr, cpos, vstr, iattr from #{ViTerm.schema.table}"
+
         db.query_each(query) do |rs|
-          zstr, cpos, vstr, attr = rs.read(String, String, String, Int32)
-          add(zstr, cpos, vstr, MtAttr.new(attr))
+          zstr, cpos, vstr, iattr = rs.read(String, String, String, Int32)
+          add(zstr, cpos: cpos, vstr: vstr, attr: MtAttr.new(iattr))
         end
       end
 

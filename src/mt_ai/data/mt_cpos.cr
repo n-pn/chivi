@@ -73,11 +73,21 @@ class MT::MtCpos
     "VSB",  # verb compounds formed by a modifier + a head
   }
 
-  MAP = Hash(String, Int32).new { |h, k| h[k] = h.size }
-  ALL.each_with_index { |cpos, idx| MAP[cpos] = idx }
+  MAP = Hash(String, Int8).new { |h, k| h[k] = h.size.to_i8 }
+  ALL.each_with_index { |cpos, idx| MAP[cpos] = idx.to_i8 }
 
+  AS = MAP["AS"]
+  NR = MAP["NR"]
   NN = MAP["NN"]
   NP = MAP["NP"]
+  PU = MAP["PU"]
+  EM = MAP["EM"]
+  CD = MAP["CD"]
+  OD = MAP["OD"]
+  M  = MAP["M"]
+  P  = MAP["P"]
+  VV = MAP["VV"]
+  VP = MAP["VP"]
 
   # EXTRA TAGS:
   # N: all nouns
@@ -97,4 +107,11 @@ class MT::MtCpos
   def self.[](cpos : String)
     MAP[cpos]
   end
+
+  def self.verb?(ipos : Int8)
+    ipos == VV || ipos == VP
+  end
 end
+
+# To delete:
+# "VD" => 66, "DEG2" => 67, "MN" => 68, "MV" => 69, "VM" => 70, "VS" => 71, "MT" => 72, "IC" => 73, "" => 74

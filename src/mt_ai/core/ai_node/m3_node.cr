@@ -7,12 +7,12 @@ class MT::M3Node
   getter middle : AiNode
   getter right : AiNode
 
-  def initialize(@left, @middle, @right, @cpos, @_idx, @attr = :none)
+  def initialize(@left, @middle, @right, @cpos, @_idx, @attr = :none, @ipos = MtCpos[cpos])
     @zstr = "#{@left.zstr}#{@middle.zstr}#{@right.zstr}"
   end
 
   def tl_phrase!(dict : AiDict)
-    if found = dict.get?(@zstr, @cpos)
+    if found = dict.get?(@zstr, @ipos)
       self.set_term!(*found)
     else
       {@left, @middle, @right}.each(&.tl_phrase!(dict))

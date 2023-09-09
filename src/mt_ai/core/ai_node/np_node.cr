@@ -7,7 +7,7 @@ class MT::NpNode
   getter orig = [] of AiNode
   getter data = [] of AiNode
 
-  def initialize(@orig : Array(AiNode), @cpos, @_idx, @attr = :none)
+  def initialize(@orig : Array(AiNode), @cpos, @_idx, @attr = :none, @ipos = MtCpos[cpos])
     @_pos = 0
     @zstr = orig.join(&.zstr)
   end
@@ -33,7 +33,7 @@ class MT::NpNode
 
   @[AlwaysInline]
   def tl_phrase!(dict : AiDict)
-    if found = dict.get?(@zstr, @cpos)
+    if found = dict.get?(@zstr, @ipos)
       self.set_term!(*found)
     else
       @orig.each(&.tl_phrase!(dict))

@@ -75,8 +75,8 @@ class MT::AiData
         size &+= 1
       end
 
-      cpos, attr = init_attr_from_cpos(cpos)
-      return {M0Node.new(zstr.to_s, cpos, _idx, attr), _idx + size}
+      ipos, attr = init_attr_from_cpos(cpos)
+      return {M0Node.new(zstr.to_s, cpos, _idx, attr, ipos), _idx + size}
     end
 
     nodes = [] of AiNode
@@ -93,15 +93,21 @@ class MT::AiData
     # pp nodes
 
     size = nodes.size
-    cpos, attr = init_attr_from_cpos(cpos)
+    ipos, attr = init_attr_from_cpos(cpos)
 
     case
-    when size == 1    then {M1Node.new(nodes[0], cpos, from, attr), _idx}
-    when cpos == "NP" then {NpNode.new(nodes, cpos, from, attr), _idx}
-    when cpos == "VP" then {VpNode.new(nodes, cpos, from, attr), _idx}
-    when size == 2    then {M2Node.new(nodes[0], nodes[1], cpos, from, attr), _idx}
-    when size == 3    then {M3Node.new(nodes[0], nodes[1], nodes[2], cpos, from, attr), _idx}
-    else                   {MxNode.new(nodes, cpos, from, attr), _idx}
+    when size == 1
+      {M1Node.new(nodes[0], cpos, from, attr, ipos), _idx}
+    when cpos == "NP"
+      {NpNode.new(nodes, cpos, from, attr, ipos), _idx}
+    when cpos == "VP"
+      {VpNode.new(nodes, cpos, from, attr, ipos), _idx}
+    when size == 2
+      {M2Node.new(nodes[0], nodes[1], cpos, from, attr, ipos), _idx}
+    when size == 3
+      {M3Node.new(nodes[0], nodes[1], nodes[2], cpos, from, attr, ipos), _idx}
+    else
+      {MxNode.new(nodes, cpos, from, attr, ipos), _idx}
     end
   end
 
@@ -121,6 +127,6 @@ class MT::AiData
       end
     end
 
-    {cpos, attr}
+    {MtCpos[cpos], attr}
   end
 end

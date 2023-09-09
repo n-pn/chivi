@@ -106,4 +106,8 @@ class MT::ViTerm
   def self.utime(mtime : Int32)
     mtime > 0 ? EPOCH &+ mtime &* 60 : 0
   end
+
+  all = self.db("regular").open_ro do |db|
+    db.query_all "select zstr, cpos from terms", as: {String, String}
+  end
 end
