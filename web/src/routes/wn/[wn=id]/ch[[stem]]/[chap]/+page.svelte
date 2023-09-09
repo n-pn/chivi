@@ -1,82 +1,72 @@
 <script context="module" lang="ts">
-  const main_tabs = [
-    { type: 'ai', mode: 'auto', icon: 'language', text: 'Dịch máy' },
-    { type: 'qt', icon: 'bolt', text: 'Dịch tạm' },
-    { type: 'tl', icon: 'ballpen', text: 'Dịch tay' },
-    { type: 'cf', icon: 'tool', text: 'Công cụ' },
-  ]
-
-  const mt_mode_tabs = [
-    {
-      mode: 'avail',
+  const modes = {
+    avail: {
       text: 'Có sẵn',
       desc: 'Chọn kết quả phân tích ngữ pháp có sẵn, ưu tiên Ernie Gram',
     },
-    {
-      mode: 'hm_eg',
+    hm_eg: {
       text: 'Ernie Gram',
       desc: 'HanLP Closed-source MTL ERNIE_GRAM_ZH',
     },
-    {
-      mode: 'hm_eb',
+    hm_eb: {
       text: 'Electra Base',
       desc: 'HanLP Closed-source MTL ELECTRA_BASE_ZH',
     },
-  ]
-
-  const secd_tabs = {
-    mt: [
-      {
-        mode: 'avail',
-        text: 'Có sẵn',
-        desc: 'Chọn kết quả phân tích ngữ pháp có sẵn, ưu tiên Ernie Gram',
-      },
-      {
-        mode: 'hm_eg',
-        text: 'Ernie Gram',
-        desc: 'HanLP Closed-source MTL ERNIE_GRAM_ZH',
-      },
-      {
-        mode: 'hm_eb',
-        text: 'Electra Base',
-        desc: 'HanLP Closed-source MTL ELECTRA_BASE_ZH',
-      },
-    ],
-    qt: [
-      {
-        mode: 'qt_v1',
-        text: 'Máy dịch cũ',
-        desc: 'Kết quả dịch từ máy dịch phiên bản cũ',
-      },
-      {
-        mode: 'be_zv',
-        text: 'Bing Edge',
-        desc: 'Dịch bằng Bing Translator thông qua Edge API',
-      },
-      {
-        mode: 'qt_hv',
-        text: 'Hán Việt',
-        desc: 'Dịch ra kết quả phiên âm Hán Việt',
-      },
-    ],
-    tl: [
-      {
-        mode: 'basic',
-        text: 'Cơ bản',
-        desc: 'Kết quả dịch tay do người dùng khởi tạo/sửa chữa',
-      },
-      {
-        mode: 'mixed',
-        text: 'Trộn lẫn',
-        desc: 'Trộn kết quả dịch tay đã kiểm chứng với kết quả dịch máy',
-      },
-      {
-        mode: 'other',
-        text: 'Sưu tầm',
-        desc: '',
-      },
-    ],
   }
+
+  // const secd_tabs = {
+  //   mt: [
+  //     {
+  //       mode: 'avail',
+  //       text: 'Có sẵn',
+  //       desc: 'Chọn kết quả phân tích ngữ pháp có sẵn, ưu tiên Ernie Gram',
+  //     },
+  //     {
+  //       mode: 'hm_eg',
+  //       text: 'Ernie Gram',
+  //       desc: 'HanLP Closed-source MTL ERNIE_GRAM_ZH',
+  //     },
+  //     {
+  //       mode: 'hm_eb',
+  //       text: 'Electra Base',
+  //       desc: 'HanLP Closed-source MTL ELECTRA_BASE_ZH',
+  //     },
+  //   ],
+  //   qt: [
+  //     {
+  //       mode: 'qt_v1',
+  //       text: 'Máy dịch cũ',
+  //       desc: 'Kết quả dịch từ máy dịch phiên bản cũ',
+  //     },
+  //     {
+  //       mode: 'be_zv',
+  //       text: 'Bing Edge',
+  //       desc: 'Dịch bằng Bing Translator thông qua Edge API',
+  //     },
+  //     {
+  //       mode: 'qt_hv',
+  //       text: 'Hán Việt',
+  //       desc: 'Dịch ra kết quả phiên âm Hán Việt',
+  //     },
+  //   ],
+  //   tl: [
+  //     {
+  //       mode: 'basic',
+  //       text: 'Cơ bản',
+  //       desc: 'Kết quả dịch tay do người dùng khởi tạo/sửa chữa',
+  //     },
+  //     {
+  //       mode: 'mixed',
+  //       text: 'Trộn lẫn',
+  //       desc: 'Trộn kết quả dịch tay đã kiểm chứng với kết quả dịch máy',
+  //     },
+  //     {
+  //       mode: 'other',
+  //       text: 'Sưu tầm',
+  //       desc: '',
+  //     },
+  //   ],
+  // }
 </script>
 
 <script lang="ts">
@@ -100,42 +90,56 @@
   $: cinfo = data.cinfo
   $: xargs = data.xargs
 
-  $: ztime = data.cinfo.mtime
+  $: tspan = data.tspan
   $: zsize = data.rdata.sizes[xargs.cpart]
 
   // let error = ''
   let l_idx = -1
+
+  let change_mode = false
 </script>
 
 <section class="mode-nav">
-  <nav class="chip-list">
+  <div class="rmode">
     <span class="chip-text">Cách dịch:</span>
-    {#each mt_mode_tabs as { mode, text, desc }}
-      <a
-        href={pager.gen_url({ mode, part: xargs.cpart })}
-        class="chip-link"
-        class:_active={xargs.rmode == mode}
-        data-tip={desc}>
-        <span>{text}</span>
-      </a>
-    {/each}
-  </nav>
+    <button
+      class="chip-link _active"
+      on:click={() => (change_mode = !change_mode)}>
+      <span>{modes[xargs.rmode].text}</span>
+      <SIcon name="chevron-down" />
+    </button>
+  </div>
 
-  <section class="chap-stat">
+  <div class="chap-stat">
     <div class="stat-group">
       <span class="stat-entry" data-tip="Số ký tự tiếng Trung">
         <SIcon name="file-analytics" />
         <span class="stat-value">{zsize}</span>
         <span class="stat-label"> chữ</span>
       </span>
-
-      <span class="stat-entry" data-tip="Thời gian lưu văn bản gốc">
-        <SIcon name="file-download" />
-        <span class="stat-value">{rel_time(ztime)}</span>
-      </span>
+      <div class="stat-entry" data-tip="Thời gian chạy máy dịch">
+        <SIcon name="clock" />
+        <span class="stat-value">{tspan}ms</span>
+      </div>
     </div>
-  </section>
+  </div>
 </section>
+
+{#if change_mode}
+  <nav class="rmode-choice">
+    <span class="chip-text">Đổi sang:</span>
+    {#each Object.entries(modes) as [mode, { text, desc }]}
+      <a
+        href={pager.gen_url({ mode, part: xargs.cpart })}
+        class="chip-link"
+        class:_active={xargs.rmode == mode}
+        data-tip={desc}
+        on:click={() => (change_mode = false)}>
+        <span>{text}</span>
+      </a>
+    {/each}
+  </nav>
+{/if}
 
 <div class="content">
   <div
@@ -166,6 +170,8 @@
   }
 
   .reader {
+    @include border(--bd-soft, $loc: top);
+
     padding: 0.75rem 0;
     display: block;
     min-height: 50vh;
@@ -182,7 +188,6 @@
   .mode-nav {
     @include padding-y(0.5rem);
     display: flex;
-    @include border(--bd-soft, $loc: bottom);
   }
 
   .chap-stat {
@@ -237,5 +242,11 @@
         @include fgcolor(primary, 5);
       }
     }
+  }
+
+  .rmode-choice {
+    padding-bottom: 0.5rem;
+    @include flex-cy;
+    gap: 0.5rem;
   }
 </style>

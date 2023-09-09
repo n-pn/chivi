@@ -46,15 +46,20 @@
 
 .chip-link {
   display: inline-flex;
+  align-items: center;
 
   @include fgcolor(tert);
-  gap: 0.25rem;
+  @include linesd(--bd-main);
 
   padding: 0.5em 0.75em;
+  line-height: 1;
+  gap: 0.25rem;
+
+  margin: 0;
   font-weight: 500;
   border-radius: 1em;
-
-  @include linesd(--bd-main);
+  background: inherit;
+  @include ftsize(sm);
   &._active,
   &:hover {
     @include fgcolor(primary, 6);
@@ -66,7 +71,8 @@
   display: inline-flex;
   @include fgcolor(tert);
   text-transform: uppercase;
-  font-size: 0.875em;
+  font-size: 0.825em;
+  font-weight: 500;
 }
 
 .chip-icon {

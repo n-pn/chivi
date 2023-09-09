@@ -39,7 +39,7 @@ export function chap_path(croot: string, ch_no: number, xargs) {
 
   const params = new URLSearchParams()
 
-  if (cpart > 0) params.append('part', cpart.toString())
+  if (cpart > 1) params.append('part', cpart.toString())
   if (rmode && rmode != default_rmode[rtype]) params.append('mode', rmode)
 
   const search = params.toString()

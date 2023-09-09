@@ -7,13 +7,15 @@ class MT::AiTranCtrl < AC::Base
 
   @[AC::Route::GET("/wnchap")]
   def wnchap(cpath : String, pdict : String = "combine", _algo : String = "avail")
+    start = Time.monotonic
     _auto_gen = _privi > 1 && _cfg_enabled?("c_auto")
-    input, ctime, _algo = AiTranUtil.get_wntext_con_data(cpath, _algo, _auto_gen)
+    input, _algo = AiTranUtil.get_wntext_con_data(cpath, _algo, _auto_gen)
 
     ai_mt = AiCore.new(pdict)
     lines = input.map { |line| ai_mt.tl_from_con_data(line) }
 
-    json = {lines: lines, ctime: ctime, _algo: _algo}
+    tspan = (Time.monotonic - start).total_milliseconds.to_i
+    json = {lines: lines, tspan: tspan, _algo: _algo}
     render json: json
   rescue ex
     Log.error(exception: ex) { [cpath, pdict] }

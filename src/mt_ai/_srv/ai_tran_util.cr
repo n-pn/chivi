@@ -54,8 +54,7 @@ module MT::AiTranUtil
 
   def read_con_file(con_path : String, _algo : String)
     lines = File.read_lines(con_path, chomp: true)
-    ctime = File.info(con_path).modification_time.to_unix
-    {lines, ctime, _algo}
+    {lines, _algo}
   end
 
   def call_hanlp_file_api(txt_path : String, con_path : String, _algo : String)
@@ -71,7 +70,7 @@ module MT::AiTranUtil
         File.write(con_path, cdata)
       end
 
-      {cdata.lines, Time.utc.to_unix, _algo}
+      {cdata.lines, _algo}
     end
   end
 

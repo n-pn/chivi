@@ -8,11 +8,12 @@ export const load = (async ({ fetch, parent }) => {
 }) satisfies PageLoad
 
 type Xargs = { wn_id: number; cpart: number; rtype: string; rmode: string }
-type Cvmtl = { lines: Array<Cdata>; ctime: number; _algo?: string }
+type Cvmtl = { lines: Array<Cdata>; tspan: number; _algo?: string }
 
 const headers = { 'Content-Type': 'application/json' }
 
 async function load_data(rdata: CV.Chdata, xargs: Xargs, fetch: CV.Fetch) {
+  if (!rdata.cbase) return { lines: [], tspan: 0 }
   const cpath = `${rdata.cbase}-${xargs.cpart}`
 
   const pdict = `book/$${xargs.wn_id}`
