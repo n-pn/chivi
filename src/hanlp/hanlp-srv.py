@@ -76,66 +76,44 @@ def render_con_data(con_data):
 
     return output
 
-def write_mtl_file(out_path, mtl_data, mtl_algo):
-    with open(f'{out_path}.{mtl_algo}.mtl', 'w') as mtl_file:
-        mtl_file.write(mtl_data.to_json())
-
-def write_con_file(out_path, con_data, con_algo):
-    with open(f'{out_path}.{con_algo}.con', 'w') as con_file:
-        con_file.write(render_con_data(con_data))
-
 app = Flask(__name__)
 
 ## electra base
 
-@app.route("/hmeb/file", methods=['GET'])
+@app.route("/hm_eb/file", methods=['GET'])
 def mtl_electra_base_file():
     torch.cuda.empty_cache()
-
     inp_path = request.args.get('file', '')
     inp_data = read_txt_file(inp_path)
 
     mtl_data = call_mtl_task(MTL_EB, inp_data)
-    out_path = inp_path.replace('chtext', 'nlp_wn').replace('.txt', '')
+    return render_con_data(mtl_data["con"])
 
-    write_mtl_file(out_path, mtl_data, 'hmeb')
-    write_con_file(out_path, mtl_data['con'], 'hmeb')
-
-    return 'ok'
-
-@app.route("/hceb/text", methods=['POST'])
+@app.route("/hm_eb/text", methods=['POST'])
 def mtl_electra_base_text():
     torch.cuda.empty_cache()
-
     inp_data = request.get_data(as_text=True).split('\n')
-    mtl_data = call_mtl_task(MTL_EB, inp_data)
 
+    mtl_data = call_mtl_task(MTL_EB, inp_data)
     return render_con_data(mtl_data["con"])
 
 ## ernie gram
 
-@app.route("/hmeg/file", methods=['GET'])
+@app.route("/hm_eg/file", methods=['GET'])
 def mtl_ernie_gram_file():
     torch.cuda.empty_cache()
-
     inp_path = request.args.get('file', '')
     inp_data = read_txt_file(inp_path)
 
     mtl_data = call_mtl_task(MTL_EG, inp_data)
-    out_path = inp_path.replace('chtext', 'nlp_wn').replace('.txt', '')
+    return render_con_data(mtl_data["con"])
 
-    write_mtl_file(out_path, mtl_data, 'hmeg')
-    write_con_file(out_path, mtl_data['con'], 'hmeg')
-
-    return 'ok'
-
-@app.route("/hceg/text", methods=['POST'])
+@app.route("/hm_eg/text", methods=['POST'])
 def mtl_ernie_gram_text():
     torch.cuda.empty_cache()
-
     inp_data = request.get_data(as_text=True).split('\n')
-    mtl_data = call_mtl_task(MTL_EG, inp_data)
 
+    mtl_data = call_mtl_task(MTL_EG, inp_data)
     return render_con_data(mtl_data["con"])
 
 ## start app

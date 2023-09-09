@@ -85,7 +85,7 @@ module MT::AiNode
     end
   end
 
-  def to_cjo(jb : JSON::Builder) : Nil
+  def to_json(jb : JSON::Builder) : Nil
     jb.array do
       jb.string @cpos
       jb.number @_idx
@@ -98,7 +98,7 @@ module MT::AiNode
         jb.string @zstr
       else
         jb.array do
-          self.v_each { |node| node.to_cjo(jb) }
+          self.v_each { |node| node.to_json(jb) }
         end
       end
     end

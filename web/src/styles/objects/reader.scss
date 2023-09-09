@@ -84,7 +84,8 @@
   }
 }
 
-.cv-line {
+.cv-line,
+.cdata {
   display: block;
 
   color: var(--fgcolor, var(--fg-main));
@@ -109,24 +110,167 @@
     font-family: Roboto Slab, var(--font-serif);
   }
 
-  // &.focus {
-  //   .tm-light & { @include bgcolor(warning, 2, 1); }
-  //   .tm-warm & { @include bgcolor(warning, 0, 4); }
-  //   .tm-dark & { @include bgcolor(neutral, 8, 9); }
-  //   .tm-oled & { @include bgcolor(neutral, 9, 8); }
-  // }
+  &.focus {
+    @include bdradi();
+    // outline: 1px solid color(primary, 5, 5);
+
+    .tm-light & {
+      @include bgcolor(warning, 2, 2);
+    }
+    .tm-warm & {
+      @include bgcolor(warning, 2, 2);
+    }
+    .tm-dark & {
+      @include bgcolor(primary, 8, 2);
+    }
+    .tm-oled & {
+      @include bgcolor(primary, 8, 2);
+    }
+  }
 }
 
-h1.cv-line {
+h1.cv-line,
+h1.cdata {
   line-height: 1.4em;
   margin: 1em 0;
   font-size: var(--head-fs);
 }
 
-p.cv-line {
+p.cv-line,
+p.cdata {
   margin: 1em 0;
   text-align: justify;
   text-justify: auto;
   line-height: var(--textlh, 160%);
   font-size: var(--para-fs);
 }
+
+@mixin cv-node($color: blue) {
+  cursor: pointer;
+  // position: relative;
+
+  @include tm-light(false) {
+    --active: #{color($color, 6)};
+    --border: #{color($color, 4)};
+  }
+
+  @include tm-dark(false) {
+    --active: #{color($color, 4)};
+    --border: #{color($color, 6)};
+  }
+}
+
+x-n {
+  background-position: bottom bottom;
+
+  .cdata:hover &,
+  .cdata.focus &,
+  .cdata.debug &,
+  &:hover {
+    background: linear-gradient(to top, var(--border) 0.75px, transparent 0);
+  }
+
+  // &:hover {
+  //   position: relative;
+  //   &::after {
+  //     @include fgcolor(tert);
+  //     @include bgcolor(tert, 0.5);
+
+  //     position: absolute;
+  //     top: -40%;
+  //     left: 0;
+  //     right: 0;
+  //     display: inline-flex;
+  //     flex-wrap: nowrap;
+  //     justify-content: center;
+  //     min-width: 4em;
+  //     line-height: 1em;
+  //     font-size: 0.6em;
+
+  //     content: attr(z) ' (' attr(p) ')';
+  //   }
+  // }
+
+  // essence + fixture
+  &[d='1'] {
+    @include cv-node(purple);
+  }
+
+  // unique
+  &[d='2'] {
+    @include cv-node(teal);
+  }
+
+  // regular
+  &[d='3'] {
+    @include cv-node(primary);
+  }
+
+  // suggest
+  &[d='4'] {
+    @include cv-node(success);
+  }
+
+  // autogen
+  &[data-d='5'] {
+    @include cv-node(warning);
+  }
+
+  &:hover,
+  &.hover {
+    color: var(--active);
+  }
+
+  // prettier-ignore
+  &.focus {
+    @include fgcolor(secd);
+    background: color(success, 5, 2) !important;
+    .tm-dark & { background: color(purple, 4, 3) !important; }
+    .tm-oled & { background: color(purple, 4, 4) !important; }
+  }
+
+  // c-g & {
+  //   cursor: pointer;
+  //   // prettier-ignore
+  //   &:hover, &.hover, &.focus { color: var(--active); }
+  // }
+}
+
+// prettier-ignore
+// @mixin vg-wrap($left: '{', $right: '}') {
+//   &:before, &:after { font-style: normal; }
+//   &:before { content: $left; }
+//   &:after { content: $right; }
+// }
+
+// v-g {
+//   --vgcolor: var(--fgmain);
+
+//   .cdata.debug & {
+//     background: none !important;
+
+//     // prettier-ignore
+//     &:before, &:after { color: var(--vgcolor); }
+//     @include vg-wrap('[', ']');
+
+//     v-n {
+//       color: var(--vgcolor);
+//       // prettier-ignore
+//       &:hover { color: var(--active); }
+//     }
+//   }
+
+//   &[d='0'],
+//   &[d='1'] {
+//     @include vg-wrap('', '');
+//   }
+
+//   $colors: (gray, green, blue, teal, orange, fuchsia, purple, pink, red);
+
+//   @for $i from 1 through 9 {
+//     &[d='#{$i}'] {
+//       $color: list.nth($colors, $i);
+//       --vgcolor: #{color($color, 5)};
+//     }
+//   }
+// }

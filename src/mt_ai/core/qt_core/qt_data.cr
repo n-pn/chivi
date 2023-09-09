@@ -17,7 +17,15 @@ class MT::QtData < Array(MT::QtNode)
     each { |node| cap, und = node.to_mtl(io, cap, und) }
   end
 
-  include JSON::Serializable
+  # include JSON::Serializable
+
+  def to_json : Nil
+    JSON.build { |jb| to_json(jb) }
+  end
+
+  def to_json(io : IO) : Nil
+    JSON.build(io) { |jb| to_json(jb) }
+  end
 
   def to_json(jb : JSON::Builder) : Nil
     jb.array do

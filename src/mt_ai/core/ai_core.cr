@@ -8,8 +8,8 @@ class MT::AiCore
     new("book/#{wn_id}")
   end
 
-  def initialize(pdict : String, @tl_phrase : Bool = true)
-    @dict = AiDict.new(pdict)
+  def initialize(pdict : String)
+    @dict = AiDict.load(pdict)
   end
 
   def con_data_to_txt(data : String, cap = true, und = true)

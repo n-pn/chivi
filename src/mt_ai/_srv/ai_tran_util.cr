@@ -8,16 +8,14 @@ module MT::AiTranUtil
   WN_TXT_DIR = "var/wnapp/chtext"
   WN_NLP_DIR = "var/wnapp/nlp_wn"
 
-  def call_hanlp_file_api(cpath : String, _algo : String)
-    file = "#{WN_TXT_DIR}/#{cpath}.txt"
-    link = "#{CV_ENV.lp_host}/#{_algo}/file?file=#{file}"
-
-    res = HTTP::Client.get(link)
-    res.status.success?
-  end
-
   def get_con_data_from_hanlp(ztext : String, _algo : String)
-    _algo = _algo == "auto" ? "hceg" : _algo.replace("hm", "hc")
+    case _algo
+    when "hm_eb", "hmeb"
+      _algo = "hceb"
+    else
+      _algo = "hceg"
+    end
+
     link = "#{CV_ENV.lp_host}/#{_algo}/text"
 
     res = HTTP::Client.post(link, body: ztext)
@@ -26,31 +24,56 @@ module MT::AiTranUtil
     res.body_io.gets_to_end.lines(chomp: true)
   end
 
-  def load_chap_con_data(cpath : String, _algo : String = "auto", _auto = false)
-    if _algo == "auto"
-      path = "#{WN_NLP_DIR}/#{cpath}.hmeg.con"
-      return {File.read(path), "hmeg"} if File.file?(path)
-      _algo = "hmeb"
-    elsif !_algo.in?("hmeg", "hmeb")
-      _algo = "hmeb"
+  def con_path(cpath : String, _algo : String)
+    "#{WN_NLP_DIR}/#{cpath}.#{_algo}.con"
+  end
+
+  def get_wntext_con_data(cpath : String, _algo : String = "avail", auto_gen = false)
+    hmeg_path = self.con_path(cpath, "hmeg")
+    hmeb_path = self.con_path(cpath, "hmeb")
+
+    if _algo == "hm_eb"
+      con_path = hmeb_path
+    elsif _algo == "hm_eg"
+      con_path = hmeg_path
+    elsif File.file?(hmeg_path) # mode == avail
+      return read_con_file(hmeg_path, "hm_eg")
+    elsif File.file?(hmeb_path) # mode == avail
+      return read_con_file(hmeb_path, "hm_eb")
+    else
+      con_path = hmeg_path
+      _algo = "hm_eg"
     end
 
-    txt_path = "#{WN_TXT_DIR}/#{cpath}."
-    con_path = "#{WN_NLP_DIR}/#{cpath}.#{_algo}.con"
+    return read_con_file(con_path, _algo) if File.file?(con_path)
+    raise "data not parsed!" if !auto_gen
 
-    unless File.file?(con_path)
-      Dir.mkdir_p(File.dirname(con_path))
+    txt_path = "#{WN_TXT_DIR}/#{cpath}.txt"
+    call_hanlp_file_api(txt_path, con_path, _algo)
+  end
 
-      raise "not found" unless _auto
-      raise "can't call api" unless call_hanlp_file_api(cpath, _algo)
-    end
-
+  def read_con_file(con_path : String, _algo : String)
     lines = File.read_lines(con_path, chomp: true)
-    gtime = File.info(con_path).modification_time.to_unix
+    ctime = File.info(con_path).modification_time.to_unix
+    {lines, ctime, _algo}
+  end
 
-    ztime = File.info?(txt_path).try(&.modification_time.to_unix) || 0_i64
+  def call_hanlp_file_api(txt_path : String, con_path : String, _algo : String)
+    link = "#{CV_ENV.lp_host}/#{_algo}/file?file=#{txt_path}"
+    Log.info { "CALL: #{link.colorize.magenta}" }
 
-    {lines, gtime, ztime, _algo}
+    HTTP::Client.get(link) do |res|
+      raise res.body unless res.status.success?
+      cdata = res.body_io.gets_to_end
+
+      spawn do
+        Dir.mkdir_p(File.dirname(con_path))
+        File.write(con_path, cdata)
+        Log.info { con_path }
+      end
+
+      {cdata.lines, Time.utc.to_unix, _algo}
+    end
   end
 
   def read_dual_wntext(cpath : String, _kind : String = "bzv") : String

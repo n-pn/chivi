@@ -31,16 +31,16 @@ class MT::AiData
     @root.to_txt(io, cap: cap, und: und)
   end
 
-  def to_cjo
-    JSON.build { |jb| to_cjo(jb) }
+  def to_json
+    JSON.build { |jb| to_json(jb) }
   end
 
-  def to_cjo(io : IO) : Nil
-    JSON.build(io) { |jb| @root.to_cjo(jb: jb) }
+  def to_json(io : IO) : Nil
+    JSON.build(io) { |jb| @root.to_json(jb: jb) }
   end
 
-  def to_cjo(jb : JSON::Builder) : Nil
-    @root.to_cjo(jb: jb)
+  def to_json(jb : JSON::Builder) : Nil
+    @root.to_json(jb: jb)
   end
 
   ###

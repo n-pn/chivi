@@ -3,22 +3,17 @@ require "./_mt_ctrl_base"
 require "./ai_tran_util"
 
 class MT::AiTranCtrl < AC::Base
-  base "/_mt/ai"
+  base "/_ai/mt"
 
   @[AC::Route::GET("/wnchap")]
-  def wn_chap(cpath : String,
-              pdict : String = "combine",
-              _algo : String = "auto",
-              _mode : Int32 = 0)
-    _mode = 0 if _privi < 2
-    lines, ctime, _algo = AiTranUtil.load_chap_con_data(cpath, _algo, _mode)
+  def wnchap(cpath : String, pdict : String = "combine", _algo : String = "avail")
+    _auto_gen = _privi > 1 && _cfg_enabled?("c_auto")
+    input, ctime, _algo = AiTranUtil.get_wntext_con_data(cpath, _algo, _auto_gen)
 
-    ai_mt = AiCore.load(pdict, true)
-    cdata = lines.map { |line| ai_mt.tl_from_con_data(line) }
-    zsize = cdata.sum(&.root.zstr.size)
+    ai_mt = AiCore.new(pdict)
+    cdata = input.map { |line| ai_mt.tl_from_con_data(line) }
 
-    json = {cdata, ctime, zsize, _algo, _mode}
-    render json: json
+    render json: [cdata, ctime, _algo]
   rescue ex
     Log.error(exception: ex) { [cpath, pdict] }
     render 455, ex.message

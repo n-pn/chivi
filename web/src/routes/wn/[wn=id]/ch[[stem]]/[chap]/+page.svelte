@@ -82,6 +82,9 @@
 <script lang="ts">
   import { page } from '$app/stores'
   import { Pager } from '$lib/pager'
+  import { config } from '$lib/stores'
+  import { render_cdata } from '$lib/mt_data_2'
+
   import { rel_time } from '$utils/time_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
@@ -90,6 +93,7 @@
   // const _user = get_user()
 
   import type { PageData } from './$types'
+
   export let data: PageData
 
   $: pager = new Pager($page.url, { part: 1, type: 'mt', mode: 'auto' })
@@ -97,11 +101,11 @@
   $: ztime = data.cinfo.mtime
   $: zsize = data.rdata.sizes[data.cpart]
 
-  console.log(data.rmode, data.rtype)
-  function load_data(type: string, mode: string) {}
+  // let error = ''
+  let l_idx = -1
 </script>
 
-<article class="article island">
+<article class="article island" style:--textlh="{$config.textlh}%">
   <header class="head">
     {#each main_tabs as { type, icon, text }}
       <a
@@ -129,23 +133,39 @@
         {/each}
       {/if}
     </nav>
+
+    <section class="chap-stat">
+      <div class="stat-group">
+        <span class="stat-entry" data-tip="Số ký tự tiếng Trung">
+          <SIcon name="file-analytics" />
+          <span class="stat-value">{zsize}</span>
+          <span class="stat-label"> chữ</span>
+        </span>
+
+        <span class="stat-entry" data-tip="Thời gian lưu văn bản gốc">
+          <SIcon name="file-download" />
+          <span class="stat-value">{rel_time(ztime)}</span>
+        </span>
+      </div>
+    </section>
   </section>
 
-  <section class="stat">
-    <div class="stat-group">
-      <span class="stat-entry" data-tip="Số ký tự tiếng Trung">
-        <SIcon name="file-analytics" />
-        <span class="stat-value">{zsize}</span>
-        <span class="stat-label"> chữ</span>
-      </span>
-
-      <span class="stat-entry" data-tip="Thời gian lưu văn bản gốc">
-        <SIcon name="file-download" />
-        <span class="stat-value">{rel_time(ztime)}</span>
-      </span>
+  <div class="content">
+    <div class="reader app-fs-{$config.ftsize} app-ff-{$config.ftface}">
+      {#each data.lines as line, _idx}
+        <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+        <!-- svelte-ignore a11y-no-static-element-interactions -->
+        <svelte:element
+          this={_idx > 0 ? 'p' : 'h1'}
+          id="L{_idx}"
+          class="cdata"
+          class:focus={_idx == l_idx}
+          on:click={() => (l_idx = _idx)}>
+          {@html render_cdata(line, 1)}
+        </svelte:element>
+      {/each}
     </div>
-  </section>
-  <div class="body">TODO!</div>
+  </div>
 </article>
 
 <style lang="scss">
@@ -154,6 +174,9 @@
     // @include shadow(2);
     @include padding-y(0);
 
+    :global(.tm-warm) & {
+      background-color: #fffbeb;
+    }
     // @include tm-dark {
     //   @include linesd(--bd-soft, $ndef: false, $inset: false);
     // }
@@ -221,10 +244,23 @@
     // }
   }
 
-  .body {
+  .cdata {
+    cursor: pointer;
+    @include bp-min(tl) {
+      @include padding-x(var(--gutter));
+    }
+  }
+
+  .reader {
     padding: 0.75rem 0;
     display: block;
     min-height: 50vh;
+    @include fgcolor(secd);
+
+    :global(cite) {
+      font-style: normal;
+      font-variant: small-caps;
+    }
 
     // @include border(--bd-soft, $loc: top);
   }
@@ -235,20 +271,19 @@
     @include border(--bd-soft, $loc: bottom);
   }
 
-  .stat {
-    @include flex;
-    justify-content: right;
+  .chap-stat {
+    display: inline-flex;
+    margin-left: auto;
   }
 
   .stat-group {
     display: inline-flex;
     align-items: center;
 
-    @include border(--bd-soft, $loc: bottom);
-    @include padding-x(0.75rem);
-    @include padding-y(0.25rem);
+    // @include padding-x(0.75rem);
+    // @include padding-y(0.25rem);
 
-    @include ftsize(xs);
+    @include ftsize(sm);
     @include fgcolor(mute);
   }
 
