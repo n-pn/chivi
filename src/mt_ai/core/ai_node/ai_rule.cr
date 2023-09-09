@@ -25,7 +25,7 @@ module MT::AiRule
     while _idx < _max
       node = list.unsafe_fetch(_idx)
       _idx &+= 1
-      return {node, _idx} if node.cpos == "PU" && node.zstr[-1] == match_char
+      return {node, _idx} if node.ipos == MtCpos::PU && node.zstr[-1] == match_char
     end
   end
 end

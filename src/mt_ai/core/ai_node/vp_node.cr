@@ -75,12 +75,12 @@ class MT::VpNode
     while @_pos < _max
       node = read_node
 
-      case node.cpos
-      when "ADVP"
+      case node.ipos
+      when MtCpos::ADVP
         node = AiRule.heal_advp!(dict, node)
         data.insert(i_tl, node)
         i_tl -= 1 if node._idx < v_node._idx && node.attr.at_t?
-      when "PP"
+      when MtCpos::PP
         if node._idx < v_node._idx
           node = AiRule.heal_pp!(dict, node, v_node)
           data.insert(i_tl, node)
@@ -88,7 +88,7 @@ class MT::VpNode
         else
           data.insert(i_tl, node)
         end
-      when "AS"
+      when MtCpos::AS
         if node.zstr == "了" && @_pos == _max && !node.attr.asis?
           node.set_vstr!("rồi")
           node.off_attr!(:hide)
@@ -98,13 +98,13 @@ class MT::VpNode
           data.insert(i_hd, node)
           i_hd += 1
         end
-      when "IP"
+      when MtCpos::IP
         if !n_node && v_stem == "想"
           v_node.set_vstr!("muốn")
         end
 
         data.insert(i_tl, node)
-      when "NP"
+      when MtCpos::NP
         # TODO: fix meaning
         if node.attr.nper? && v_stem == "想"
           v_node.set_vstr!("nhớ")

@@ -68,7 +68,7 @@ class MT::NpNode
     i_hd = 0
     i_tl = -1
 
-    if first_node.first.cpos == "PN"
+    if first_node.first.ipos == MtCpos::PN
       # TODO: handle PN as head
       data << first_node
       @_pos &+= 1
@@ -80,18 +80,18 @@ class MT::NpNode
     while @_pos < _max
       node = self.read_node
 
-      case node.cpos
-      when "CD"
+      case node.ipos
+      when MtCpos::CD
         data.insert(i_hd, node)
         i_hd &+= 1
-      when "OD"
+      when MtCpos::OD
         data.insert(i_tl, node)
         i_tl &-= 1
-      when "QP"
+      when MtCpos::QP
         qp_node = node
         data.insert(i_hd, node)
         i_hd &+= 1
-      when "DP"
+      when MtCpos::DP
         dt_node, qp_node = AiRule.split_dp(node)
         if dt_node.attr.at_h?
           data.insert(i_hd, dt_node)
@@ -105,10 +105,10 @@ class MT::NpNode
           data.insert(i_hd, qp_node)
           i_hd &+= 1
         end
-      when "CLP"
+      when MtCpos["CLP"]
         # FIXME: split phrase if first element is CD
         data.insert(i_hd, node)
-      when "DNP"
+      when MtCpos["DNP"]
         if node.attr.at_h?
           data.insert(i_hd, node)
           i_hd &+= 1
@@ -116,7 +116,7 @@ class MT::NpNode
           data.insert(i_tl, node)
           i_tl &-= 1
         end
-      when "PU"
+      when MtCpos::PU
         if match_found = AiRule.find_matching_pu(orig, node, _idx: @_pos, _max: _max)
           # TODO: check flipping
           match_tail, match_max = match_found
@@ -128,13 +128,13 @@ class MT::NpNode
           data.insert(i_tl, node)
           i_hd = data.size
         end
-      when "CC"
+      when MtCpos["CC"]
         data.insert(i_tl, node)
         i_hd = data.size &+ i_tl &+ 1
-      when "PRN", "ETC", "FLR"
+      when MtCpos["PRN"], MtCpos["ETC"], MtCpos["FLR"]
         data.insert(i_tl, node)
         i_hd = data.size &+ i_tl &+ 1
-      when "NN", "NP", "NR"
+      when MtCpos::NN, MtCpos::NP, MtCpos::NR
         # TODO: consume node
 
         if qp_node
@@ -159,7 +159,7 @@ class MT::NpNode
     inner_list = [] of AiNode
     @_pos.upto(_max &- 2) { |_pos| inner_list << peak_node(_pos) }
 
-    inner_cpos = inner_list.last.cpos == "PU" ? "IP" : "NP"
+    inner_cpos = inner_list.last.ipos == MtCpos::PU ? "IP" : "NP"
     inner_node = NpNode.new(inner_list, inner_cpos, _idx: inner_list.first._idx)
     inner_node.tl_phrase!(dict)
 

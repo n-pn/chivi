@@ -76,18 +76,26 @@ class MT::MtCpos
   MAP = Hash(String, Int8).new { |h, k| h[k] = h.size.to_i8 }
   ALL.each_with_index { |cpos, idx| MAP[cpos] = idx.to_i8 }
 
-  AS = MAP["AS"]
-  NR = MAP["NR"]
-  NN = MAP["NN"]
-  NP = MAP["NP"]
-  PU = MAP["PU"]
-  EM = MAP["EM"]
-  CD = MAP["CD"]
-  OD = MAP["OD"]
-  M  = MAP["M"]
-  P  = MAP["P"]
-  VV = MAP["VV"]
-  VP = MAP["VP"]
+  PN   = MAP["PN"]
+  AS   = MAP["AS"]
+  NR   = MAP["NR"]
+  NN   = MAP["NN"]
+  NP   = MAP["NP"]
+  PU   = MAP["PU"]
+  EM   = MAP["EM"]
+  CD   = MAP["CD"]
+  OD   = MAP["OD"]
+  M    = MAP["M"]
+  P    = MAP["P"]
+  VV   = MAP["VV"]
+  VP   = MAP["VP"]
+  IP   = MAP["IP"]
+  CP   = MAP["CP"]
+  DP   = MAP["DP"]
+  QP   = MAP["QP"]
+  PP   = MAP["PP"]
+  ADVP = MAP["ADVP"]
+  ADJP = MAP["ADJP"]
 
   # EXTRA TAGS:
   # N: all nouns

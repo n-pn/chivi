@@ -149,24 +149,23 @@ class MT::AiDict
     end
 
     def load_db3!(dname : String = @dname)
-      # ViTerm.db(dname).open_ro do |db|
-      #   query = "select zstr, icpos, vstr, iattr from #{ViTerm.schema.table}"
-
-      #   db.query_each(query) do |rs|
-      #     zstr, ipos, vstr, iattr = rs.read(String, Int32, String, Int32)
-      #     add(zstr, ipos: ipos.to_i8, vstr: vstr, attr: MtAttr.new(iattr))
-
-      #   end
-      # end
-
       ViTerm.db(dname).open_ro do |db|
-        query = "select zstr, cpos, vstr, iattr from #{ViTerm.schema.table}"
+        query = "select zstr, icpos, vstr, iattr from #{ViTerm.schema.table}"
 
         db.query_each(query) do |rs|
-          zstr, cpos, vstr, iattr = rs.read(String, String, String, Int32)
-          add(zstr, cpos: cpos, vstr: vstr, attr: MtAttr.new(iattr))
+          zstr, ipos, vstr, iattr = rs.read(String, Int32, String, Int32)
+          add(zstr, ipos: ipos.to_i8, vstr: vstr, attr: MtAttr.new(iattr))
         end
       end
+
+      # ViTerm.db(dname).open_ro do |db|
+      #   query = "select zstr, cpos, vstr, iattr from #{ViTerm.schema.table}"
+
+      #   db.query_each(query) do |rs|
+      #     zstr, cpos, vstr, iattr = rs.read(String, String, String, Int32)
+      #     add(zstr, cpos: cpos, vstr: vstr, attr: MtAttr.new(iattr))
+      #   end
+      # end
 
       self
     rescue ex

@@ -3,9 +3,9 @@ export type Cdata = [
   number,
   number,
   string,
-  number | Array<Cdata>,
+  string | Array<Cdata>,
   string | null,
-  string | null
+  number | null
 ]
 
 const escape_tags = { '&': '&amp;', '"': '&quot;', "'": '&apos;' }
@@ -42,6 +42,43 @@ function render_vstr(vstr: string, cpos: string) {
   }
 }
 
+export function render_ctree(input: Cdata, rmode = 1) {
+  let out = ''
+
+  const queue = [input]
+  while (true) {
+    const node = queue.pop()
+    if (!node) break
+
+    const [cpos, cidx, size, _attr, body, _vstr, vdic] = node
+
+    if (rmode > 0) out += `<x-g i=${cidx} u=${cidx + size}>`
+
+    out += `(${cpos} `
+
+    if (Array.isArray(body)) {
+      for (let i = body.length - 1; i >= 0; i--) queue.push(body[i])
+    } else {
+      out += body
+
+      // if (rmode == 2) {
+      //   out += `<x-n d=${body} b=${_idx} e=${_idx + _len}>`
+      //   out += render_vstr(vstr2, cpos)
+      //   out += `</x-n>`
+      // } else if (rmode == 1) {
+      //   out += render_vstr(vstr2, cpos)
+      // } else {
+      //   out += escape_htm(vstr2)
+      // }
+    }
+    out += `)`
+
+    if (rmode > 0) out += '</x-g>'
+  }
+
+  return out
+}
+
 export function render_cdata(input: Cdata, rmode = 1, cap = true) {
   let out = ''
   let und = true
@@ -52,7 +89,7 @@ export function render_cdata(input: Cdata, rmode = 1, cap = true) {
     const node = queue.pop()
     if (!node) break
 
-    const [cpos, _idx, _len, attr, body, vstr] = node
+    const [cpos, _idx, _len, attr, body, vstr, _dic] = node
     if (Array.isArray(body)) {
       for (let i = body.length - 1; i >= 0; i--) queue.push(body[i])
     } else {
@@ -62,7 +99,7 @@ export function render_cdata(input: Cdata, rmode = 1, cap = true) {
       und = attr.includes('Hide') ? und : attr.includes('Undn')
 
       if (rmode == 2) {
-        out += `<x-n d=${body} b=${_idx} e=${_idx + _len}>`
+        out += `<x-n d=${_dic} b=${_idx} e=${_idx + _len}>`
         out += render_vstr(vstr2, cpos)
         out += `</x-n>`
       } else if (rmode == 1) {
