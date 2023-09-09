@@ -83,11 +83,15 @@ app = Flask(__name__)
 @app.route("/hm_eb/file", methods=['GET'])
 def mtl_electra_base_file():
     torch.cuda.empty_cache()
+
     inp_path = request.args.get('file', '')
     inp_data = read_txt_file(inp_path)
 
     mtl_data = call_mtl_task(MTL_EB, inp_data)
-    return render_con_data(mtl_data["con"])
+    con_text = render_con_data(mtl_data["con"])
+
+    return con_text
+
 
 @app.route("/hm_eb/text", methods=['POST'])
 def mtl_electra_base_text():
@@ -95,31 +99,42 @@ def mtl_electra_base_text():
     inp_data = request.get_data(as_text=True).split('\n')
 
     mtl_data = call_mtl_task(MTL_EB, inp_data)
-    return render_con_data(mtl_data["con"])
+
+    con_text = render_con_data(mtl_data["con"])
+
+    return con_text
+
 
 ## ernie gram
 
 @app.route("/hm_eg/file", methods=['GET'])
 def mtl_ernie_gram_file():
     torch.cuda.empty_cache()
+
     inp_path = request.args.get('file', '')
     inp_data = read_txt_file(inp_path)
 
     mtl_data = call_mtl_task(MTL_EG, inp_data)
-    return render_con_data(mtl_data["con"])
+    con_text = render_con_data(mtl_data["con"])
+
+    return con_text
+
 
 @app.route("/hm_eg/text", methods=['POST'])
 def mtl_ernie_gram_text():
     torch.cuda.empty_cache()
+
     inp_data = request.get_data(as_text=True).split('\n')
 
     mtl_data = call_mtl_task(MTL_EG, inp_data)
-    return render_con_data(mtl_data["con"])
+    con_text = render_con_data(mtl_data["con"])
+
+    return con_text
 
 ## start app
 
 if __name__ == '__main__':
-    # app.run(debug=True, port=5555)
+    app.run(debug=True, port=5555)
 
-    from waitress import serve
-    serve(app, port=5555)
+    # from waitress import serve
+    # serve(app, port=5555)

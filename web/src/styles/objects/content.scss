@@ -131,38 +131,6 @@ cv-user,
   }
 }
 
-.bread {
-  display: flow-root;
-
-  padding: 0.5rem 0;
-  line-height: 1.25rem;
-  margin: 0.25rem 0;
-
-  @include ftsize(sm);
-  @include fgcolor(secd);
-}
-
-.crumb {
-  @include fgcolor(tert);
-
-  &._caps {
-    text-transform: uppercase;
-    @include ftsize(xs);
-  }
-
-  &._link {
-    &:hover {
-      @include fgcolor(primary, 5);
-    }
-  }
-
-  svg {
-    height: 1rem;
-    width: 1rem;
-    vertical-align: text-top;
-  }
-}
-
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   /* display: none; <- Crashes Chrome on hover */

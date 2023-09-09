@@ -24,20 +24,26 @@ export const fix_sname = (sname: string) => {
   return seed_prefixes.includes(sname[0]) ? sname : '~draft'
 }
 
-export function chap_path(
-  bslug: string,
-  sname: string,
-  ch_no: number,
-  cpart = 1,
-  uslug = ''
-) {
-  return `${seed_path(bslug, sname)}/${chap_tail(ch_no, cpart, uslug)}`
+const default_rmode = {
+  ai: 'avail',
+  qt: 'mt_v1',
+  ht: 'plain',
+  cf: 'add_term',
 }
 
-export function chap_tail(ch_no: number, cpart = 1, uslug = '', rmode = 'mt') {
-  return cpart > 1
-    ? `${ch_no}/${uslug}-${cpart}-${rmode}`
-    : `${ch_no}/${uslug}--${rmode}`
+export function chap_path(croot: string, ch_no: number, xargs) {
+  const { rtype, cpart, rmode } = xargs
+
+  let href = `${croot}/${ch_no}`
+  if (rtype != 'ai') href += '/' + rtype
+
+  const params = new URLSearchParams()
+
+  if (cpart > 0) params.append('part', cpart.toString())
+  if (rmode && rmode != default_rmode[rtype]) params.append('mode', rmode)
+
+  const search = params.toString()
+  return search ? `${href}?${search}` : href
 }
 
 export function _pgidx(index: number, limit = 32) {

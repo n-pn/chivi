@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   const main_tabs = [
-    { type: 'mt', mode: 'auto', icon: 'language', text: 'Dịch máy' },
+    { type: 'ai', mode: 'auto', icon: 'language', text: 'Dịch máy' },
     { type: 'qt', icon: 'bolt', text: 'Dịch tạm' },
     { type: 'tl', icon: 'ballpen', text: 'Dịch tay' },
     { type: 'cf', icon: 'tool', text: 'Công cụ' },
@@ -93,157 +93,71 @@
   // const _user = get_user()
 
   import type { PageData } from './$types'
-
   export let data: PageData
 
-  $: pager = new Pager($page.url, { part: 1, type: 'mt', mode: 'auto' })
+  $: pager = new Pager($page.url, { part: 1, mode: 'avail' })
+
+  $: cinfo = data.cinfo
+  $: xargs = data.xargs
 
   $: ztime = data.cinfo.mtime
-  $: zsize = data.rdata.sizes[data.cpart]
+  $: zsize = data.rdata.sizes[xargs.cpart]
 
   // let error = ''
   let l_idx = -1
 </script>
 
-<article class="article island" style:--textlh="{$config.textlh}%">
-  <header class="head">
-    {#each main_tabs as { type, icon, text }}
+<section class="mode-nav">
+  <nav class="chip-list">
+    <span class="chip-text">Cách dịch:</span>
+    {#each mt_mode_tabs as { mode, text, desc }}
       <a
-        href={pager.gen_url({ type, mode: '', part: data.part })}
-        class="htab"
-        class:_active={data.rtype == type}>
-        <SIcon name={icon} />
+        href={pager.gen_url({ mode, part: xargs.cpart })}
+        class="chip-link"
+        class:_active={xargs.rmode == mode}
+        data-tip={desc}>
         <span>{text}</span>
       </a>
     {/each}
-  </header>
+  </nav>
 
-  <section class="mode-nav">
-    <nav class="chip-list">
-      {#if data.rtype == 'mt'}
-        <span class="chip-text">Cách dịch:</span>
-        {#each mt_mode_tabs as { mode, text, desc }}
-          <a
-            href={pager.gen_url({ type: 'mt', mode, part: data.part })}
-            class="chip-link"
-            class:_active={data.rmode == mode}
-            data-tip={desc}>
-            <span>{text}</span>
-          </a>
-        {/each}
-      {/if}
-    </nav>
+  <section class="chap-stat">
+    <div class="stat-group">
+      <span class="stat-entry" data-tip="Số ký tự tiếng Trung">
+        <SIcon name="file-analytics" />
+        <span class="stat-value">{zsize}</span>
+        <span class="stat-label"> chữ</span>
+      </span>
 
-    <section class="chap-stat">
-      <div class="stat-group">
-        <span class="stat-entry" data-tip="Số ký tự tiếng Trung">
-          <SIcon name="file-analytics" />
-          <span class="stat-value">{zsize}</span>
-          <span class="stat-label"> chữ</span>
-        </span>
-
-        <span class="stat-entry" data-tip="Thời gian lưu văn bản gốc">
-          <SIcon name="file-download" />
-          <span class="stat-value">{rel_time(ztime)}</span>
-        </span>
-      </div>
-    </section>
-  </section>
-
-  <div class="content">
-    <div class="reader app-fs-{$config.ftsize} app-ff-{$config.ftface}">
-      {#each data.lines as line, _idx}
-        <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
-        <svelte:element
-          this={_idx > 0 ? 'p' : 'h1'}
-          id="L{_idx}"
-          class="cdata"
-          class:focus={_idx == l_idx}
-          on:click={() => (l_idx = _idx)}>
-          {@html render_cdata(line, 1)}
-        </svelte:element>
-      {/each}
+      <span class="stat-entry" data-tip="Thời gian lưu văn bản gốc">
+        <SIcon name="file-download" />
+        <span class="stat-value">{rel_time(ztime)}</span>
+      </span>
     </div>
+  </section>
+</section>
+
+<div class="content">
+  <div
+    class="reader app-fs-{$config.ftsize} app-ff-{$config.ftface}"
+    style:--textlh="{$config.textlh}%">
+    {#each data.lines as line, _idx}
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <svelte:element
+        this={_idx > 0 ? 'p' : 'h1'}
+        id="L{_idx}"
+        class="cdata"
+        class:focus={_idx == l_idx}
+        on:click={() => (l_idx = _idx)}>
+        {@html render_cdata(line, 1)}
+        {#if _idx == 0 && cinfo.psize > 1}[{xargs.cpart}/{cinfo.psize}]{/if}
+      </svelte:element>
+    {/each}
   </div>
-</article>
+</div>
 
 <style lang="scss">
-  .article {
-    // @include bgcolor(tert);
-    // @include shadow(2);
-    @include padding-y(0);
-
-    :global(.tm-warm) & {
-      background-color: #fffbeb;
-    }
-    // @include tm-dark {
-    //   @include linesd(--bd-soft, $ndef: false, $inset: false);
-    // }
-  }
-
-  .head {
-    display: flex;
-    @include border(--bd-main, $loc: bottom);
-  }
-
-  .htab {
-    @include flex-ca;
-    flex-direction: column;
-    padding: 0.5rem 0 0.25rem;
-
-    font-weight: 500;
-    flex: 1;
-
-    --color: var(--fg-secd, #555);
-    color: var(--color, inherit);
-
-    > :global(svg) {
-      width: 1.25rem;
-      height: 1.25rem;
-      // opacity: 0.8;
-    }
-
-    > span {
-      @include ftsize(sm);
-    }
-
-    @include bp-min(ts) {
-      flex-direction: row;
-      padding: 0.75rem 0;
-
-      > :global(svg) {
-        margin-right: 0.25rem;
-      }
-
-      > span {
-        @include ftsize(md);
-      }
-    }
-
-    &._active {
-      --color: #{color(primary, 6)};
-      position: relative;
-
-      &:after {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        content: '';
-        @include border(primary, 5, $width: 2px, $loc: bottom);
-      }
-
-      @include tm-dark {
-        --color: #{color(primary, 4)};
-      }
-    }
-
-    // &.disabled {
-    //   --color: var(--fg-mute);
-    // }
-  }
-
   .cdata {
     cursor: pointer;
     @include bp-min(tl) {

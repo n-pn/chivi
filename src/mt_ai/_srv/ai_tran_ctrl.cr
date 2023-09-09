@@ -11,9 +11,10 @@ class MT::AiTranCtrl < AC::Base
     input, ctime, _algo = AiTranUtil.get_wntext_con_data(cpath, _algo, _auto_gen)
 
     ai_mt = AiCore.new(pdict)
-    cdata = input.map { |line| ai_mt.tl_from_con_data(line) }
+    lines = input.map { |line| ai_mt.tl_from_con_data(line) }
 
-    render json: [cdata, ctime, _algo]
+    json = {lines: lines, ctime: ctime, _algo: _algo}
+    render json: json
   rescue ex
     Log.error(exception: ex) { [cpath, pdict] }
     render 455, ex.message

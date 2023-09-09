@@ -69,7 +69,6 @@ module MT::AiTranUtil
       spawn do
         Dir.mkdir_p(File.dirname(con_path))
         File.write(con_path, cdata)
-        Log.info { con_path }
       end
 
       {cdata.lines, Time.utc.to_unix, _algo}

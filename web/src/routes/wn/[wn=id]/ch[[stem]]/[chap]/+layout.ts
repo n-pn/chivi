@@ -13,7 +13,12 @@ type Chdata = {
   _succ: CV.Wnchap | null
 }
 
-export const load = (async ({ parent, params: { wn, stem, chap }, fetch }) => {
+export const load = (async ({
+  url,
+  parent,
+  params: { wn, stem, chap },
+  fetch,
+}) => {
   const wn_id = parseInt(wn, 10)
   const ch_no = parseInt(chap, 10)
 
@@ -35,5 +40,28 @@ export const load = (async ({ parent, params: { wn, stem, chap }, fetch }) => {
     show_config: true,
   }
 
-  return { cinfo, rdata, ch_no, croot, _meta, _title }
+  const xargs = get_xargs(wn_id, cinfo.psize, url.searchParams)
+  return { cinfo, rdata, xargs, _meta, _title }
 }) satisfies PageLoad
+
+function get_xargs(wn_id: number, psize: number, search: URLSearchParams) {
+  let cpart = +search.get('part') || 1
+  if (cpart < 0) cpart += psize + 1
+
+  const rtype = search.get('type')
+  const rmode = search.get('mode')
+
+  switch (rtype) {
+    case 'qt':
+      return { wn_id, cpart, rtype, rmode: rmode || 'mt_v1' }
+
+    case 'tl':
+      return { wn_id, cpart, rtype, rmode: rmode || 'basic' }
+
+    case 'cf':
+      return { wn_id, cpart, rtype, rmode: rmode || 'add_term' }
+
+    default:
+      return { wn_id, cpart, rtype: 'ai', rmode: rmode || 'avail' }
+  }
+}

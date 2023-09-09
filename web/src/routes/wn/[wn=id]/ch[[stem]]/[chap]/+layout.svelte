@@ -1,56 +1,67 @@
 <script context="module" lang="ts">
-  const links = [
-    ['tl', 'Dịch tay', 'Bản dịch có chỉnh sửa bởi người dùng Chivi'],
-    ['bv', 'Dịch Bing', 'Xem kết quả dịch từ Binh Translator'],
-    ['mt', 'Dịch máy', 'Dịch máy bằng phiên bản máy dịch hiện tại'],
-    ['ai', 'Dịch máy (mới)', 'Dịch máy bằng phiên bản máy dịch thử nghiệm'],
+  const main_tabs = [
+    { type: 'ai', mode: 'auto', icon: 'language', text: 'Dịch máy' },
+    { type: 'qt', icon: 'bolt', text: 'Dịch tạm' },
+    { type: 'tl', icon: 'ballpen', text: 'Dịch tay' },
+    { type: 'cf', icon: 'tool', text: 'Công cụ' },
   ]
 </script>
 
 <script lang="ts">
   import { page } from '$app/stores'
+  import { Pager } from '$lib/pager'
 
   import { get_user } from '$lib/stores'
   const _user = get_user()
 
   import { api_call } from '$lib/api_call'
   import { afterNavigate } from '$app/navigation'
-  import { seed_path, _pgidx, chap_tail } from '$lib/kit_path'
+  import { seed_path, chap_path, _pgidx } from '$lib/kit_path'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import Gmenu from '$gui/molds/Gmenu.svelte'
   import Footer from '$gui/sects/Footer.svelte'
 
   import type { LayoutData } from './$types'
-  import { recrawl_chap } from './shared'
+  import Crumb from '$gui/molds/Crumb.svelte'
   export let data: LayoutData
 
-  $: ({ nvinfo, curr_seed, cinfo, rdata } = data)
-  $: paths = gen_paths(data, $page.data.cpart || 1, $page.data.rmode || 'mt')
+  $: ({ nvinfo, curr_seed, cinfo, xargs } = data)
 
-  function gen_paths(data: LayoutData, cpart: number, rmode: string) {
-    const sname = data.curr_seed.sname
+  $: ch_no = cinfo.ch_no
+  $: total = curr_seed.chmax
 
-    const { ch_no, uslug } = cinfo
+  $: croot = seed_path(nvinfo.bslug, curr_seed.sname)
+  $: clist = ch_no > 32 ? `${croot}?pg=${_pgidx(ch_no)}` : croot
+  $: paths = gen_paths(croot, cinfo, xargs)
 
-    const base = seed_path(nvinfo.bslug, sname)
-    const list = seed_path(nvinfo.bslug, sname, _pgidx(cinfo.ch_no))
+  $: pager = new Pager($page.url, { part: 1, type: 'ai', mode: 'auto' })
 
-    const curr = `${base}/${chap_tail(ch_no, cpart - 1, uslug, '')}`
+  function gen_paths(croot: string, { ch_no, psize }, xargs) {
+    const curr = chap_path(croot, ch_no, xargs)
+    const prev = gen_prev_path(croot, ch_no, xargs)
+    const next = gen_next_path(croot, ch_no, xargs, psize)
+    return { curr, prev, next }
+  }
 
-    const prev =
-      cpart < 2
-        ? `${base}/${rdata._prev}-${rmode}`
-        : `${base}/${chap_tail(ch_no, cpart - 1, uslug, rmode)}`
+  function gen_prev_path(croot: string, ch_no: number, xargs) {
+    if (ch_no < 2) return croot
 
-    const next =
-      cpart < rdata.psize
-        ? `${base}/${chap_tail(ch_no, cpart + 1, uslug, rmode)}`
-        : rdata._next
-        ? `${base}/${rdata._next}-${rmode}`
-        : base
+    const cpart = xargs.cpart
 
-    return { base, list, curr, prev, next }
+    if (cpart < 2) {
+      return chap_path(croot, ch_no - 1, { ...xargs, cpart: -1 })
+    } else {
+      return chap_path(croot, ch_no, { ...xargs, cpart: cpart - 1 })
+    }
+  }
+
+  function gen_next_path(croot: string, ch_no: number, xargs, psize: number) {
+    const cpart = xargs.cpart
+    if (cpart < psize) {
+      return chap_path(croot, ch_no, { ...xargs, cpart: cpart + 1 })
+    } else {
+      return chap_path(croot, ch_no + 1, { ...xargs, cpart: 1 })
+    }
   }
 
   afterNavigate(() => {
@@ -85,24 +96,20 @@
     return on_memory ? [true, 'bookmark'] : [false, 'bookmark-off']
   }
 
-  let _onload = false
-
-  const reload_chap = async () => {
-    _onload = true
-    const json = await recrawl_chap(data)
-    data = { ...data, ...json }
-    _onload = false
-  }
+  $: crumb = [
+    { text: 'Truyện chữ', href: `/wn` },
+    { text: nvinfo.vtitle, href: `/wn/${nvinfo.bslug}` },
+    { text: `Mục lục: [${curr_seed.sname}]`, href: croot },
+    { text: cinfo.chdiv || 'Chính văn' },
+    { text: cinfo.title },
+  ]
 </script>
 
-<nav class="bread">
-  <a href="/wn/{nvinfo.bslug}" class="crumb _link">
-    <SIcon name="book" />
-    <span>{nvinfo.vtitle}</span>
-  </a>
-  <span>/</span>
-  <span class="crumb _text">{cinfo.chdiv || 'Chính văn'}</span>
-</nav>
+<Crumb items={crumb}>
+  {#if cinfo.psize > 1}
+    <div class="crumb"><span>Phần {xargs.cpart}/{cinfo.psize}</span></div>
+  {/if}
+</Crumb>
 
 <!-- <nav class="nav-list">
   {#each links as [mode, text, dtip]}
@@ -116,74 +123,65 @@
   {/each}
 </nav> -->
 
-<slot />
+<article class="article island">
+  <header class="head">
+    {#each main_tabs as { type, icon, text }}
+      <a
+        href={chap_path(croot, ch_no, { ...xargs, rtype: type, rmode: '' })}
+        class="htab"
+        class:_active={xargs.rtype == type}>
+        <SIcon name={icon} />
+        <span>{text}</span>
+      </a>
+    {/each}
+  </header>
+  <slot />
+</article>
 
 <Footer>
   <div class="navi">
     <a
       href={paths.prev}
       class="m-btn navi-item"
-      class:_disable={!rdata._prev}
+      class:_disable={ch_no < 2}
       data-key="74"
       data-kbd="←">
       <SIcon name="chevron-left" />
       <span>Trước</span>
     </a>
 
-    <Gmenu class="navi-item" loc="top">
-      <button class="m-btn" slot="trigger">
-        <SIcon name={_onload ? 'reload' : memo_icon} spin={_onload} />
-        <span>{cinfo.ch_no}/{curr_seed.chmax}</span>
+    <a
+      href="{croot}{ch_no > 32 ? `?pg=${_pgidx(ch_no)}` : ''}"
+      class="m-btn _success"
+      data-kbd="h">
+      <SIcon name="list" />
+      <span class="u-show-tm">Mục lục</span>
+    </a>
+
+    {#if on_memory && data.ubmemo.locked}
+      <button
+        class="m-btn"
+        disabled={$_user.privi < 0}
+        on:click={() => update_memo(false)}
+        data-kbd="p">
+        <SIcon name="bookmark-off" />
+        <span class="u-show-tm">Bỏ đánh dấu</span>
       </button>
-
-      <svelte:fragment slot="content">
-        <a
-          class="gmenu-item"
-          class:_disable={$_user.privi < 1}
-          href="{paths.base}/+text?ch_no={cinfo.ch_no}">
-          <SIcon name="pencil" />
-          <span>Sửa text gốc</span>
-        </a>
-
-        <button
-          class="gmenu-item"
-          disabled={$_user.privi < cinfo.privi}
-          on:click={reload_chap}>
-          <SIcon name="rotate-rectangle" spin={_onload} />
-          <span>Tải lại nguồn</span>
-        </button>
-
-        {#if on_memory && data.ubmemo.locked}
-          <button
-            class="gmenu-item"
-            disabled={$_user.privi < 0}
-            on:click={() => update_memo(false)}
-            data-kbd="p">
-            <SIcon name="bookmark-off" />
-            <span>Bỏ đánh dấu</span>
-          </button>
-        {:else}
-          <button
-            class="gmenu-item"
-            disabled={$_user.privi < 0}
-            on:click={() => update_memo(true)}
-            data-kbd="p">
-            <SIcon name="bookmark" />
-            <span>Đánh dấu</span>
-          </button>
-        {/if}
-
-        <a href={paths.list} class="gmenu-item" data-kbd="h">
-          <SIcon name="list" />
-          <span>Mục lục</span>
-        </a>
-      </svelte:fragment>
-    </Gmenu>
+    {:else}
+      <button
+        class="m-btn"
+        disabled={$_user.privi < 0}
+        on:click={() => update_memo(true)}
+        data-kbd="p">
+        <SIcon name="bookmark" />
+        <span class="u-show-tm">Đánh dấu</span>
+      </button>
+    {/if}
 
     <a
       href={paths.next}
       class="m-btn _fill navi-item"
-      class:_primary={rdata._next}
+      class:_primary={ch_no < total}
       data-key="75"
       data-kbd="→">
       <span>Kế tiếp</span>
@@ -193,8 +191,79 @@
 </Footer>
 
 <style lang="scss">
-  .nav-list {
-    margin-bottom: 0.75rem;
+  .article {
+    // @include bgcolor(tert);
+    // @include shadow(2);
+    @include padding-y(0);
+
+    :global(.tm-warm) & {
+      background-color: #fffbeb;
+    }
+    // @include tm-dark {
+    //   @include linesd(--bd-soft, $ndef: false, $inset: false);
+    // }
+  }
+
+  .head {
+    display: flex;
+    @include border(--bd-main, $loc: bottom);
+  }
+
+  .htab {
+    @include flex-ca;
+    flex-direction: column;
+    padding: 0.5rem 0 0.25rem;
+
+    font-weight: 500;
+    flex: 1;
+
+    --color: var(--fg-secd, #555);
+    color: var(--color, inherit);
+
+    > :global(svg) {
+      width: 1.25rem;
+      height: 1.25rem;
+      // opacity: 0.8;
+    }
+
+    > span {
+      @include ftsize(sm);
+    }
+
+    @include bp-min(ts) {
+      flex-direction: row;
+      padding: 0.75rem 0;
+
+      > :global(svg) {
+        margin-right: 0.25rem;
+      }
+
+      > span {
+        @include ftsize(md);
+      }
+    }
+
+    &._active {
+      --color: #{color(primary, 6)};
+      position: relative;
+
+      &:after {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        content: '';
+        @include border(primary, 5, $width: 2px, $loc: bottom);
+      }
+
+      @include tm-dark {
+        --color: #{color(primary, 4)};
+      }
+    }
+
+    // &.disabled {
+    //   --color: var(--fg-mute);
+    // }
   }
 
   .navi {

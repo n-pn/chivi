@@ -8,7 +8,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import { get_rtime } from '$gui/atoms/RTime.svelte'
 
-  export let _user: Writable<App.CurrentUser>
+  // export let _user: Writable<App.CurrentUser>
 
   let chaps: Array<any>
   let kind = ''
