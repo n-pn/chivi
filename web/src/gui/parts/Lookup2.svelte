@@ -70,8 +70,6 @@
       const cdata = lines[l_idx]
       const ztext = render_ztext(cdata, 0)
 
-      console.log(zpath)
-
       const hviet = await get_hviet(zpath, l_idx)
       const btran = await get_btran(zpath, l_idx)
 
@@ -102,6 +100,10 @@
 
   const call_btran = async () => {
     $data.btran = await get_btran($data.zpath, $data.l_idx, true)
+  }
+
+  const copy_ctree = () => {
+    navigator.clipboard.writeText(render_ctree($data.cdata, 0))
   }
 
   let viewer = null
@@ -152,7 +154,7 @@
       <h4 class="label">Tiếng Trung:</h4>
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <div class="cdata debug _zh" on:click={handle_click} lang="zh">
+      <div class="cdata _zh" on:click={handle_click} lang="zh">
         {@html render_ztext($data.cdata, 2)}
       </div>
 
@@ -163,7 +165,13 @@
         {@html render_cdata($data.hviet, 2)}
       </div>
 
-      <h4 class="label">Cây ngữ pháp:</h4>
+      <h4 class="label">
+        <span class="title">Cây ngữ pháp:</span>
+        <span class="tools">
+          <button type="button" class="tools-btn" on:click={copy_ctree}
+            >Sao chép</button>
+        </span>
+      </h4>
       <div class="cdata debug _ct">
         {@html render_ctree($data.cdata, 2)}
       </div>
@@ -172,7 +180,9 @@
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div class="cdata debug _mt" on:click={handle_click}>
-        {@html render_cdata($data.cdata, 2)}
+        {#if $data.cdata}
+          {@html render_cdata($data.cdata, 2)}
+        {/if}
       </div>
 
       <h4 class="label">Bing Edge:</h4>
@@ -193,34 +203,6 @@
   {:else}
     <div class="empty">Bấm vào đoạn văn để xem giải nghĩa!</div>
   {/if}
-  <!-- <section class="terms">
-    {#each current as [size, terms]}
-      <div class="entry">
-        <h3 class="word" lang="zh">
-          <span class="entry-key"
-            >{$ztext.substring($zfrom, $zfrom + size)}</span>
-          <button
-            class="m-btn _sm btn-edit"
-            on:click={() => upsert.show(0, 1, $zfrom, $zfrom + size)}>
-            <SIcon name="edit" />
-          </button>
-        </h3>
-
-        {#each Object.entries(terms) as [dict, defn]}
-          {#if defn}
-            {@const defns = defn.split('\n')}
-
-            <div class="item">
-              <h4 class="name">{dict}</h4>
-              {#each defns as defn}
-                <p class="term">{defn}</p>
-              {/each}
-            </div>
-          {/if}
-        {/each}
-      </div>
-    {/each}
-  </section> -->
 </Slider>
 
 <style lang="scss">
@@ -241,7 +223,6 @@
       $line: 1.125rem;
       line-height: $line;
       max-height: $line * 4 + 0.75rem;
-      @include ftsize(sm);
     }
 
     &._mt {
@@ -254,18 +235,16 @@
       $line: 1.125rem;
       line-height: $line;
       max-height: $line * 5 + 0.75rem;
-      @include ftsize(sm);
+      font-size: rem(15px);
     }
 
     &._ct {
       $line: 1.25rem;
       line-height: $line;
-      font-size: rem(15px);
-
       max-height: $line * 10 + 0.75rem;
 
       :global(x-z) {
-        font-weight: bolder;
+        font-weight: 500;
       }
     }
   }
@@ -279,6 +258,19 @@
 
     margin-top: 0.5rem;
     margin-bottom: 0.25rem;
+
+    > .tools {
+      margin-left: auto;
+    }
+  }
+
+  .tools-btn {
+    background: none;
+    color: currentColor;
+    font-style: italic;
+    &:hover {
+      @include fgcolor(primary, 5);
+    }
   }
 
   .blank {

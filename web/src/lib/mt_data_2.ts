@@ -54,11 +54,12 @@ export function render_ztext(input: Cdata, rmode = 1) {
 
     const [_cpos, zidx, zlen, _attr, body, _vstr, vdic] = node
 
-    if (rmode > 1)
+    if (rmode > 1) {
       out += `<x-n data-d=${vdic} data-b=${zidx} data-e=${zidx + zlen}>`
+    }
 
     if (Array.isArray(body)) {
-      const orig = body.sort(sort)
+      const orig = body.slice().sort(sort)
       for (let i = orig.length - 1; i >= 0; i--) queue.push(orig[i])
     } else {
       if (rmode == 0) {
@@ -84,14 +85,14 @@ export function render_ctree(node: Cdata, rmode = 1, sbuff = '') {
   if (rmode > 0) {
     sbuff += `<x-g data-b=${zidx} data-e=${zidx + zlen}>`
   } else {
-    sbuff += `(${cpos}' '`
+    sbuff += `(${cpos} `
   }
 
   if (rmode > 1)
     sbuff += `<x-c data-b=${zidx} data-e=${zidx + zlen}>${cpos}</x-c> `
 
   if (Array.isArray(body)) {
-    const orig = body.sort(sort)
+    const orig = body.slice().sort(sort)
 
     for (let i = 0; i < orig.length; i++) {
       if (i) sbuff += ' '

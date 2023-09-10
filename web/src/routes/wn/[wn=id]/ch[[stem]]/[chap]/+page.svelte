@@ -69,7 +69,6 @@
   let l_idx = -1
 
   afterNavigate(() => {
-    $lookup_ctrl.actived = false
     l_idx = -1
   })
 
@@ -92,26 +91,32 @@
   let reader: HTMLDivElement
   let change_mode = false
 
-  const change_focus = async (evt: Event, idx: number) => {
+  $: zpath = `${rdata.cbase}-${xargs.cpart}`
+  $: pdict = `book/${xargs.wn_id}`
+
+  const change_focus = async () => {
     if (!reader) return
 
+    const curr = document.getElementById('L' + l_idx)
     const prev = reader.querySelector('.cdata.focus')
-    if (prev) prev.classList.remove('focus')
 
-    const curr = document.getElementById('L' + idx)
-    curr.classList.add('focus')
-
-    l_idx = idx
-
-    await lookup_data.from_cdata(
-      data.lines,
-      l_idx,
-      `${rdata.cbase}-${xargs.cpart}`,
-      `book/${xargs.wn_id}`
-    )
+    if (curr != prev) {
+      if (prev) prev.classList.remove('focus')
+      curr.classList.add('focus')
+      curr.scrollIntoView({ block: 'center', behavior: 'smooth' })
+      await lookup_data.from_cdata(data.lines, l_idx, zpath, pdict)
+    }
 
     lookup_ctrl.show()
   }
+
+  $: render_mode = $config.r_mode == 2 ? 2 : 1
+  $: l_max = data.lines.length
+
+  const move_up = () => (l_idx = l_idx > 0 ? l_idx - 1 : l_idx)
+  const move_down = () => (l_idx = l_idx < l_max - 1 ? l_idx + 1 : l_idx)
+
+  $: if (reader && l_idx > -1) change_focus()
 </script>
 
 <section class="mode-nav">
@@ -167,11 +172,16 @@
       this={_idx > 0 ? 'p' : 'h1'}
       id="L{_idx}"
       class="cdata"
-      on:click={(e) => change_focus(e, _idx)}>
-      {@html render_cdata(line, 1)}
+      on:click={() => (l_idx = _idx)}>
+      {@html render_cdata(line, render_mode)}
       {#if _idx == 0 && cinfo.psize > 1}[{xargs.cpart}/{cinfo.psize}]{/if}
     </svelte:element>
   {/each}
+</div>
+
+<div hidden>
+  <button type="button" data-key="↑" on:click={move_up} />
+  <button type="button" data-key="↓" on:click={move_down} />
 </div>
 
 <style lang="scss">

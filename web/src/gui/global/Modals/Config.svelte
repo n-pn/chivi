@@ -161,72 +161,12 @@
 
   <config-item>
     <label class="switch">
-      <input type="checkbox" bind:checked={$data.show_z} />
-      <span class="switch-label">Hiển thị tiếng Trung gốc:</span>
-    </label>
-  </config-item>
-
-  <config-item>
-    <label class="switch">
-      <input type="checkbox" bind:checked={$data.w_udic} />
-      <span class="switch-label">Sử dụng từ điển cá nhân:</span>
-    </label>
-  </config-item>
-
-  <config-item>
-    <label class="switch">
       <input type="checkbox" bind:checked={$lookup.enabled} />
       <span class="switch-label">Luôn bật ô giải nghĩa:</span>
     </label>
   </config-item>
 
-  {#if $_user.privi > 2}
-    <config-sep />
-
-    <config-item>
-      <label class="switch">
-        <input type="checkbox" bind:checked={$data.view_dual} />
-        <span class="switch-label">Hiển thị song song nhiều kết quả:</span>
-      </label>
-    </config-item>
-
-    <config-item>
-      <field-label class="small">Lựa chọn:</field-label>
-      <field-input>
-        {#each dual_kinds as [label, value, chint]}
-          <label class:_active={value == $data.dual_kind} data-tip={chint}>
-            <input
-              type="radio"
-              name="dual_kind"
-              {value}
-              bind:group={$data.dual_kind} />
-            <span>{label}</span>
-          </label>
-        {/each}
-      </field-input>
-    </config-item>
-  {/if}
-
   <config-sep />
-
-  <config-item>
-    <label class="switch">
-      <input type="checkbox" bind:checked={$data.show_c} />
-      <span class="switch-label">Hiển thị cây ngữ pháp:</span>
-    </label>
-  </config-item>
-
-  <config-item>
-    <field-label class="small">Thuật toán:</field-label>
-    <field-input>
-      {#each c_algos as [label, value, chint]}
-        <label class:_active={value == $data.c_algo} data-tip={chint}>
-          <input type="radio" name="c_algo" {value} bind:group={$data.c_algo} />
-          <span>{label}</span>
-        </label>
-      {/each}
-    </field-input>
-  </config-item>
 
   <config-item>
     <label class="switch">
@@ -234,10 +174,6 @@
       <span class="switch-label">Tự động phân tích ngữ pháp:</span>
     </label>
   </config-item>
-
-  <div class="config-hint">
-    * Chỉ áp dụng cho người dùng quyền hạn 2 trở lên!
-  </div>
 </Slider>
 
 <style lang="scss">

@@ -228,16 +228,16 @@ x-c {
 }
 
 x-z {
-  font-family: var(--font-sans);
-  .cdata:hover &,
+  font-family: Roboto, Noto Sans CJK, 'Microsoft Yahei', STXihei, sans-serif;
+
   .cdata.debug & {
     color: var(--active);
   }
 
   &:hover {
-    border-bottom: 1px solid var(--border);
-    background: none;
-    // background: linear-gradient(to top, var(--border) 0.75px, transparent 0);
+    // border-bottom: 1px solid var(--border);
+    // background: none;
+    background: linear-gradient(to top, var(--border) 0.75px, transparent 0);
   }
 }
 

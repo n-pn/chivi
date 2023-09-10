@@ -59,7 +59,7 @@ class MT::M2Node
   end
 
   def fix_qp!
-    @flip = @left.ipos == MtCpos::OD || @right.ipos == MtCpos["CLP"]
+    @flip = @left.ipos == MtCpos::OD || @right.zstr.includes?('之')
   end
 
   private def possessive?(node : AiNode)

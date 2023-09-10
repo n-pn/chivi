@@ -20,7 +20,7 @@ puts data.to_txt.colorize.yellow
 puts "--------------------------------".colorize.dark_gray
 puts data.to_json.colorize.cyan
 puts "--------------------------------".colorize.dark_gray
-puts dict.to_json
 puts "Total time used (including loading dicts): #{(Time.monotonic - time).total_milliseconds.round}ms".colorize.red
 
-puts MT::MtCpos::MAP
+# puts dict.to_json
+# puts MT::MtCpos::MAP
