@@ -58,6 +58,9 @@ class MT::AiDict
     when MtCpos::CD, MtCpos::OD
       vstr = TlUnit.translate(zstr) rescue QtCore.tl_hvword(zstr)
       @auto_dict.add(zstr, ipos, vstr, :none)
+    when MtCpos::VV
+      vstr = init_vv(zstr)
+      @auto_dict.add(zstr, ipos, vstr, :none)
     when MtCpos::NR
       # TODO: call special name translation engine
       vstr = QtCore.tl_hvname(zstr)
@@ -65,6 +68,22 @@ class MT::AiDict
     else
       vstr = QtCore.tl_hvword(zstr)
       @auto_dict.add(zstr, ipos, vstr, :none)
+    end
+  end
+
+  def init_vv(zstr : String)
+    if match = MtPair.vrd_pair.find_any(zstr)
+      a_zstr, b_term = match
+      a_term, _dic = get(a_zstr, MtCpos::VV)
+      "#{a_term.vstr} #{b_term.a_vstr}"
+    elsif zstr[0] == '一'
+      b_term, _ = get(zstr[1..], MtCpos::VV)
+      "#{b_term.vstr} một phát"
+    elsif zstr[0] == '吓'
+      b_term, _ = get(zstr[1..], MtCpos::VV)
+      "dọa #{b_term.vstr}"
+    else
+      QtCore.tl_hvword(zstr)
     end
   end
 

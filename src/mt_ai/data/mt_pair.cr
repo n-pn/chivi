@@ -67,6 +67,18 @@ class MT::MtPair
     b_node.add_attr!(b_attr)
   end
 
+  getter any_re : Regex {
+    any_key = [] of String
+    @hash.each { |k, v| any_key << k if v.has_key?("_") }
+    Regex.new("^(.+)(#{any_key.join('|')})$")
+  }
+
+  def find_any(zstr : String)
+    return unless match = any_re.match(zstr)
+    _, a_zstr, b_zstr = match
+    {a_zstr, @hash[b_zstr]["_"]}
+  end
+
   ###
 
   class_getter m_n_pair : self { new("m_n_pair").load_tsv! }
