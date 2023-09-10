@@ -1,90 +1,6 @@
 <script context="module" lang="ts">
-  import { writable, get } from 'svelte/store'
-  // import { api_call, api_get } from '$lib/api_call'
-
-  import { get_wntext_btran, get_wntext_hviet } from '$utils/tran_util'
-
-  import {
-    type Cdata,
-    render_cdata,
-    render_ztext,
-    render_ctree,
-  } from '$lib/mt_data_2'
-
-  export const ctrl = {
-    ...writable({ actived: false, enabled: true }),
-    hide: (enabled = true) => ctrl.set({ enabled, actived: false }),
-    show(forced = true) {
-      const { enabled, actived } = get(ctrl)
-      if (actived || forced || enabled) ctrl.set({ enabled, actived: true })
-    },
-  }
-
-  // const headers = { 'Content-Type': 'application/json' }
-
-  async function get_hviet(zpath: string, l_idx: number, force = false) {
-    const { cdata } = await get_wntext_hviet(zpath, force)
-    return cdata[l_idx]
-  }
-
-  async function get_btran(zpath: string, l_idx: number, force = false) {
-    const { cdata } = await get_wntext_btran(zpath, force)
-    return cdata[l_idx]
-  }
-
-  export interface Data {
-    zpath: string
-    pdict: string
-
-    l_idx: number
-    l_max: number
-
-    ztext: string
-    btran: string
-
-    cdata: Cdata
-    hviet: Cdata
-  }
-
-  export const data = {
-    ...writable<Data>({
-      zpath: '',
-      pdict: '',
-      l_idx: 0,
-      l_max: 0,
-      ztext: '',
-      btran: '',
-      cdata: undefined,
-      hviet: undefined,
-    }),
-
-    async from_cdata(
-      lines: Array<Cdata>,
-      l_idx: number,
-      zpath = '',
-      pdict = ''
-    ) {
-      const l_max = lines.length
-      if (l_idx >= l_max) l_idx = l_max - 1
-
-      const cdata = lines[l_idx]
-      const ztext = render_ztext(cdata, 0)
-
-      const hviet = await get_hviet(zpath, l_idx)
-      const btran = await get_btran(zpath, l_idx)
-
-      data.set({
-        zpath,
-        pdict,
-        l_idx,
-        l_max,
-        ztext,
-        btran,
-        cdata,
-        hviet,
-      })
-    },
-  }
+  import { ctrl, data, get_btran } from '$lib/stores/lookup_stores'
+  import { render_cdata, render_ztext, render_ctree } from '$lib/mt_data_2'
 </script>
 
 <script lang="ts">
@@ -129,14 +45,6 @@
   //     })
   //   }
   // }
-
-  const move_up = () => {
-    if ($data.l_idx > 0) $data.l_idx -= 1
-  }
-
-  const move_down = () => {
-    if ($data.l_idx < $data.l_max - 1) $data.l_idx += 1
-  }
 </script>
 
 <Slider
@@ -145,15 +53,28 @@
   bind:actived={$ctrl.actived}
   --slider-width="30rem">
   <svelte:fragment slot="header-left">
-    <div class="-icon">
-      <SIcon name="compass" />
-    </div>
-    <div class="-text">Giải nghĩa</div>
+    <div class="-text">Phân tích</div>
   </svelte:fragment>
 
   <svelte:fragment slot="header-right">
-    <button type="button" class="-btn" data-kbd="↑" on:click={move_up} />
-    <button type="button" class="-btn" data-kbd="↓" on:click={move_down} />
+    <button
+      type="button"
+      class="-btn"
+      data-kbd="↑"
+      on:click={data.move_up}
+      data-tip="Chuyển lên dòng trên"
+      data-tip-loc="bottom">
+      <SIcon name="arrow-up" />
+    </button>
+    <button
+      type="button"
+      class="-btn"
+      data-kbd="↓"
+      on:click={data.move_down}
+      data-tip="Chuyển xuống dòng dưới"
+      data-tip-loc="bottom">
+      <SIcon name="arrow-down" />
+    </button>
   </svelte:fragment>
 
   {#if $data.ztext}
@@ -215,6 +136,7 @@
 <style lang="scss">
   .cdata {
     padding: 0.25rem 0.5rem;
+    @include border($loc: top-bottom);
     @include bgcolor(tert);
     @include scroll;
 
@@ -223,7 +145,6 @@
       line-height: $line;
       max-height: $line * 3 + 0.75rem;
       @include ftsize(lg);
-      @include border($loc: bottom);
     }
 
     &._hv {
@@ -236,6 +157,7 @@
       $line: 1.25rem;
       line-height: $line;
       max-height: $line * 6 + 0.75rem;
+      font-size: rem(17px);
     }
 
     &._tl {

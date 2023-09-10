@@ -59,17 +59,16 @@
   import { render_cdata } from '$lib/mt_data_2'
 
   import {
-    ctrl as lookup_ctrl,
     data as lookup_data,
-  } from '$gui/parts/Lookup2.svelte'
+    ctrl as lookup_ctrl,
+  } from '$lib/stores/lookup_stores'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   // let error = ''
-  let l_idx = -1
 
   afterNavigate(() => {
-    l_idx = -1
+    $lookup_data.l_idx = -1
   })
 
   // import { get_user } from '$lib/stores'
@@ -94,7 +93,7 @@
   $: zpath = `${rdata.cbase}-${xargs.cpart}`
   $: pdict = `book/${xargs.wn_id}`
 
-  const change_focus = async () => {
+  const change_focus = async (l_idx: number) => {
     if (!reader) return
 
     const curr = document.getElementById('L' + l_idx)
@@ -111,13 +110,7 @@
   }
 
   $: render_mode = $config.r_mode == 2 ? 2 : 1
-  $: l_max = data.lines.length
-
-  const move_up = () => (l_idx = l_idx > 0 ? l_idx - 1 : l_idx)
-  const move_down = () => (l_idx = l_idx < l_max - 1 ? l_idx + 1 : l_idx)
-
-  $: if (reader && l_idx > -1) change_focus()
-  $: if ($lookup_data.l_idx != l_idx) l_idx = $lookup_data.l_idx
+  $: if (reader && $lookup_data.l_idx > -1) change_focus($lookup_data.l_idx)
 </script>
 
 <section class="mode-nav">
@@ -173,7 +166,7 @@
       this={_idx > 0 ? 'p' : 'h1'}
       id="L{_idx}"
       class="cdata"
-      on:click={() => (l_idx = _idx)}>
+      on:click={() => ($lookup_data.l_idx = _idx)}>
       {@html render_cdata(line, render_mode)}
       {#if _idx == 0 && cinfo.psize > 1}[{xargs.cpart}/{cinfo.psize}]{/if}
     </svelte:element>
@@ -181,8 +174,8 @@
 </div>
 
 <div hidden>
-  <button type="button" data-kbd="↑" on:click={move_up} />
-  <button type="button" data-kbd="↓" on:click={move_down} />
+  <button type="button" data-kbd="↑" on:click={lookup_data.move_up} />
+  <button type="button" data-kbd="↓" on:click={lookup_data.move_down} />
 </div>
 
 <style lang="scss">
