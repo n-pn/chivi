@@ -33,7 +33,6 @@
   $: total = curr_seed.chmax
 
   $: croot = seed_path(nvinfo.bslug, curr_seed.sname)
-  $: clist = ch_no > 32 ? `${croot}?pg=${_pgidx(ch_no)}` : croot
   $: paths = gen_paths(croot, cinfo, xargs)
 
   $: pager = new Pager($page.url, { part: 1, type: 'ai', mode: 'auto' })

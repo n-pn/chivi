@@ -129,6 +129,14 @@
   //     })
   //   }
   // }
+
+  const move_up = () => {
+    if ($data.l_idx > 0) $data.l_idx -= 1
+  }
+
+  const move_down = () => {
+    if ($data.l_idx < $data.l_max - 1) $data.l_idx += 1
+  }
 </script>
 
 <Slider
@@ -144,9 +152,8 @@
   </svelte:fragment>
 
   <svelte:fragment slot="header-right">
-    <button class="-btn" data-kbd="`" on:click={() => ctrl.hide(false)}>
-      <SIcon name="circle-off" />
-    </button>
+    <button type="button" class="-btn" data-kbd="↑" on:click={move_up} />
+    <button type="button" class="-btn" data-kbd="↓" on:click={move_down} />
   </svelte:fragment>
 
   {#if $data.ztext}

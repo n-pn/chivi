@@ -37,19 +37,17 @@
   .crumb {
     display: inline;
 
-    & + & {
-      &:before {
-        display: inline-flex;
-        vertical-align: top;
+    &:not(:last-child):after {
+      display: inline-flex;
+      vertical-align: top;
 
-        margin-left: 0.25rem;
-        margin-right: 0.25rem;
+      margin-left: 0.25rem;
+      margin-right: 0.25rem;
 
-        content: '/';
-        font-size: 0.775em;
+      content: '/';
+      font-size: 0.775em;
 
-        @include fgcolor(mute);
-      }
+      @include fgcolor(mute);
     }
 
     > span,

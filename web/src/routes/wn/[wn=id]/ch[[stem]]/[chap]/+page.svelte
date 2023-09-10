@@ -117,6 +117,7 @@
   const move_down = () => (l_idx = l_idx < l_max - 1 ? l_idx + 1 : l_idx)
 
   $: if (reader && l_idx > -1) change_focus()
+  $: if ($lookup_data.l_idx != l_idx) l_idx = $lookup_data.l_idx
 </script>
 
 <section class="mode-nav">
@@ -180,8 +181,8 @@
 </div>
 
 <div hidden>
-  <button type="button" data-key="↑" on:click={move_up} />
-  <button type="button" data-key="↓" on:click={move_down} />
+  <button type="button" data-kbd="↑" on:click={move_up} />
+  <button type="button" data-kbd="↓" on:click={move_down} />
 </div>
 
 <style lang="scss">
