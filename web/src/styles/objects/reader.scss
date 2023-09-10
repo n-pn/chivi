@@ -164,10 +164,11 @@ x-n {
   background-position: bottom bottom;
 
   .cdata:hover &,
-  .cdata.focus &,
   .cdata.debug &,
   &:hover {
-    background: linear-gradient(to top, var(--border) 0.75px, transparent 0);
+    border-bottom: var(--border) 1px solid;
+    background: none;
+    // background: linear-gradient(to top, var(--border) 0.75px, transparent 0);
   }
 
   // &:hover {

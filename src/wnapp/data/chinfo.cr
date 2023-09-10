@@ -53,8 +53,15 @@ class WN::Chinfo
     );
     SQL
 
-  def self.db_path(sname : String, sn_id : String)
-    "var/zroot/wnchap/#{sname}/#{sn_id}.db3"
+  OLD_DIR = "var/zroot/wnchap"
+  NEW_DIR = "var/wnapp/chinfo"
+
+  def self.db_path(wn_id : Int32, sname : String)
+    "#{NEW_DIR}/#{wn_id}/#{sname}.db3"
+  end
+
+  def self.old_db_path(sname : String, sn_id : String)
+    "#{OLD_DIR}/#{sname}/#{sn_id}.db3"
   end
 
   ###
@@ -233,12 +240,25 @@ class WN::Chinfo
 
   CACHE = {} of String => Crorm::SQ3
 
-  def self.load(sname : String, sn_id : String)
-    CACHE["#{sname}/#{sn_id}"] ||= self.db(sname, sn_id)
+  def self.load(wn_id : Int32, sname : String, sn_id : String)
+    CACHE["#{wn_id}/#{sname}"] ||= begin
+      new_path = self.db_path(wn_id, sname)
+      old_path = self.old_db_path(sname, sn_id)
+
+      if !File.file?(new_path) || File.file?(old_path)
+        File.copy(old_path, new_path)
+      end
+
+      self.db(wn_id, sname)
+    end
   end
 
-  def self.init!(sname : String, sn_id : String, force : Bool = false) : Bool
-    repo = self.load(sname, sn_id)
+  def self.load(wn_id : Int32, sname : String)
+    CACHE["#{wn_id}/#{sname}"] ||= self.db(wn_id, sname)
+  end
+
+  def self.init!(wn_id : Int32, sname : String, sn_id : String, force : Bool = false) : Bool
+    repo = self.load(wn_id, sname, sn_id)
     return false if !force && self.chap_count(repo) > 0
     import_old!(repo, sname, sn_id) rescue false
   end
@@ -248,14 +268,14 @@ class WN::Chinfo
     db.query_one?(query, as: Int32) || 0
   end
 
-  OLD_DIR = "/2tb/app.chivi/var/zchap/infos"
+  OLDER_DIR = "/2tb/app.chivi/var/zchap/infos"
 
   def self.import_old!(repo, sname : String, sn_id : String) : Bool
     db_paths = {
-      "#{OLD_DIR}/#{sname}/#{sn_id}.db",
-      "#{OLD_DIR}/#{sname}/#{sn_id}.db.old",
-      "#{OLD_DIR}/#{sname}/#{sn_id}-infos.db",
-      "#{OLD_DIR}/#{sname}/#{sn_id}-infos.db.old",
+      "#{OLDER_DIR}/#{sname}/#{sn_id}.db",
+      "#{OLDER_DIR}/#{sname}/#{sn_id}.db.old",
+      "#{OLDER_DIR}/#{sname}/#{sn_id}-infos.db",
+      "#{OLDER_DIR}/#{sname}/#{sn_id}-infos.db.old",
     }
 
     db_paths.each do |db_path|

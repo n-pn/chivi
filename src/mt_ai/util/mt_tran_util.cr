@@ -57,29 +57,31 @@ module MT::MtTranUtil
   def call_hanlp_file_api(txt_path : String, con_path : String, _algo : String)
     link = "#{CV_ENV.lp_host}/#{_algo}/file?file=#{txt_path}"
 
-    res = HTTP::Client.get(link)
-    raise "error: #{res.body}" unless res.status.success?
+    HTTP::Client.get(link) do |res|
+      raise "error: #{res.body}" unless res.status.success?
 
-    cdata = res.body_io.gets_to_end
+      cdata = res.body_io.gets_to_end
 
-    spawn do
-      Dir.mkdir_p(File.dirname(con_path))
-      File.write(con_path, cdata)
+      spawn do
+        Dir.mkdir_p(File.dirname(con_path))
+        File.write(con_path, cdata)
+      end
+
+      {cdata.lines, _algo}
     end
-
-    {cdata.lines, _algo}
   end
 
   def call_hanlp_text_api(ztext : String, _algo : String)
     link = "#{CV_ENV.lp_host}/#{_algo}/text"
 
-    res = HTTP::Client.post(link, body: ztext)
-    raise "error: #{res.body}" unless res.status.success?
+    HTTP::Client.post(link, body: ztext) do |res|
+      raise "error: #{res.body}" unless res.status.success?
 
-    cdata = res.body_io.gets_to_end
-    # TODO: save to disk?
+      cdata = res.body_io.gets_to_end
+      # TODO: save to disk?
 
-    cdata.lines(chomp: true)
+      cdata.lines(chomp: true)
+    end
   end
 
   def get_wntext_btran_data(cpath : String, name = "be_zv")

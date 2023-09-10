@@ -89,7 +89,12 @@ export function render_ctree(input: Cdata, rmode = 1) {
 
     if (rmode > 0) out += `<x-g data-b=${zidx} data-e=${zidx + zlen}>`
 
-    out += `(${cpos} `
+    out += `(`
+    if (rmode > 1) {
+      out += `<x-c data-b=${zidx} data-e=${zidx + zlen}>${cpos}</x-c> `
+    } else {
+      out += cpos + ' '
+    }
 
     if (Array.isArray(body)) {
       const orig = body.sort(sort)

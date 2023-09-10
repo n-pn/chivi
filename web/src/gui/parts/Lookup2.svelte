@@ -163,34 +163,34 @@
 
   {#if $data.ztext}
     <section class="cbody" bind:this={viewer}>
-      <h4 class="type">Tiếng Trung:</h4>
+      <h4 class="label">Tiếng Trung:</h4>
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <div class="input _zh" on:click={handle_click} lang="zh">
+      <div class="cdata _zh" on:click={handle_click} lang="zh">
         {@html render_ztext($data.cdata, 2)}
       </div>
 
-      <h4 class="type">Hán Việt:</h4>
+      <h4 class="label">Hán Việt:</h4>
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <div class="input _hv" on:click={handle_click}>
+      <div class="cdata debug _hv" on:click={handle_click}>
         {@html render_cdata($data.hviet, 2)}
       </div>
 
-      <h4 class="type">Dịch máy:</h4>
+      <h4 class="label">Cây ngữ pháp:</h4>
+      <div class="cdata debug _ct">
+        {@html render_ctree($data.cdata, 2)}
+      </div>
+
+      <h4 class="label">Dịch máy:</h4>
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <div class="input _mt" on:click={handle_click}>
+      <div class="cdata debug _mt" on:click={handle_click}>
         {@html render_cdata($data.cdata, 2)}
       </div>
 
-      <h4 class="type">Bing Edge:</h4>
-      <div class="input _tl">{$data.btran}</div>
-
-      <h4 class="type">Cây ngữ pháp:</h4>
-      <div class="input _ct">
-        {@html render_ctree($data.cdata, 2)}
-      </div>
+      <h4 class="label">Bing Edge:</h4>
+      <div class="cdata debug _tl">{$data.btran}</div>
     </section>
   {:else}
     <div class="empty">Bấm vào đoạn văn để xem giải nghĩa!</div>
@@ -226,14 +226,8 @@
 </Slider>
 
 <style lang="scss">
-  .cbody {
-    padding: 0.375rem 0.75rem;
-  }
-
-  .input {
+  .cdata {
     padding: 0.25rem 0.5rem;
-    @include border();
-    @include bdradi;
     @include bgcolor(tert);
     @include scroll;
 
@@ -273,9 +267,10 @@
     }
   }
 
-  .type {
+  .label {
     display: flex;
     @include ftsize(sm);
+    padding: 0 0.75rem;
     // font-weight: bold;
     line-height: 1rem;
 

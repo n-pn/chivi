@@ -23,8 +23,10 @@
     else console.log(await api_res.text())
   }
 
-  const chap_href = ({ bslug, sname, chidx: ch_no, cpart, uslug }) =>
-    chap_path(bslug, sname, ch_no, cpart, uslug)
+  const chap_href = ({ bslug, sname, chidx: ch_no, cpart }) => {
+    const croot = `/wn/${bslug}/ch${sname}`
+    return chap_path(croot, ch_no, { cpart, rtype: 'ai', rmode: 'avail' })
+  }
 </script>
 
 <div class="chips">

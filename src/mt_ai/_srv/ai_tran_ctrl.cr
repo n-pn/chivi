@@ -6,7 +6,7 @@ class MT::AiTranCtrl < AC::Base
   @[AC::Route::GET("/wnchap")]
   def wnchap(cpath : String, pdict : String = "combine", _algo : String = "avail")
     start = Time.monotonic
-    _auto_gen = _privi > 1 && _cfg_enabled?("c_auto")
+    _auto_gen = _privi >= 0
     input, _algo = MtTranUtil.get_wntext_con_data(cpath, _algo, _auto_gen)
 
     ai_mt = AiCore.new(pdict)

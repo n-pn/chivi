@@ -33,6 +33,7 @@ def init_mtl(type):
     del mtl['srl']
 
     del mtl['ner/pku']
+    del mtl['ner/msra']
     del mtl['ner/ontonotes']
 
     del mtl['pos/pku']
@@ -43,14 +44,6 @@ def init_mtl(type):
 MTL_EB = init_mtl(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_BASE_ZH)
 MTL_EG = init_mtl(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ERNIE_GRAM_ZH)
 
-# TOK = hanlp.load(hanlp.pretrained.tok.CTB9_TOK_ELECTRA_BASE)
-# POS = hanlp.load(hanlp.pretrained.pos.CTB9_POS_ELECTRA_SMALL)
-# CON = hanlp.load(hanlp.pretrained.constituency.CTB9_CON_FULL_TAG_ERNIE_GRAM)
-
-# NLP = hanlp.pipeline() \
-#     .append(POS, input_key='tok', output_key='pos') \
-#     .append(CON, input_key='tok', output_key='con') \
-#     .append(merge_pos_into_con, input_key='*')
 
 def call_mtl_task(mtl_pipeline, lines):
     doc = mtl_pipeline(lines[0])
@@ -99,7 +92,6 @@ def mtl_electra_base_text():
     inp_data = request.get_data(as_text=True).split('\n')
 
     mtl_data = call_mtl_task(MTL_EB, inp_data)
-
     con_text = render_con_data(mtl_data["con"])
 
     return con_text
@@ -134,7 +126,7 @@ def mtl_ernie_gram_text():
 ## start app
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5555)
+    # app.run(debug=True, port=5555)
 
-    # from waitress import serve
-    # serve(app, port=5555)
+    from waitress import serve
+    serve(app, port=5555)

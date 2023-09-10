@@ -14,6 +14,7 @@
 <section class="wrapper">
   <article class="content">
     <h1>{$page.status}</h1>
+    <p><strong>{$page.error.message}</strong></p>
 
     {#if $page.status == 403}
       <Notext bind:data />

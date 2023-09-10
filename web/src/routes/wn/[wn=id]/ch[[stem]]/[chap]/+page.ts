@@ -19,6 +19,6 @@ async function load_data(rdata: CV.Chdata, xargs: Xargs, fetch: CV.Fetch) {
   const pdict = `book/$${xargs.wn_id}`
   const url = `/_ai/mt/wnchap?cpath=${cpath}&pdict=${pdict}&_algo=${xargs.rmode}`
   const res = await fetch(url, { headers: headers })
-  if (!res.ok) throw error(res.status, await res.text())
+  if (!res.ok) throw error(res.status, { message: await res.text() })
   return (await res.json()) as Cvmtl
 }

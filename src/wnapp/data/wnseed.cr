@@ -35,7 +35,7 @@ class WN::Wnstem
   # field updated_at : Time = Time.utc
 
   @[DB::Field(ignore: true, auto: true)]
-  getter chap_list : Crorm::SQ3 { Chinfo.load(@sname, @s_bid) }
+  getter chap_list : Crorm::SQ3 { Chinfo.load(@wn_id, @sname, @s_bid) }
 
   @[DB::Field(ignore: true, auto: true)]
   getter seed_type : SeedType { SeedType.parse(sname) }
@@ -46,9 +46,9 @@ class WN::Wnstem
   end
 
   def init!(force : Bool = false) : Nil
-    return unless force || @_flag < 0 || !File.file?(Chinfo.db_path(@sname, @s_bid))
+    return unless force || @_flag < 0 || !File.file?(Chinfo.db_path(@wn_id, @sname))
 
-    return unless Chinfo.init!(@sname, @s_bid)
+    return unless Chinfo.init!(@wn_id, @sname, @s_bid)
     # Log.info { "restored".colorize.green }
 
     @_flag = -@_flag
