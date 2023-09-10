@@ -6,7 +6,7 @@ text = ARGV[0]? || "(TOP (IP (PP (P 作为) (NP (QP (CD 一个)) (CP (CP (IP (VP
 dict = MT::AiDict.new(ARGV[1]? || "book/5865")
 
 data = MT::AiData.parse_con_data(text)
-data.root.tl_phrase!(dict: dict)
+data.translate!(dict: dict)
 
 puts "--------------------------------".colorize.dark_gray
 puts data.zstr.colorize.cyan

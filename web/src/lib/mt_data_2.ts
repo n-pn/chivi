@@ -54,7 +54,8 @@ export function render_ztext(input: Cdata, rmode = 1) {
 
     const [_cpos, zidx, zlen, _attr, body, _vstr, vdic] = node
 
-    if (rmode > 1) out += `<x-g data-b=${zidx} data-e=${zidx + zlen}>`
+    if (rmode > 1)
+      out += `<x-n data-d=${vdic} data-b=${zidx} data-e=${zidx + zlen}>`
 
     if (Array.isArray(body)) {
       const orig = body.sort(sort)
@@ -65,58 +66,54 @@ export function render_ztext(input: Cdata, rmode = 1) {
       } else {
         for (let x = 0; x < body.length; x++) {
           const idx = zidx + x
-          out += `<x-n data-d=${vdic} data-b=${idx} data-e=${idx + 1}>`
+          out += `<x-z data-d=${vdic} data-b=${idx} data-e=${idx + 1}>`
           out += escape_htm(body.charAt(x))
-          out += `</x-n>`
+          out += `</x-z>`
         }
       }
     }
-    if (rmode > 1) out += '</x-g>'
+    if (rmode > 1) out += '</x-n>'
   }
 
   return out
 }
 
-export function render_ctree(input: Cdata, rmode = 1) {
-  let out = ''
+export function render_ctree(node: Cdata, rmode = 1, sbuff = '') {
+  const [cpos, zidx, zlen, _attr, body, _vstr, vdic] = node
 
-  const queue = [input]
-  while (true) {
-    const node = queue.pop()
-    if (!node) break
-
-    const [cpos, zidx, zlen, _attr, body, _vstr, vdic] = node
-
-    if (rmode > 0) out += `<x-g data-b=${zidx} data-e=${zidx + zlen}>`
-
-    out += `(`
-    if (rmode > 1) {
-      out += `<x-c data-b=${zidx} data-e=${zidx + zlen}>${cpos}</x-c> `
-    } else {
-      out += cpos + ' '
-    }
-
-    if (Array.isArray(body)) {
-      const orig = body.sort(sort)
-      for (let i = orig.length - 1; i >= 0; i--) queue.push(orig[i])
-    } else {
-      if (rmode == 2) {
-        for (let x = 0; x < body.length; x++) {
-          const b = zidx + x
-          out += `<x-n data-d=${vdic} data-b=${b} data-e=${b + 1}>`
-          out += escape_htm(body.charAt(x))
-          out += `</x-n>`
-        }
-      } else {
-        out += escape_htm(body)
-      }
-    }
-    out += `)`
-
-    if (rmode > 0) out += '</x-g>'
+  if (rmode > 0) {
+    sbuff += `<x-g data-b=${zidx} data-e=${zidx + zlen}>`
+  } else {
+    sbuff += `(${cpos}' '`
   }
 
-  return out
+  if (rmode > 1)
+    sbuff += `<x-c data-b=${zidx} data-e=${zidx + zlen}>${cpos}</x-c> `
+
+  if (Array.isArray(body)) {
+    const orig = body.sort(sort)
+
+    for (let i = 0; i < orig.length; i++) {
+      if (i) sbuff += ' '
+      sbuff = render_ctree(orig[i], rmode, sbuff)
+    }
+  } else {
+    if (rmode == 2) {
+      for (let x = 0; x < body.length; x++) {
+        const b = zidx + x
+        sbuff += `<x-z data-d=${vdic} data-b=${b} data-e=${b + 1}>`
+        sbuff += escape_htm(body.charAt(x))
+        sbuff += `</x-z>`
+      }
+    } else {
+      sbuff += escape_htm(body)
+    }
+  }
+
+  if (rmode > 0) sbuff += '</x-g>'
+  else sbuff += `)`
+
+  return sbuff
 }
 
 export function render_cdata(input: Cdata, rmode = 1, cap = true) {

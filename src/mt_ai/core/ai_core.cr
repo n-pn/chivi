@@ -16,9 +16,8 @@ class MT::AiCore
     tl_from_con_data(data).to_txt(cap: cap, und: und)
   end
 
-  def tl_from_con_data(data : String) : AiData
+  def tl_from_con_data(data : String, rearrange : Bool = true) : AiData
     data = AiData.parse_con_data(data)
-    data.tl_phrase!(dict: @dict)
-    data
+    data.translate!(dict: @dict, rearrange: rearrange)
   end
 end

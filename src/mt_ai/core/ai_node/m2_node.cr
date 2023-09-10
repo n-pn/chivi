@@ -12,23 +12,13 @@ class MT::M2Node
     @zstr = "#{@left.zstr}#{@right.zstr}"
   end
 
-  def tl_phrase!(dict : AiDict) : Nil
-    if found = dict.get?(@zstr, @ipos)
-      self.set_term!(*found)
-    else
-      {@left, @right}.each(&.tl_phrase!(dict))
-      fix_inner!(dict)
-    end
+  def translate!(dict : AiDict, rearrange : Bool = true) : Nil
+    self.tl_whole!(dict: dict)
+    {@left, @right}.each(&.translate!(dict, rearrange: rearrange))
+    self.rearrange!(dict) if rearrange
   end
 
-  @[AlwaysInline]
-  def tl_word!(dict : AiDict)
-    {@left, @right}.each(&.tl_word!(dict))
-    fix_inner!(dict)
-  end
-
-  @[AlwaysInline]
-  private def fix_inner!(dict : AiDict) : Nil
+  private def rearrange!(dict : AiDict) : Nil
     case @ipos
     when MtCpos["DVP"] then fix_dvp!
     when MtCpos["DNP"] then fix_dnp!
@@ -36,10 +26,9 @@ class MT::M2Node
     when MtCpos["VRD"] then fix_vrd!
     when MtCpos["VCD"] then fix_vcd!
     when MtCpos["VCP"] then fix_vcp!
+    when MtCpos::QP    then fix_qp!
     when MtCpos["DP"]
       @flip = !@left.attr.at_h?
-    when MtCpos["QP"]
-      @flip = @left.ipos == MtCpos["OD"]
     end
   end
 
@@ -67,6 +56,10 @@ class MT::M2Node
     else
       right.set_term!(MtTerm.new("", MtAttr[:hide, :at_t]))
     end
+  end
+
+  def fix_qp!
+    @flip = @left.ipos == MtCpos::OD || @right.ipos == MtCpos["CLP"]
   end
 
   private def possessive?(node : AiNode)

@@ -110,16 +110,21 @@ module MT::TlUnit
     suf_str = ""
 
     zstr.each_char do |char|
-      if char.in?('0'..'9')
+      case
+      when char.in?('0'..'9')
         digits << Digit.new(char)
-      elsif char.in?('０'..'９')
+      when char.in?('０'..'９')
         digits << Digit.new(char - 0xfee0) # to half width
-      elsif extra = EXTRA_STR[char]?
+      when extra = EXTRA_STR[char]?
         pre_str = pre_str.empty? ? extra : "#{pre_str} #{extra}"
-      elsif !(int = HAN_TO_INT[char]?)
+      when char == '分'
+        suf_str = "phần"
+      when char == '之'
+        # DO NOTHING!
+      when !(int = HAN_TO_INT[char]?)
         Log.error { "#{char} not match any known type" }
         pre_str = pre_str.empty? ? char.to_s : "#{pre_str} #{char}"
-      elsif int >= 0
+      when int >= 0
         digits << Digit.new('０' + int) # convert to full width form
       else
         no_unit = false
@@ -144,15 +149,15 @@ module MT::TlUnit
     return pre_str if digits.empty?
 
     if digit_only
-      render_pure_digit(digits, pre_str)
+      render_pure_digit(digits, pre_str, suf_str)
     elsif no_unit
-      render_no_unit(digits, pre_str)
+      render_no_unit(digits, pre_str, suf_str)
     else
-      render_unit(digits, pre_str)
+      render_unit(digits, pre_str, suf_str)
     end
   end
 
-  private def render_no_unit(digits : Array(Digit), pre_str : String)
+  private def render_no_unit(digits : Array(Digit), pre_str : String, suf_str : String)
     String.build do |io|
       io << pre_str << ' ' unless pre_str.empty?
       was_digit = false
@@ -164,10 +169,12 @@ module MT::TlUnit
         digit.render(io, is_digit)
         was_digit = is_digit
       end
+
+      io << ' ' << suf_str unless suf_str.empty?
     end
   end
 
-  private def render_pure_digit(digits : Array(Digit), pre_str : String)
+  private def render_pure_digit(digits : Array(Digit), pre_str : String, suf_str : String)
     digits = fix_digits_unit!(digits)
     # pp digits.colorize.blue
 
@@ -181,10 +188,11 @@ module MT::TlUnit
       end
 
       prev_unit.times { io << '0' }
+      io << ' ' << suf_str unless suf_str.empty?
     end
   end
 
-  private def render_unit(digits : Array(Digit), pre_str : String)
+  private def render_unit(digits : Array(Digit), pre_str : String, suf_str : String)
     digits = fix_digits_unit!(digits)
     # pp digits
 
@@ -211,6 +219,8 @@ module MT::TlUnit
           prev_unit = digit.unit
         end
       end
+
+      io << ' ' << suf_str unless suf_str.empty?
     end
   end
 

@@ -11,17 +11,9 @@ class MT::MxNode
   end
 
   @[AlwaysInline]
-  def tl_phrase!(dict : AiDict)
-    if found = dict.get?(@zstr, @ipos)
-      self.set_term!(*found)
-    else
-      @list.each(&.tl_phrase!(dict))
-    end
-  end
-
-  @[AlwaysInline]
-  def tl_word!(dict : AiDict) : Nil
-    @list.each(&.tl_word!(dict))
+  def translate!(dict : AiDict, rearrange : Bool = true)
+    self.tl_whole!(dict: dict)
+    @list.each(&.translate!(dict, rearrange: rearrange))
   end
 
   ###

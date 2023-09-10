@@ -17,6 +17,10 @@ module MT::AiNode
   abstract def first
   abstract def last
 
+  def tl_whole!(dict : AiDict)
+    dict.get?(@zstr, @ipos).try { |term, _dic| self.set_term!(term, _dic) }
+  end
+
   def find_by_ipos(ipos : Int8)
     z_each do |node|
       return node if node.ipos == ipos

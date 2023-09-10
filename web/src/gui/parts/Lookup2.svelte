@@ -152,7 +152,7 @@
       <h4 class="label">Tiếng Trung:</h4>
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <div class="cdata _zh" on:click={handle_click} lang="zh">
+      <div class="cdata debug _zh" on:click={handle_click} lang="zh">
         {@html render_ztext($data.cdata, 2)}
       </div>
 
@@ -260,8 +260,13 @@
     &._ct {
       $line: 1.25rem;
       line-height: $line;
-      @include ftsize(sm);
+      font-size: rem(15px);
+
       max-height: $line * 10 + 0.75rem;
+
+      :global(x-z) {
+        font-weight: bolder;
+      }
     }
   }
 

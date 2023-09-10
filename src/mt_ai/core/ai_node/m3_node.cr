@@ -11,23 +11,13 @@ class MT::M3Node
     @zstr = "#{@left.zstr}#{@middle.zstr}#{@right.zstr}"
   end
 
-  def tl_phrase!(dict : AiDict)
-    if found = dict.get?(@zstr, @ipos)
-      self.set_term!(*found)
-    else
-      {@left, @middle, @right}.each(&.tl_phrase!(dict))
-      fix_inner!(dict)
-    end
+  def translate!(dict : AiDict, rearrange : Bool = true)
+    self.tl_whole!(dict: dict)
+    {@left, @middle, @right}.each(&.translate!(dict, rearrange: rearrange))
+    self.rearrange!(dict) if rearrange
   end
 
-  @[AlwaysInline]
-  def tl_word!(dict : AiDict)
-    {@left, @middle, @right}.each(&.tl_word!(dict))
-    fix_inner!(dict)
-  end
-
-  @[AlwaysInline]
-  private def fix_inner!(dict : AiDict) : Nil
+  private def rearrange!(dict : AiDict) : Nil
     case @cpos
     when "VPT"
       return unless @right.zstr == "住"

@@ -32,19 +32,10 @@ class MT::NpNode
   ###
 
   @[AlwaysInline]
-  def tl_phrase!(dict : AiDict)
-    if found = dict.get?(@zstr, @ipos)
-      self.set_term!(*found)
-    else
-      @orig.each(&.tl_phrase!(dict))
-      @data = read_np!(dict, _max: @orig.size)
-    end
-  end
-
-  @[AlwaysInline]
-  def tl_word!(dict : AiDict) : Nil
-    @orig.each(&.tl_word!(dict))
-    @data = read_np!(dict, _max: @orig.size)
+  def translate!(dict : AiDict, rearrange : Bool = true)
+    self.tl_whole!(dict: dict)
+    @orig.each(&.translate!(dict, rearrange: rearrange))
+    @data = read_np!(dict, _max: @orig.size) if rearrange
   end
 
   ###
@@ -161,10 +152,11 @@ class MT::NpNode
 
     inner_cpos = inner_list.last.ipos == MtCpos::PU ? "IP" : "NP"
     inner_node = NpNode.new(inner_list, inner_cpos, _idx: inner_list.first._idx)
-    inner_node.tl_phrase!(dict)
+    inner_node.translate!(dict, true)
 
     outer_node = M3Node.new(head, inner_node, tail, "NP", _idx: head._idx)
-    outer_node.tl_phrase!(dict)
+    outer_node.translate!(dict, true)
+
     outer_node
   end
 end

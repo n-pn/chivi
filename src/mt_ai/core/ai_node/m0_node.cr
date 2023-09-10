@@ -7,12 +7,7 @@ class MT::M0Node
   end
 
   @[AlwaysInline]
-  def tl_phrase!(dict : AiDict) : Nil
-    self.tl_word!(dict: dict)
-  end
-
-  @[AlwaysInline]
-  def tl_word!(dict : AiDict) : Nil
+  def translate!(dict : AiDict, rearrange : Bool = true) : Nil
     self.set_term!(*dict.get(@zstr, @ipos))
   end
 

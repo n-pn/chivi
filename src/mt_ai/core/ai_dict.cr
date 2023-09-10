@@ -83,8 +83,9 @@ class MT::AiDict
     Essence = 1 # top most level definitions, triumph all, for unique terms only
     Primary = 2 # book dict/priv dict/fixture dict that override regular terms
     Regular = 3 # glossaries shared for all books/projects
-    Suggest = 4 # collected from multi sources as fallback
-    Autogen = 5 # entries auto translated by system
+    Hintpri = 4 # cpos type "_" in primary dict
+    Hintreg = 5 # cpos type "_" in regular dict
+    Autogen = 6 # entries auto translated by system
   end
 
   class Entry
@@ -111,7 +112,7 @@ class MT::AiDict
     def any?(zstr : String)
       return unless entry = @data[zstr]?
       return unless found = entry[0]? || entry.first_value?
-      {found, @dtype.to_i8}
+      {found, @dtype.to_i8 &+ 2_i8}
     end
 
     ####

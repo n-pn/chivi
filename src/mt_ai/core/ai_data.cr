@@ -11,8 +11,6 @@ class MT::AiData
   getter root : AiNode
 
   delegate zstr, to: @root
-  delegate tl_word!, to: @root
-  delegate tl_phrase!, to: @root
 
   def initialize(@root : AiNode)
   end
@@ -41,6 +39,11 @@ class MT::AiData
 
   def to_json(jb : JSON::Builder) : Nil
     @root.to_json(jb: jb)
+  end
+
+  def translate!(dict : AiDict, rearrange : Bool = true)
+    @root.translate!(dict, rearrange: rearrange)
+    self
   end
 
   ###

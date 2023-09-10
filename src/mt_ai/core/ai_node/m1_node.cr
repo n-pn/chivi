@@ -9,19 +9,10 @@ class MT::M1Node
     @zstr = node.zstr
   end
 
-  def tl_phrase!(dict : AiDict)
-    if found = dict.get?(@zstr, @ipos)
-      self.set_term!(*found)
-    else
-      @node.tl_phrase!(dict: dict)
-      @attr = @node.attr
-    end
-  end
-
-  @[AlwaysInline]
-  def tl_word!(dict : AiDict)
-    @node.tl_word!(dict)
-    @attr = @node.attr
+  def translate!(dict : AiDict, rearrange : Bool = true)
+    dict.get?(@zstr, @ipos).try { |term, _dic| self.set_term!(term, _dic) }
+    @node.translate!(dict: dict, rearrange: rearrange)
+    @attr |= @node.attr
   end
 
   ###

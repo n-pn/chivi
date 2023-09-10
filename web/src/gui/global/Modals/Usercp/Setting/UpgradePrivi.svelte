@@ -64,7 +64,8 @@
       {#each [0, 1, 2, 3] as value}
         <label class="m-label _{value}" class:_active={value == form.range}>
           <input type="radio" bind:group={form.range} {value} />
-          <SIcon name="clock" />{ranges[value]}
+          <SIcon name="clock" class="u-show-pm" />
+          <span>{ranges[value]}</span>
         </label>
       {/each}
     </div>
@@ -99,7 +100,7 @@
 
 <style lang="scss">
   .radio-group {
-    @include flex-ca($gap: 0.5rem);
+    @include flex-ca($gap: 0.375rem);
   }
 
   .explain {

@@ -32,19 +32,10 @@ class MT::VpNode
 
   ###
 
-  def tl_phrase!(dict : AiDict) : Nil
-    if found = dict.get?(@zstr, @ipos)
-      self.set_term!(*found)
-    else
-      @orig.each(&.tl_phrase!(dict))
-      @data = read_vp!(dict)
-    end
-  end
-
-  @[AlwaysInline]
-  def tl_word!(dict : AiDict) : Nil
-    @orig.each(&.tl_word!(dict))
-    @data = read_vp!(dict)
+  def translate!(dict : AiDict, rearrange : Bool = true) : Nil
+    self.tl_whole!(dict: dict)
+    @orig.each(&.translate!(dict, rearrange: rearrange))
+    @data = read_vp!(dict) if rearrange
   end
 
   @[AlwaysInline]
