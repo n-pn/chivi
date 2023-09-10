@@ -102,8 +102,8 @@
       class="m-btn _primary _fill"
       disabled={!as_admin && $_user.vcoin < form.amount}>
       <span>Gửi tặng</span>
-      <SIcon name="coin" />
-      {form.amount}
+      <span>{form.amount}</span>
+      <SIcon iset="extra" name="vcoin" />
     </button>
   </footer>
 </form>

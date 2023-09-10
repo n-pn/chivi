@@ -51,7 +51,7 @@
       {#each [1, 2, 3] as value}
         <label class="m-label _{value}" class:_active={value == form.privi}>
           <input type="radio" bind:group={form.privi} {value} />
-          <span class="icon"><SIcon name="privi-{value}" iset="sprite" /></span
+          <span class="icon"><SIcon name="privi-{value}" iset="extra" /></span
           >Q.hạn {value}
         </label>
       {/each}
@@ -82,9 +82,19 @@
       class="m-btn _fill _{privi_colors[form.privi]}"
       disabled={_onload || cost > $_user.vcoin}>
       <span>Nâng cấp</span>
-      <SIcon name="coin" />{cost}
+      <span>{cost}</span>
+      <SIcon iset="extra" name="vcoin" />
     </button>
   </footer>
+
+  <div class="explain">
+    {#if cost > $_user.vcoin}
+      <p>
+        <strong>Bạn chưa đủ số vcoin cần thiết để nâng cấp tài khoản!</strong>
+      </p>
+    {/if}
+    <p>Ủng hộ Chivi để được tặng vcoin: <a href="/hd/donation">Hướng dẫn</a></p>
+  </div>
 </form>
 
 <style lang="scss">
@@ -103,5 +113,9 @@
 
   .form-action {
     margin-top: 0.25rem;
+  }
+
+  a {
+    @include fgcolor(primary);
   }
 </style>

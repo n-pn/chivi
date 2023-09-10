@@ -5,9 +5,10 @@
   width: var(--icon-size);
   height: var(--icon-size);
   stroke-width: 2;
-  stroke-linecap: round;
   stroke: currentColor;
   fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .icon-sm {

@@ -2,6 +2,8 @@
   import { writable, get } from 'svelte/store'
   // import { api_call, api_get } from '$lib/api_call'
 
+  import { get_wntext_btran, get_wntext_hviet } from '$utils/tran_util'
+
   import {
     type Cdata,
     render_cdata,
@@ -18,35 +20,15 @@
     },
   }
 
-  const hviet_cache = new Map<string, Array<Cdata>>()
-  const btran_cache = new Map<string, Array<string>>()
-
   // const headers = { 'Content-Type': 'application/json' }
 
-  async function get_hviet(zpath: string, l_idx: number) {
-    const cached = hviet_cache.get(zpath)
-    if (cached) return cached[l_idx]
-
-    const url = `/_ai/qt/hviet?zpath=${zpath}`
-    const res = await fetch(url, { method: 'GET' })
-
-    const { cdata } = await res.json()
-    console.log(cdata)
-
-    hviet_cache.set(zpath, cdata)
+  async function get_hviet(zpath: string, l_idx: number, force = false) {
+    const { cdata } = await get_wntext_hviet(zpath, force)
     return cdata[l_idx]
   }
 
-  async function get_btran(zpath: string, l_idx: number) {
-    const cached = btran_cache.get(zpath)
-    if (cached) return cached[l_idx]
-
-    const url = `/_ai/qt/btran?zpath=${zpath}`
-    const res = await fetch(url, { method: 'GET' })
-
-    const { cdata } = await res.json()
-
-    btran_cache.set(zpath, cdata)
+  async function get_btran(zpath: string, l_idx: number, force = false) {
+    const { cdata } = await get_wntext_btran(zpath, force)
     return cdata[l_idx]
   }
 
@@ -116,6 +98,10 @@
 
   function handle_click({ target }) {
     if (target.nodeName == 'X-N') zfrom = +target.dataset.b
+  }
+
+  const call_btran = async () => {
+    $data.btran = await get_btran($data.zpath, $data.l_idx, true)
   }
 
   let viewer = null
@@ -190,7 +176,19 @@
       </div>
 
       <h4 class="label">Bing Edge:</h4>
-      <div class="cdata debug _tl">{$data.btran}</div>
+      <div class="cdata debug _tl">
+        {#if $data.btran}
+          {$data.btran}
+        {:else}
+          <div class="blank">
+            <div>
+              <em>Chưa có kết quả dịch sẵn.</em>
+            </div>
+            <button class="m-btn _sm _primary" on:click={call_btran}
+              >Dịch từ Bing Edge!</button>
+          </div>
+        {/if}
+      </div>
     </section>
   {:else}
     <div class="empty">Bấm vào đoạn văn để xem giải nghĩa!</div>
@@ -276,5 +274,13 @@
 
     margin-top: 0.5rem;
     margin-bottom: 0.25rem;
+  }
+
+  .blank {
+    @include flex-ca;
+    flex-direction: column;
+    gap: 0.25rem;
+    height: 100%;
+    padding: 0.25rem 0;
   }
 </style>

@@ -84,9 +84,14 @@ module MT::MtTranUtil
     end
   end
 
-  def get_wntext_btran_data(cpath : String, name = "be_zv")
+  def get_wntext_btran_data(cpath : String, force : Bool = false)
     vtl_path = self.vtl_path(cpath, "bzv")
-    return File.read_lines(vtl_path, chomp: true) if File.file?(vtl_path)
+
+    if File.file?(vtl_path)
+      return File.read_lines(vtl_path, chomp: true)
+    elsif !force
+      raise "Chưa tồn tại thông tin dịch trên hệ thống!"
+    end
 
     btran = SP::Btran.free_translate(read_txt(cpath), target: "vi")
     spawn File.write(vtl_path, btran.join('\n'))

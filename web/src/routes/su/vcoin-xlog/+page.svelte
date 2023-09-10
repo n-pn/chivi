@@ -37,7 +37,7 @@
               class="cv-user"
               href={pager.gen_url({ vu_id: xlog.sender_id, pg: 1 })}
               data-privi={sender.privi}>
-              <SIcon name="privi-{sender.privi}" iset="sprite" />
+              <SIcon name="privi-{sender.privi}" iset="extra" />
               {sender.uname}
             </a>
           </td>
@@ -47,7 +47,7 @@
               href={pager.gen_url({ vu_id: xlog.target_id, pg: 1 })}
               data-privi={target.privi}>
               {target.uname}
-              <SIcon name="privi-{target.privi}" iset="sprite" />
+              <SIcon name="privi-{target.privi}" iset="extra" />
             </a>
           </td>
           <td>{xlog.amount}</td>

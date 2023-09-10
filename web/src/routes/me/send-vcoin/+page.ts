@@ -8,7 +8,7 @@ export const load = (async ({ url }) => {
       nav_link('/me/send-vcoin', 'Gửi tặng vcoin', 'gift', { kind: 'title' }),
     ],
     right_nav: [
-      nav_link('/me/vcoin-xlog', 'Lịch sử', 'coin', { kind: 'title' }),
+      nav_link('/me/vcoin-xlog', 'Lịch sử', 'money-bag', { kind: 'title' }),
     ],
   }
 

@@ -36,5 +36,26 @@
       <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
       <path d="M12 6l4 6l5 -4l-2 10h-14l-2 -10l5 4z"></path>
     </symbol>
+    <symbol id="vcoin" viewBox="0 0 24 24">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+      <path d="M19.875 6.27a2.225 2.225 0 0 1 1.125 1.948v7.284c0 .809 -.443 1.555 -1.158 1.948l-6.75 4.27a2.269 2.269 0 0 1 -2.184 0l-6.75 -4.27a2.225 2.225 0 0 1 -1.158 -1.948v-7.285c0 -.809 .443 -1.554 1.158 -1.947l6.75 -3.98a2.33 2.33 0 0 1 2.25 0l6.75 3.98h-.033z"></path>
+      <path d="M10 8l2 8l2 -8"></path>
+    </symbol>
+    <symbol id="karma" viewBox="0 0 24 24">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+      <path d="M19.875 6.27a2.225 2.225 0 0 1 1.125 1.948v7.284c0 .809 -.443 1.555 -1.158 1.948l-6.75 4.27a2.269 2.269 0 0 1 -2.184 0l-6.75 -4.27a2.225 2.225 0 0 1 -1.158 -1.948v-7.285c0 -.809 .443 -1.554 1.158 -1.947l6.75 -3.98a2.33 2.33 0 0 1 2.25 0l6.75 3.98h-.033z"></path>
+      <path d="M10 8v8"></path>
+      <path d="M14 8l-2.5 4l2.5 4"></path>
+      <path d="M10 12h1.5"></path>
+    </symbol>
+    <symbol id="fanpt" viewBox="0 0 24 24">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+      <path d="M20.87 10.48a9 9 0 1 0 -7.876 10.465"></path>
+      <path d="M9 10h.01"></path>
+      <path d="M15 10h.01"></path>
+      <path d="M9.5 15c.658 .64 1.56 1 2.5 1c.357 0 .709 -.052 1.043 -.151"></path>
+      <path d="M21 15h-2.5a1.5 1.5 0 0 0 0 3h1a1.5 1.5 0 0 1 0 3h-2.5"></path>
+      <path d="M19 21v1m0 -8v1"></path>
+    </symbol>
   </defs>
 </svg>

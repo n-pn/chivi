@@ -52,7 +52,7 @@
 
       <a {href} class="m-star" class:_active>
         <span>{star}</span>
-        <SIcon name="star" iset="sprite" />
+        <SIcon name="star" iset="extra" />
       </a>
     {/each}
   </div>

@@ -139,7 +139,7 @@
           <button type="submit" class="m-btn _primary _fill" {disabled}>
             <SIcon name="upload" />
             <span class="-text">Đăng tải</span>
-            <SIcon name="privi-1" iset="sprite" />
+            <SIcon name="privi-1" iset="extra" />
           </button>
         </div>
       </div>
