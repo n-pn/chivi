@@ -16,4 +16,18 @@ declare namespace CV {
 
     state: string
   }
+
+  interface Viterm {
+    zstr: string
+    cpos: string
+
+    vstr: string
+    attr: string
+
+    uname: string
+    mtime: number
+
+    _lock: number
+    _flag: number
+  }
 }

@@ -53,6 +53,8 @@
 </script>
 
 <script lang="ts">
+  import { afterNavigate } from '$app/navigation'
+
   import { page } from '$app/stores'
   import { Pager } from '$lib/pager'
   import { config } from '$lib/stores'
@@ -67,16 +69,13 @@
 
   // let error = ''
 
-  afterNavigate(() => {
-    $lookup_data.l_idx = -1
-  })
-
   // import { get_user } from '$lib/stores'
   // const _user = get_user()
 
   import type { PageData } from './$types'
-  import { afterNavigate } from '$app/navigation'
   export let data: PageData
+
+  afterNavigate(() => ($lookup_data.l_idx = -1))
 
   $: pager = new Pager($page.url, { part: 1, mode: 'avail' })
 

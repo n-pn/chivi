@@ -47,9 +47,7 @@ class WN::Wnstem
 
   def init!(force : Bool = false) : Nil
     return unless force || @_flag < 0 || !File.file?(Chinfo.db_path(@wn_id, @sname))
-
     return unless Chinfo.init!(@wn_id, @sname, @s_bid)
-    # Log.info { "restored".colorize.green }
 
     @_flag = -@_flag
 

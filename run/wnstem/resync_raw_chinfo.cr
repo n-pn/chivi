@@ -26,17 +26,23 @@ def resync(sname : String, sn_id : String, vi_db_path = WN::Chinfo.db_path(sname
 end
 
 def resync(sname : String)
-  files = Dir.glob("var/zroot/wnchap/#{sname}/*.db3")
+  # files = Dir.glob("var/zroot/wnchap/#{sname}/*.db3.old")
+  files = Dir.glob("var/zroot/chinfo/#{sname}/*.db3.db3")
 
+  puts "- #{sname}: #{files.size}"
   files.each_with_index do |file, idx|
-    sn_id = File.basename(file, ".db3")
-    synced = resync(sname, sn_id, file)
-
+    sn_id = File.basename(file, ".db3.db3")
+    synced = resync(sname, sn_id, file) rescue nil
+    File.delete(file)
     puts "- <#{idx}/#{files.size}> #{file}: #{synced} synced"
-  rescue ex
-    File.delete(file) if ex.message.try(&.includes?("no such table"))
   end
 end
 
-snames = ARGV.select!(&.starts_with?('!'))
+snames = ARGV.reject!(&.starts_with?('-'))
+# snames = Dir.children("var/zroot/wnchap") if snames.empty?
+snames = Dir.children("var/zroot/chinfo") if snames.empty?
+
+snames.select!(&.starts_with?('!')) if ARGV.includes?("--globs")
+snames.select!(&.starts_with?('@')) if ARGV.includes?("--users")
+
 snames.each { |sname| resync(sname) }

@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit'
 import type { PageLoad } from './$types'
-import type { Cdata } from '$lib/mt_data_2'
+import type { Ctree } from '$lib/mt_data_2'
 
 export const load = (async ({ fetch, parent }) => {
   const { rdata, xargs } = await parent()
@@ -8,7 +8,7 @@ export const load = (async ({ fetch, parent }) => {
 }) satisfies PageLoad
 
 type Xargs = { wn_id: number; cpart: number; rtype: string; rmode: string }
-type Cvmtl = { lines: Array<Cdata>; tspan: number; _algo?: string }
+type Cvmtl = { lines: Array<Ctree>; tspan: number; _algo?: string }
 
 const headers = { 'Content-Type': 'application/json' }
 

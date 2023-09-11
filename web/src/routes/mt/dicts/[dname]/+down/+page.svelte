@@ -69,8 +69,8 @@
 
   <div class="action">
     <a
-      href="/_m1/dicts/{data.dname}/export?{dl_opts.to_query()}"
-      download="{data.label}.{dl_opts.format == 'q' ? 'txt' : 'tsv'}"
+      href="/_m1/dicts/{data.vdict.dname}/export?{dl_opts.to_query()}"
+      download="{data.vdict.label}.{dl_opts.format == 'q' ? 'txt' : 'tsv'}"
       class="m-btn _primary _fill _lg"
       class:_disable={$_user.privi < 1}>
       <SIcon name="download" />

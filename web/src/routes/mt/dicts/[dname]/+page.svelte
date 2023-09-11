@@ -1,88 +1,62 @@
 <script lang="ts">
   import { page } from '$app/stores'
+
   import { get_user } from '$lib/stores'
+  const _user = get_user()
 
-  import { invalidateAll } from '$app/navigation'
-
-  import { ztext, vdict } from '$lib/stores'
   import { rel_time_vp } from '$utils/time_utils'
-
-  import Lookup, { ctrl as lookup } from '$gui/parts/Lookup.svelte'
-  import Upsert, { ctrl as upsert } from '$gui/parts/Upsert.svelte'
-  import pt_labels from '$lib/consts/postag_labels.json'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
-  import Postag from '$gui/parts/Postag.svelte'
-  import DictDl from './DictDl.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
-  const _user = get_user()
 
-  $: vdict.put(+data.vd_id, data.label, data.brief)
+  $: ({ dinfo, terms } = data)
+
   $: query = data.query
 
   $: pager = new Pager($page.url)
   $: root_path = $page.url.pathname
 
-  let postag_state = 1
-
-  const prio_labels = ['Ẩn', 'Thấp', 'Bình', 'Cao']
-
   function reset_query() {
     for (let key in query) query[key] = ''
     query = query
   }
-
-  function show_lookup(key: string) {
-    ztext.put(key)
-    lookup.show(true)
-  }
-
-  function show_upsert(key: string, state = 1) {
-    ztext.put(key)
-    upsert.show(0, state)
-  }
-
-  const tab_labels = ['Tự chọn', 'Chung', 'Nháp', 'Riêng']
 </script>
 
 <article class="article m-article">
   <header>
-    <h1 class="h2">{data.label} <small>Số lượng từ: {data.dsize}</small></h1>
+    <h1 class="h2">{dinfo.label} <small>Số lượng từ: {dinfo.total}</small></h1>
   </header>
-
-  <DictDl {data} />
 
   <div class="body">
     <table>
       <thead>
         <tr class="thead">
           <th>#</th>
-          <th>Trung</th>
-          <th>Nghĩa Việt</th>
-          <th>Phân loại</th>
-          <th class="prio">Ư.t</th>
+          <th class="zstr">Trung</th>
+          <th class="vstr">Nghĩa</th>
+          <th class="cpos">Từ loại</th>
+          <th class="attr">Thuộc tính</th>
           <th class="uname">Người dùng</th>
-          <th class="scope">Cách lưu</th>
+          <th class="scope">Khóa</th>
           <th>Cập nhật</th>
         </tr>
 
         <tr class="tquery">
           <td><SIcon name="search" /></td>
-          <td><input type="text" placeholder="-" bind:value={query.key} /></td>
-          <td><input type="text" placeholder="-" bind:value={query.val} /></td>
+          <td><input type="text" placeholder="-" bind:value={query.zstr} /></td>
+          <td><input type="text" placeholder="-" bind:value={query.vstr} /></td>
           <td>
-            <button class="m-btn _sm" on:click={() => (postag_state = 2)}
-              >{(query.ptag && pt_labels[query.ptag]) || '-'}</button>
+            <button class="m-btn _sm">{query.cpos}</button>
           </td>
-          <td class="prio"
-            ><input type="text" placeholder="-" bind:value={query.prio} /></td>
+          <td class="attr"
+            ><input type="text" placeholder="-" bind:value={query.attr} /></td>
           <td class="uname"
             ><input type="text" placeholder="-" bind:value={query.uname} /></td>
-          <td class="scope"
-            ><input type="text" placeholder="-" bind:value={query.tab} /></td>
+          <td class="plock"
+            ><input type="text" placeholder="-" bind:value={query._lock} /></td>
           <td>
             <button class="m-btn _sm" on:click={reset_query}>
               <SIcon name="eraser" />
@@ -98,32 +72,26 @@
       </thead>
 
       <tbody>
-        {#each data.terms as { key, val, ptag, prio, mtime, uname, tab = 0 }, idx}
+        {#each terms.items as { zstr, vstr, cpos, attr, mtime, uname, plock }, idx}
           {@const uname_class = uname == $_user.uname ? '_self' : '_else'}
 
-          <tr class="term" class:_mute={tab < 0} class:_temp={tab > 1}>
-            <td class="-idx">{data.start + idx}</td>
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
-            <td class="-key" on:click={() => show_lookup(key)}>
-              <span>{key}</span>
+          <tr class="term">
+            <td class="-idx">{terms.start + idx}</td>
+            <!-- svelte-ignore a11y-click-events-have-zstr-events -->
+            <td class="-zstr">
+              <span>{zstr}</span>
               <div class="hover">
-                <span class="m-btn _xs _active">
-                  <SIcon name="compass" />
-                </span>
-
                 <button
                   class="m-btn _xs"
-                  on:click|stopPropagation={() => (query.key = key)}>
+                  on:click|stopPropagation={() => (query.zstr = zstr)}>
                   <SIcon name="search" />
                 </button>
               </div>
             </td>
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
-            <td
-              class="-val"
-              class:_del={!val}
-              on:click={() => show_upsert(key, 1)}>
-              <span>{val || 'Đã xoá'}</span>
+
+            <!-- svelte-ignore a11y-click-events-have-zstr-events -->
+            <td class="-vstr">
+              <span>{vstr}</span>
 
               <div class="hover">
                 <span class="m-btn _xs _active">
@@ -131,40 +99,30 @@
                 </span>
                 <button
                   class="m-btn _xs"
-                  on:click|stopPropagation={() => (query.val = val)}>
+                  on:click|stopPropagation={() => (query.vstr = vstr)}>
                   <SIcon name="search" />
                 </button>
               </div>
             </td>
-            <td class="-tag">
-              <button
-                type="button"
-                class="m-as-btn"
-                on:click={() => show_upsert(key, 2)}>
-                {pt_labels[ptag || '~']}
+            <td class="-cpos">
+              <button type="button" class="m-as-btn">
+                {cpos}
               </button>
               <div class="hover">
-                <button
-                  on:click={() => show_upsert(key, 2)}
-                  class="m-btn _xs _active">
-                  <SIcon name="pencil" />
-                </button>
-                <a
-                  class="m-btn _xs"
-                  href={pager.gen_url({ ptag: ptag || '~' })}>
+                <a class="m-btn _xs" href={pager.gen_url({ cpos: cpos })}>
                   <SIcon name="search" />
                 </a>
               </div>
             </td>
-            <td class="prio">
-              <a href="{root_path}?prio={prio}">{prio_labels[prio]}</a>
+            <td class="attr">
+              <a href="{root_path}?attr={attr}">{attr}</a>
             </td>
             <td class="uname {uname_class}">
               <a href="{root_path}?uname={uname}">{uname}</a>
             </td>
-            <td class="scope _{Math.abs(tab)}">
-              <a href="{root_path}?tab={tab}">
-                {tab_labels[Math.abs(tab)]}
+            <td class="plock">
+              <a href="{root_path}?plock={plock}">
+                {plock}
               </a>
             </td>
             <td class="mtime">{rel_time_vp(mtime)} </td>
@@ -175,17 +133,9 @@
   </div>
 
   <footer class="foot">
-    <Mpager {pager} pgidx={data.pgidx} pgmax={data.pgmax} />
+    <Mpager {pager} pgidx={terms.pgidx} pgmax={terms.pgmax} />
   </footer>
 </article>
-
-{#if $lookup.enabled}<Lookup />{/if}
-
-{#if $upsert.state > 0}<Upsert on_change={invalidateAll} />{/if}
-
-{#if postag_state > 1}
-  <Postag bind:state={postag_state} bind:ptag={query.ptag} />
-{/if}
 
 <style lang="scss">
   .brief {
@@ -254,19 +204,19 @@
     td:hover > & { visibility: visible; }
   }
 
-  .-key {
+  .-zstr {
     max-width: 4rem;
     @include ftsize(md);
   }
 
   .-idx,
-  .prio,
+  .attr,
   .mtime,
   .uname {
     @include fgcolor(tert);
   }
 
-  .prio {
+  .attr {
     width: 3rem;
   }
 

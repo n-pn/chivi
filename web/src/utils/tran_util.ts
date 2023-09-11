@@ -1,16 +1,16 @@
-import type { Cdata } from '$lib/mt_data_2'
+import type { Ctree } from '$lib/mt_data_2'
 
-export type CdataRes = { cdata: Array<Cdata>; tspan: number; error?: string }
+export type CtreeRes = { cdata: Array<Ctree>; tspan: number; error?: string }
 export type VtextRes = { cdata: Array<string>; tspan: number; error?: string }
 
-const hviet_cache = new Map<string, CdataRes>()
+const hviet_cache = new Map<string, CtreeRes>()
 const btran_cache = new Map<string, VtextRes>()
 
 export async function get_wntext_hviet(
   zpath: string,
   force = false,
   fetch = globalThis.fetch
-): Promise<CdataRes> {
+): Promise<CtreeRes> {
   const cached = force ? undefined : hviet_cache.get(zpath)
   if (cached) return cached
 

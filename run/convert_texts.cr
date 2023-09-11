@@ -101,7 +101,7 @@ class Chtext
 end
 
 def convert(stem : WN::Wnstem, retry = 0)
-  db_path = WN::Chinfo.db_path(stem.sname, stem.s_bid)
+  db_path = WN::Chinfo.db_path(stem.wn_id, stem.sname)
   return unless File.file?(db_path)
 
   begin

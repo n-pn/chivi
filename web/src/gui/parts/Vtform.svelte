@@ -12,7 +12,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Dialog from '$gui/molds/Dialog.svelte'
 
-  import PickForm from './vtform/FormHead.svelte'
+  import FormHead from './vtform/FormHead.svelte'
   import PrevDefn from './vtform/PrevDefn.svelte'
 
   import DefnHint from './vtform/DefnHint.svelte'
@@ -97,22 +97,8 @@
 </script>
 
 <Dialog actived={$ctrl.actived} on_close={ctrl.hide} class="upsert" _size="lg">
-  <header class="head">
-    <button class="m-btn _text">
-      <SIcon name="compass" />
-    </button>
-
-    <PickForm input={data} />
-
-    <button
-      type="button"
-      class="m-btn _text"
-      data-kbd="esc"
-      on:click={ctrl.hide}>
-      <SIcon name="x" />
-    </button>
-  </header>
-
+  <FormHead />
+  <!--
   <upsert-tabs>
     <button
       class="tab-item _miscs"
@@ -141,7 +127,6 @@
       <span>Tranh luận</span>
     </button>
   </upsert-tabs>
-
   <main class="upsert-body">
     {#if $ctrl.tab == 0}
       <PrevDefn {form} {dicts} />
@@ -206,13 +191,9 @@
       <div class="upsert-msg _err">{upsert_error}</div>
     {/if}
   </main>
-
-  <HelpUrls {key} />
+</-->
+  <HelpUrls key={data.get_zstr()} />
 </Dialog>
-
-{#if $ctrl.state == 2}
-  <Postag bind:ptag={form.ptag} bind:state={$ctrl.state} />
-{/if}
 
 <style lang="scss">
   $gutter: 0.75rem;

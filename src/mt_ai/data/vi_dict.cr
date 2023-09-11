@@ -75,12 +75,15 @@ class MT::ViDict
     @total = self.class.db.open_rb &.exec(query, mtime, @dname, as: Int32)
   end
 
-  def to_cjo(jb : JSON::Builder)
+  def to_json(jb : JSON::Builder)
     jb.object do
       jb.field "dname", @dname.sub('/', ':')
+      jb.field "dtype", @dtype
+
       jb.field "label", @label
-      jb.field "total", @total
       jb.field "descs", @descs
+
+      jb.field "total", @total
       jb.field "mtime", @mtime
     end
   end

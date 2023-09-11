@@ -245,7 +245,7 @@ class WN::Chinfo
       new_path = self.db_path(wn_id, sname)
       old_path = self.old_db_path(sname, sn_id)
 
-      if !File.file?(new_path) || File.file?(old_path)
+      if !File.file?(new_path) && File.file?(old_path)
         File.copy(old_path, new_path)
       end
 

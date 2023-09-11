@@ -6,35 +6,26 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ cores = [], books = [] } = data)
+  const types = [
+    'Không rõ',
+    'Hệ thống',
+    'Truyện chữ',
+    'Dự án khác',
+    'Ngẫu nhiên',
+    'Đặc biệt',
+  ]
 </script>
 
 <article class="article m-article">
   <h1>Từ điển</h1>
 
-  <h2>Hệ thống</h2>
-
   <div class="dicts">
-    {#each cores as [dname, label, dsize]}
+    {#each data.dicts as { dname, dtype, label, total }}
       <a class="-dict" href="/mt/dicts/{dname}">
         <div class="-name">{label}</div>
         <div class="-meta">
-          <div class="-type">Hệ thống</div>
-          <div class="-size">Số từ: {dsize}</div>
-        </div>
-      </a>
-    {/each}
-  </div>
-
-  <h2>Theo bộ <span class="u-badge">{data.total}</span></h2>
-
-  <div class="dicts">
-    {#each books as [dname, label, dsize]}
-      <a class="-dict" href="/mt/dicts/{dname}">
-        <div class="-name">{label}</div>
-        <div class="-meta">
-          <div class="-type">Bộ truyện</div>
-          <div class="-size">Số từ: {dsize}</div>
+          <div class="-type">{types[dtype]}</div>
+          <div class="-size">Số từ: {total}</div>
         </div>
       </a>
     {/each}

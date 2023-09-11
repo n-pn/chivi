@@ -80,7 +80,7 @@ class MT::ViTerm
     @iattr = MtAttr.parse_list!(@attr).to_i
   end
 
-  def to_cjo(jb : JSON::Builder)
+  def to_json(jb : JSON::Builder)
     jb.object do
       jb.field "zstr", @zstr
       jb.field "cpos", @cpos
@@ -91,7 +91,7 @@ class MT::ViTerm
       jb.field "uname", @uname
       jb.field "mtime", self.class.utime(@mtime)
 
-      jb.field "_lock", @_lock
+      jb.field "plock", @_lock
     end
   end
 

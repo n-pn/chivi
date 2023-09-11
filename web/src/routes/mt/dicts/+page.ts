@@ -3,11 +3,8 @@ import { home_nav, nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 
-export type DictInfo = [string, string, number]
-
 interface JsonData extends CV.Paginate {
-  cores: DictInfo[]
-  books: DictInfo[]
+  dicts: CV.Vidict[]
 }
 
 const _meta: App.PageMeta = {
@@ -15,7 +12,7 @@ const _meta: App.PageMeta = {
 }
 
 export const load = (async ({ fetch, url }) => {
-  const path = `/_m1/dicts${url.search}`
+  const path = `/_ai/dicts${url.search}`
   const data = await api_get<JsonData>(path, fetch)
 
   return { ...data, _meta, _title: 'Từ điển' }

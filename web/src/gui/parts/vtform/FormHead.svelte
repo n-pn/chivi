@@ -1,5 +1,6 @@
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
+  import { render_cdata } from '$lib/mt_data_2'
 
   import { ctrl, data } from '$lib/stores/vtform_stores'
 
@@ -10,103 +11,117 @@
 
   $: update_input($data)
 
-  const update_input = ({ ztext, zfrom, zupto }) => {
-    output = ztext.substring(zfrom, zupto)
-    prefix = ztext.substring(zfrom - 10, zfrom)
-    suffix = ztext.substring(zupto, zupto + 10)
+  const update_input = ({ text, from, upto }) => {
+    output = text.substring(from, upto)
+    prefix = text.substring(from - 10, from)
+    suffix = text.substring(upto, upto + 10)
   }
 
   function change_focus(index: number) {
-    if (index != $data.zfrom && index < $data.zupto) $data.zfrom = index
-    if (index >= $data.zfrom) $data.zupto = index + 1
+    if (index != $data.from && index < $data.upto) $data.from = index
+    if (index >= $data.from) $data.upto = index + 1
   }
 
   function shift_lower(value = 0) {
-    value += $data.zfrom
-    if (value < 0 || value >= $data.ztext.length) return
+    value += $data.from
+    if (value < 0 || value >= $data.text.length) return
 
-    $data.zfrom = value
-    if ($data.zupto <= value) $data.zupto = value + 1
+    $data.from = value
+    if ($data.upto <= value) $data.upto = value + 1
   }
 
   function shift_upper(value = 0) {
-    value += $data.zupto
-    if (value < 1 || value > $data.ztext.length) return
+    value += $data.upto
+    if (value < 1 || value > $data.text.length) return
 
-    $data.zupto = value
-    if ($data.zfrom >= value) $data.zfrom = value - 1
+    $data.upto = value
+    if ($data.from >= value) $data.from = value - 1
   }
 </script>
 
-<div class="ztext">
-  <button
-    class="btn _left _hide"
-    data-kbd="←"
-    disabled={$data.zfrom == 0}
-    on:click={() => shift_lower(-1)}>
-    <SIcon name="chevron-left" />
+<header class="head">
+  <button class="m-btn _text">
+    <SIcon name="compass" />
   </button>
 
-  <button
-    class="btn _left"
-    data-kbd="⇧←"
-    disabled={$data.zfrom == $data.ztext.length - 1}
-    on:click={() => shift_lower(1)}>
-    <SIcon name="chevron-right" />
-  </button>
+  <div class="text">
+    <button
+      class="btn _left _hide"
+      data-kbd="←"
+      disabled={$data.from == 0}
+      on:click={() => shift_lower(-1)}>
+      <SIcon name="chevron-left" />
+    </button>
 
-  <div class="key">
-    <div class="key-txt">
-      <div class="key-pre">
-        {#each Array.from(prefix) as chr, idx}
-          {@const offset = prefix.length - idx}
-          <button class="key-btn" on:click={() => shift_lower(-offset)}
-            >{chr}</button>
-        {/each}
-      </div>
+    <button
+      class="btn _left"
+      data-kbd="⇧←"
+      disabled={$data.from == $data.text.length - 1}
+      on:click={() => shift_lower(1)}>
+      <SIcon name="chevron-right" />
+    </button>
 
-      <div class="key-out">
-        {#each output.slice(0, 6) as chr, idx}
-          <button
-            class="key-btn _out"
-            on:click={() => change_focus($data.zfrom + idx)}>{chr}</button>
-        {/each}
-        {#if output.length > 6}
-          <span class="trim">(+{output.length - 6})</span>
-        {/if}
-      </div>
+    <div class="key">
+      <div class="key-txt">
+        <div class="key-pre">
+          {#each Array.from(prefix) as chr, idx}
+            {@const offset = prefix.length - idx}
+            <button class="key-btn" on:click={() => shift_lower(-offset)}
+              >{chr}</button>
+          {/each}
+        </div>
 
-      <div class="key-suf">
-        {#each Array.from(suffix) as chr, idx}
-          {@const offset = idx + 1}
-          <button class="key-btn" on:click={() => shift_upper(offset)}
-            >{chr}</button>
-        {/each}
+        <div class="key-out">
+          {#each output.slice(0, 6) as chr, idx}
+            <button
+              class="key-btn _out"
+              on:click={() => change_focus($data.from + idx)}>{chr}</button>
+          {/each}
+          {#if output.length > 6}
+            <span class="trim">(+{output.length - 6})</span>
+          {/if}
+        </div>
+
+        <div class="key-suf">
+          {#each Array.from(suffix) as chr, idx}
+            {@const offset = idx + 1}
+            <button class="key-btn" on:click={() => shift_upper(offset)}
+              >{chr}</button>
+          {/each}
+        </div>
       </div>
     </div>
+
+    <button
+      class="btn _right"
+      data-kbd="⇧→"
+      disabled={$data.upto == 1}
+      on:click={(e) => shift_upper(-1)}>
+      <SIcon name="chevron-left" />
+    </button>
+
+    <button
+      class="btn _right _hide"
+      data-kbd="→"
+      disabled={$data.upto == $data.text.length}
+      on:click={(e) => shift_upper(1)}>
+      <SIcon name="chevron-right" />
+    </button>
   </div>
 
-  <button
-    class="btn _right"
-    data-kbd="⇧→"
-    disabled={$data.zupto == 1}
-    on:click={(e) => shift_upper(-1)}>
-    <SIcon name="chevron-left" />
+  <button type="button" class="m-btn _text" data-kbd="esc" on:click={ctrl.hide}>
+    <SIcon name="x" />
   </button>
+</header>
 
-  <button
-    class="btn _right _hide"
-    data-kbd="→"
-    disabled={$data.zupto == $data.ztext.length}
-    on:click={(e) => shift_upper(1)}>
-    <SIcon name="chevron-right" />
-  </button>
-</div>
+<section class="tree">
+  {render_cdata($data.tree, 2)}
+</section>
 
 <style lang="scss">
   $height: 2.25rem;
 
-  .ztext {
+  .text {
     display: flex;
     width: calc(100% - 4.5rem);
     height: $height;
