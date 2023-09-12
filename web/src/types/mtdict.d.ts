@@ -17,17 +17,4 @@ declare namespace CV {
     total: number
     mtime: number
   }
-
-  interface Viterm {
-    zstr: string
-    cpos: string
-
-    vstr: string
-    attr: string
-
-    uname: string
-    mtime: number
-
-    _lock: number
-  }
 }

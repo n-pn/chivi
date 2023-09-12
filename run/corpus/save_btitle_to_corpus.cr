@@ -3,7 +3,7 @@ require "../../src/_data/_data"
 require "../../src/zroot/corpus"
 
 CORPUS = ZR::Corpus.new("wnovel/btitle")
-CORPUS.init_zdata!
+CORPUS.init_dbs!(no_vdata: true)
 
 LIMIT = 1000
 
@@ -28,7 +28,7 @@ start.upto(limit) do |page|
     input.each do |wn_id, btitle|
       next if btitle.empty?
       btitle = CharUtil.to_canon(btitle)
-      saved &+= 1 if CORPUS.add_part!(wn_id, [btitle])
+      saved &+= 1 if CORPUS.add_part!(wn_id, [btitle])[1]
     end
   end
 

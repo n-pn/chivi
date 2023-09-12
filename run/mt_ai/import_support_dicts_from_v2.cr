@@ -19,8 +19,7 @@ struct Input
 
     term.uname = @uname
     term.mtime = @mtime
-
-    term._lock = @uname.empty? ? 1 : 2
+    term.plock = @uname.empty? ? 1 : 2
 
     term
   end

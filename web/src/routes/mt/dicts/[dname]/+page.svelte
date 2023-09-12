@@ -56,7 +56,7 @@
           <td class="uname"
             ><input type="text" placeholder="-" bind:value={query.uname} /></td>
           <td class="plock"
-            ><input type="text" placeholder="-" bind:value={query._lock} /></td>
+            ><input type="text" placeholder="-" bind:value={query.plock} /></td>
           <td>
             <button class="m-btn _sm" on:click={reset_query}>
               <SIcon name="eraser" />

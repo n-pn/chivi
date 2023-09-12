@@ -30,21 +30,18 @@ class ZR::Corpus
 
   ###
 
-  getter zhead_db : DB::Connection { Zhead.db(@ctype).open_rw }
-  getter zline_db : DB::Connection { Zline.db(@ctype).open_rw }
+  getter zhead_db : DB::Connection { Zhead.db(@zname).open_rw }
+  getter zline_db : DB::Connection { Zline.db(@zname).open_rw }
+  getter vdata_db : DB::Connection { Vdata.db("#{@zname}-#{@vname}").open_rw }
 
-  def initialize(@ctype : String)
-    Dir.mkdir_p(File.dirname("#{DIR}/#{ctype}"))
+  def initialize(@zname : String, @vname = "")
+    # Dir.mkdir_p(File.dirname("#{DIR}/#{zname}"))
   end
 
-  def init_zdata!
-    puts self.zhead_db.scalar "select 'init zhead'"
-    puts self.zline_db.scalar "select 'init zline'"
-  end
-
-  def init_vdata!
-    puts self.zhead_db.scalar "select 'init zhead'"
-    puts self.zline_db.scalar "select 'init zline'"
+  def init_dbs!(no_zhead = @zname.empty?, no_zline = @zname.empty, no_vdata = @vname.empty?)
+    puts self.zhead_db.scalar "select 'init zhead'" unless no_zhead
+    puts self.zline_db.scalar "select 'init zline'" unless no_zline
+    puts self.vdata_db.scalar "select 'init vdata'" unless no_vdata
   end
 
   def open_tx(&)
@@ -56,17 +53,20 @@ class ZR::Corpus
   def open_tx
     @zhead_db.try(&.exec("begin"))
     @zline_db.try(&.exec("begin"))
+    @vdata_db.try(&.exec("begin"))
   end
 
   def close_tx
     @zhead_db.try(&.exec("commit"))
     @zline_db.try(&.exec("commit"))
+    @vdata_db.try(&.exec("commit"))
   end
 
   def finalize
     close_tx rescue nil
     @zhead_db.try(&.close) rescue nil
     @zline_db.try(&.close) rescue nil
+    @vdata_db.try(&.close) rescue nil
   end
 
   ZLINE_UPSERT_QUERY = <<-SQL
@@ -76,16 +76,22 @@ class ZR::Corpus
 
   ZHEAD_UPSERT_QUERY = <<-SQL
     insert into zheads(zorig, mtime, u1_ids) values ($1, $2, $3)
-    on conflict(zorig) do update set mtime.excluded.mtime, u1_ids = excluded.u1_ids
+    on conflict(zorig) do update set mtime = excluded.mtime, u1_ids = excluded.u1_ids
     where zheads.u1_ids != excluded.u1_ids
     returning zorig
     SQL
 
+  VDATA_UPSERT_QUERY = <<-SQL
+    insert into vdatas(i8_id, vtype, vdata, cksum) values ($1, $2, $3, $4)
+    on conflict(i8_id, vtype, cksum) do nothing
+    returning i8_id
+    SQL
+
   def add_file!(zorig : String, fpath : String,
                 force_redo = false, to_canon = force_redo,
-                remove_empty = force_redo, encoding : String = "UTF-8")
+                remove_blank = force_redo, encoding : String = "UTF-8")
     lines = File.read_lines(fpath, encoding: encoding, chomp: true)
-    lines = Corpus.clean_lines(lines, to_canon: to_canon, remove_empty: remove_empty)
+    lines = Corpus.clean_lines(lines, to_canon: to_canon, remove_blank: remove_blank)
 
     mtime = File.info(fpath).modification_time
     add_part!(zorig, lines, mtime: mtime, force_redo: force_redo)
@@ -102,19 +108,35 @@ class ZR::Corpus
       self.zhead_db.query_one?(ZHEAD_UPSERT_QUERY, zorig, mtime, u1_ids, as: String)
     end
 
-    return false unless force_redo || saved_zorig
+    return {u8_ids, false} unless force_redo || saved_zorig
 
     lines.each_with_index do |line, idx|
       u8_id = u8_ids.unsafe_fetch(idx)
       self.zline_db.exec(ZLINE_UPSERT_QUERY, line, u8_id.unsafe_as(Int64))
     end
 
-    true
+    {u8_ids, true}
   end
 
+  def add_data!(vtype : String, u8_ids : Array(UInt64), vdatas : Array(String))
+    raise "data not match" unless u8_ids.size == vdatas.size
+
+    count = 0
+
+    u8_ids.zip(vdatas) do |u8_id, vdata|
+      i8_id = u8_id.unsafe_as(Int64)
+      cksum = HashUtil.fnv_1a(vdata).unsafe_as(Int32)
+      count += 1 if self.vdata_db.query_one?(VDATA_UPSERT_QUERY, i8_id, vtype, vdata, cksum, as: Int32)
+    end
+
+    count
+  end
+
+  ###
+
   class Zline
-    def self.db_path(ctype : String)
-      "#{DIR}/#{ctype}-zline.db3"
+    def self.db_path(zname : String)
+      "#{DIR}/#{zname}-zline.db3"
     end
 
     class_getter init_sql = <<-SQL
@@ -138,8 +160,8 @@ class ZR::Corpus
   end
 
   class Zhead
-    def self.db_path(ctype : String)
-      "#{DIR}/#{ctype}-zhead.db3"
+    def self.db_path(zname : String)
+      "#{DIR}/#{zname}-zhead.db3"
     end
 
     class_getter init_sql = <<-SQL
@@ -172,35 +194,37 @@ class ZR::Corpus
     end
   end
 
-  class Value
-    def self.db_path(ctype : String)
-      "#{DIR}/#{ctype}.db3"
+  class Vdata
+    def self.db_path(zname : String)
+      "#{DIR}/#{zname}.db3"
     end
 
     class_getter init_sql = <<-SQL
-      create table values(
+      create table vdatas(
         i8_id bigint not null,
+        vtype varchar not null,
         vdata text not null,
         cksum int not null,
-        primary key (i8_id, cksum)
+        primary key (i8_id, vtype, cksum)
       );
       SQL
 
     include Crorm::Model
-    schema "values", :sqlite, multi: true
+    schema "vdatas", :sqlite, multi: true
 
-    field i8_id : Int64
+    field i8_id : Int64, pkey: true
+    field vtype : String, pkey: true
+    field cksum : Int32, pkey: true
     field vdata : String
-    field cksum : Int32
 
-    def initialize(@i8_id, @vdata,
+    def initialize(@i8_id, @vtype, @vdata,
                    @cksum = HashUtil.fnv_1a_32(vdata).unsafe_as(Int32))
     end
 
-    def self.new(zline : String, vdata : String, to_canon : Bool = false)
+    def self.new(zline : String, vtype : String, vdata : String, to_canon : Bool = false)
       zline = CharUtil.to_canon(zline) if to_canon
       i8_id = Corpus.line_cksum(zline).unsafe_as(Int64)
-      new(i8_id, vdata)
+      new(i8_id, vtype, vdata)
     end
   end
 end

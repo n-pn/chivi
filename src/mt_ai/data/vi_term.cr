@@ -14,13 +14,13 @@ class MT::ViTerm
       vstr varchar not null default '',
       attr varchar not null default '',
 
-      icpos int not null default 0,
+      icpos smallint not null default 0,
       iattr int not null default 0,
 
       uname varchar not null default '',
       mtime bigint not null default 0,
+      plock smallint not null default 0,
 
-      _lock int not null default 0,
       _flag int not null default 0,
 
       primary key (zstr, cpos)
@@ -46,11 +46,11 @@ class MT::ViTerm
 
   field uname : String = ""
   field mtime : Int32 = 0
+  field plock : Int32 = 0
 
   field icpos : Int32 = 0
   field iattr : Int32 = 0
 
-  field _lock : Int32 = 0
   field _flag : Int32 = 0
 
   def self.new(cols : Array(String))
@@ -71,12 +71,13 @@ class MT::ViTerm
     new(zstr: zstr, cpos: cpos, vstr: vstr, attr: attr.to_str)
   end
 
-  def initialize(@zstr, @cpos = "_", @vstr = "", @attr = "", @uname = "", @mtime = 0)
+  def initialize(@zstr, @cpos = "_", @vstr = "", @attr = "",
+                 @uname = "", @mtime = 0, @plock = 1)
     self.fix_enums!
   end
 
   def fix_enums!
-    @icpos = MtCpos[@cpos]
+    @icpos = MtCpos[@cpos].to_i
     @iattr = MtAttr.parse_list!(@attr).to_i
   end
 
@@ -91,7 +92,7 @@ class MT::ViTerm
       jb.field "uname", @uname
       jb.field "mtime", self.class.utime(@mtime)
 
-      jb.field "plock", @_lock
+      jb.field "plock", @plock
     end
   end
 
@@ -109,5 +110,9 @@ class MT::ViTerm
 
   all = self.db("regular").open_ro do |db|
     db.query_all "select zstr, cpos from terms", as: {String, String}
+  end
+
+  def self.find(zstr : String, cpos : String, dict : String)
+    find_by_pkey(zstr, cpos, db: self.db(dict))
   end
 end

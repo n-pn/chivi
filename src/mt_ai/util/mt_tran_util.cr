@@ -17,7 +17,7 @@ module MT::MtTranUtil
     File.read_lines(self.txt_path(cpath), chomp: true)
   end
 
-  def vtl_path(cpath : String, _kind : String = "be_zv")
+  def vtl_path(cpath : String, _kind : String = "bzv")
     "#{WN_VTL_DIR}/#{cpath}.#{_kind}.txt"
   end
 
@@ -94,7 +94,11 @@ module MT::MtTranUtil
     end
 
     btran = SP::Btran.free_translate(read_txt(cpath), target: "vi")
-    spawn File.write(vtl_path, btran.join('\n'))
+
+    spawn do
+      Dir.mkdir_p(File.dirname(vtl_path))
+      File.write(vtl_path, btran.join('\n'))
+    end
 
     return btran
   end

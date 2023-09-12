@@ -42,6 +42,6 @@ function gen_query(params: URLSearchParams) {
     cpos: params.get('cpos') || '',
     attr: params.get('attr') || '',
     uname: params.get('uname') || '',
-    _lock: params.get('_lock') || '',
+    plock: params.get('plock') || '',
   }
 }

@@ -3,7 +3,7 @@ require "../../src/_data/_data"
 require "../../src/zroot/corpus"
 
 CORPUS = ZR::Corpus.new("yousuu/ysrepl")
-CORPUS.init_zdata!
+CORPUS.init_dbs!(no_vdata: true)
 
 LIMIT = 1000
 
@@ -28,8 +28,8 @@ start.upto(limit) do |page|
 
   CORPUS.open_tx do
     input.each do |yr_id, ztext|
-      lines = ZR::Corpus.clean_lines(ztext.lines, to_canon: true, remove_empty: true)
-      saved &+= 1 if !lines.empty? && CORPUS.add_part!(yr_id, lines)
+      lines = ZR::Corpus.clean_lines(ztext.lines, to_canon: true, remove_blank: true)
+      saved &+= 1 if !lines.empty? && CORPUS.add_part!(yr_id, lines)[1]
     end
   end
 

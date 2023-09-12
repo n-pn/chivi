@@ -24,34 +24,38 @@ struct Input
 
   def to_terms
     @zstr = CharUtil.to_canon(@zstr, true)
-    @vstr = @vstr == "⛶" ? "" : @vstr.strip
+    @vstr = @vstr.strip
 
-    _lock = map_flag_to_lock(@_flag)
+    plock = map_flag_to_plock(@_flag)
 
     cpos_list = xpos.split(' ')
-    cpos_list = ["_"] if cpos_list.size > 3
+    cpos_list = ["_"] if cpos_list.size > 3 || xpos == ""
 
     terms = cpos_list.map do |cpos|
-      gen_term(cpos, @vstr, _lock)
+      gen_term(cpos, @vstr, plock)
     end
 
     unless @vmap.blank?
       @vmap.split('ǀ') do |item|
         cpos, vstr = item.split(':')
-        terms << gen_term(cpos, vstr.strip, _lock)
+        terms << gen_term(cpos, vstr.strip, plock)
       end
     end
 
-    terms # .uniq!(&.cpos)
+    terms.reject!(&.cpos.in?(REJECT_CPOS))
   end
 
-  def gen_term(cpos : String, vstr : String, _lock = 1)
+  REJECT_CPOS = {
+    "VD", "DEG2", "MN", "MV", "VM", "VS", "MT", "IC", "",
+  }
+
+  def gen_term(cpos : String, vstr : String, plock = 1)
     term = MT::ViTerm.new(zstr: @zstr, cpos: cpos, vstr: vstr, attr: map_attr(cpos))
 
     term.uname = @uname
     term.mtime = @mtime
+    term.plock = plock
 
-    term._lock = _lock
     term._flag = @_flag
 
     term
@@ -72,9 +76,9 @@ struct Input
   MAP_FEAT = {
     # "plural" => MT::MtAttr::Nplr,
     "attrib" => MT::MtAttr::Ndes,
-    "perprn" => MT::MtAttr[Nper, Npos],
     "person" => MT::MtAttr[Nper, Npos],
     "locati" => MT::MtAttr[Nloc, Npos],
+    "perprn" => MT::MtAttr[Nper, Npos],
     "demprn" => MT::MtAttr::Pn_d,
     "intprn" => MT::MtAttr::Pn_i,
     "vditra" => MT::MtAttr::Vdit,
@@ -82,7 +86,7 @@ struct Input
     "vmodal" => MT::MtAttr::Vmod,
   }
 
-  def map_flag_to_lock(flag = @_flag)
+  def map_flag_to_plock(flag = @_flag)
     case flag
     when .< 2 then 0
     when .> 3 then 2
@@ -104,7 +108,7 @@ end
 output = inputs.flat_map(&.to_terms)
 output.uniq! { |x| {x.zstr, x.cpos} }
 
-regular, suggest = output.partition(&._lock.> 0)
+regular, suggest = output.partition(&.plock.> 0)
 puts output.size, regular.size, suggest.size
 
 MT::ViTerm.db("regular").open_tx do |db|

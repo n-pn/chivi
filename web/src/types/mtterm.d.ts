@@ -27,7 +27,6 @@ declare namespace CV {
     uname: string
     mtime: number
 
-    _lock: number
-    _flag: number
+    plock: number
   }
 }

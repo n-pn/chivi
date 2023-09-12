@@ -127,57 +127,54 @@
       <span>Tranh luận</span>
     </button>
   </upsert-tabs>
+</-->
   <main class="upsert-body">
-    {#if $ctrl.tab == 0}
-      <PrevDefn {form} {dicts} />
+    <PrevDefn {form} {dicts} />
 
-      <upsert-main>
-        <DefnHint hanviet={data.hanviet} val_hints={data.val_hints} bind:form />
-        <div class="value" class:_fresh={form.init.id == 0}>
-          <input
-            type="text"
-            class="-input"
-            bind:this={field}
-            bind:value={form.val}
-            autocomplete="off"
-            autocapitalize="off" />
+    <upsert-main>
+      <DefnHint hanviet={data.hanviet} val_hints={data.val_hints} bind:form />
+      <div class="value" class:_fresh={form.init.id == 0}>
+        <input
+          type="text"
+          class="-input"
+          bind:this={field}
+          bind:value={form.val}
+          autocomplete="off"
+          autocapitalize="off" />
 
-          <button class="ptag" data-kbd="w" on:click={() => ctrl.set_state(2)}>
-            {pt_labels[form.ptag] || 'Phân loại'}
-          </button>
-        </div>
+        <button class="ptag" data-kbd="w" on:click={() => ctrl.set_state(2)}>
+          {pt_labels[form.ptag] || 'Phân loại'}
+        </button>
+      </div>
 
-        <DefnUtil bind:form />
-      </upsert-main>
+      <DefnUtil bind:form />
+    </upsert-main>
 
-      {#if show_opts}<TermOpts bind:form vdict={$vdict} {privi} />{/if}
+    {#if show_opts}<TermOpts bind:form vdict={$vdict} {privi} />{/if}
 
-      <upsert-foot>
-        <WsegRank bind:form />
+    <upsert-foot>
+      <WsegRank bind:form />
 
-        <btn-group>
-          <button
-            class="m-btn _lg _fill {btn_style}"
-            class:_active={show_opts}
-            data-kbd="&bsol;"
-            data-key="Backslash"
-            use:hint={'Thay đổi lựa chọn lưu trữ'}
-            on:click={() => (show_opts = !show_opts)}>
-            <SIcon name="privi-{form.req_privi}" iset="extra" />
-          </button>
+      <btn-group>
+        <button
+          class="m-btn _lg _fill {btn_style}"
+          class:_active={show_opts}
+          data-kbd="&bsol;"
+          data-key="Backslash"
+          use:hint={'Thay đổi lựa chọn lưu trữ'}
+          on:click={() => (show_opts = !show_opts)}>
+          <SIcon name="privi-{form.req_privi}" iset="extra" />
+        </button>
 
-          <button
-            class="m-btn _lg _fill {btn_style}"
-            data-kbd="↵"
-            disabled={!form.changed()}
-            on:click={submit_val}>
-            <span class="submit-text">Lưu</span>
-          </button>
-        </btn-group>
-      </upsert-foot>
-    {:else}
-      <div class="empty">Đợi thêm sau</div>
-    {/if}
+        <button
+          class="m-btn _lg _fill {btn_style}"
+          data-kbd="↵"
+          disabled={!form.changed()}
+          on:click={submit_val}>
+          <span class="submit-text">Lưu</span>
+        </button>
+      </btn-group>
+    </upsert-foot>
 
     {#if privi < form.req_privi}
       <div class="upsert-msg _warn">
@@ -191,7 +188,7 @@
       <div class="upsert-msg _err">{upsert_error}</div>
     {/if}
   </main>
-</-->
+
   <HelpUrls key={data.get_zstr()} />
 </Dialog>
 

@@ -10,7 +10,7 @@ def import_gold_data
     end
 
     puts "file: #{file}, size: #{terms.size}"
-    terms.each(&._lock = 2)
+    terms.each(&.plock = 2)
 
     MT::ViTerm.db("regular").open_tx do |db|
       terms.each(&.upsert!(db: db))

@@ -20,7 +20,7 @@ struct Input
 
   SPLIT = 'ǀ'
 
-  def to_term(_lock = 1)
+  def to_term(plock = 1)
     vstr = @val.split(SPLIT).first.strip
     cpos, attr = map_tag(@ptag)
 
@@ -31,8 +31,8 @@ struct Input
 
     term.uname = @uname
     term.mtime = @mtime
+    term.plock = @tab == 1 ? 1 : 0
 
-    term._lock = @tab == 1 ? 1 : 0
     term._flag = @tab
 
     term
