@@ -172,7 +172,7 @@ x-g {
 
   // primary
   &[data-d='2'] {
-    @include cv-node(success);
+    @include cv-node(warning);
   }
 
   // regular
@@ -182,7 +182,7 @@ x-g {
 
   // hintpri
   &[data-d='4'] {
-    @include cv-node(warning);
+    @include cv-node(harmful);
   }
 
   // hintreg

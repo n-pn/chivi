@@ -1,13 +1,12 @@
 require "./_mt_ctrl_base"
-
-require "../data/vi_dict"
-require "../data/vi_term"
+require "./vi_term_form"
+require "../core/ai_dict"
 
 class MT::ViTermCtrl < AC::Base
   base "/_ai/terms"
 
   @[AC::Route::GET("/")]
-  def terms(dname : String,
+  def index(dname : String,
             zstr : String? = nil,
             vstr : String? = nil,
             cpos : String? = nil,
@@ -86,5 +85,51 @@ class MT::ViTermCtrl < AC::Base
     str = str.starts_with?('^') ? str[1..] : "%" + str
     str = str.ends_with?('$') ? str[..-2] : str + "%"
     str
+  end
+
+  LOG_DIR = "var/ulogs/mtapp"
+  Dir.mkdir_p(LOG_DIR)
+
+  @[AC::Route::PUT("/", body: :form)]
+  def upsert(form : ViTermForm)
+    prev_term = form.prev_term
+
+    min_plock = prev_term ? prev_term.plock : 0
+    min_privi = ViDict.min_privi(form.dname) + min_plock
+
+    if _privi < min_privi
+      raise Unauthorized.new "Bạn cần quyền hạn tối thiểu là #{min_privi} để thêm/sửa từ"
+    end
+
+    if form.plock < min_plock && _privi < min_privi &+ 1
+      raise Unauthorized.new "Từ đã bị khoá, bạn cần quyền hạn tối thiểu là #{min_privi + 1} để đổi khoá"
+    end
+
+    term = form.save!(_uname)
+    sync_data!(form.dname, term: term, fresh: prev_term.nil?)
+
+    _log_action("once", form, ldir: LOG_DIR)
+
+    render json: term
+  end
+
+  def sync_data!(dname : String, term : ViTerm, fresh : Bool = false)
+    spawn do
+      db_path = ViTerm.db_path(dname, "tsv")
+      File.open(db_path, "a", &.puts(term.to_tsv_line))
+      ViDict.bump_stats!(dname, term.mtime, fresh ? 1 : 0)
+    end
+
+    ipos = term.icpos.to_i8
+    attr = MtAttr.new(term.iattr)
+
+    case dname
+    when "regular"
+      AiDict::Entry.regular.add(term.zstr, ipos, term.vstr, attr)
+    else
+      AiDict::Entry::ENTRIES[dname]?.try do |entry|
+        entry.add(term.zstr, ipos, term.vstr, attr)
+      end
+    end
   end
 end

@@ -218,19 +218,14 @@ class MT::AiDict
 
     class_getter special : self { new("special", :essence).load_tsv! }
     class_getter regular : self { new("regular", :regular).load_db3!.load_tsv! }
-
-    {% if flag?(:release) %}
-      class_getter suggest : self { new("suggest", :suggest).load_db3! }
-    {% else %}
-      class_getter suggest : self { new("suggest", :suggest) }
-    {% end %}
+    class_getter suggest : self { new("suggest", :suggest).load_db3! }
 
     # @@expire = {} of String => Time
-    @@cached = {} of String => self
+    ENTRIES = {} of String => self
 
     def self.load(dname : String, dtype : Dtype = :primary)
       # @@expire[dname] = Time.utc + 10.minutes
-      @@cached[dname] ||= new(dname, dtype).load_db3!.load_tsv!
+      ENTRIES[dname] ||= new(dname, dtype).load_db3!.load_tsv!
     end
   end
 end

@@ -96,6 +96,23 @@ class MT::ViTerm
     end
   end
 
+  def to_tsv_line
+    String.build do |io|
+      io << @zstr << '\t' << @cpos << '\t' << @vstr
+
+      if @plock != 1
+        io << '\t' << @attr
+        io << '\t' << @uname << '\t' << @mtime
+        io << '\t' << @plock
+      elsif @uname != ""
+        io << '\t' << @attr
+        io << '\t' << @uname << '\t' << @mtime
+      elsif @attr != ""
+        io << '\t' << @attr
+      end
+    end
+  end
+
   ###
 
   EPOCH = Time.utc(2020, 1, 1, 0, 0, 0).to_unix
@@ -113,6 +130,7 @@ class MT::ViTerm
   end
 
   def self.find(zstr : String, cpos : String, dict : String)
-    find_by_pkey(zstr, cpos, db: self.db(dict))
+    query = @@schema.select_by_pkey + " limit 1"
+    self.db(dict).query_one(query, zstr, cpos, as: self)
   end
 end

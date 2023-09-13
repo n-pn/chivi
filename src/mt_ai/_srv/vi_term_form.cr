@@ -1,5 +1,8 @@
 require "json"
+
 require "../data/vi_term"
+require "../data/vi_dict"
+
 require "../../_util/char_util"
 require "../../_util/viet_util"
 
@@ -30,29 +33,17 @@ class MT::ViTermForm
     @zstr = CharUtil.to_canon(@zstr, upcase: true)
 
     @vstr = @vstr.gsub(/\p{C}+/, " ").strip.unicode_normalize(:nfkc)
-    @vstr = VietUtil.fix_tones(@vistr)
+    @vstr = VietUtil.fix_tones(@vstr)
+
+    @cpos = "_" unless @cpos.in?(MtCpos::ALL)
+    @attr = MtAttr.parse_list(@attr).to_str
+
+    @dname = @dname.sub(':', '/')
+    @plock = 1 unless 0 <= @plock <= 2
   end
 
-  def min_privi(dname = @dname)
-    case dname
-    when "regular", "suggest"  then 1
-    when .starts_with?("book") then 0
-    when .starts_with?("priv") then 0
-    when 2
-    end
-  end
-
-  def validate!(_privi : Int32 = -1, prev = ViTerm.find(@zstr, @cpos, @dname))
-    min_plock = prev ? prev.plock : 0
-    min_privi = self.min_privi(@dname) + min_plock
-
-    if _privi < min_privi
-      raise Unauthorized.new "Bạn cần quyền hạn tối thiểu là #{min_privi} để thêm/sửa từ"
-    end
-
-    if @plock < min_plock && _privi < min_privi &+ 1
-      raise Unauthorized.new "Từ đã bị khoá, bạn cần quyền hạn tối thiểu là #{min_privi + 1} để đổi khoá"
-    end
+  def prev_term
+    ViTerm.find(@zstr, @cpos, @dname)
   end
 
   def save!(uname : String, mtime = ViTerm.mtime) : ViTerm

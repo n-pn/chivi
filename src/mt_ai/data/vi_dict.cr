@@ -1,6 +1,15 @@
 require "crorm"
 
 class MT::ViDict
+  def self.min_privi(dname : String)
+    case dname
+    when "regular", "suggest"  then 1
+    when .starts_with?("book") then 0
+    when .starts_with?("priv") then 0
+    else                            2
+    end
+  end
+
   enum Dtype
     None = 0
     Core = 1
@@ -65,14 +74,25 @@ class MT::ViDict
     @dtype = dtype.to_i
   end
 
-  def update_after_term_added!(@mtime : Int64, @total : Int32)
-    query = "update dicts set mtime = $1, total = $2 where @dname = $3"
-    self.class.db.open_rb &.exec(query, mtime, total, @dname)
+  def update_stats!(@mtime : Int64, total : Int32)
+    self.class.bump_stats!(dname: @dname, mtime: mtime, total_change: total - @total)
+    @total = total
+    self
   end
 
-  def update_after_term_added!(@mtime : Int64)
-    query = "update dicts set mtime = $1, total = total + 1 where dname = $2 returning total"
-    @total = self.class.db.open_rb &.exec(query, mtime, @dname, as: Int32)
+  # def update_stats!(@mtime : Int64)
+  #   @total = self.class.db.bump_stats!(dname: @dname, mtime: mtime)
+  # end
+
+  def self.bump_stats!(dname : String, mtime : Int64, total_change : Int32 = 1)
+    query = <<-SQL
+      update dicts
+      set mtime = $1, total = total + $2
+      where $dname = $3
+      returning total
+      SQL
+
+    db.open_rw &.exec(query, mtime, total_change, dname)
   end
 
   def to_json(jb : JSON::Builder)
