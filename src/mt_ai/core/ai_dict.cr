@@ -62,8 +62,7 @@ class MT::AiDict
       vstr = init_vv(zstr)
       @auto_dict.add(zstr, ipos, vstr, :none)
     when MtCpos::NR
-      # TODO: call special name translation engine
-      vstr = QtCore.tl_hvname(zstr)
+      vstr = init_nr(zstr)
       @auto_dict.add(zstr, ipos, vstr, :none)
     else
       vstr = QtCore.tl_hvword(zstr)
@@ -71,15 +70,38 @@ class MT::AiDict
     end
   end
 
-  def init_vv(zstr : String)
-    if match = MtPair.vrd_pair.find_any(zstr)
+  def init_nr(zstr : String)
+    # TODO: call special name translation engine
+
+    fname, pchar, lname = zstr.partition(/[\p{P}]/)
+    return QtCore.tl_hvname(zstr) if pchar.empty?
+
+    fname_vstr = get?(fname, MtCpos::NR).try(&.[0].vstr) || QtCore.tl_hvname(fname)
+    lname_vstr = get?(lname, MtCpos::NR).try(&.[0].vstr) || QtCore.tl_hvname(lname)
+
+    pchar = MAP_PCHAR[pchar]? || pchar
+
+    "#{fname_vstr}#{pchar}#{init_nr(lname)}"
+  end
+
+  MAP_PCHAR = {
+    "､" => ", ",
+    "･" => " ",
+  }
+
+  def init_vv(zstr : String) : String
+    case
+    when match = MtPair.vrd_pair.find_any(zstr)
       a_zstr, b_term = match
       a_term, _dic = get(a_zstr, MtCpos::VV)
       "#{a_term.vstr} #{b_term.a_vstr}"
-    elsif zstr[0] == '一'
+    when zstr[-1] == '了'
+      a_term, _ = get(zstr[..-1], MtCpos::VV)
+      "#{a_term.vstr} rooif"
+    when zstr[0] == '一'
       b_term, _ = get(zstr[1..], MtCpos::VV)
       "#{b_term.vstr} một phát"
-    elsif zstr[0] == '吓'
+    when zstr[0] == '吓'
       b_term, _ = get(zstr[1..], MtCpos::VV)
       "dọa #{b_term.vstr}"
     else

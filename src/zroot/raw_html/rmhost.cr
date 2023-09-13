@@ -212,7 +212,12 @@ class Rmhost
   end
 
   def http_client
-    HTTP::Client.new(@hostname, tls: !self.insecure?)
+    client = HTTP::Client.new(@hostname, tls: !self.insecure?)
+
+    client.connect_timeout = 2
+    client.read_timeout = 5
+
+    client
   end
 
   ###
@@ -290,7 +295,7 @@ class Rmhost
   end
 
   def self.from_link!(link : String)
-    self.from_host!(URI.parse(link).host.as(String))
+    self.from_host!(URI.parse(link).host.as(String).sub("www.", ""))
   end
 
   def self.from_name!(sname : String)

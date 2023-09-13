@@ -93,12 +93,11 @@ module MT::MtTranUtil
       raise "Chưa tồn tại thông tin dịch trên hệ thống!"
     end
 
-    btran = SP::Btran.free_translate(read_txt(cpath), target: "vi")
+    lines = read_txt(cpath)
+    btran = SP::Btran.free_translate(lines, target: "vi")
 
-    spawn do
-      Dir.mkdir_p(File.dirname(vtl_path))
-      File.write(vtl_path, btran.join('\n'))
-    end
+    Dir.mkdir_p(File.dirname(vtl_path))
+    File.write(vtl_path, btran.join('\n'))
 
     return btran
   end

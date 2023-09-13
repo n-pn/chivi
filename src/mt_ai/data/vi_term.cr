@@ -27,7 +27,7 @@ class MT::ViTerm
     )
     SQL
 
-  DIR = ENV["MT_DIR"]? || "var/mtapp"
+  DIR = "var/mtapp"
 
   def self.db_path(dname : String, type : String = "db3")
     "#{DIR}/mt_ai/#{dname}.#{type}"

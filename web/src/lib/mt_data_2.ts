@@ -127,24 +127,26 @@ export function render_cdata(input: Ctree, rmode = 1, cap = true) {
     const node = queue.pop()
     if (!node) break
 
-    const [cpos, zidx, zlen, attr, body, vstr, vdic] = node
+    let [cpos, zidx, zlen, attr, body, vstr, vdic] = node
 
     if (Array.isArray(body)) {
       for (let i = body.length - 1; i >= 0; i--) queue.push(body[i])
     } else {
       if (!skip_space(und, attr)) out += ' '
-      const [vstr2, cap2] = apply_cap(vstr || '', cap, attr)
-      cap = cap2
-      und = attr.includes('Hide') ? und : attr.includes('Undn')
+
+      if (!attr.includes('Hide')) {
+        und = attr.includes('Undn')
+        ;[vstr, cap] = apply_cap(vstr || '', cap, attr)
+      }
 
       if (rmode == 2) {
         out += `<x-n data-d=${vdic} data-b=${zidx} data-e=${zidx + zlen}>`
-        out += render_vstr(vstr2, cpos)
+        out += render_vstr(vstr, cpos)
         out += `</x-n>`
       } else if (rmode == 1) {
-        out += render_vstr(vstr2, cpos)
+        out += render_vstr(vstr, cpos)
       } else {
-        out += escape_htm(vstr2)
+        out += escape_htm(vstr)
       }
 
       if (rmode > 0) {

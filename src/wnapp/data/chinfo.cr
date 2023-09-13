@@ -228,6 +228,8 @@ class WN::Chinfo
   end
 
   def self.gen_vinfos_from_mt(id_map : Array(Int32), zinfos : String, wn_id : Int32 = 0)
+    return [] of {Int32, String, String} if id_map.empty?
+
     href = "#{CV_ENV.m1_host}/_m1/qtran/tl_mulu?wn_id=#{wn_id}"
     tran = HTTP::Client.post(href, body: zinfos, &.body_io.gets_to_end).lines
 

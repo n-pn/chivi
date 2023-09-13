@@ -17,9 +17,6 @@
   import { api_get } from '$lib/api_call'
 
   onMount(() => {
-    $config.showzh = $page.data._conf.showzh == 't'
-    $config.w_udic = $page.data._conf.w_udic == 't'
-    $config.w_init = $page.data._conf.w_init == 't'
     $config.wtheme = $page.data._conf.theme
 
     let interval = setInterval(short_pulling_user_data, 60000)

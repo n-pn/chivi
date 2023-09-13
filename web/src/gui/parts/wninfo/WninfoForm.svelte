@@ -241,7 +241,7 @@
         disabled={$_user.privi < 2}>
         <SIcon name="send" />
         <span class="-txt">Lưu thông tin</span>
-        <SIcon name="privi-2" iset="extra" />
+        <SIcon name="privi-2" iset="icons" />
       </button>
     </form-group>
   </form>

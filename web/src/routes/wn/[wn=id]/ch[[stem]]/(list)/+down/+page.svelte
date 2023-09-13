@@ -121,7 +121,7 @@
     <div class="action">
       <span class="label">Số vcoin cần thiết để yêu cầu tải xuống:</span>
       <span class="vcoin">{vcoin_cost}</span>
-      <SIcon iset="extra" name="vcoin" />
+      <SIcon iset="icons" name="vcoin" />
 
       <button class="m-btn _primary _fill" disabled={_onload} on:click={submit}>
         <SIcon name={_onload ? 'refresh' : 'send'} spin={_onload} />

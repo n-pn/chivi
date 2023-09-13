@@ -51,7 +51,7 @@
       {#each [1, 2, 3] as value}
         <label class="m-label _{value}" class:_active={value == form.privi}>
           <input type="radio" bind:group={form.privi} {value} />
-          <span class="icon"><SIcon name="privi-{value}" iset="extra" /></span
+          <span class="icon"><SIcon name="privi-{value}" iset="icons" /></span
           >Q.hạn {value}
         </label>
       {/each}
@@ -84,7 +84,7 @@
       disabled={_onload || cost > $_user.vcoin}>
       <span>Nâng cấp</span>
       <span>{cost}</span>
-      <SIcon iset="extra" name="vcoin" />
+      <SIcon iset="icons" name="vcoin" />
     </button>
   </footer>
 

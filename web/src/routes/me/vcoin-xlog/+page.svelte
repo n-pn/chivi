@@ -31,14 +31,14 @@
         <tr>
           <td>
             <span class="cv-user" data-privi={sender.privi}>
-              <SIcon name="privi-{sender.privi}" iset="extra" />
+              <SIcon name="privi-{sender.privi}" iset="icons" />
               {sender.uname}
             </span>
           </td>
           <td>
             <span class="cv-user" data-privi={target.privi}>
               {target.uname}
-              <SIcon name="privi-{target.privi}" iset="extra" />
+              <SIcon name="privi-{target.privi}" iset="icons" />
             </span>
           </td>
           <td>{xlog.amount}</td>

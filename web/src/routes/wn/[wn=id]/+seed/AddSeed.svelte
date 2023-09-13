@@ -62,7 +62,7 @@
     disabled={!sname || !s_bid}
     data-tip="Yêu cầu quyền hạn: 3">
     <span>Thêm nguồn</span>
-    <SIcon name="privi-3" iset="extra" />
+    <SIcon name="privi-3" iset="icons" />
   </button>
 </div>
 

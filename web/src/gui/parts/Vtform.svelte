@@ -163,7 +163,7 @@
           data-key="Backslash"
           use:hint={'Thay đổi lựa chọn lưu trữ'}
           on:click={() => (show_opts = !show_opts)}>
-          <SIcon name="privi-{form.req_privi}" iset="extra" />
+          <SIcon name="privi-{form.req_privi}" iset="icons" />
         </button>
 
         <button
@@ -182,7 +182,7 @@
         <br />
         Thử bấm vào biểu tượng <SIcon
           name="privi-{form.req_privi}"
-          iset="extra" /> phía trên để thay đổi cách lưu.
+          iset="icons" /> phía trên để thay đổi cách lưu.
       </div>
     {:else if upsert_error}
       <div class="upsert-msg _err">{upsert_error}</div>

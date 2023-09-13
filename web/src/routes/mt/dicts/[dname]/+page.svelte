@@ -49,7 +49,7 @@
           <td><input type="text" placeholder="-" bind:value={query.zstr} /></td>
           <td><input type="text" placeholder="-" bind:value={query.vstr} /></td>
           <td>
-            <button class="m-btn _sm">{query.cpos}</button>
+            <button class="m-btn _sm">{query.cpos || '-'}</button>
           </td>
           <td class="attr"
             ><input type="text" placeholder="-" bind:value={query.attr} /></td>
@@ -73,8 +73,6 @@
 
       <tbody>
         {#each terms.items as { zstr, vstr, cpos, attr, mtime, uname, plock }, idx}
-          {@const uname_class = uname == $_user.uname ? '_self' : '_else'}
-
           <tr class="term">
             <td class="-idx">{terms.start + idx}</td>
             <!-- svelte-ignore a11y-click-events-have-zstr-events -->
@@ -104,7 +102,7 @@
                 </button>
               </div>
             </td>
-            <td class="-cpos">
+            <td class="cpos">
               <button type="button" class="m-as-btn">
                 {cpos}
               </button>
@@ -115,14 +113,17 @@
               </div>
             </td>
             <td class="attr">
-              <a href="{root_path}?attr={attr}">{attr}</a>
+              <span class="flex"
+                >{#each attr.split(' ') as a}
+                  <a href="{root_path}?attr={a}">{a}</a>
+                {/each}</span>
             </td>
-            <td class="uname {uname_class}">
+            <td class="uname" class:_self={uname == $_user.uname}>
               <a href="{root_path}?uname={uname}">{uname}</a>
             </td>
-            <td class="plock">
+            <td class="plock _{plock}">
               <a href="{root_path}?plock={plock}">
-                {plock}
+                <SIcon name="plock-{plock}" iset="icons" />
               </a>
             </td>
             <td class="mtime">{rel_time_vp(mtime)} </td>
@@ -210,7 +211,6 @@
   }
 
   .-idx,
-  .attr,
   .mtime,
   .uname {
     @include fgcolor(tert);
@@ -218,17 +218,21 @@
 
   .attr {
     width: 3rem;
+
+    a {
+      @include fgcolor(tert);
+      &:hover {
+        @include fgcolor(primary, 5);
+      }
+    }
   }
 
   .uname {
     width: 6rem;
+    font-weight: 500;
 
     &._self {
-      @include fgcolor(harmful);
-    }
-
-    &._else {
-      @include fgcolor(primary);
+      font-style: italic;
     }
   }
 
@@ -296,6 +300,20 @@
 
     &:hover {
       @include bgcolor(main);
+    }
+  }
+
+  .plock {
+    &._0 {
+      @include fgcolor(success);
+    }
+
+    &._1 {
+      @include fgcolor(primary);
+    }
+
+    &._2 {
+      @include fgcolor(warning);
     }
   }
 </style>

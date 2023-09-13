@@ -19,7 +19,7 @@ export const load = (async ({
   params: { wn, stem, chap },
   fetch,
 }) => {
-  const wn_id = parseInt(wn, 10)
+  const wn_id = +wn.split('-')[0]
   const ch_no = parseInt(chap, 10)
 
   const cinfo_path = `/_wn/chaps/${wn_id}/${stem}/${ch_no}`

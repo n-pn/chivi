@@ -11,7 +11,7 @@ class MT::ViTermCtrl < AC::Base
             zstr : String? = nil,
             vstr : String? = nil,
             cpos : String? = nil,
-            prop : String? = nil,
+            attr : String? = nil,
             uname : String? = nil,
             plock : Int32? = nil)
     pg_no, limit, offset = _paginate(min: 10, max: 100)
@@ -35,9 +35,9 @@ class MT::ViTermCtrl < AC::Base
         sql << " and vstr like $" << args.size
       end
 
-      if prop
-        args << fix_query_str(prop)
-        sql << " and prop like $" << args.size
+      if attr
+        args << fix_query_str(attr)
+        sql << " and attr like $" << args.size
       end
 
       if uname

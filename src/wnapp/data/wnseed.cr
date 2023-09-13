@@ -166,10 +166,10 @@ class WN::Wnstem
   def reload_chlist!(mode : Int32 = 1)
     stale = Time.utc - remote_reload_tspan(mode)
 
-    if self.remote?
-      rmstem = ZR::RawRmstem.from_stem(@sname, @s_bid, stale: stale) rescue nil
-    elsif !@rlink.empty?
+    if !@rlink.empty?
       rmstem = ZR::RawRmstem.from_link(@rlink, stale: stale) rescue nil
+    elsif self.remote?
+      rmstem = ZR::RawRmstem.from_stem(@sname, @s_bid, stale: stale) rescue nil
     else
       # Do nothing
     end
@@ -207,6 +207,8 @@ class WN::Wnstem
     ch_nos, zinfos = Chinfo.get_zinfos(self.chap_list, chmin, chmax)
     output = Chinfo.gen_vinfos_from_mt(ch_nos, zinfos, @wn_id)
     Chinfo.update_vinfos!(self.chap_list, output)
+  rescue ex
+    Log.error(exception: ex) { [chmin, chmax] }
   end
 
   ###

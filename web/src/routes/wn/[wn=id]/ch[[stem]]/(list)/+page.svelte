@@ -112,14 +112,14 @@
           <a
             class="gmenu-item"
             class:_disable={!can_upsert}
-            href="/wn/{nvinfo.bslug}/ch/{curr_seed.sname}/+conf">
+            href="/wn/{nvinfo.bslug}/ch{curr_seed.sname}/+conf">
             <SIcon name="settings" />
             <span>Cài đặt</span>
           </a>
           <a
             class="gmenu-item"
             class:_disable={$_user.privi < 1}
-            href="/wn/{nvinfo.bslug}/ch/{curr_seed.sname}/+down">
+            href="/wn/{nvinfo.bslug}/ch{curr_seed.sname}/+down">
             <SIcon name="download" />
             <span>Tải xuống</span>
           </a>

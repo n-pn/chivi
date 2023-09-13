@@ -92,7 +92,7 @@
 
       <a {href} class="m-star" class:_active>
         <span>{star}</span>
-        <SIcon name="star" iset="extra" />
+        <SIcon name="star" iset="icons" />
       </a>
     {/each}
   </div>

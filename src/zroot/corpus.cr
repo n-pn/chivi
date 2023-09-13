@@ -30,18 +30,20 @@ class ZR::Corpus
 
   ###
 
-  getter zhead_db : DB::Connection { Zhead.db(@zname).open_rw }
-  getter zline_db : DB::Connection { Zline.db(@zname).open_rw }
-  getter vdata_db : DB::Connection { Vdata.db("#{@zname}-#{@vname}").open_rw }
+  getter zhead_rw : DB::Connection { Zhead.db("#{@zname}-zhead").open_rw }
+  getter zline_rw : DB::Connection { Zline.db("#{@zname}-zline").open_rw }
+  getter vtran_rw : DB::Connection { Vdata.db("#{@zname}-vtran").open_rw }
+  getter ctree_rw : DB::Connection { Vdata.db("#{@zname}-ctree").open_rw }
 
-  def initialize(@zname : String, @vname = "")
+  def initialize(@zname : String)
     # Dir.mkdir_p(File.dirname("#{DIR}/#{zname}"))
   end
 
-  def init_dbs!(no_zhead = @zname.empty?, no_zline = @zname.empty, no_vdata = @vname.empty?)
-    puts self.zhead_db.scalar "select 'init zhead'" unless no_zhead
-    puts self.zline_db.scalar "select 'init zline'" unless no_zline
-    puts self.vdata_db.scalar "select 'init vdata'" unless no_vdata
+  def init_dbs!(no_zhead = false, no_zline = false, no_vtran = false, no_ctree = false)
+    puts self.zhead_rw.scalar "select 'init zhead'" unless no_zhead
+    puts self.zline_rw.scalar "select 'init zline'" unless no_zline
+    puts self.vtran_rw.scalar "select 'init vtran'" unless no_vtran
+    puts self.ctree_rw.scalar "select 'init ctree'" unless no_ctree
   end
 
   def open_tx(&)
@@ -51,22 +53,21 @@ class ZR::Corpus
   end
 
   def open_tx
-    @zhead_db.try(&.exec("begin"))
-    @zline_db.try(&.exec("begin"))
-    @vdata_db.try(&.exec("begin"))
+    @zhead_rw.try(&.exec("begin"))
+    @zline_rw.try(&.exec("begin"))
+    @vtran_rw.try(&.exec("begin"))
   end
 
   def close_tx
-    @zhead_db.try(&.exec("commit"))
-    @zline_db.try(&.exec("commit"))
-    @vdata_db.try(&.exec("commit"))
+    @zhead_rw.try(&.exec("commit"))
+    @zline_rw.try(&.exec("commit"))
+    @vtran_rw.try(&.exec("commit"))
   end
 
   def finalize
-    close_tx rescue nil
-    @zhead_db.try(&.close) rescue nil
-    @zline_db.try(&.close) rescue nil
-    @vdata_db.try(&.close) rescue nil
+    @zhead_rw.try(&.close) rescue nil
+    @zline_rw.try(&.close) rescue nil
+    @vtran_rw.try(&.close) rescue nil
   end
 
   ZLINE_UPSERT_QUERY = <<-SQL
@@ -76,14 +77,13 @@ class ZR::Corpus
 
   ZHEAD_UPSERT_QUERY = <<-SQL
     insert into zheads(zorig, mtime, u1_ids) values ($1, $2, $3)
-    on conflict(zorig) do update set mtime = excluded.mtime, u1_ids = excluded.u1_ids
-    where zheads.u1_ids != excluded.u1_ids
+    on conflict (zorig) do nothing
     returning zorig
     SQL
 
   VDATA_UPSERT_QUERY = <<-SQL
     insert into vdatas(i8_id, vtype, vdata, cksum) values ($1, $2, $3, $4)
-    on conflict(i8_id, vtype, cksum) do nothing
+    on conflict (i8_id, vtype, cksum) do nothing
     returning i8_id
     SQL
 
@@ -93,8 +93,8 @@ class ZR::Corpus
     lines = File.read_lines(fpath, encoding: encoding, chomp: true)
     lines = Corpus.clean_lines(lines, to_canon: to_canon, remove_blank: remove_blank)
 
-    mtime = File.info(fpath).modification_time
-    add_part!(zorig, lines, mtime: mtime, force_redo: force_redo)
+    # mtime = File.info(fpath).modification_time
+    add_part!(zorig, lines, mtime: 0, force_redo: force_redo)
   end
 
   def add_part!(zorig : String,
@@ -105,14 +105,14 @@ class ZR::Corpus
 
     saved_zorig = begin
       u1_ids = Corpus.u8_ids_to_bytes(u8_ids)
-      self.zhead_db.query_one?(ZHEAD_UPSERT_QUERY, zorig, mtime, u1_ids, as: String)
+      self.zhead_rw.query_one?(ZHEAD_UPSERT_QUERY, zorig, mtime, u1_ids, as: String)
     end
 
     return {u8_ids, false} unless force_redo || saved_zorig
 
     lines.each_with_index do |line, idx|
       u8_id = u8_ids.unsafe_fetch(idx)
-      self.zline_db.exec(ZLINE_UPSERT_QUERY, line, u8_id.unsafe_as(Int64))
+      self.zline_rw.exec(ZLINE_UPSERT_QUERY, line, u8_id.unsafe_as(Int64))
     end
 
     {u8_ids, true}
@@ -126,7 +126,7 @@ class ZR::Corpus
     u8_ids.zip(vdatas) do |u8_id, vdata|
       i8_id = u8_id.unsafe_as(Int64)
       cksum = HashUtil.fnv_1a(vdata).unsafe_as(Int32)
-      count += 1 if self.vdata_db.query_one?(VDATA_UPSERT_QUERY, i8_id, vtype, vdata, cksum, as: Int32)
+      count += 1 if self.vtran_rw.query_one?(VDATA_UPSERT_QUERY, i8_id, vtype, vdata, cksum, as: Int32)
     end
 
     count
@@ -136,7 +136,7 @@ class ZR::Corpus
 
   class Zline
     def self.db_path(zname : String)
-      "#{DIR}/#{zname}-zline.db3"
+      "#{DIR}/#{zname}.db3"
     end
 
     class_getter init_sql = <<-SQL
@@ -161,7 +161,7 @@ class ZR::Corpus
 
   class Zhead
     def self.db_path(zname : String)
-      "#{DIR}/#{zname}-zhead.db3"
+      "#{DIR}/#{zname}.db3"
     end
 
     class_getter init_sql = <<-SQL

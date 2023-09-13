@@ -53,7 +53,7 @@
 
 <Slider class="usercp" bind:actived --slider-width="26rem">
   <svelte:fragment slot="header-left">
-    <div class="-icon"><SIcon name="privi-{privi}" iset="extra" /></div>
+    <div class="-icon"><SIcon name="privi-{privi}" iset="icons" /></div>
     <div class="-text">
       <cv-user data-privi={privi}>{$_user.uname}</cv-user>
     </div>
@@ -80,7 +80,7 @@
       <div class="info">
         <div>
           <span class="lbl">Quyền hạn:</span>
-          <SIcon name="privi-{privi}" iset="extra" />
+          <SIcon name="privi-{privi}" iset="icons" />
         </div>
         {#if privi > 0 && privi < 4}
           <div>
@@ -96,7 +96,7 @@
         <div>
           <span class="lbl">Số lượng vcoin hiện có:</span>
           <strong>{Math.round($_user.vcoin * 100) / 100}</strong>
-          <SIcon iset="extra" name="vcoin" />
+          <SIcon iset="icons" name="vcoin" />
         </div>
 
         <a href="/hd/tat-ca-ve-vcoin" class="m-btn _xs">Giải thích</a>

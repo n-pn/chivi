@@ -10,9 +10,10 @@ class MT::AiTranCtrl < AC::Base
     input, _algo = MtTranUtil.get_wntext_con_data(cpath, _algo, _auto_gen)
 
     ai_mt = AiCore.new(pdict)
-    lines = input.map { |line| ai_mt.tl_from_con_data(line) }
 
+    lines = input.map { |line| ai_mt.tl_from_con_data(line) }
     tspan = (Time.monotonic - start).total_milliseconds.to_i
+
     json = {lines: lines, tspan: tspan, _algo: _algo}
     render json: json
   rescue ex

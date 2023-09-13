@@ -99,7 +99,7 @@
         disabled={$_user.vcoin < form.amount}>
         <span>Gửi tặng</span>
         <span>{form.amount}</span>
-        <SIcon iset="extra" name="vcoin" />
+        <SIcon iset="icons" name="vcoin" />
       </button>
     </footer>
   </form>

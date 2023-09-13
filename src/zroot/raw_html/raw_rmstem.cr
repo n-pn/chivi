@@ -10,9 +10,10 @@ class ZR::RawRmstem
   ####
 
   def self.from_link(rlink : String, stale : Time = Time.utc - 1.years)
-    host, path = URI.parse(rlink).try { |x| {x.host, x.path} }
-    host = Rmhost.from_host!(host.as(String))
+    hostname, path = URI.parse(rlink).try { |x| {x.host, x.path} }
+    hostname = hostname.as(String).sub("www.", "")
 
+    host = Rmhost.from_host!(hostname)
     new(host, b_id: host.extract_bid(path.as(String)), stale: stale)
   end
 

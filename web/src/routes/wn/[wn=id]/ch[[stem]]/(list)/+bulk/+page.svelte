@@ -222,7 +222,7 @@
           on:click={submit}>
           <SIcon name={_onload ? 'loader-2' : 'send'} spin={_onload} />
           <span class="m-show-ts -text">Đăng tải</span>
-          <SIcon name="privi-{min_privi}" iset="extra" />
+          <SIcon name="privi-{min_privi}" iset="icons" />
         </button>
       </div>
     </footer>
