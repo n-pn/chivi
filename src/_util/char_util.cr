@@ -188,6 +188,14 @@ module CharUtil
     (char.ord &- 0xfee0).chr
   end
 
+  def to_halfwidth(str : String)
+    String.build do |io|
+      str.each_char do |char|
+        io << to_halfwidth(char)
+      end
+    end
+  end
+
   def hw_digit?(char : Char)
     '0' <= char <= '9'
   end

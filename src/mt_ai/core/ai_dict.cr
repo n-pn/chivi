@@ -55,9 +55,10 @@ class MT::AiDict
     when MtCpos["URL"]
       vstr = CharUtil.normalize(zstr)
       @auto_dict.add(zstr, ipos, vstr, MtAttr[Asis, Npos])
-    when MtCpos::CD, MtCpos::OD
-      vstr = TlUnit.translate(zstr) rescue QtCore.tl_hvword(zstr)
-      @auto_dict.add(zstr, ipos, vstr, :none)
+    when MtCpos::OD
+      @auto_dict.add(zstr, ipos, init_od(zstr), :none)
+    when MtCpos::CD
+      @auto_dict.add(zstr, ipos, init_cd(zstr), :none)
     when MtCpos::VV
       vstr = init_vv(zstr)
       @auto_dict.add(zstr, ipos, vstr, :none)
@@ -82,6 +83,26 @@ class MT::AiDict
     pchar = MAP_PCHAR[pchar]? || pchar
 
     "#{fname_vstr}#{pchar}#{init_nr(lname)}"
+  end
+
+  def init_od(zstr : String)
+    if zstr[0] == '第'
+      "thứ #{tl_unit(zstr[1..])}"
+    else
+      tl_unit(zstr)
+    end
+  end
+
+  def init_cd(zstr : String)
+    return "#{tl_unit(zstr[2..])} phần" if zstr.starts_with?("分之")
+    tl_unit(zstr)
+  end
+
+  def tl_unit(zstr : String)
+    case zstr
+    when /^[０-９．，－：～ ]/ then CharUtil.to_halfwidth(zstr)
+    else                     TlUnit.translate(zstr)
+    end
   end
 
   MAP_PCHAR = {

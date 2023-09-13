@@ -118,12 +118,14 @@ module MT::TlUnit
       when extra = EXTRA_STR[char]?
         pre_str = pre_str.empty? ? extra : "#{pre_str} #{extra}"
       when char == '分'
-        suf_str = "phần"
+        suf_str = " phần"
+      when '％'
+        suf_str = "%"
       when char == '之'
         # DO NOTHING!
       when !(int = HAN_TO_INT[char]?)
         Log.error { "#{char} not match any known type" }
-        pre_str = pre_str.empty? ? char.to_s : "#{pre_str} #{char}"
+        pre_str = pre_str.empty? ? char.to_s : "#{pre_str} #{char} "
       when int >= 0
         digits << Digit.new('０' + int) # convert to full width form
       else
@@ -159,7 +161,7 @@ module MT::TlUnit
 
   private def render_no_unit(digits : Array(Digit), pre_str : String, suf_str : String)
     String.build do |io|
-      io << pre_str << ' ' unless pre_str.empty?
+      io << pre_str unless pre_str.empty?
       was_digit = false
 
       digits.each_with_index do |digit, index|
@@ -170,7 +172,7 @@ module MT::TlUnit
         was_digit = is_digit
       end
 
-      io << ' ' << suf_str unless suf_str.empty?
+      io << suf_str unless suf_str.empty?
     end
   end
 
@@ -179,7 +181,7 @@ module MT::TlUnit
     # pp digits.colorize.blue
 
     String.build do |io|
-      io << pre_str << ' ' unless pre_str.empty?
+      io << pre_str unless pre_str.empty?
       prev_unit = 0
 
       digits.each do |digit|
@@ -188,7 +190,7 @@ module MT::TlUnit
       end
 
       prev_unit.times { io << '0' }
-      io << ' ' << suf_str unless suf_str.empty?
+      io << suf_str unless suf_str.empty?
     end
   end
 
@@ -197,7 +199,7 @@ module MT::TlUnit
     # pp digits
 
     String.build do |io|
-      io << pre_str << ' ' unless pre_str.empty?
+      io << pre_str unless pre_str.empty?
 
       prev = digits.unsafe_fetch(0)
       was_digit = prev.pure_digit?
@@ -220,7 +222,7 @@ module MT::TlUnit
         end
       end
 
-      io << ' ' << suf_str unless suf_str.empty?
+      io << suf_str unless suf_str.empty?
     end
   end
 
