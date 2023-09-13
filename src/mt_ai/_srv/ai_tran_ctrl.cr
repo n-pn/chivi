@@ -21,6 +21,23 @@ class MT::AiTranCtrl < AC::Base
     render 455, ex.message
   end
 
+  @[AC::Route::POST("/reload")]
+  def reload(pdict : String = "combine")
+    start = Time.monotonic
+    ai_mt = AiCore.new(pdict)
+
+    input = _read_body.lines(chomp: true)
+    trees = input.map { |line| ai_mt.tl_from_con_data(line) }
+
+    tspan = (Time.monotonic - start).total_milliseconds.to_i
+    json = {lines: trees, tspan: tspan}
+
+    render json: json
+  rescue ex
+    Log.error(exception: ex) { input }
+    render 455, ex.message
+  end
+
   # @[AC::Route::GET("/debug/ztext")]
   # def debug(ztext : String, pdict : String = "rand/fixture")
   #   _algo = _read_cookie("c_algo") || "auto"

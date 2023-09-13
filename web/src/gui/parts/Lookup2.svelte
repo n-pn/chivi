@@ -22,6 +22,19 @@
     navigator.clipboard.writeText(render_ctree($data.cdata, 0))
   }
 
+  const text_headers = { 'Content-Type': 'text/plain' }
+  const reload_ctree = async () => {
+    const url = '/_ai/mt/reload?pdict=' + $data.pdict
+    const body = render_ctree($data.cdata, 0)
+    const init = { method: 'POST', body, headers: text_headers }
+
+    const res = await fetch(url, init)
+    if (!res.ok) return alert(await res.text())
+
+    const { lines } = await res.json()
+    $data.cdata = lines[0]
+  }
+
   let viewer = null
   // const focused = []
 
@@ -104,7 +117,18 @@
         {@html render_ctree($data.cdata, 2)}
       </div>
 
-      <h4 class="label">Dịch máy:</h4>
+      <h4 class="label">
+        <span class="title">Dịch máy:</span>
+        <span class="tools">
+          <button
+            type="button"
+            class="tools-btn"
+            on:click={reload_ctree}
+            data-tip="Dịch lại sau khi đã thay đổi nghĩa của từ"
+            >Dịch lại</button>
+        </span>
+      </h4>
+
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div class="cdata debug _mt" on:click={handle_click}>

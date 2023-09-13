@@ -90,8 +90,8 @@ class MT::ViTermCtrl < AC::Base
   LOG_DIR = "var/ulogs/mtapp"
   Dir.mkdir_p(LOG_DIR)
 
-  @[AC::Route::PUT("/", body: :form)]
-  def upsert(form : ViTermForm)
+  @[AC::Route::PUT("/once", body: :form)]
+  def upsert_once(form : ViTermForm)
     prev_term = form.prev_term
 
     min_plock = prev_term ? prev_term.plock : 0
@@ -113,7 +113,7 @@ class MT::ViTermCtrl < AC::Base
     render json: term
   end
 
-  def sync_data!(dname : String, term : ViTerm, fresh : Bool = false)
+  private def sync_data!(dname : String, term : ViTerm, fresh : Bool = false)
     spawn do
       db_path = ViTerm.db_path(dname, "tsv")
       File.open(db_path, "a", &.puts(term.to_tsv_line))
@@ -130,6 +130,17 @@ class MT::ViTermCtrl < AC::Base
       AiDict::Entry::ENTRIES[dname]?.try do |entry|
         entry.add(term.zstr, ipos, term.vstr, attr)
       end
+    end
+  end
+
+  @[AC::Route::GET("/find")]
+  def show(dict : String, zstr : String, cpos : String)
+    term = ViTerm.find(dict: dict, zstr: zstr, cpos: cpos)
+
+    if term
+      render json: term
+    else
+      render :not_found, text: "Không tồn tại"
     end
   end
 end

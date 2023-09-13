@@ -15,8 +15,8 @@ export interface TermsData extends CV.Paginate {
   start: number
 }
 
-export const load = (async ({ fetch, url, params: { dname } }) => {
-  const { dinfo, users } = await api_get<DictData>(`/_ai/dicts/${dname}`, fetch)
+export const load = (async ({ fetch, url, params: { dname }, parent }) => {
+  const { dinfo, users } = await parent()
 
   const search = merge_query(url.searchParams, { dname, lm: 50 })
   const terms = await api_get<TermsData>(`/_ai/terms?${search}`, fetch)
@@ -32,7 +32,7 @@ export const load = (async ({ fetch, url, params: { dname } }) => {
   const query = gen_query(url.searchParams)
   const _title = 'Từ điển: ' + dinfo.label
 
-  return { dinfo, users, terms, query, _meta, _title }
+  return { terms, query, _meta, _title }
 }) satisfies PageLoad
 
 function gen_query(params: URLSearchParams) {

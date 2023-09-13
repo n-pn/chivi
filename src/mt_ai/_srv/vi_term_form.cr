@@ -18,6 +18,8 @@ class MT::ViTermForm
   getter dname : String
   getter plock : Int32
 
+  getter old_cpos : String = ""
+
   struct Context
     getter wn_id : Int32
     getter ctree : String
@@ -40,10 +42,12 @@ class MT::ViTermForm
 
     @dname = @dname.sub(':', '/')
     @plock = 1 unless 0 <= @plock <= 2
+
+    @old_cpos = @cpos if @old_cpos.blank?
   end
 
   def prev_term
-    ViTerm.find(@zstr, @cpos, @dname)
+    ViTerm.find(dict: @dname, zstr: @zstr, cpos: @old_cpos)
   end
 
   def save!(uname : String, mtime = ViTerm.mtime) : ViTerm

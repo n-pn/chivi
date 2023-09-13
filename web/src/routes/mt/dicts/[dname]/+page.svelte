@@ -74,7 +74,10 @@
       <tbody>
         {#each terms.items as { zstr, vstr, cpos, attr, mtime, uname, plock }, idx}
           <tr class="term">
-            <td class="-idx">{terms.start + idx}</td>
+            <td class="-idx">
+              <a href="/mt/dicts/{data.dname}/+term?zstr={zstr}&cpos={cpos}">
+                {terms.start + idx}</a>
+            </td>
             <!-- svelte-ignore a11y-click-events-have-zstr-events -->
             <td class="-zstr">
               <span>{zstr}</span>
