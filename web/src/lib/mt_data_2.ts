@@ -45,7 +45,7 @@ export function render_ztext(input: CV.Cvtree, rmode = 1) {
     const [_cpos, zidx, zlen, _attr, body, _vstr, vdic] = node
 
     if (rmode > 1) {
-      out += `<x-n data-d=${vdic} data-b=${zidx} data-e=${zidx + zlen}>`
+      out += `<x-n data-d=${vdic % 10} data-b=${zidx} data-e=${zidx + zlen}>`
     }
 
     if (Array.isArray(body)) {
@@ -57,7 +57,7 @@ export function render_ztext(input: CV.Cvtree, rmode = 1) {
       } else {
         for (let x = 0; x < body.length; x++) {
           const idx = zidx + x
-          out += `<x-z data-d=${vdic} data-b=${idx} data-e=${idx + 1}>`
+          out += `<x-z data-d=${vdic % 10} data-b=${idx} data-e=${idx + 1}>`
           out += escape_htm(body.charAt(x))
           out += `</x-z>`
         }
@@ -92,7 +92,7 @@ export function render_ctree(node: CV.Cvtree, rmode = 1, sbuff = '') {
     if (rmode == 2) {
       for (let x = 0; x < body.length; x++) {
         const b = zidx + x
-        sbuff += `<x-z data-d=${vdic} data-b=${b} data-e=${b + 1}>`
+        sbuff += `<x-z data-d=${vdic % 10} data-b=${b} data-e=${b + 1}>`
         sbuff += escape_htm(body.charAt(x))
         sbuff += `</x-z>`
       }
@@ -130,7 +130,7 @@ export function render_vdata(input: CV.Cvtree, rmode = 1, cap = true) {
       }
 
       if (rmode == 2) {
-        out += `<x-n data-d=${vdic} data-b=${zidx} data-e=${zidx + zlen}>`
+        out += `<x-n data-d=${vdic % 10} data-b=${zidx} data-e=${zidx + zlen}>`
         out += render_vstr(vstr, cpos)
         out += `</x-n>`
       } else if (rmode == 1) {

@@ -3,8 +3,9 @@ require "./mt_attr"
 struct MT::MtTerm
   getter vstr : String
   getter attr : MtAttr
+  getter lock : Int8
 
-  def initialize(@vstr, @attr = :none)
+  def initialize(@vstr, @attr = :none, @lock = 1_i8)
   end
 
   # def to_txt(io : IO, apply_cap : Bool, pad_space : Bool)
@@ -32,6 +33,6 @@ struct MT::MtTerm
   ###
 
   def self.from_char(char : Char)
-    new(CharUtil.normalize(char).to_s, MtAttr.parse(char))
+    new(CharUtil.normalize(char).to_s, MtAttr.parse(char), 0_i8)
   end
 end

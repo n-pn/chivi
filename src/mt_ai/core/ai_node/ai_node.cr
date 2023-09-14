@@ -42,12 +42,14 @@ module MT::AiNode
     end
   end
 
-  def set_term!(term, @_dic : Int8 = 1) : Nil
+  def set_term!(term : MtTerm, _dic : Int8 = 1_i8) : Nil
     @vstr = term.vstr
     @attr |= term.attr
+    @_dic = term.lock &* 10 &+ _dic
   end
 
-  def set_vstr!(@vstr : String, @_dic : Int8 = 1) : Nil
+  def set_vstr!(@vstr : String, _dic : Int8 = 1_i8) : Nil
+    @_dic = (@_dic % 10) &* 10 &+ _dic
   end
 
   def add_attr!(attr : MtAttr)

@@ -40,6 +40,6 @@ class MT::QtDict
       index &+= 1
     end
 
-    {MtTerm.new(vstr.to_s, attr), index &- start, 5}
+    {MtTerm.new(vstr.to_s, attr, 0_i8), index &- start, 5}
   end
 end

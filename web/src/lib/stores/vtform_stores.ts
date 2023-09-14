@@ -50,12 +50,10 @@ function split_hviet_node(node: CV.Cvtree) {
 }
 
 function find_hviet_node(node: CV.Cvtree, lower = 0, upper = 0) {
-  console.log({ lower, upper })
-
   const [_cpos, from, zlen, _atrr, body] = node
   const upto = from + zlen
 
-  if (from > lower || upto < upper) return null
+  if (from > lower || upto < upper) return node
 
   if (typeof body == 'string') {
     if (from == lower && upto == upper) {
@@ -91,13 +89,41 @@ function find_hviet_node(node: CV.Cvtree, lower = 0, upper = 0) {
   }
 }
 
+function find_vdata_node(node: CV.Cvtree, lower = 0, upper = 0, icpos = '') {
+  const [cpos, from, zlen, _atrr, body] = node
+  const upto = from + zlen
+
+  if (from > lower || upto < upper) return null
+
+  if (from == lower && upto == upper) {
+    if (typeof body == 'string') return node
+    if (icpos && icpos == cpos) return node
+  }
+
+  for (const child of body as Array<CV.Cvtree>) {
+    const [_cpos, from, zlen, _attr] = child
+    const upto = from + zlen
+
+    if (from <= lower && upto >= upper) {
+      return find_vdata_node(child, lower, upper, icpos)
+    }
+  }
+
+  return from == lower && upto == upper ? node : null
+}
+
 function extract_term(input: Data) {
   const { htree, vtree, zfrom, zupto, icpos } = input
+
   const hnode = find_hviet_node(htree, zfrom, zupto)
+  const vnode = find_vdata_node(vtree, zfrom, zupto, icpos) || hnode
 
   return {
     ztext: render_ztext(hnode, 0),
     hviet: render_vdata(hnode, 0, false),
+    vtran: render_vdata(vnode, 0, false),
+    icpos: vnode[0],
+    plock: Math.floor((vnode[6] || 0) / 10),
   }
 }
 
@@ -108,7 +134,7 @@ export const data = {
 
     data.set({ htree, vtree, zfrom, zupto, icpos })
   },
-  get_term(_from = -1, _upto = -1, _cpos = '') {
+  get_term(_from = -1, _upto = -1, _cpos = '?') {
     const input = get(data)
     if (_from >= 0) input.zfrom = _from
     if (_upto >= 0) input.zupto = _upto

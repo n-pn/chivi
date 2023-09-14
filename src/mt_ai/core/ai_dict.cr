@@ -182,22 +182,17 @@ class MT::AiDict
 
     ####
 
-    def add(zstr : String, cpos : String, vstr : String, attr : String) : MtTerm
-      add(zstr, ipos: MtCpos[cpos], vstr: vstr, attr: attr)
+    def add(zstr : String, ipos : Int8, vstr : String, attr : MtAttr, lock = 0_i8) : MtTerm
+      add(zstr: zstr, ipos: ipos, term: MtTerm.new(vstr, attr, lock))
     end
 
-    def add(zstr : String, ipos : Int8, vstr : String, attr : String) : MtTerm
+    def add(zstr : String, cpos : String, term : MtTerm) : MtTerm
+      add(zstr: zstr, ipos: MtCpos[cpos], term: term)
+    end
+
+    def add(zstr : String, ipos : Int8, term : MtTerm) : MtTerm
       entry = @data[zstr] ||= {} of Int8 => MtTerm
-      entry[ipos] = MtTerm.new(vstr, attr: MtAttr.parse_list(attr))
-    end
-
-    def add(zstr : String, cpos : String, vstr : String, attr : MtAttr = :none) : MtTerm
-      add(zstr, MtCpos[cpos], vstr, attr)
-    end
-
-    def add(zstr : String, ipos : Int8, vstr : String, attr : MtAttr = :none) : MtTerm
-      entry = @data[zstr] ||= {} of Int8 => MtTerm
-      entry[ipos] = MtTerm.new(vstr, attr)
+      entry[ipos] = term
     end
 
     def load_tsv!(dname : String = @dname)
@@ -207,8 +202,15 @@ class MT::AiDict
       File.each_line(db_path) do |line|
         cols = line.split('\t')
         next if cols.size < 3
+
+        zstr = cols[0]
+        ipos = MtCpos[cols[1]]
+        vstr = cols[2]
         attr = MtAttr.parse_list(cols[3]?)
-        add(cols[0], cols[1], cols[2], attr: attr)
+        lock = cols[6]?.try(&.to_i8?) || 2_i8
+
+        term = MtTerm.new(vstr: vstr, attr: attr, lock: lock)
+        add(zstr: zstr, ipos: ipos, term: term)
       end
 
       self
@@ -216,11 +218,17 @@ class MT::AiDict
 
     def load_db3!(dname : String = @dname)
       ViTerm.db(dname).open_ro do |db|
-        query = "select zstr, icpos, vstr, iattr from #{ViTerm.schema.table}"
+        query = "select zstr, icpos, vstr, iattr, plock from #{ViTerm.schema.table}"
 
         db.query_each(query) do |rs|
-          zstr, ipos, vstr, iattr = rs.read(String, Int32, String, Int32)
-          add(zstr, ipos: ipos.to_i8, vstr: vstr, attr: MtAttr.new(iattr))
+          zstr = rs.read(String)
+          ipos = rs.read(Int32).unsafe_as(Int8)
+          vstr = rs.read(String)
+          attr = MtAttr.new(rs.read(Int32))
+          lock = rs.read(Int32).unsafe_as(Int8)
+
+          term = MtTerm.new(vstr: vstr, attr: attr, lock: lock)
+          add(zstr, ipos: ipos, term: term)
         end
       end
 
