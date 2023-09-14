@@ -1,101 +1,101 @@
 <script context="module" lang="ts">
   export const attr_map = {
     Hide: {
-      desc: 'Ẩn nghĩa của từ khi dịch',
+      desc: 'Ẩn cả cụm từ (không thêm nghĩa) của từ khi dịch',
       used: true,
     },
     Asis: {
-      desc: 'Không viết hoa cụm từ',
+      desc: 'Giữ nguyên cụm từ, không áp dụng viết hoa',
       used: true,
     },
 
     At_h: {
-      desc: 'Đặt tại phía trước',
+      desc: 'Trong trường hợp đặc biệt, đặt từ ở phía đầu của cụm (!)',
       used: true,
     },
     At_t: {
-      desc: 'Đặt tại phía sau',
+      desc: 'Trong trường hợp đặc biệt, đặt từ ở phía cuối của cụm (!)',
       used: true,
     },
 
     Prfx: {
-      desc: 'Đánh dấu tiền tố',
+      desc: 'Đánh dấu từ là tiền tố của một cụm từ (ít dùng)',
       used: true,
     },
     Sufx: {
-      desc: 'Đánh dấu hậu tố',
+      desc: 'Đánh dấu từ là hậu tố cho danh từ, động từ, tính từ, tên riêng etc.',
       used: true,
     },
 
     Capn: {
-      desc: 'Viết hoa từ tiếp theo',
+      desc: 'Viết hoa cụm từ ngay tiếp theo từ này (áp dụng cho dấu câu)',
       used: true,
     },
     Capx: {
-      desc: 'Chuyển viết hoa ra sau',
+      desc: 'Chuyển tiếp yêu cầu viết hoa cho cụm từ phía sau',
       used: true,
     },
 
     Undb: {
-      desc: 'Không thêm dấu cách phía trước',
+      desc: 'Không thêm dấu cách phía trước (áp dụng cho dấu câu)',
       used: true,
     },
     Undn: {
-      desc: 'Không thêm dấu cách phía sau',
+      desc: 'Không thêm dấu cách phía sau (áp dụng cho dấu câu)',
       used: true,
     },
     Ndes: {
-      desc: 'Danh từ chỉ tính chất sự vật sự việc',
+      desc: 'Danh từ chỉ tính chất sự vật sự việc, khi làm định ngữ không có `của`',
       used: true,
     },
     Npos: {
-      desc: 'Danh từ chỉ đối tượng sở hữu cụ thể',
+      desc: 'Danh từ chỉ đối tượng sở hữu cụ thể, khi làm định ngữ sẽ thêm `của`',
       used: true,
     },
     Nper: {
-      desc: 'Danh/đại từ chỉ người',
+      desc: 'Các danh/đại từ chỉ người, gồm cả tên riêng, danh xưng, chức vụ',
       used: true,
     },
     Ngrp: {
-      desc: 'Danh/đại từ chỉ nhóm',
+      desc: 'Danh/đại từ chỉ nhóm người, tổ chức, dân tộc, số nhiều',
       used: false,
     },
     Nloc: {
-      desc: 'Danh/đại từ chỉ nơi chốn',
+      desc: 'Danh/đại từ chỉ nơi chốn địa điểm, kể cả địa danh, tổ chức',
       used: true,
     },
     Ntmp: {
-      desc: 'Danh/đại từ chỉ thời gian',
+      desc: 'Danh/đại từ chỉ thời gian, ngày tháng, khoảng thời gian',
       used: true,
     },
 
     Pn_d: {
-      desc: 'Đại từ chỉ thị',
+      desc: 'Đại từ chỉ thị (từ loại con của đại từ)',
       used: true,
     },
 
     Pn_i: {
-      desc: 'Đại từ nghi vấn',
+      desc: 'Đại từ nghi vấn (từ loại con của đại từ)',
       used: true,
     },
 
     Vint: {
-      desc: 'Động từ không đối tượng',
+      desc: 'Động từ không đối tượng (từ loại con của động từ)',
       used: false,
     },
 
     Vdit: {
-      desc: 'Động từ hai đối tương',
+      desc: 'Động từ hai đối tượng (từ loại con của động từ)',
       used: false,
     },
 
     Vmod: {
-      desc: 'Động từ năng nguyện',
+      desc: 'Động từ năng nguyện (từ loại con của động từ)',
       used: false,
     },
 
     Vpsy: {
-      desc: 'Động từ tâm lý',
+      desc: 'Động từ tâm lý (từ loại con của động từ)',
       used: false,
     },
   }
@@ -109,8 +109,6 @@
 </script>
 
 <script lang="ts">
-  import { tooltip } from '$lib/actions'
-
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Dialog from '$gui/molds/Dialog.svelte'
 
@@ -134,40 +132,20 @@
   </svelte:fragment>
 
   <section class="body">
-    <h3>Đang có hiệu lực</h3>
-    <div class="list">
-      {#each attrs as attr}
-        {@const { desc, used } = attr_map[attr] || { desc: '??', used: false }}
-        <button
-          class="attr _active"
-          class:_unused={!used}
-          use:tooltip={desc}
-          data-anchor=".attr-picker"
-          on:click={() => toggle_attr(attr)}>
-          <span>{attr}</span>
-          <SIcon name="check" />
-        </button>
-      {:else}
-        <div class="none">Chưa có từ tính</div>
-      {/each}
-    </div>
-
-    <h3 id="attr-group">Tất cả từ tính</h3>
     {#each groups as list}
       <div class="list">
         {#each list as attr}
           {@const active = attrs.includes(attr)}
           {@const { desc, used } = attr_map[attr] || {}}
+
           <button
             class="attr"
             class:_active={active}
             class:_unused={!used}
-            data-tag={attr}
-            use:tooltip={desc || '???'}
-            data-anchor=".attr-picker"
             on:click={() => toggle_attr(attr)}>
-            <span>{attr}</span>
-            {#if active}<SIcon name="check" />{/if}
+            <SIcon name={active ? 'check' : 'square'} />
+            <code>{attr}</code>
+            <span>{desc}</span>
           </button>
         {/each}
       </div>
@@ -202,49 +180,35 @@
   }
 
   .list {
-    @include grid(null, $gap: 0.375rem);
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    // @include grid(null, $gap: 0.375rem);
+    // grid-template-columns: 1fr 1fr 1fr 1fr;
+    margin-top: 0.375rem;
     padding: 0 0.75rem;
 
     & + & {
-      margin-top: 0.375rem;
       padding-top: 0.375rem;
       @include border($loc: top);
     }
   }
 
-  .none {
-    line-height: 1.75rem;
-    font-style: italic;
-    @include fgcolor(tert);
-    @include ftsize(sm);
-  }
-
   .attr {
     padding: 0;
     background: transparent;
-    font-weight: 500;
 
-    flex-shrink: 1;
     line-height: 1.75rem;
+    text-align: left;
 
-    @include linesd(--bd-main);
-
+    border: none;
     @include fgcolor(tert);
-    @include bdradi(0.75rem);
     @include bps(font-size, rem(13px), $pl: rem(14px));
     @include clamp($width: 100%);
 
     &:hover,
     &._active {
       @include fgcolor(primary, 7);
-      @include bgcolor(primary, 1);
-      @include linesd(primary, 2, $ndef: false);
 
       @include tm-dark {
         @include fgcolor(primary, 3);
-        @include bgcolor(primary, 9, 5);
-        @include linesd(primary, 8, $ndef: false);
       }
     }
 
