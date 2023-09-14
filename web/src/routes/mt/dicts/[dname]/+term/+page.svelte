@@ -6,6 +6,7 @@
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import CposPicker, { cpos_map } from '$gui/parts/CposPicker.svelte'
+  import AttrPicker, { attr_map } from '$gui/parts/AttrPicker.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
@@ -17,10 +18,7 @@
   $: on_edit = prev
 
   let show_cpos_picker = false
-
-  const show_attr_picker = () => {
-    // TODO
-  }
+  let show_attr_picker = false
 
   const action = '/_ai/terms/once'
   const method = 'PUT'
@@ -82,7 +80,10 @@
 
     <div class="form-field">
       <label for="attr" class="form-label">Từ tính:</label>
-      <button type="button" class="m-input" on:click={show_attr_picker}>
+      <button
+        type="button"
+        class="m-input"
+        on:click={() => (show_attr_picker = !show_attr_picker)}>
         {form.attr || '-'}
       </button>
     </div>
@@ -95,9 +96,13 @@
   </footer>
 </article>
 
-{#if show_cpos_picker}<CposPicker
-    bind:output={form.cpos}
-    bind:actived={show_cpos_picker} />{/if}
+{#if show_cpos_picker}
+  <CposPicker bind:output={form.cpos} bind:actived={show_cpos_picker} />
+{/if}
+
+{#if show_attr_picker}
+  <AttrPicker bind:output={form.attr} bind:actived={show_attr_picker} />
+{/if}
 
 <style lang="scss">
   .body {

@@ -87,7 +87,7 @@ class MT::ViTerm
       jb.field "cpos", @cpos
 
       jb.field "vstr", @vstr
-      jb.field "attr", @attr
+      jb.field "attr", @attr == "None" ? "" : @attr
 
       jb.field "uname", @uname
       jb.field "mtime", self.class.utime(@mtime)
