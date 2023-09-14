@@ -3,8 +3,8 @@ require "../zroot/rmbook"
 DIR = "var/.keep/rmbook"
 
 def init(hostname : String)
-  rmconf = Rmconf.from_host!(hostname)
-  sname = rmconf.seedname
+  rmhost = Rmhost.from_host!(hostname)
+  sname = rmhost.seedname
 
   files = Dir.glob("#{DIR}/#{hostname}/*.htm")
   files.reject!(&.ends_with?("-cata.htm"))

@@ -291,11 +291,12 @@ class Rmhost
   CACHED = {} of String => self
 
   def self.from_host!(host : String)
+    host = host.sub("www.", "")
     CACHED[host] ||= self.from_yaml(File.read("#{CONF_DIR}/#{host}.yml"))
   end
 
   def self.from_link!(link : String)
-    self.from_host!(URI.parse(link).host.as(String).sub("www.", ""))
+    self.from_host!(URI.parse(link).host.as(String))
   end
 
   def self.from_name!(sname : String)
@@ -313,6 +314,6 @@ class Rmhost
   end
 
   def self.chap_url(sname : String, sn_id : Int32 | String, sc_id : Int32 | String)
-    self.from_name!(sname).text_url(sn_id, sc_id)
+    self.from_name!(sname).chap_url(sn_id, sc_id)
   end
 end

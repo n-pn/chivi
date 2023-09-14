@@ -117,12 +117,6 @@ module MT::TlUnit
         digits << Digit.new(char - 0xfee0) # to half width
       when extra = EXTRA_STR[char]?
         pre_str = pre_str.empty? ? extra : "#{pre_str} #{extra}"
-      when char == '分'
-        suf_str = " phần"
-      when '％'
-        suf_str = "%"
-      when char == '之'
-        # DO NOTHING!
       when !(int = HAN_TO_INT[char]?)
         Log.error { "#{char} not match any known type" }
         pre_str = pre_str.empty? ? char.to_s : "#{pre_str} #{char} "

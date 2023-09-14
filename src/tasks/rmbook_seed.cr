@@ -42,7 +42,7 @@ def seed_book(sname : String)
   fake_rating = sname.in?("!hetushu", "!zxcs_me")
 
   rm_db = ZR::Rmbook.db(sname)
-  rconf = Rmconf.load!(sname)
+  rhost = Rmhost.from_name!(sname)
 
   inputs = ZR::Rmbook.get_all(db: rm_db, &.<< "where btitle <> ''")
   inputs.sort_by! { |x| x.id.to_i? || 0 } if inputs.first.id.to_i?
@@ -59,7 +59,7 @@ def seed_book(sname : String)
       wninfo = CV::Wninfo.upsert!(author_zh: author, btitle_zh: btitle, name_fixed: true)
       input.update_wninfo(wninfo, fake_rating: fake_rating)
 
-      rlink = rconf.full_book_link(input.id)
+      rlink = rhost.book_u(input.id)
 
       PGDB.exec <<-SQL, wninfo.id, sname, input.id, input.chap_count, rlink, input.rtime
         insert into wnseeds(wn_id, sname, s_bid, chap_total, rlink, rtime)

@@ -72,8 +72,8 @@ class WN::Wnstem
   end
 
   def active_remote?
-    return unless @sname[0] == '!' && Rmconf.is_remote?(@sname)
-    Rmconf.load!(@sname).active? # not dead or hidden behind cloudflare
+    return unless @sname[0] == '!' && Rmstem.is_remote?(@sname)
+    Rmstem.from_sname!(@sname).active? # not dead or hidden behind cloudflare
   end
 
   def owner?(uname : String = "")

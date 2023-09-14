@@ -1,6 +1,6 @@
 # require "json"
 # require "sqlite3"
-# require "../../zroot/html_parser/raw_rmcata"
+# require "../../zroot/raw_html/raw_rmstem"
 
 # class Bgcata
 #   class Chap
@@ -51,14 +51,14 @@
 
 #   ###
 
-#   getter conf : Rmconf
+#   getter host : Rmhost
 
 #   getter idx_path : String
 #   getter zip_path : String
 #   getter tmp_path : String
 
 #   def initialize(@sname : String, @s_bid : String)
-#     @conf = Rmconf.load!(@sname)
+#     @host = Rmhost.load!(@sname)
 
 #     @idx_path = self.class.file_path(sname, s_bid, ".db3")
 #     @zip_path = self.class.file_path(sname, s_bid, ".zip")
@@ -66,8 +66,8 @@
 
 #     return if File.file?(@idx_path)
 
-#     # Dir.mkdir_p(@conf.book_save_dir)
-#     # Dir.mkdir_p(@conf.chap_save_dir(s_bid))
+#     # Dir.mkdir_p(@host.book_save_dir)
+#     # Dir.mkdir_p(@host.chap_save_dir(s_bid))
 #     # Dir.mkdir_p(File.dirname(@tmp_path))
 
 #     init_db(@idx_path)
@@ -109,7 +109,7 @@
 #   ###
 
 #   def reload!(stale : Time = Time.utc - 1.days, uname : String = "") : Rlog?
-#     parser = Rmcata.new(@conf, @s_bid, stale: stale)
+#     parser = Rmcata.new(@host, @s_bid, stale: stale)
 
 #     open_tx do |db|
 #       chap_list = parser.chap_list

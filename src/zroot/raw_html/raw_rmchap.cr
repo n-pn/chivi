@@ -2,7 +2,8 @@ require "uri"
 require "colorize"
 
 require "../../_util/chap_util"
-require "./rmconf"
+
+require "./rmhost"
 require "./rmpage"
 
 class ZR::RawRmchap
@@ -10,51 +11,51 @@ class ZR::RawRmchap
 
   def self.from_link(full_link : String, stale : Time = Time.utc - 1.years)
     host, cpath = URI.parse(full_link).try { |x| {x.host, x.path} }
-    conf = Rmconf.from_host!(host.as(String))
+    host = Rmhost.from_host!(host.as(String))
 
-    b_id, c_id = conf.extract_ids(cpath)
-    cfile = conf.chap_file_path(b_id, c_id)
+    b_id, c_id = host.extract_ids(cpath)
+    cfile = host.chap_file(b_id, c_id)
 
-    new(conf, cpath, cfile, stale)
+    new(host, cpath, cfile, stale)
   end
 
   def self.from_path(sname : String, b_id : String | Int32, cpath : String,
                      stale : Time = Time.utc - 1.years)
-    conf = Rmconf.load!(sname)
-    cfile = conf.chap_file_path(b_id, cid: conf.extract_cid(cpath))
+    host = Rmhost.load!(sname)
+    cfile = host.chap_file(b_id, cid: host.extract_cid(cpath))
 
-    new(conf, cpath, cfile, stale)
+    new(host, cpath, cfile, stale)
   end
 
   def self.from_seed(sname : String, b_id : String | Int32, c_id : String | Int32,
                      stale = Time.utc - 1.years)
-    conf = Rmconf.load!(sname)
+    host = Rmhost.load!(sname)
 
-    cpath = conf.make_chap_path(b_id, c_id)
-    cfile = conf.chap_file_path(b_id, c_id)
+    cpath = host.make_chap_path(b_id, c_id)
+    cfile = host.chap_file_path(b_id, c_id)
 
-    new(conf, cpath, cfile, stale)
+    new(host, cpath, cfile, stale)
   end
 
-  private def self.load_decrypt_string(conf : Rmconf, cpath : String, cfile : String)
+  private def self.load_decrypt_string(host : Rmhost, cpath : String, cfile : String)
     tfile = cfile.sub(".htm", ".tok")
     return File.read(tfile) if File.file?(tfile)
 
     tpath = cpath.sub(/(\d+).html$/) { "r#{$1}.json" }
 
-    conf.http_client.get(tpath, headers: conf.xhr_headers(cpath)) do |res|
+    host.http_client.get(tpath, headers: host.xhr_headers(cpath)) do |res|
       raise "Can't download decode string" unless res.success?
       res.headers["token"].tap { |x| File.write(tfile, x) }
     end
   end
 
-  def self.new(conf : Rmconf, cpath : String, cfile : String, stale : Time)
+  def self.new(host : Rmhost, cpath : String, cfile : String, stale : Time)
     Dir.mkdir_p(File.dirname(cfile))
 
-    html = conf.load_page(cpath, cfile, stale: stale)
-    extra = conf.chap_type == "encrypt" ? load_decrypt_string(conf, cpath, cfile) : ""
+    html = host.load_page(cpath, cfile, stale: stale)
+    extra = host.chap_type == "encrypt" ? load_decrypt_string(host, cpath, cfile) : ""
 
-    new(html, conf, extra)
+    new(html, host, extra)
   end
 
   ###
@@ -62,7 +63,7 @@ class ZR::RawRmchap
   getter title = ""
   getter paras = [] of String
 
-  def initialize(html : String, @conf : Rmconf, @extra = "")
+  def initialize(html : String, @host : Rmhost, @extra = "")
     @page = Rmpage.new(html)
   end
 
@@ -96,7 +97,7 @@ class ZR::RawRmchap
       end
     end
 
-    scrub_re = @conf.chap_body_scrub.try { |x| Regex.new(x) }
+    scrub_re = @host.chap_body_scrub.try { |x| Regex.new(x) }
 
     container.inner_text('\n').each_line do |line|
       scrub_re.try { |re| line = line.sub(re, "") }
@@ -141,8 +142,8 @@ class ZR::RawRmchap
   end
 
   def parse_page!
-    @title = extract_title(@conf.chap_name)
-    @paras = extract_paras(@conf.chap_type, @conf.chap_body)
+    @title = extract_title(@host.chap_name)
+    @paras = extract_paras(@host.chap_type, @host.chap_body)
 
     {@title, @paras}
   end

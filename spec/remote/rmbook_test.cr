@@ -2,7 +2,7 @@ require "json"
 require "../../src/zroot/raw_html/raw_rmbook.cr"
 
 def fetch_info(sname : String, s_bid : String | Int32, fresh = false) : Nil
-  puts "\n[#{Rmconf.full_book_link(sname, s_bid)}]".colorize.green.bold
+  puts "\n[#{Rmhost.book_url(sname, s_bid)}]".colorize.green.bold
   parser = RawRmbook.init(sname, s_bid, stale: Time.utc - (fresh ? 10.seconds : 10.years))
 
   puts "------".colorize.green

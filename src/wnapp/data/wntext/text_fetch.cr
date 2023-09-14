@@ -16,10 +16,10 @@ module WN::TextFetch
       sname, s_bid, s_cid = _path.split('/')
       parser = RawRmchap.from_seed(sname, s_bid, s_cid, stale: stale)
     when seed.remote?
-      conf = Rmconf.load!(seed.sname)
-      cpath = _path.starts_with?('/') ? _path : conf.make_chap_path(seed.s_bid, chap.s_cid)
-      cfile = conf.chap_file_path(seed.s_bid, chap.s_cid)
-      parser = RawRmchap.new(conf, cpath: cpath, cfile: cfile, stale: stale)
+      host = Rmhost.from_name!(seed.sname)
+      cpath = _path.starts_with?('/') ? _path : host.make_chap_path(seed.s_bid, chap.s_cid)
+      cfile = host.chap_file_path(seed.s_bid, chap.s_cid)
+      parser = RawRmchap.new(host, cpath: cpath, cfile: cfile, stale: stale)
     else
       return chap.body
     end

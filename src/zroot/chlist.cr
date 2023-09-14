@@ -18,7 +18,7 @@
 
 #   ###
 
-#   # getter conf : Rmconf
+#   # getter host : Rmhost
 
 #   getter zinfo_db : Crorm::SQ3
 #   # getter zfile_db : Crorm::SQ3
@@ -48,8 +48,8 @@
 
 #   def reload_from_remote!(stale : Time = Time.utc - 1.days,
 #                           uname : String = "")
-#     conf = Rmconf.load!(@sname)
-#     parser = RawRmcata.new(conf, @sn_id, stale: stale)
+#     host = Rmhost.load!(@sname)
+#     parser = RawRmcata.new(host, @sn_id, stale: stale)
 #     chlist = parser.chap_list
 
 #     @zinfo_db.open_tx { |db| chlist.each(&.upsert!(db: db)) }

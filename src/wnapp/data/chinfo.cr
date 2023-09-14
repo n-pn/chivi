@@ -324,27 +324,27 @@ class WN::Chinfo
 
     case xpath = old_chap._path
     when ""
-      if Rmconf.is_remote?(sname)
+      if Rmhost.is_remote?(sname)
         new_chap.spath = "#{sname}/#{sn_id}/#{old_chap.s_cid}"
-        new_chap.rlink = Rmconf.full_chap_link(sname, sn_id, old_chap.s_cid)
+        new_chap.rlink = Rmhost.chap_url(sname, sn_id, old_chap.s_cid)
       end
     when .starts_with?('!')
       sname, sn_id, s_cid = xpath.split(/[\/:]/)
       sname = SeedUtil.fix_sname(sname)
 
       new_chap.spath = "#{sname}/#{sn_id}/#{s_cid}"
-      new_chap.rlink = Rmconf.full_chap_link(sname, sn_id, s_cid) if Rmconf.is_remote?(sname)
+      new_chap.rlink = Rmhost.chap_url(sname, sn_id, s_cid) if Rmhost.is_remote?(sname)
     when .starts_with?('/')
       new_chap.spath = "#{sname}/#{sn_id}/#{old_chap.s_cid}"
-      new_chap.rlink = Rmconf.full_chap_link(sname, sn_id, old_chap.s_cid)
+      new_chap.rlink = Rmhost.chap_url(sname, sn_id, old_chap.s_cid)
     when .starts_with?("http")
       uri = URI.parse(xpath)
-      conf = Rmconf.from_host!(uri.host.as(String)) rescue nil
+      host = Rmhost.from_host!(uri.host.as(String)) rescue nil
 
-      if conf
+      if host
         new_chap.rlink = xpath
-        sn_id, s_cid = conf.extract_ids(uri.path.as(String))
-        new_chap.spath = "#{conf.seedname}/#{sn_id}/#{s_cid}"
+        sn_id, s_cid = host.extract_ids(uri.path.as(String))
+        new_chap.spath = "#{host.seedname}/#{sn_id}/#{s_cid}"
       end
     end
 

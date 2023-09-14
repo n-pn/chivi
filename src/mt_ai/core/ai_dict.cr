@@ -60,8 +60,7 @@ class MT::AiDict
     when MtCpos::CD
       @auto_dict.add(zstr, ipos, init_cd(zstr), :none)
     when MtCpos::VV
-      vstr = init_vv(zstr)
-      @auto_dict.add(zstr, ipos, vstr, :none)
+      @auto_dict.add(zstr, ipos, init_vv(zstr), :none)
     when MtCpos::NR
       vstr = init_nr(zstr)
       @auto_dict.add(zstr, ipos, vstr, :none)
@@ -94,14 +93,18 @@ class MT::AiDict
   end
 
   def init_cd(zstr : String)
-    return "#{tl_unit(zstr[2..])} phần" if zstr.starts_with?("分之")
-    tl_unit(zstr)
+    case
+    when zstr.starts_with?("分之") then "#{tl_unit(zstr[2..])} phần"
+    else                              tl_unit(zstr)
+    end
   end
 
   def tl_unit(zstr : String)
     case zstr
-    when /^[０-９．，－：～ ]/ then CharUtil.to_halfwidth(zstr)
-    else                     TlUnit.translate(zstr)
+    when /^[０-９．，－：～ ％]/
+      CharUtil.to_halfwidth(zstr)
+    else
+      TlUnit.translate(zstr)
     end
   end
 
@@ -117,8 +120,8 @@ class MT::AiDict
       a_term, _dic = get(a_zstr, MtCpos::VV)
       "#{a_term.vstr} #{b_term.a_vstr}"
     when zstr[-1] == '了'
-      a_term, _ = get(zstr[..-1], MtCpos::VV)
-      "#{a_term.vstr} rooif"
+      a_term, _ = get(zstr[..-2], MtCpos::VV)
+      "#{a_term.vstr} rồi"
     when zstr[0] == '一'
       b_term, _ = get(zstr[1..], MtCpos::VV)
       "#{b_term.vstr} một phát"

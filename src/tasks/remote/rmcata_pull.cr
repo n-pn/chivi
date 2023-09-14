@@ -2,27 +2,27 @@ require "colorize"
 require "option_parser"
 
 require "../../zroot/rmbook"
-require "../../zroot/zhcata"
+require "../../zroot/zhstem"
 
 class RmcataSeed
-  @conf : Rmconf
+  @host : Rmhost
   @repo : DB::Database
 
   def initialize(@sname : String, @conns = 6, @stale = Time.utc - 10.days)
-    @conf = Rmconf.load!(sname)
+    @host = Rmhost.from_sname!(sname)
     @repo = ZR::Rmbook.db(sname)
   end
 
   def get_max_bid
-    @conf.get_max_bid(6.hours)
+    @host.get_max_bid(6.hours)
   end
 
   def sync_one(sn_id : String | Int32, force = false)
-    file_path = @conf.book_file_path(sn_id)
-    link_path = @conf.make_book_path(sn_id)
+    book_file = @host.book_file(sn_id)
+    book_href = @host.book_href(sn_id)
 
-    bhtml = @conf.load_page(link_path, file_path, stale: @stale)
-    rtime = File.info(file_path).modification_time.to_unix
+    bhtml = @host.load_page(book_href, book_file, stale: @stale)
+    rtime = File.info(book_file).modification_time.to_unix
 
     loop do
       entry = ZR::Rmbook.from_html(bhtml, @sname, sn_id.to_s, force: force)
@@ -38,7 +38,7 @@ class RmcataSeed
   def sync_all(lower : Int32, upper : Int32, force = false)
     puts "Syncing [#{@sname}] from #{lower} to #{upper}!".colorize.yellow
 
-    Dir.mkdir_p "var/.keep/rmbook/#{@conf.hostname}"
+    Dir.mkdir_p "var/.keep/rmbook/#{@host.hostname}"
 
     total = upper - lower + 1
 

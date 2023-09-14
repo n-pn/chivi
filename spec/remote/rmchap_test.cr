@@ -1,9 +1,9 @@
 require "colorize"
 
-require "../../src/zroot/html_parser/raw_rmchap.cr"
+require "../../src/zroot/raw_html/raw_rmchap.cr"
 
 def do_test(sname : String, s_bid : Int32 | String, s_cid : Int32 | String, reset = false)
-  full_link = Rmconf.full_chap_link(sname, s_bid, s_cid)
+  full_link = Rmhost.chap_url(sname, s_bid, s_cid)
   puts "\n[#{full_link.colorize.blue.bold}]"
   puts
 
