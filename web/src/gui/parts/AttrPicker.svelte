@@ -99,6 +99,13 @@
       used: false,
     },
   }
+
+  const groups = [
+    ['At_h', 'At_t', 'Prfx', 'Sufx'],
+    ['Ndes', 'Npos', 'Nper', 'Ngrp', 'Nloc', 'Ntmp', 'Pn_d', 'Pn_i'],
+    ['Hide', 'Asis', 'Capn', 'Capx', 'Undb', 'Undn'],
+    ['Vint', 'Vdit', 'Vmod', 'Vpsy'],
+  ]
 </script>
 
 <script lang="ts">
@@ -146,22 +153,25 @@
     </div>
 
     <h3 id="attr-group">Tất cả từ tính</h3>
-    <div class="list">
-      {#each Object.entries(attr_map) as [attr, { desc, used }]}
-        {@const active = output.includes(attr)}
-        <button
-          class="attr"
-          class:_active={active}
-          class:_unused={!used}
-          data-tag={attr}
-          use:tooltip={desc}
-          data-anchor=".attr-picker"
-          on:click={() => toggle_attr(attr)}>
-          <span>{attr}</span>
-          {#if active}<SIcon name="check" />{/if}
-        </button>
-      {/each}
-    </div>
+    {#each groups as list}
+      <div class="list">
+        {#each list as attr}
+          {@const active = attrs.includes(attr)}
+          {@const { desc, used } = attr_map[attr] || {}}
+          <button
+            class="attr"
+            class:_active={active}
+            class:_unused={!used}
+            data-tag={attr}
+            use:tooltip={desc || '???'}
+            data-anchor=".attr-picker"
+            on:click={() => toggle_attr(attr)}>
+            <span>{attr}</span>
+            {#if active}<SIcon name="check" />{/if}
+          </button>
+        {/each}
+      </div>
+    {/each}
   </section>
 
   <footer class="foot">
@@ -193,23 +203,30 @@
 
   .list {
     @include grid(null, $gap: 0.375rem);
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     padding: 0 0.75rem;
+
+    & + & {
+      margin-top: 0.375rem;
+      padding-top: 0.375rem;
+      @include border($loc: top);
+    }
   }
 
   .none {
-    line-height: 1.875rem;
+    line-height: 1.75rem;
     font-style: italic;
     @include fgcolor(tert);
     @include ftsize(sm);
   }
+
   .attr {
     padding: 0;
     background: transparent;
     font-weight: 500;
 
     flex-shrink: 1;
-    line-height: 1.875rem;
+    line-height: 1.75rem;
 
     @include linesd(--bd-main);
 
