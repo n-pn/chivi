@@ -109,6 +109,8 @@
 </script>
 
 <script lang="ts">
+  import { tooltip } from '$lib/actions'
+
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Dialog from '$gui/molds/Dialog.svelte'
 
@@ -142,7 +144,9 @@
             class="attr"
             class:_active={active}
             class:_unused={!used}
-            on:click={() => toggle_attr(attr)}>
+            on:click={() => toggle_attr(attr)}
+            use:tooltip={desc}
+            data-anchor=".attr-picker">
             <SIcon name={active ? 'check' : 'square'} />
             <code>{attr}</code>
             <span>{desc}</span>
@@ -159,14 +163,6 @@
 
 <style lang="scss">
   $tab-height: 1.875rem;
-
-  h3 {
-    font-weight: 500;
-    line-height: 2.25rem;
-    margin: 0rem 0.75rem;
-    font-size: rem(15px);
-    @include fgcolor(tert);
-  }
 
   .body {
     display: block;

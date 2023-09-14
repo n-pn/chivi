@@ -445,7 +445,7 @@
   }
 </script>
 
-<Dialog --z-idx={80} class="postag" {on_close}>
+<Dialog --z-idx={80} class="cpos-picker" {on_close}>
   <svelte:fragment slot="header">
     <span>Từ loại:</span>
     <span class="tabs">
@@ -471,9 +471,9 @@
             class="cpos-item"
             class:_active={active}
             class:_unused={!used}
-            data-tag={cpos}
+            data-cpos={cpos}
             use:tooltip={desc}
-            data-anchor=".postag"
+            data-anchor=".cpos-picker"
             on:click={() => pick_pos(cpos)}>
             <code>{cpos}</code>
             <span>{name}</span>
