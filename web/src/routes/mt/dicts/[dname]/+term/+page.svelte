@@ -108,7 +108,8 @@
         type="button"
         class="m-input"
         on:click={() => (show_cpos_picker = !show_cpos_picker)}>
-        {cpos_map[form.cpos || '_']?.name} ({form.cpos || '_'})
+        <code>{form.cpos || '_'}</code>
+        <span>{cpos_map[form.cpos || '_']?.name}</span>
       </button>
     </div>
 
@@ -118,7 +119,11 @@
         type="button"
         class="m-input"
         on:click={() => (show_attr_picker = !show_attr_picker)}>
-        {form.attr || '-'}
+        {#each form.attr.split(' ') as attr}
+          <code>{attr}</code>
+        {:else}
+          <code>None</code>
+        {/each}
       </button>
     </div>
 
@@ -128,8 +133,7 @@
         <label
           class="form-radio"
           class:_active={plock == form.plock}
-          data-tip="Cần quyền hạn tối thiểu là {min_privi +
-            plock} để sửa nội dung">
+          data-tip="Cần quyền hạn tối thiểu là {min_privi + plock} để sửa từ">
           <input type="radio" bind:group={form.plock} value={plock} />
           <SIcon name="plock-{plock}" iset="icons" />
           <span>Quyền hạn {min_privi + plock}</span>
@@ -176,7 +180,7 @@
   }
 
   .form-label {
-    width: 6rem;
+    width: 5rem;
     padding-bottom: 0;
   }
 
@@ -201,5 +205,9 @@
   .foot {
     display: flex;
     gap: 0.5rem;
+  }
+
+  code + code {
+    margin-left: 0.25rem;
   }
 </style>

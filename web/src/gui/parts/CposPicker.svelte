@@ -37,8 +37,8 @@
       used: true,
     },
     AS: {
-      name: 'Dấu thể',
-      desc: 'Các từ 了/过/在/着 đánh dấu thể (aspect) của động từ trong câu',
+      name: 'Động thái',
+      desc: 'Các từ 了/过/在/着 đánh dấu thể/động thái (aspect) của động từ trong câu',
       type: 'word',
       used: true,
     },
@@ -475,6 +475,7 @@
             use:tooltip={desc}
             data-anchor=".postag"
             on:click={() => pick_pos(cpos)}>
+            <code>{cpos}</code>
             <span>{name}</span>
             {#if active}<SIcon name="check" />{/if}
           </button>
@@ -563,7 +564,11 @@
   .cpos-item {
     padding: 0.25rem 0.5rem;
     background: transparent;
-    font-weight: 500;
+    // font-weight: 500;
+
+    code {
+      margin-right: -0.2em;
+    }
 
     flex-shrink: 1;
     line-height: 1.5rem;
