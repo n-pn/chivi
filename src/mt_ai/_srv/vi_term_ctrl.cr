@@ -135,6 +135,7 @@ class MT::ViTermCtrl < AC::Base
 
   @[AC::Route::GET("/find")]
   def show(dict : String, zstr : String, cpos : String)
+    dict = dict.sub(':', '/')
     term = ViTerm.find(dict: dict, zstr: zstr, cpos: cpos)
 
     if term

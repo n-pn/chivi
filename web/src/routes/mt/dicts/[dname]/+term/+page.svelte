@@ -5,6 +5,7 @@
   import { rel_time_vp } from '$utils/time_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
+  import CposPicker, { cpos_map } from '$gui/parts/CposPicker.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
@@ -15,9 +16,7 @@
 
   $: on_edit = prev
 
-  const show_cpos_picker = () => {
-    // TODO
-  }
+  let show_cpos_picker = false
 
   const show_attr_picker = () => {
     // TODO
@@ -58,7 +57,7 @@
         lang="zh"
         class="m-input"
         bind:value={form.zstr}
-        disabled={on_edit} />
+        disabled={!!prev} />
     </div>
 
     <div class="form-field">
@@ -73,8 +72,11 @@
 
     <div class="form-field">
       <label for="cpos" class="form-label">Từ loại:</label>
-      <button type="button" class="m-input" on:click={show_cpos_picker}>
-        {form.cpos || '-'}
+      <button
+        type="button"
+        class="m-input"
+        on:click={() => (show_cpos_picker = !show_cpos_picker)}>
+        {cpos_map[form.cpos || '_']?.name} ({form.cpos || '_'})
       </button>
     </div>
 
@@ -92,6 +94,10 @@
     </button>
   </footer>
 </article>
+
+{#if show_cpos_picker}<CposPicker
+    bind:output={form.cpos}
+    bind:actived={show_cpos_picker} />{/if}
 
 <style lang="scss">
   .body {

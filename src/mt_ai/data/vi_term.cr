@@ -131,6 +131,6 @@ class MT::ViTerm
 
   def self.find(dict : String, zstr : String, cpos : String)
     query = @@schema.select_by_pkey + " limit 1"
-    self.db(dict).query_one(query, zstr, cpos, as: self)
+    self.db(dict).query_one?(query, zstr, cpos, as: self)
   end
 end

@@ -56,8 +56,6 @@ class MT::MtCpos
     "IP",   # simple clause headed by I (INFL)
     "LCP",  # phrase formed by ‘‘XP + LC’’
     "LST",  # list marker
-    "MSP",  # some particles
-    "NN",   # common noun
     "NP",   # noun phrase
     "PP",   # preposition phrase
     "PRN",  # parenthetical
