@@ -1,13 +1,3 @@
-export type Ctree = [
-  string,
-  number,
-  number,
-  string,
-  string | Array<Ctree>,
-  string | null,
-  number | null
-]
-
 const escape_tags = { '&': '&amp;', '"': '&quot;', "'": '&apos;' }
 
 function escape_htm(str: string) {
@@ -42,9 +32,9 @@ function render_vstr(vstr: string, cpos: string) {
   }
 }
 
-const sort = (a: Ctree, b: Ctree) => a[1] - b[1]
+const sort = (a: CV.Cvtree, b: CV.Cvtree) => a[1] - b[1]
 
-export function render_ztext(input: Ctree, rmode = 1) {
+export function render_ztext(input: CV.Cvtree, rmode = 1) {
   let out = ''
 
   const queue = [input]
@@ -79,7 +69,7 @@ export function render_ztext(input: Ctree, rmode = 1) {
   return out
 }
 
-export function render_ctree(node: Ctree, rmode = 1, sbuff = '') {
+export function render_ctree(node: CV.Cvtree, rmode = 1, sbuff = '') {
   const [cpos, zidx, zlen, _attr, body, _vstr, vdic] = node
 
   if (rmode > 0) {
@@ -117,7 +107,7 @@ export function render_ctree(node: Ctree, rmode = 1, sbuff = '') {
   return sbuff
 }
 
-export function render_cdata(input: Ctree, rmode = 1, cap = true) {
+export function render_vdata(input: CV.Cvtree, rmode = 1, cap = true) {
   let out = ''
   let und = true
   let lvl = 0
@@ -178,7 +168,7 @@ export function render_cdata(input: Ctree, rmode = 1, cap = true) {
   return out
 }
 
-export function find_node(input: Ctree, q_idx = 0, q_len = 0) {
+export function find_node(input: CV.Cvtree, q_idx = 0, q_len = 0) {
   const queue = [input]
 
   while (true) {

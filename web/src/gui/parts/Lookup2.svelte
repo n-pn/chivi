@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   import { ctrl, data, get_btran } from '$lib/stores/lookup_stores'
-  import { render_cdata, render_ztext, render_ctree } from '$lib/mt_data_2'
+  import { render_vdata, render_ztext, render_ctree } from '$lib/mt_data_2'
 </script>
 
 <script lang="ts">
@@ -19,6 +19,9 @@
   }
 
   const copy_ctree = () => {
+    console.log($data.cdata)
+    console.log($data.hviet)
+
     navigator.clipboard.writeText(render_ctree($data.cdata, 0))
   }
 
@@ -103,7 +106,7 @@
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div class="cdata debug _hv" on:click={handle_click}>
-        {@html render_cdata($data.hviet, 2)}
+        {@html render_vdata($data.hviet, 2)}
       </div>
 
       <h4 class="label">
@@ -133,7 +136,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div class="cdata debug _mt" on:click={handle_click}>
         {#if $data.cdata}
-          {@html render_cdata($data.cdata, 2)}
+          {@html render_vdata($data.cdata, 2)}
         {/if}
       </div>
 

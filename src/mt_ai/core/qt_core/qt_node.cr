@@ -3,16 +3,14 @@ require "json"
 require "../../data/vi_term"
 
 struct MT::QtNode
+  getter zstr : String
   getter vstr : String
   getter attr : MtAttr
-  getter _len : Int32
 
   getter _idx : Int32
   getter _dic : Int32 = 0
 
-  def initialize(term : MtTerm, @_idx, @_dic = 0, @_len = 0)
-    @vstr = term.vstr
-    @attr = term.attr
+  def initialize(@zstr, @vstr, @attr, @_idx, @_dic = 0)
   end
 
   def to_txt(io : IO, cap : Bool, und : Bool)
@@ -37,10 +35,11 @@ struct MT::QtNode
     jb.array do
       jb.string "_"
       jb.number @_idx
-      jb.number @_len
+      jb.number @zstr.size
+
       jb.string(@attr.none? ? "" : @attr.to_str)
 
-      jb.string ""
+      jb.string @zstr
       jb.string @vstr
       jb.number @_dic
     end

@@ -31,7 +31,7 @@ class MT::QtData < Array(MT::QtNode)
     jb.array do
       jb.string "TOP"
       jb.number 0
-      jb.number self.sum(&._len)
+      jb.number self.sum(&.zstr.size)
       jb.string ""
 
       jb.array do

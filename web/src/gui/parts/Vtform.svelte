@@ -94,10 +94,12 @@
   // ]
 
   // $: btn_style = button_colors[form.tab + (form.dic < 0 ? 0 : 4)]
+  let ztext = ''
+  let hviet = ''
 </script>
 
 <Dialog actived={$ctrl.actived} on_close={ctrl.hide} class="upsert" _size="lg">
-  <FormHead />
+  <FormHead bind:ztext bing:hviet />
   <!--
   <upsert-tabs>
     <button

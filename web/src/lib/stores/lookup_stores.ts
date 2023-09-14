@@ -2,7 +2,7 @@ import { writable, get } from 'svelte/store'
 
 import { get_wntext_btran, get_wntext_hviet } from '$utils/tran_util'
 
-import { type Ctree, render_ztext } from '$lib/mt_data_2'
+import { render_ztext } from '$lib/mt_data_2'
 
 export const ctrl = {
   ...writable({ actived: false, enabled: true }),
@@ -35,8 +35,8 @@ export interface Data {
   ztext: string
   btran: string
 
-  cdata: Ctree
-  hviet: Ctree
+  cdata: CV.Cvtree
+  hviet: CV.Cvtree
 }
 
 const init_data = {
@@ -52,7 +52,12 @@ const init_data = {
 
 export const data = {
   ...writable<Data>(init_data),
-  async from_cdata(lines: Array<Ctree>, l_idx: number, zpath = '', pdict = '') {
+  async from_cdata(
+    lines: Array<CV.Cvtree>,
+    l_idx: number,
+    zpath = '',
+    pdict = ''
+  ) {
     const l_max = lines.length
     if (l_idx >= l_max) l_idx = l_max - 1
 

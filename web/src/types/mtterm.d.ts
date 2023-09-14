@@ -29,4 +29,14 @@ declare namespace CV {
 
     plock: number
   }
+
+  export type Cvtree = [
+    string, // cpos
+    number, // from
+    number, // size
+    string, // attr
+    string | Array<Cvtree>, // zstr or children
+    string?, // vstr
+    number? // vdic
+  ]
 }

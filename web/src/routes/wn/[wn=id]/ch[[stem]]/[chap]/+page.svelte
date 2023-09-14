@@ -58,7 +58,7 @@
   import { page } from '$app/stores'
   import { Pager } from '$lib/pager'
   import { config } from '$lib/stores'
-  import { render_cdata } from '$lib/mt_data_2'
+  import { render_vdata } from '$lib/mt_data_2'
 
   import {
     data as lookup_data,
@@ -166,7 +166,7 @@
       id="L{_idx}"
       class="cdata"
       on:click={() => ($lookup_data.l_idx = _idx)}>
-      {@html render_cdata(line, render_mode)}
+      {@html render_vdata(line, render_mode)}
       {#if _idx == 0 && cinfo.psize > 1}[{xargs.cpart}/{cinfo.psize}]{/if}
     </svelte:element>
   {/each}

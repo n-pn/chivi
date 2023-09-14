@@ -10,9 +10,9 @@
   import { config } from '$lib/stores'
 
   // import SIcon from '$gui/atoms/SIcon.svelte'
-  import { type Ctree, render_cdata } from '$lib/mt_data_2'
+  import { render_vdata } from '$lib/mt_data_2'
 
-  export let data: { cdata: Array<Ctree>; _algo: string }
+  export let data: { cdata: Array<CV.Cvtree>; _algo: string }
 
   let l_focus = 0
   $: debug = $config.r_mode == 2
@@ -39,7 +39,7 @@
         class:debug
         class:focus={index == l_focus}
         on:click={() => (l_focus = index)}>
-        {@html render_cdata(cdata, debug ? 2 : 1)}
+        {@html render_vdata(cdata, debug ? 2 : 1)}
       </svelte:element>
     {/each}
   </section>

@@ -32,8 +32,8 @@ class MT::QtCore
 
     while index < chars.size
       term, _len, _dic = @dict.find(chars, start: index)
-
-      stack << QtNode.new(term, _idx: index, _dic: _dic, _len: _len)
+      zstr = chars[index, _len].join
+      stack << QtNode.new(zstr, term.vstr, term.attr, _idx: index, _dic: _dic)
       index &+= _len
     end
 

@@ -1,17 +1,20 @@
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import { render_cdata } from '$lib/mt_data_2'
+  import { render_vdata } from '$lib/mt_data_2'
 
   import { ctrl, data } from '$lib/stores/vtform_stores'
 
-  export let output = ''
+  export let ztext = ''
+  export let hviet = ''
+  export let vtext = ''
 
-  let prefix = ''
-  let suffix = ''
+  let from = $data.from
+  let upto = $data.upto
 
-  $: update_input($data)
+  $: input = tr
+  $: update_input(from, upto)
 
-  const update_input = ({ text, from, upto }) => {
+  const update_input = (from, upto) => {
     output = text.substring(from, upto)
     prefix = text.substring(from - 10, from)
     suffix = text.substring(upto, upto + 10)
@@ -115,7 +118,7 @@
 </header>
 
 <section class="tree">
-  {render_cdata($data.tree, 2)}
+  {render_vdata($data.tree, 2)}
 </section>
 
 <style lang="scss">
