@@ -58,6 +58,6 @@ class MT::ViTermForm
       plock: @plock
     )
 
-    term.tap(&.insert!(db: ViTerm.db(@dname)))
+    term.tap(&.upsert!(db: ViTerm.db(@dname)))
   end
 end

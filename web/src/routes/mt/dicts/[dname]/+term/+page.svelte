@@ -13,7 +13,9 @@
 
   let form = data.form
   let prev = data.prev
-  let _err = ''
+
+  let form_stt = ''
+  let form_msg = ''
 
   $: on_edit = prev
 
@@ -25,13 +27,45 @@
 
   const headers = { 'Content-type': 'application/json' }
 
+  const reset_term = () => {
+    if (prev) {
+      form.vstr = prev.vstr
+      form.cpos = prev.cpos
+      form.attr = prev.attr
+      form.plock = prev.plock
+    } else {
+      form.vstr = ''
+      form.cpos = ''
+      form.attr = ''
+      form.plock = 1
+    }
+  }
   const submit_term = async () => {
-    const body = { ...form, old_cpos: prev?.cpos }
+    const body = { ...form, old_cpos: prev?.cpos, dname: data.dname }
     const init = { body: JSON.stringify(body), method, headers }
     const res = await fetch(action, init)
 
-    if (res.ok) prev = await res.json()
-    else _err = await res.text()
+    console.log(body)
+    form_msg = ''
+
+    if (res.ok) {
+      form_stt = 'ok'
+      form_msg = 'Đã lưu từ vào hệ thống!'
+
+      prev = await res.json()
+      console.log(prev)
+    } else {
+      form_stt = 'err'
+      form_msg = await res.text()
+    }
+  }
+
+  $: min_privi = map_privi(data.dname)
+
+  const map_privi = (dname: String) => {
+    if (dname == 'regular') return 1
+    if (dname.match(/^book|priv/)) return 0
+    return 2
   }
 </script>
 
@@ -87,10 +121,34 @@
         {form.attr || '-'}
       </button>
     </div>
+
+    <div class="form-field">
+      <label for="attr" class="form-label">Khóa sửa:</label>
+      {#each [0, 1, 2] as plock}
+        <label
+          class="form-radio"
+          class:_active={plock == form.plock}
+          data-tip="Cần quyền hạn tối thiểu là {min_privi +
+            plock} để sửa nội dung">
+          <input type="radio" bind:group={form.plock} value={plock} />
+          <SIcon name="plock-{plock}" iset="icons" />
+          <span>Quyền hạn {min_privi + plock}</span>
+        </label>
+      {/each}
+    </div>
   </div>
 
+  {#if form_msg}
+    <div class="form-msg _{form_stt}">{form_msg}</div>
+  {/if}
+
   <footer class="foot">
+    <button type="reset" class="m-btn _harmful" on:click={reset_term}>
+      <SIcon name="arrow-back-up" />
+      <span>Phục hồi</span>
+    </button>
     <button type="button" class="m-btn _primary _fill" on:click={submit_term}>
+      <SIcon name="send" />
       <span>{on_edit ? 'Sửa' : 'Thêm'} từ</span>
     </button>
   </footer>
@@ -119,5 +177,29 @@
 
   .form-label {
     width: 6rem;
+    padding-bottom: 0;
+  }
+
+  .form-radio {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    @include fgcolor(tert);
+
+    & + & {
+      margin-left: 0.25rem;
+    }
+
+    &._active {
+      @include fgcolor(primary);
+    }
+
+    input[type='radio'] {
+      margin-right: 0.25rem;
+    }
+  }
+  .foot {
+    display: flex;
+    gap: 0.5rem;
   }
 </style>
