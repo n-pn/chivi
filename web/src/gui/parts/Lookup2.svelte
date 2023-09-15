@@ -102,13 +102,6 @@
         {@html render_ztext($data.cdata, 2)}
       </div>
 
-      <h4 class="label">Hán Việt:</h4>
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <div class="cdata debug _hv" on:click={handle_click}>
-        {@html render_vdata($data.hviet, 2)}
-      </div>
-
       <h4 class="label">
         <span class="title">Cây ngữ pháp:</span>
         <span class="tools">
@@ -154,6 +147,13 @@
           </div>
         {/if}
       </div>
+
+      <h4 class="label">Hán Việt:</h4>
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <div class="cdata debug _hv" on:click={handle_click}>
+        {@html render_vdata($data.hviet, 2)}
+      </div>
     </section>
   {:else}
     <div class="empty">Bấm vào đoạn văn để xem giải nghĩa!</div>
@@ -197,10 +197,14 @@
     &._ct {
       $line: 1.25rem;
       line-height: $line;
-      max-height: $line * 10 + 0.75rem;
+      overflow-y: visible;
 
       :global(x-z) {
         font-weight: 500;
+      }
+
+      :global(x-n) {
+        border-bottom: none;
       }
     }
   }

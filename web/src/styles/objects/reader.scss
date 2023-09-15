@@ -166,37 +166,37 @@ x-g {
   background-position: bottom bottom;
 
   // unknown
-  &[data-d='0'] {
+  &[d='0'] {
     @include cv-node(success);
   }
 
   // primary
-  &[data-d='1'] {
+  &[d='1'] {
     @include cv-node(warning);
   }
 
   // regular
-  &[data-d='2'] {
+  &[d='2'] {
     @include cv-node(primary);
   }
 
   // hintpri
-  &[data-d='3'] {
+  &[d='3'] {
     @include cv-node(harmful);
   }
 
   // hintreg
-  &[data-d='4'] {
+  &[d='4'] {
     @include cv-node(teal);
   }
 
   // autogen
-  &[data-d='5'] {
+  &[d='5'] {
     @include cv-node(purple);
   }
 
   // essence + fixture
-  &[data-d='6'] {
+  &[d='6'] {
     @include cv-node(neutral);
   }
 }
@@ -230,6 +230,11 @@ x-c {
     background: none;
     // background: linear-gradient(to top, var(--border) 0.75px, transparent 0);
   }
+
+  &:after {
+    padding: 0 0.25rem;
+    @include ftsize(xs);
+  }
 }
 
 x-z {
@@ -258,6 +263,10 @@ x-n {
   &:hover,
   &.hover {
     color: var(--active);
+  }
+
+  &:after {
+    padding: 0 0.25rem;
   }
 
   // &.focus {

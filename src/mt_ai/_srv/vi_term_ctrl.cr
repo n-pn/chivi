@@ -120,16 +120,16 @@ class MT::ViTermCtrl < AC::Base
       ViDict.bump_stats!(dname, term.mtime, fresh ? 1 : 0)
     end
 
+    zstr = term.zstr
     ipos = term.icpos.to_i8
-    attr = MtAttr.new(term.iattr)
 
     case dname
     when "regular"
-      AiDict::Entry.regular.add(term.zstr, ipos, term.vstr, attr)
+      mt_term = term.to_mt(:regular)
+      MtDict.regular.add(zstr, ipos: ipos, term: mt_term)
     else
-      AiDict::Entry::ENTRIES[dname]?.try do |entry|
-        entry.add(term.zstr, ipos, term.vstr, attr)
-      end
+      mt_term = term.to_mt(:primary)
+      MtDict.get?(dname).try(&.add(zstr, ipos: ipos, term: mt_term))
     end
   end
 

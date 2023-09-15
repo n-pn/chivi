@@ -2,8 +2,7 @@ require "crorm"
 require "../../_util/char_util"
 require "../../_util/viet_util"
 
-require "./mt_attr"
-require "./mt_cpos"
+require "./mt_term"
 
 class MT::ViTerm
   class_getter init_sql = <<-SQL
@@ -74,6 +73,14 @@ class MT::ViTerm
   def initialize(@zstr, @cpos = "_", @vstr = "", @attr = "",
                  @uname = "", @mtime = 0, @plock = 1)
     self.fix_enums!
+  end
+
+  def to_mt(dtype : MtDtyp = :primary)
+    MtTerm.new(
+      vstr: @vstr,
+      attr: MtAttr.new(@iattr),
+      dnum: MtDnum.from(dtype: dtype, plock: @plock.to_i8)
+    )
   end
 
   def fix_enums!

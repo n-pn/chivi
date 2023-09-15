@@ -2,11 +2,14 @@
   import { get_user } from '$lib/stores'
   const _user = get_user()
 
+  import cpos_info from '$lib/consts/cpos_info'
+  import attr_info from '$lib/consts/attr_info'
+
   import { rel_time_vp } from '$utils/time_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import CposPicker, { cpos_map } from '$gui/parts/CposPicker.svelte'
-  import AttrPicker, { attr_map } from '$gui/parts/AttrPicker.svelte'
+  import CposPicker from '$gui/parts/CposPicker.svelte'
+  import AttrPicker from '$gui/parts/AttrPicker.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
@@ -109,7 +112,7 @@
         class="m-input"
         on:click={() => (show_cpos_picker = !show_cpos_picker)}>
         <code>{form.cpos || '_'}</code>
-        <span>{cpos_map[form.cpos || '_']?.name}</span>
+        <span>{cpos_info[form.cpos || '_']?.name}</span>
       </button>
     </div>
 
@@ -120,7 +123,8 @@
         class="m-input"
         on:click={() => (show_attr_picker = !show_attr_picker)}>
         {#each form.attr.split(' ') as attr}
-          <code>{attr}</code>
+          {@const { desc } = attr_info[attr] || {}}
+          <code data-tip={desc}>{attr}</code>
         {:else}
           <code>None</code>
         {/each}
