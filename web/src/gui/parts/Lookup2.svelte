@@ -161,10 +161,20 @@
 </Slider>
 
 <style lang="scss">
+  .cbody {
+    padding: 0 0.75rem;
+  }
+
   .cdata {
     padding: 0.25rem 0.5rem;
-    @include border($loc: top-bottom);
+
+    text-align: justify;
+    text-justify: auto;
+
     @include bgcolor(tert);
+
+    @include border;
+    @include bdradi;
     @include scroll;
 
     &._zh {
@@ -211,13 +221,15 @@
 
   .label {
     display: flex;
-    @include ftsize(sm);
-    padding: 0 0.75rem;
-    // font-weight: bold;
-    line-height: 1rem;
 
     margin-top: 0.5rem;
     margin-bottom: 0.25rem;
+
+    // padding: 0 0.75rem;
+    font-weight: 500;
+    line-height: 1rem;
+
+    @include ftsize(sm);
 
     > .tools {
       margin-left: auto;
