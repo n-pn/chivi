@@ -9,6 +9,13 @@
 
 {#if !route_id.includes('_auth')}
   <div class="app-vessel">
+    <p class="pledge">
+      <strong>
+        Trang web đang đập đi làm lại, bắt đầu từ phần máy dịch. Trong quá trình
+        này sẽ có rất nhiều lỗi, mong các bạn thông cảm. Có thắc mắc xin liên hệ
+        Facebook của trang hoặc Discord (kéo xuống dưới cùng để xem liên kết).
+      </strong>
+    </p>
     {#if $_user.privi < 0}
       <a class="pledge" href="/_auth/signup">
         Đăng ký tài khoản <strong>Chivi</strong> ngay hôm nay để mở khoá các tính

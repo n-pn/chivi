@@ -9,7 +9,7 @@ module MT::AiNode
   getter vstr : String = ""
   getter attr : MtAttr = MtAttr::None
 
-  getter _dic : Int8 = -1_i8
+  getter dnum : Int8 = -1_i8
   getter _idx : Int32 = 0
 
   abstract def z_each(& : AiNode ->)
@@ -18,7 +18,7 @@ module MT::AiNode
   abstract def last
 
   def tl_whole!(dict : AiDict)
-    dict.get?(@zstr, @ipos).try { |term, _dic| self.set_term!(term, _dic) }
+    dict.get?(@zstr, @ipos).try { |term| self.set_term!(term) }
   end
 
   def find_by_ipos(ipos : Int8)
@@ -42,14 +42,13 @@ module MT::AiNode
     end
   end
 
-  def set_term!(term : MtTerm, _dic : Int8 = 1_i8) : Nil
+  def set_term!(term : MtTerm) : Nil
     @vstr = term.vstr
     @attr |= term.attr
-    @_dic = term.lock &* 10 &+ _dic
+    @dnum = term.dnum
   end
 
-  def set_vstr!(@vstr : String, _dic : Int8 = 1_i8) : Nil
-    @_dic = (@_dic % 10) &* 10 &+ _dic
+  def set_vstr!(@vstr : String, @dnum : Int8 = MtDnum::Autogen_2.to_i8) : Nil
   end
 
   def add_attr!(attr : MtAttr)
@@ -82,7 +81,7 @@ module MT::AiNode
   ###
 
   def to_txt(io : IO, cap : Bool, und : Bool)
-    if @_dic >= 0
+    if @dnum >= 0
       io << ' ' unless @attr.undent?(und: und)
       @attr.render_vstr(io, @vstr, cap: cap, und: und)
     elsif self.is_a?(M0Node)
@@ -100,10 +99,10 @@ module MT::AiNode
       jb.number @zstr.size
       jb.string(@attr.none? ? "" : @attr.to_str)
 
-      if @_dic >= 0 || self.is_a?(M0Node)
+      if @dnum >= 0 || self.is_a?(M0Node)
         jb.string @zstr
         jb.string @vstr
-        jb.number @_dic
+        jb.number @dnum
       else
         jb.array { self.v_each(&.to_json(jb)) }
       end

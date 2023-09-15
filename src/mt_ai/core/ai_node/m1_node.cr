@@ -10,7 +10,7 @@ class MT::M1Node
   end
 
   def translate!(dict : AiDict, rearrange : Bool = true)
-    dict.get?(@zstr, @ipos).try { |term, _dic| self.set_term!(term, _dic) }
+    self.tl_whole!(dict: dict)
     @node.translate!(dict: dict, rearrange: rearrange)
     @attr |= @node.attr
   end

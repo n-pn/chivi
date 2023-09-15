@@ -4,8 +4,8 @@ require "./qt_core"
 require "./tl_unit"
 
 class MT::AiDict
-  @main_dict : Entry
-  @auto_dict : Entry
+  @main_dict : MtDict
+  @auto_dict : MtDict
 
   @@cache = {} of String => self
 
@@ -14,22 +14,21 @@ class MT::AiDict
   end
 
   def initialize(@pdict : String = "combined")
-    @main_dict = Entry.load(pdict)
-    @auto_dict = Entry.new(pdict, :autogen)
+    @main_dict = MtDict.load(pdict)
+    @auto_dict = MtDict.new(pdict, :autogen)
 
-    @dict_list = {@main_dict, Entry.regular, @auto_dict}
+    @dict_list = {@main_dict, MtDict.regular, @auto_dict}
   end
 
   def to_json(jb : JSON::Builder)
     jb.object {
       jb.field "pdict", @pdict.sub('/', ':')
-      jb.field "sizes", {@main_dict.size, Entry.regular.size, @auto_dict.size}
+      jb.field "sizes", {@main_dict.size, MtDict.regular.size, @auto_dict.size}
     }
   end
 
-  def get(zstr : String, ipos : Int8) : {MtTerm, Int8}
-    get?(zstr, ipos) || get_alt?(zstr) ||
-      {init(zstr, ipos), Dtype::Autogen.to_i8}
+  def get(zstr : String, ipos : Int8) : MtTerm
+    get?(zstr, ipos) || get_alt?(zstr) || init(zstr, ipos)
   end
 
   def get?(zstr : String, ipos : Int8)
@@ -76,8 +75,8 @@ class MT::AiDict
     fname, pchar, lname = zstr.partition(/[\p{P}]/)
     return QtCore.tl_hvname(zstr) if pchar.empty?
 
-    fname_vstr = get?(fname, MtCpos::NR).try(&.[0].vstr) || QtCore.tl_hvname(fname)
-    lname_vstr = get?(lname, MtCpos::NR).try(&.[0].vstr) || QtCore.tl_hvname(lname)
+    fname_vstr = get?(fname, MtCpos::NR).try(&.vstr) || QtCore.tl_hvname(fname)
+    lname_vstr = get?(lname, MtCpos::NR).try(&.vstr) || QtCore.tl_hvname(lname)
 
     pchar = MAP_PCHAR[pchar]? || pchar
 
@@ -101,11 +100,14 @@ class MT::AiDict
 
   def tl_unit(zstr : String)
     case zstr
-    when /^[０-９．，－：～ ％]/
+    when /^[０-９．，－：～ ％]$/
       CharUtil.to_halfwidth(zstr)
     else
       TlUnit.translate(zstr)
     end
+  rescue ex
+    Log.error(exception: ex) { zstr }
+    zstr
   end
 
   MAP_PCHAR = {
@@ -117,16 +119,16 @@ class MT::AiDict
     case
     when match = MtPair.vrd_pair.find_any(zstr)
       a_zstr, b_term = match
-      a_term, _dic = get(a_zstr, MtCpos::VV)
+      a_term = get(a_zstr, MtCpos::VV)
       "#{a_term.vstr} #{b_term.a_vstr}"
     when zstr[-1] == '了'
-      a_term, _ = get(zstr[..-2], MtCpos::VV)
+      a_term = get(zstr[..-2], MtCpos::VV)
       "#{a_term.vstr} rồi"
     when zstr[0] == '一'
-      b_term, _ = get(zstr[1..], MtCpos::VV)
+      b_term = get(zstr[1..], MtCpos::VV)
       "#{b_term.vstr} một phát"
     when zstr[0] == '吓'
-      b_term, _ = get(zstr[1..], MtCpos::VV)
+      b_term = get(zstr[1..], MtCpos::VV)
       "dọa #{b_term.vstr}"
     else
       QtCore.tl_hvword(zstr)
@@ -134,130 +136,13 @@ class MT::AiDict
   end
 
   # def self.get_special?(astr : String, bstr : String)
-  #   Entry.special.get?(astr, bstr).try(&.[0])
+  #   MtDict.special.get?(astr, bstr).try(&.[0])
   # end
 
   # def self.get_special?(astr : String, *bstr : String)
-  #   Entry.special.get?(astr, *bstr).try(&.[0])
+  #   MtDict.special.get?(astr, *bstr).try(&.[0])
   # end
 
   ###########
 
-  enum Dtype : Int8
-    Unknown = 0 # reserved
-    Essence = 1 # top most level definitions, triumph all, for unique terms only
-    Primary = 2 # book dict/priv dict/fixture dict that override regular terms
-    Regular = 3 # glossaries shared for all books/projects
-    Hintpri = 4 # cpos type "_" in primary dict
-    Hintreg = 5 # cpos type "_" in regular dict
-    Autogen = 6 # entries auto translated by system
-  end
-
-  class Entry
-    getter data = {} of String => Hash(Int8, MtTerm)
-
-    getter dname : String
-    getter dtype : Dtype
-
-    delegate size, to: @data
-
-    def initialize(@dname : String, @dtype : Dtype = :primary)
-    end
-
-    # def get?(zstr : String, cpos : String)
-    #   get?(zstr, MtCpos[cpos])
-    # end
-
-    def get?(zstr : String, ipos : Int8)
-      return unless entry = @data[zstr]?
-      return unless found = entry[ipos]?
-      {found, @dtype.to_i8}
-    end
-
-    def any?(zstr : String)
-      return unless entry = @data[zstr]?
-      return unless found = entry[0]? || entry.first_value?
-      {found, @dtype.to_i8 &+ 2_i8}
-    end
-
-    ####
-
-    def add(zstr : String, ipos : Int8, vstr : String, attr : MtAttr, lock = 0_i8) : MtTerm
-      add(zstr: zstr, ipos: ipos, term: MtTerm.new(vstr, attr, lock))
-    end
-
-    def add(zstr : String, cpos : String, term : MtTerm) : MtTerm
-      add(zstr: zstr, ipos: MtCpos[cpos], term: term)
-    end
-
-    def add(zstr : String, ipos : Int8, term : MtTerm) : MtTerm
-      entry = @data[zstr] ||= {} of Int8 => MtTerm
-      entry[ipos] = term
-    end
-
-    def load_tsv!(dname : String = @dname)
-      db_path = ViTerm.db_path(dname, "tsv")
-      return self unless File.file?(db_path)
-
-      File.each_line(db_path) do |line|
-        cols = line.split('\t')
-        next if cols.size < 3
-
-        zstr = cols[0]
-        ipos = MtCpos[cols[1]]
-        vstr = cols[2]
-        attr = MtAttr.parse_list(cols[3]?)
-        lock = cols[6]?.try(&.to_i8?) || 2_i8
-
-        term = MtTerm.new(vstr: vstr, attr: attr, lock: lock)
-        add(zstr: zstr, ipos: ipos, term: term)
-      end
-
-      self
-    end
-
-    def load_db3!(dname : String = @dname)
-      ViTerm.db(dname).open_ro do |db|
-        query = "select zstr, icpos, vstr, iattr, plock from #{ViTerm.schema.table}"
-
-        db.query_each(query) do |rs|
-          zstr = rs.read(String)
-          ipos = rs.read(Int32).unsafe_as(Int8)
-          vstr = rs.read(String)
-          attr = MtAttr.new(rs.read(Int32))
-          lock = rs.read(Int32).unsafe_as(Int8)
-
-          term = MtTerm.new(vstr: vstr, attr: attr, lock: lock)
-          add(zstr, ipos: ipos, term: term)
-        end
-      end
-
-      # ViTerm.db(dname).open_ro do |db|
-      #   query = "select zstr, cpos, vstr, iattr from #{ViTerm.schema.table}"
-
-      #   db.query_each(query) do |rs|
-      #     zstr, cpos, vstr, iattr = rs.read(String, String, String, Int32)
-      #     add(zstr, cpos: cpos, vstr: vstr, attr: MtAttr.new(iattr))
-      #   end
-      # end
-
-      self
-    rescue ex
-      self
-    end
-
-    ###
-
-    class_getter special : self { new("special", :essence).load_tsv! }
-    class_getter regular : self { new("regular", :regular).load_db3!.load_tsv! }
-    class_getter suggest : self { new("suggest", :suggest).load_db3! }
-
-    # @@expire = {} of String => Time
-    ENTRIES = {} of String => self
-
-    def self.load(dname : String, dtype : Dtype = :primary)
-      # @@expire[dname] = Time.utc + 10.minutes
-      ENTRIES[dname] ||= new(dname, dtype).load_db3!.load_tsv!
-    end
-  end
 end

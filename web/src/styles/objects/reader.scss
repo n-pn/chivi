@@ -165,34 +165,39 @@ x-z,
 x-g {
   background-position: bottom bottom;
 
-  // essence + fixture
-  &[data-d='1'] {
-    @include cv-node(neutral);
+  // unknown
+  &[data-d='0'] {
+    @include cv-node(success);
   }
 
   // primary
-  &[data-d='2'] {
+  &[data-d='1'] {
     @include cv-node(warning);
   }
 
   // regular
-  &[data-d='3'] {
+  &[data-d='2'] {
     @include cv-node(primary);
   }
 
   // hintpri
-  &[data-d='4'] {
+  &[data-d='3'] {
     @include cv-node(harmful);
   }
 
   // hintreg
-  &[data-d='5'] {
+  &[data-d='4'] {
     @include cv-node(teal);
   }
 
   // autogen
-  &[data-d='6'] {
+  &[data-d='5'] {
     @include cv-node(purple);
+  }
+
+  // essence + fixture
+  &[data-d='6'] {
+    @include cv-node(neutral);
   }
 }
 

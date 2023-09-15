@@ -3,9 +3,14 @@ require "./mt_attr"
 struct MT::MtTerm
   getter vstr : String
   getter attr : MtAttr
-  getter lock : Int8
 
-  def initialize(@vstr, @attr = :none, @lock = 1_i8)
+  getter dnum : Int8
+
+  def initialize(@vstr, @attr = :none, @dnum = 1_i8)
+  end
+
+  def as_temp
+    MtTerm.new(@vstr, @attr, @dnum &+ 2_i8)
   end
 
   # def to_txt(io : IO, apply_cap : Bool, pad_space : Bool)

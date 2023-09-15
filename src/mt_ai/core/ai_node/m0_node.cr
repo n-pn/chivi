@@ -8,7 +8,7 @@ class MT::M0Node
 
   @[AlwaysInline]
   def translate!(dict : AiDict, rearrange : Bool = true) : Nil
-    self.set_term!(*dict.get(@zstr, @ipos))
+    self.set_term!(dict.get(@zstr, @ipos))
   end
 
   def z_each(&)
@@ -27,10 +27,10 @@ class MT::M0Node
     self
   end
 
-  COLORS = {:light_gray, :green, :magenta, :yellow, :blue, :cyan, :red}
+  COLORS = {:green, :yellow, :blue, :red, :cyan, :magenta, :light_gray}
 
   def inspect_inner(io : IO)
-    io << ' ' << @zstr.colorize.light_blue
-    io << ' ' << @vstr.colorize(COLORS[@_dic]) if @_dic >= 0
+    io << ' ' << @zstr.colorize.dark_gray
+    io << ' ' << @vstr.colorize(COLORS[@dnum % 10]) if @dnum >= 0
   end
 end
