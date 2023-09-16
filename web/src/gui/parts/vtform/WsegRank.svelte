@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<!-- <script context="module" lang="ts">
   type Prio = [number, string, string, string]
 
   const options: Prio[] = [
@@ -74,4 +74,4 @@
       margin-left: 0.375rem;
     }
   }
-</style>
+</style> -->

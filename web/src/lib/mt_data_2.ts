@@ -207,3 +207,12 @@ export function find_node(input: CV.Cvtree, q_idx = 0, q_len = 0) {
 
   return null
 }
+
+export function split_hviet_vstr(hstr: string, cpos: string, zlen: number) {
+  if (cpos == 'PU' || hstr.length == zlen) return Array.from(hstr)
+
+  const harr = hstr.split(' ')
+  if (cpos == '_' || harr.length == zlen) return harr
+
+  return hstr.split(' ').flatMap((x) => x.split(/\p{P}/u))
+}

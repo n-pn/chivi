@@ -10,7 +10,7 @@
 <script lang="ts">
   import { type CvtermForm, hint, req_privi } from './_shared'
 
-  export let form: CvtermForm
+  export let tform: CvtermForm
   export let privi: number
   export let vdict: CV.Cvdict
 </script>

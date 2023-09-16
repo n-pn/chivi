@@ -39,4 +39,16 @@ declare namespace CV {
     string?, // vstr
     number? // vdic
   ]
+
+  export interface Vtdata {
+    zstr: string
+    vstr: string
+    cpos: string
+    attr: string
+
+    plock: number
+    local: boolean
+
+    hviet: string
+  }
 }

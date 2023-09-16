@@ -19,8 +19,8 @@
   }
 
   const copy_ctree = () => {
-    console.log($data.cdata)
-    console.log($data.hviet)
+    console.log(JSON.stringify($data.cdata))
+    console.log(JSON.stringify($data.hviet))
 
     navigator.clipboard.writeText(render_ctree($data.cdata, 0))
   }
