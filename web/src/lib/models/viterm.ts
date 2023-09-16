@@ -1,3 +1,5 @@
+import { render_ctree } from '$lib/mt_data_2'
+
 export class Vtform {
   // static from(key: string, dic: number = 0, privi = -1) {
   //   const term = { key, val: '', ptag: '', wseg: 2, dic, tab: 1 }
@@ -5,69 +7,89 @@ export class Vtform {
   // }
 
   init: CV.Vtdata
-  curr: CV.Vtdata
+  term: CV.Vtdata
 
   vtmp: string
 
   constructor(init: CV.Vtdata) {
     this.init = init
-    this.curr = { ...init }
+    this.term = { ...init }
 
     this.vtmp = init.vstr
   }
 
+  get zstr() {
+    return this.term.zstr
+  }
+
   get vstr() {
-    return this.curr.vstr
+    return this.term.vstr
   }
 
   set vstr(vstr: string) {
-    this.vtmp = this.curr.vstr
-    this.curr.vstr = vstr
+    this.vtmp = this.term.vstr
+    this.term.vstr = vstr
   }
 
   get attr() {
-    return this.curr.attr
+    return this.term.attr
   }
 
   set attr(attr: string) {
-    this.curr.attr = attr
+    this.term.attr = attr
   }
 
   get cpos() {
-    return this.curr.cpos
+    return this.term.cpos
   }
 
   set cpos(cpos: string) {
-    this.curr.cpos = cpos
+    this.term.cpos = cpos
+  }
+
+  get local() {
+    return this.term.local
+  }
+
+  set local(local: boolean) {
+    this.term.local = local
+  }
+
+  get plock() {
+    return this.term.plock
+  }
+
+  set plock(plock: number) {
+    this.term.plock = plock
   }
 
   reset() {
-    if (this.curr.vstr != this.vtmp) {
-      this.curr.vstr = this.vtmp
-    } else if (this.curr.vstr != this.init.vstr) {
-      this.curr.vstr = this.init.vstr
+    if (this.term.vstr != this.vtmp) {
+      this.term.vstr = this.vtmp
+    } else if (this.term.vstr != this.init.vstr) {
+      this.term.vstr = this.init.vstr
     } else {
-      this.curr = { ...this.init }
+      this.term = { ...this.init }
     }
 
     return this
   }
 
   clear() {
-    if (this.curr.vstr) {
-      this.curr.vstr = ''
-    } else if (this.curr.attr) {
-      this.curr.attr = ''
+    if (this.term.vstr) {
+      this.term.vstr = ''
+    } else if (this.term.attr) {
+      this.term.attr = ''
     } else {
-      this.curr.vstr = '⛶'
-      this.curr.attr = 'Hide'
+      this.term.vstr = '⛶'
+      this.term.attr = 'Hide'
     }
 
     return this
   }
 
   changed() {
-    if (!this.curr.vstr) return false
+    if (!this.term.vstr) return false
 
     const fields = ['vstr', 'cpos', 'attr', 'plock', 'local']
 
@@ -82,14 +104,21 @@ export class Vtform {
   //   return req_privi(this.dic, this.tab)
   // }
 
-  // toJSON(wn_id: number, input: string, index: number) {
-  //   return JSON.stringify({
-  //     key: this.key,
-  //     val: this.val,
-  //     ptag: this.ptag,
-  //     prio: this.prio,
-  //     dic: this.dic,
-  //     _ctx: { wn_id, input, index },
-  //   })
-  // }
+  to_form_body(pdict: string, vtree: CV.Cvtree, zfrom: number) {
+    return {
+      zstr: this.zstr,
+      vstr: this.vstr,
+      cpos: this.cpos,
+      attr: this.attr,
+
+      plock: this.plock,
+      dname: this.local ? pdict : 'generic',
+
+      _ctx: {
+        wn_id: +pdict.replace('book/', ''),
+        vtree: render_ctree(vtree, 0),
+        zfrom,
+      },
+    }
+  }
 }

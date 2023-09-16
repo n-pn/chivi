@@ -80,12 +80,12 @@ export function render_ctree(node: CV.Cvtree, rmode = 1, sbuff = '') {
   if (rmode > 0) {
     sbuff += `<x-g data-b=${from} data-e=${upto}>`
   } else {
-    sbuff += `(${cpos} `
+    sbuff += `(`
   }
 
   if (rmode > 1) {
     const { name } = cpos_info[cpos] || {}
-    sbuff += `<x-c data-tip="${name}" data-b=${from} data-e=${upto}>${cpos}</x-c> `
+    sbuff += `<x-c data-tip="${name}" data-b=${from} data-e=${upto} data-c=${cpos}>${cpos}</x-c> `
   } else {
     sbuff += cpos + ' '
   }
@@ -100,12 +100,12 @@ export function render_ctree(node: CV.Cvtree, rmode = 1, sbuff = '') {
   } else {
     if (rmode == 3) {
       const zesc = escape_htm(body)
-      sbuff += `<x-n d=${dpos} data-tip="${zesc}" data-b=${from} data-e=${upto}>`
+      sbuff += `<x-n d=${dpos} data-tip="${zesc}" data-b=${from} data-e=${upto} data-c=${cpos}>`
       sbuff += escape_htm(vstr)
       sbuff += `</x-n>`
     } else if (rmode == 2) {
       const vesc = escape_htm(vstr)
-      sbuff += `<x-n d=${dpos} data-tip="${vesc}" data-b=${from} data-e=${upto}>`
+      sbuff += `<x-n d=${dpos} data-tip="${vesc}" data-b=${from} data-e=${upto} data-c=${cpos}>`
       for (let x = 0; x < body.length; x++) {
         const b = from + x
         sbuff += `<x-z d=${dpos} data-b=${b} data-e=${b + 1}>`
@@ -135,6 +135,8 @@ export function render_vdata(input: CV.Cvtree, rmode = 1, cap = true) {
     if (!node) break
 
     let [cpos, zidx, zlen, attr, body, vstr, vdic] = node
+    const upto = zidx + zlen
+    const dtyp = vdic % 10
 
     if (Array.isArray(body)) {
       for (let i = body.length - 1; i >= 0; i--) queue.push(body[i])
@@ -147,7 +149,7 @@ export function render_vdata(input: CV.Cvtree, rmode = 1, cap = true) {
       }
 
       if (rmode == 2) {
-        out += `<x-n d=${vdic % 10} data-b=${zidx} data-e=${zidx + zlen}>`
+        out += `<x-n d=${dtyp} data-b=${zidx} data-e=${upto} data-c=${cpos}>`
         out += render_vstr(vstr, cpos)
         out += `</x-n>`
       } else if (rmode == 1) {

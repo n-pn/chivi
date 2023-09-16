@@ -115,7 +115,7 @@ function extract_term(input: Data): CV.Vtdata {
     cpos: vnode[0],
     attr: vnode[3],
 
-    plock: Math.floor((vnode[6] || 0) / 10),
+    plock: Math.floor((vnode[6] || 0) / 10) || 0,
     local: (vnode[6] || 0) % 2 == 1,
 
     hviet: render_vdata(hnode, 0, false),

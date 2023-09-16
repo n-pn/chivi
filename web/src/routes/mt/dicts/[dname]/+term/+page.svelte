@@ -48,7 +48,6 @@
     const init = { body: JSON.stringify(body), method, headers }
     const res = await fetch(action, init)
 
-    console.log(body)
     form_msg = ''
 
     if (res.ok) {

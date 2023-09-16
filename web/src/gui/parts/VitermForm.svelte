@@ -7,6 +7,20 @@
   import { Vtform } from '$lib/models/viterm'
 
   import { ctrl, data } from '$lib/stores/vtform_stores'
+
+  const cached = new Map<string, Vtform>()
+
+  function make_form(zfrom: number, zupto: number, icpos: string) {
+    const key = `${zfrom}-${zupto}-${icpos}`
+
+    const old = cached.get(key)
+    if (old) return old
+
+    const form = new Vtform(data.get_term(zfrom, zupto, icpos))
+    cached.set(key, form)
+
+    return form
+  }
 </script>
 
 <script lang="ts">
@@ -20,49 +34,54 @@
   import AttrPicker from '$gui/parts/AttrPicker.svelte'
 
   import FormHead from './vtform/FormHead.svelte'
+  import TermOpts from './vtform/TermOpts.svelte'
   import VstrUtil from './vtform/VstrUtil.svelte'
   import HelpLink from './vtform/HelpLink.svelte'
 
-  export let on_close = () => {}
-  onDestroy(on_close)
+  export let pdict: string
+  export let on_close = (_term?: CV.Viterm) => {}
+  onDestroy(() => on_close(null))
 
   const _user = get_user()
   $: privi = $_user.privi
 
   let { zfrom, zupto, icpos } = $data
 
-  let tform = new Vtform(data.get_term())
+  $: tform = make_form(zfrom, zupto, icpos)
+  $: hviet = tform.init.hviet
+
+  $: if (tform) refocus()
+  $: cpos_data = cpos_info[tform.cpos] || {}
+  $: attr_list = tform.attr ? tform.attr.split(' ') : []
+
   let field: HTMLInputElement
 
   const refocus = (caret: number = 0) => {
     if (!field) return
-    console.log({ caret })
-    // field.setSelectionRange(caret, caret)
+    if (caret > 0) field.setSelectionRange(caret, caret)
     field.focus()
   }
 
-  // $: if (tform) refocus()
+  let form_msg = ''
 
-  $: cpos_data = cpos_info[tform.cpos] || {}
-  $: attrs = tform.attr ? tform.attr.split(' ') : []
-  // let upsert_error = ''
+  const send_form = async () => {
+    const action = '/_ai/terms/once'
+    const method = 'PUT'
 
-  // const submit_val = async () => {
-  //   const res = await fetch('/_m1/defns', {
-  //     method: 'POST',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: form.toJSON($vdict.vd_id, $ztext, $zfrom),
-  //   })
+    const headers = { 'Content-type': 'application/json' }
+    const body = tform.to_form_body(pdict, $data.vtree, zfrom)
 
-  //   const data = await res.json()
+    const init = { body: JSON.stringify(body), method, headers }
+    const res = await fetch(action, init)
 
-  //   if (!res.ok) {
-  //     upsert_error = data.message
-  //   } else {
-  //     $ctrl.state = 0
-  //     on_change()
-  //   }
-  // }
+    if (!res.ok) {
+      form_msg = await res.text()
+    } else {
+      const term = await res.json()
+      on_close(term as CV.Viterm)
+      ctrl.hide()
+    }
+  }
 
   // const button_colors = [
   //   '_neutral', // base
@@ -81,7 +100,7 @@
 </script>
 
 <Dialog actived={$ctrl.actived} on_close={ctrl.hide} class="vtform" _size="lg">
-  <FormHead bind:tform bind:zfrom bind:zupto bind:icpos />
+  <FormHead bind:zfrom bind:zupto bind:icpos {hviet} />
 
   <nav class="tabs">
     <button
@@ -132,7 +151,7 @@
           class="attr"
           on:click={() => (show_attr_picker = !show_attr_picker)}>
           <span class="plbl u-show-pm">Từ tính:</span>
-          {#each attrs as attr}
+          {#each attr_list as attr}
             <code use:tooltip={attr_info[attr]?.desc} data-anchor=".vtform"
               >{attr}</code>
           {:else}
@@ -150,7 +169,10 @@
           bind:value={tform.vstr}
           autocomplete="off"
           autocapitalize="off" />
+
+        <TermOpts bind:tform {privi} />
       </div>
+
       <VstrUtil bind:tform {field} {refocus} />
     </div>
 
@@ -159,44 +181,12 @@
         class="m-btn _lg _fill _primary"
         data-kbd="↵"
         disabled={!tform.changed()}
-        on:click={() => console.log(tform)}>
+        on:click={send_form}>
         <SIcon name="send" />
         <span class="submit-text">Lưu</span>
       </button>
     </footer>
   </main>
-
-  <!--
-
-
-
-    <upsert-main>
-      <DefnHint hanviet={data.hanviet} val_hints={data.val_hints} bind:form />
-
-
-      <VstrUtil bind:form />
-    </upsert-main>
-
-    {#if show_opts}<TermOpts bind:form vdict={$vdict} {privi} />{/if}
-
-
-      <WsegRank bind:form />
-
-
-
-    {#if privi < form.req_privi}
-      <div class="upsert-msg _warn">
-        Bạn chưa đủ quyền hạn để thêm sửa từ.
-        <br />
-        Thử bấm vào biểu tượng <SIcon
-          name="privi-{form.req_privi}"
-          iset="icons" /> phía trên để thay đổi cách lưu.
-      </div>
-    {:else if upsert_error}
-      <div class="upsert-msg _err">{upsert_error}</div>
-    {/if}
-  </main>
-</-->
 
   <HelpLink key={tform.init.zstr} />
 </Dialog>
@@ -348,10 +338,10 @@
   .text {
     display: flex;
     $h-outer: 3.25rem;
-    $h-inner: 1.75rem;
+    $h-inner: 2rem;
 
     height: $h-outer;
-    padding: math.div($h-outer - $h-inner, 2);
+    padding: math.div($h-outer - $h-inner, 2) 0.625rem;
 
     @include linesd(--bd-soft, $inset: true);
 

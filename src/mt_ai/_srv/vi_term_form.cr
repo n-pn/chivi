@@ -22,8 +22,7 @@ class MT::ViTermForm
 
   struct Context
     getter wn_id : Int32
-    getter ctree : String
-    getter ztext : String
+    getter vtree : String
     getter zfrom : Int32
     include JSON::Serializable
   end

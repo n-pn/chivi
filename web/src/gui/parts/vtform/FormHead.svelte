@@ -3,15 +3,12 @@
   import { render_ztext } from '$lib/mt_data_2'
 
   import { ctrl, data } from '$lib/stores/vtform_stores'
-  import { Vtform } from '$lib/models/viterm'
-
-  export let tform: Vtform
 
   export let zfrom: number
   export let zupto: number
   export let icpos: string
+  export let hviet: string
 
-  $: tform = make_form(zfrom, zupto)
   $: zsize = $data.htree[2]
 
   $: chars = Array.from(render_ztext($data.htree, 0))
@@ -26,20 +23,6 @@
       chars.slice(zfrom, zupto),
       chars.slice(zupto, zupto + 10),
     ]
-  }
-
-  const cached = new Map<string, Vtform>()
-
-  function make_form(zfrom: number, zupto: number) {
-    const key = `${zfrom}-${zupto}`
-
-    const old = cached.get(key)
-    if (old) return old
-
-    const form = new Vtform(data.get_term(zfrom, zupto))
-    cached.set(key, form)
-
-    return form
   }
 
   function change_index(index: number) {
@@ -132,7 +115,7 @@
       </div>
     </div>
     <div class="hlit">
-      <span>{tform.init.hviet}</span>
+      <span>{hviet}</span>
     </div>
   </div>
 

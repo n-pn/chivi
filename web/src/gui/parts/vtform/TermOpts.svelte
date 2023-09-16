@@ -1,91 +1,137 @@
 <script context="module" lang="ts">
-  type SaveTab = [number, string, string]
+  const dict_choices = {
+    t: {
+      desc: 'Áp dụng nghĩa từ cho bộ truyện hiện tại',
+      icon: 'book',
+    },
 
-  const save_tabs: SaveTab[] = [
-    [1, 'Chung', 'Nghĩa của từ sẽ được áp dụng tất cả mọi người'],
-    [2, 'Riêng', 'Nghĩa của từ chỉ áp dụng cho riêng cá nhân bạn'],
-  ]
+    f: {
+      desc: 'Áp dụng nghĩa từ cho tất cả các bộ truyện',
+      icon: 'world',
+    },
+  }
 </script>
 
 <script lang="ts">
-  import { type CvtermForm, hint, req_privi } from './_shared'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let tform: CvtermForm
+  import { tooltip } from '$lib/actions'
+  import type { Vtform } from '$lib/models/viterm'
+
+  // import { type CvtermForm, hint, req_privi } from './_shared'
+
+  export let tform: Vtform
   export let privi: number
-  export let vdict: CV.Cvdict
-</script>
 
-<section class="opts">
-  <span class="choices">
-    <span class="label _hide">Phạm vi:</span>
-    <label class="label" use:hint={'Áp dụng nghĩa từ cho bộ truyện hiện tại'}>
-      <input
-        type="radio"
-        name="term-dic"
-        bind:group={form.dic}
-        disabled={privi < req_privi(0, form.tab)}
-        value={vdict.vd_id} />
-      <span>Bộ này</span>
-    </label>
+  $: dict_choice = dict_choices[tform.local ? 't' : 'f']
 
-    <label class="label" use:hint={'Áp dụng nghĩa từ cho tất cả các bộ truyện'}>
-      <input
-        type="radio"
-        name="dic"
-        bind:group={form.dic}
-        disabled={privi < req_privi(-1, form.tab)}
-        value={-1} />
-      <span>Tất cả</span>
-    </label>
-  </span>
-  <span class="choices _right">
-    <span class="label _hide">Cách lưu:</span>
-
-    {#each save_tabs as [value, label, brief]}
-      <label class="label" class:_active={form.tab == value} use:hint={brief}>
-        <input
-          type="radio"
-          name="term-tab"
-          bind:group={form.tab}
-          disabled={privi < req_privi(form.dic, value)}
-          {value} />
-        <span class="-text">{label}</span>
-      </label>
-    {/each}
-  </span>
-</section>
-
-<style lang="scss">
-  .opts {
-    display: flex;
-    margin-top: 0.5rem;
-    margin-bottom: -0.25rem;
-  }
-
-  .label {
-    cursor: pointer;
-    line-height: 1.25rem;
-    // font-weight: 500;
-
-    @include bps(font-size, rem(12px), $pm: rem(13px), $pl: rem(14px));
-
-    @include fgcolor(tert);
-
-    &._active {
-      @include fgcolor(secd);
+  function change_plock() {
+    if (tform.plock == 2) {
+      tform.plock = 0
+    } else {
+      tform.plock = tform.plock + 1
     }
   }
 
-  .choices {
-    display: flex;
-    gap: 0.5rem;
-  }
+  $: min_privi = tform.local ? 0 : 1
+  $: max_plock = tform.init.plock + min_privi
+</script>
 
-  ._hide {
-    @include bps(display, none, $pl: initial);
-  }
+<div class="opts">
+  <button
+    class="dict {tform.local ? 'local' : 'world'}"
+    use:tooltip={dict_choice.desc}
+    data-anchor=".vtform"
+    on:click={() => (tform.local = !tform.local)}>
+    <SIcon name={dict_choice.icon} />
+  </button>
 
-  ._right {
+  <button
+    class="lock _{tform.plock}"
+    use:tooltip={'Đổi chế độ khóa từ'}
+    data-anchor=".vtform"
+    on:click={change_plock}
+    disabled={privi <= tform.init.plock + min_privi}>
+    <SIcon name="plock-{tform.plock}" iset="icons" />
+  </button>
+</div>
+
+<style lang="scss">
+  .opts {
+    display: inline-flex;
+    align-items: center;
     margin-left: auto;
+    padding-left: 0.25rem;
+    // gap: 0.5rem;
+    // padding: 0 0.5rem;get
+    // margin-left: 0.5rem;
   }
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    line-height: 2rem;
+
+    background: inherit;
+    padding: 0;
+    @include ftsize(lg);
+    @include fgcolor(secd);
+    &:hover {
+      @include fgcolor(primary, 5);
+    }
+  }
+
+  .dict {
+    &.local {
+      @include fgcolor(warning);
+    }
+
+    &.world {
+      @include fgcolor(primary);
+    }
+  }
+
+  .lock {
+    &._0 {
+      @include fgcolor(green);
+    }
+
+    &._1 {
+      @include fgcolor(primary);
+    }
+
+    &._2 {
+      @include fgcolor(red);
+    }
+  }
+
+  // .label {
+  //   cursor: pointer;
+  //   line-height: 1.25rem;
+  //   // font-weight: 500;
+
+  //   @include bps(font-size, rem(12px), $pm: rem(13px), $pl: rem(14px));
+
+  //   @include fgcolor(tert);
+
+  //   &._active {
+  //     @include fgcolor(secd);
+  //   }
+  // }
+
+  // .choices {
+  //   display: flex;
+  //   gap: 0.5rem;
+  // }
+
+  // ._hide {
+  //   @include bps(display, none, $pl: initial);
+  // }
+
+  // ._right {
+  //   margin-left: auto;
+  // }
 </style>

@@ -1,17 +1,31 @@
 <script context="module" lang="ts">
   import { ctrl, data, get_btran } from '$lib/stores/lookup_stores'
   import { render_vdata, render_ztext, render_ctree } from '$lib/mt_data_2'
+
+  import {
+    data as vtform_data,
+    ctrl as vtform_ctrl,
+  } from '$lib/stores/vtform_stores'
 </script>
 
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Slider from '$gui/molds/Slider.svelte'
+  import VitermForm from '$gui/parts/VitermForm.svelte'
 
   let zfrom = 0
   let zupto = 1
 
+  const node_names = ['X-N', 'X-C', 'X-Z']
   function handle_click({ target }) {
-    if (target.nodeName == 'X-N') zfrom = +target.dataset.b
+    if (!node_names.includes(target.nodeName)) return
+
+    zfrom = +target.dataset.b
+    zupto = +target.dataset.e
+    const icpos = target.dataset.c || '_'
+
+    vtform_data.put($data.hviet, $data.cdata, zfrom, zupto, icpos)
+    vtform_ctrl.show(0)
   }
 
   const call_btran = async () => {
@@ -19,14 +33,12 @@
   }
 
   const copy_ctree = () => {
-    console.log(JSON.stringify($data.cdata))
-    console.log(JSON.stringify($data.hviet))
-
     navigator.clipboard.writeText(render_ctree($data.cdata, 0))
   }
 
-  const text_headers = { 'Content-Type': 'text/plain' }
   const reload_ctree = async () => {
+    const text_headers = { 'Content-Type': 'text/plain' }
+
     const url = '/_ai/mt/reload?pdict=' + $data.pdict
     const body = render_ctree($data.cdata, 0)
     const init = { method: 'POST', body, headers: text_headers }
@@ -35,32 +47,14 @@
     if (!res.ok) return alert(await res.text())
 
     const { lines } = await res.json()
+
     $data.cdata = lines[0]
   }
 
-  let viewer = null
-  // const focused = []
-
-  // function update_focus() {
-  //   if (!viewer) return
-
-  //   current = entries[$zfrom] || []
-  //   if (current.length == 0) $zupto = $zfrom
-  //   else $zupto = $zfrom + +current[0][0]
-
-  //   focused.forEach((x) => x.classList.remove('focus'))
-  //   focused.length = 0
-
-  //   for (let idx = $zfrom; idx < $zupto; idx++) {
-  //     const nodes = viewer.querySelectorAll(`x-n[data-l="${idx}"]`)
-
-  //     nodes.forEach((x: HTMLElement) => {
-  //       focused.push(x)
-  //       x.classList.add('focus')
-  //       x.scrollIntoView({ block: 'end', behavior: 'smooth' })
-  //     })
-  //   }
-  // }
+  const on_term_change = (term?: CV.Viterm) => {
+    if (!term) return
+    reload_ctree()
+  }
 </script>
 
 <Slider
@@ -94,11 +88,12 @@
   </svelte:fragment>
 
   {#if $data.ztext}
-    <section class="cbody" bind:this={viewer}>
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <section class="cbody" on:click={handle_click}>
       <h4 class="label">Tiếng Trung:</h4>
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <div class="cdata _zh" on:click={handle_click} lang="zh">
+
+      <div class="cdata _zh" lang="zh">
         {@html render_ztext($data.cdata, 2)}
       </div>
 
@@ -127,7 +122,7 @@
 
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <div class="cdata debug _mt" on:click={handle_click}>
+      <div class="cdata debug _mt">
         {#if $data.cdata}
           {@html render_vdata($data.cdata, 2)}
         {/if}
@@ -151,7 +146,7 @@
       <h4 class="label">Hán Việt:</h4>
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <div class="cdata debug _hv" on:click={handle_click}>
+      <div class="cdata debug _hv">
         {@html render_vdata($data.hviet, 2)}
       </div>
     </section>
@@ -159,6 +154,10 @@
     <div class="empty">Bấm vào đoạn văn để xem giải nghĩa!</div>
   {/if}
 </Slider>
+
+{#if $vtform_ctrl.actived}
+  <VitermForm pdict={$data.pdict} on_close={on_term_change} />
+{/if}
 
 <style lang="scss">
   .cbody {
