@@ -78,10 +78,15 @@ class MT::AiDict
     fname_vstr = get?(fname, MtCpos::NR).try(&.vstr) || QtCore.tl_hvname(fname)
     lname_vstr = get?(lname, MtCpos::NR).try(&.vstr) || QtCore.tl_hvname(lname)
 
-    pchar = MAP_PCHAR[pchar]? || pchar
+    pchar = MAP_PCHAR[pchar[0]]? || pchar
 
     "#{fname_vstr}#{pchar}#{lname_vstr}"
   end
+
+  MAP_PCHAR = {
+    '､' => ", ",
+    '･' => " ",
+  }
 
   def init_od(zstr : String)
     if zstr[0] == '第'
@@ -100,22 +105,27 @@ class MT::AiDict
     end
   end
 
+  DECIMAL_SEP = {
+    '点' => " chấm ",
+    '．' => ".",
+    '／' => "/",
+  }
+
   def tl_unit(zstr : String)
-    case zstr
-    when /^[０-９．，－：～％]$/
-      CharUtil.to_halfwidth(zstr)
-    else
-      TlUnit.translate(zstr)
-    end
+    return CharUtil.to_halfwidth(zstr) if zstr =~ /^[０-９．，－：～％]$/
+    integer_part, sep_char, fractional_part = zstr.partition(/[点．／]/)
+
+    integer_vstr = TlUnit.translate(integer_part)
+    return integer_vstr if sep_char.empty?
+
+    sep_vstr = DECIMAL_SEP[sep_char[0]]
+    fractional_vstr = fractional_part.empty? ? "" : TlUnit.translate(fractional_part)
+
+    "#{integer_vstr}#{sep_vstr}#{fractional_vstr}"
   rescue ex
     Log.error(exception: ex) { zstr }
     zstr
   end
-
-  MAP_PCHAR = {
-    "､" => ", ",
-    "･" => " ",
-  }
 
   def init_vv(zstr : String) : String
     case

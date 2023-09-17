@@ -105,32 +105,11 @@ class MT::ViTermCtrl < AC::Base
       raise Unauthorized.new "Từ đã bị khoá, bạn cần quyền hạn tối thiểu là #{min_privi + 1} để đổi khoá"
     end
 
-    term = form.save!(_uname)
-    sync_data!(form.dname, term: term, fresh: prev_term.nil?)
-
+    spawn form.save_to_disk!(_uname, fresh: prev_term.nil?)
     _log_action("once", form, ldir: LOG_DIR)
 
-    render json: term
-  end
-
-  private def sync_data!(dname : String, term : ViTerm, fresh : Bool = false)
-    spawn do
-      db_path = ViTerm.db_path(dname, "tsv")
-      File.open(db_path, "a", &.puts(term.to_tsv_line))
-      ViDict.bump_stats!(dname, term.mtime, fresh ? 1 : 0)
-    end
-
-    zstr = term.zstr
-    ipos = term.icpos.to_i8
-
-    case dname
-    when "regular"
-      mt_term = term.to_mt(:regular)
-      MtDict.regular.add(zstr, ipos: ipos, term: mt_term)
-    else
-      mt_term = term.to_mt(:primary)
-      MtDict.get?(dname).try(&.add(zstr, ipos: ipos, term: mt_term))
-    end
+    form.sync_with_dict!
+    render text: "ok"
   end
 
   @[AC::Route::GET("/find")]

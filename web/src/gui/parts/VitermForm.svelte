@@ -24,7 +24,7 @@
   import HelpLink from './vtform/HelpLink.svelte'
 
   export let pdict: string
-  export let on_close = (_term?: CV.Viterm) => {}
+  export let on_close = (_term?: CV.Vtdata) => {}
   onDestroy(() => on_close(null))
 
   const cached = new Map<string, Vtform>()
@@ -76,8 +76,7 @@
     if (!res.ok) {
       form_msg = await res.text()
     } else {
-      const term = await res.json()
-      on_close(term as CV.Viterm)
+      on_close(tform.term)
       ctrl.hide()
     }
   }

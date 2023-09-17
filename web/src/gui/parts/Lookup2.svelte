@@ -54,7 +54,7 @@
     $data.cdata = lines[0]
   }
 
-  const on_term_change = (term?: CV.Viterm) => {
+  const on_term_change = (term?: CV.Vtdata) => {
     if (!term) return
     reload_ctree()
   }

@@ -49,7 +49,20 @@ class MT::ViTermForm
     ViTerm.find(dict: @dname, zstr: @zstr, cpos: @old_cpos)
   end
 
-  def save!(uname : String, mtime = ViTerm.mtime) : ViTerm
+  def save_to_disk!(uname : String, mtime = ViTerm.mtime, fresh : Bool = true) : Nil
+    spawn do
+      ViDict.bump_stats!(@dname, mtime, fresh ? 1 : 0)
+    end
+
+    spawn do
+      db_path = ViTerm.db_path(@dname, "tsv")
+
+      File.open(db_path, "a") do |file|
+        file << '\n'
+        {@zstr, @cpos, @vstr, @attr, uname, mtime, @plock}.join(file, '\t')
+      end
+    end
+
     term = ViTerm.new(
       zstr: @zstr, cpos: @cpos,
       vstr: @vstr, attr: @attr,
@@ -57,6 +70,26 @@ class MT::ViTermForm
       plock: @plock
     )
 
-    term.tap(&.upsert!(db: ViTerm.db(@dname)))
+    term.upsert!(db: ViTerm.db(@dname))
+  end
+
+  def sync_with_dict!
+    ipos = MtCpos[@cpos]
+    case @dname
+    when "regular"
+      mt_term = make_term(:regular)
+      MtDict.regular.add(zstr, ipos: ipos, term: mt_term)
+    else
+      mt_term = make_term(:primary)
+      MtDict.get?(dname).try(&.add(zstr, ipos: ipos, term: mt_term))
+    end
+  end
+
+  def make_term(dtype : MtDtyp = :primary)
+    MtTerm.new(
+      vstr: @vstr,
+      attr: MtAttr.parse_list(@attr),
+      dnum: MtDnum.from(dtype: dtype, plock: @plock.to_i8)
+    )
   end
 end
