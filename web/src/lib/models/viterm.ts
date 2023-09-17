@@ -11,11 +11,23 @@ export class Vtform {
 
   vtmp: string
 
-  constructor(init: CV.Vtdata) {
+  constructor(init: CV.Vtdata, privi = 0) {
     this.init = init
     this.term = { ...init }
 
+    this.fix_plock(privi)
+    if (privi < this.min_privi) this.local = true
+
     this.vtmp = init.vstr
+  }
+
+  fix_plock(privi: number) {
+    if (this.plock < 0) this.plock = privi > 0 ? 1 : 0
+    else if (this.plock == 0 && privi > this.min_privi) this.plock = 1
+  }
+
+  get min_privi() {
+    return this.local ? 0 : 1
   }
 
   get zstr() {
@@ -112,7 +124,7 @@ export class Vtform {
       attr: this.attr,
 
       plock: this.plock,
-      dname: this.local ? pdict : 'generic',
+      dname: this.local ? pdict : 'regular',
 
       _ctx: {
         wn_id: +pdict.replace('book/', ''),

@@ -34,7 +34,7 @@ function split_hviet_node(node: CV.Cvtree) {
   const list: Array<CV.Cvtree> = []
 
   for (let i = 0; i < zval.length; i++) {
-    list.push([cpos, zidx + i, 1, attr, zval[i], hval[i], 0])
+    list.push([cpos, zidx + i, 1, attr, zval[i], hval[i], -1])
   }
 
   return list
@@ -107,18 +107,33 @@ function extract_term(input: Data): CV.Vtdata {
   const { htree, vtree, zfrom, zupto, icpos } = input
 
   const hnode = find_hviet_node(htree, zfrom, zupto)
-  const vnode = find_vdata_node(vtree, zfrom, zupto, icpos) || hnode
+  const vnode = find_vdata_node(vtree, zfrom, zupto, icpos)
+  const hviet = render_vdata(hnode, 0, false)
 
-  return {
-    zstr: render_ztext(hnode, 0),
-    vstr: render_vdata(vnode, 0, false),
-    cpos: vnode[0],
-    attr: vnode[3],
+  const zstr = render_ztext(hnode, 0)
 
-    plock: Math.floor((vnode[6] || 0) / 10) || 0,
-    local: (vnode[6] || 0) % 2 == 1,
+  if (vnode) {
+    const [cpos, _idx, _len, attr, _zh, _vi, dnum = 5] = vnode
 
-    hviet: render_vdata(hnode, 0, false),
+    return {
+      zstr: zstr,
+      vstr: render_vdata(vnode, 0, false),
+      cpos,
+      attr,
+      plock: Math.floor(dnum / 10),
+      local: dnum % 2 == 1,
+      hviet,
+    }
+  } else {
+    return {
+      zstr: zstr,
+      vstr: hviet,
+      cpos: '_',
+      attr: '',
+      plock: -1,
+      local: true,
+      hviet,
+    }
   }
 }
 

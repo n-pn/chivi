@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script lang="ts">
   import { ctrl, data, get_btran } from '$lib/stores/lookup_stores'
   import { render_vdata, render_ztext, render_ctree } from '$lib/mt_data_2'
 
@@ -6,9 +6,7 @@
     data as vtform_data,
     ctrl as vtform_ctrl,
   } from '$lib/stores/vtform_stores'
-</script>
 
-<script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Slider from '$gui/molds/Slider.svelte'
   import VitermForm from '$gui/parts/VitermForm.svelte'

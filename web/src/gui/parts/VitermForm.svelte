@@ -1,29 +1,13 @@
 <!-- @hmr:keep-all -->
-<script context="module" lang="ts">
-  import { onDestroy } from 'svelte'
-
+<script lang="ts">
   import { get_user } from '$lib/stores'
-  import { api_call } from '$lib/api_call'
-  import { Vtform } from '$lib/models/viterm'
+  const _user = get_user()
 
+  import { Vtform } from '$lib/models/viterm'
   import { ctrl, data } from '$lib/stores/vtform_stores'
 
-  const cached = new Map<string, Vtform>()
+  import { onDestroy } from 'svelte'
 
-  function make_form(zfrom: number, zupto: number, icpos: string) {
-    const key = `${zfrom}-${zupto}-${icpos}`
-
-    const old = cached.get(key)
-    if (old) return old
-
-    const form = new Vtform(data.get_term(zfrom, zupto, icpos))
-    cached.set(key, form)
-
-    return form
-  }
-</script>
-
-<script lang="ts">
   import { tooltip } from '$lib/actions'
   import cpos_info from '$lib/consts/cpos_info'
   import attr_info from '$lib/consts/attr_info'
@@ -42,7 +26,21 @@
   export let on_close = (_term?: CV.Viterm) => {}
   onDestroy(() => on_close(null))
 
-  const _user = get_user()
+  const cached = new Map<string, Vtform>()
+
+  function make_form(zfrom: number, zupto: number, icpos: string) {
+    const key = `${zfrom}-${zupto}-${icpos}`
+
+    const old = cached.get(key)
+    if (old) return old
+
+    const term = data.get_term(zfrom, zupto, icpos)
+    const form = new Vtform(term, privi)
+
+    cached.set(key, form)
+    return form
+  }
+
   $: privi = $_user.privi
 
   let { zfrom, zupto, icpos } = $data
@@ -175,6 +173,10 @@
 
       <VstrUtil bind:tform {field} {refocus} />
     </div>
+
+    {#if form_msg}
+      <div class="fmsg">{form_msg}</div>
+    {/if}
 
     <footer class="foot">
       <button
@@ -375,7 +377,7 @@
     padding-top: 0.75rem;
   }
 
-  .umsg {
+  .fmsg {
     margin-top: -0.25rem;
     font-size: rem(13px);
     line-height: 1rem;
