@@ -30,6 +30,10 @@ export class Vtform {
     return this.local ? 0 : 1
   }
 
+  get req_privi() {
+    return this.min_privi + this.plock
+  }
+
   get zstr() {
     return this.term.zstr
   }

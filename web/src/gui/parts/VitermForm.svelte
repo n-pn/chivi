@@ -15,6 +15,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Dialog from '$gui/molds/Dialog.svelte'
 
+  import CposPicker from '$gui/parts/CposPicker.svelte'
   import AttrPicker from '$gui/parts/AttrPicker.svelte'
 
   import FormHead from './vtform/FormHead.svelte'
@@ -81,20 +82,19 @@
     }
   }
 
-  // const button_colors = [
-  //   '_neutral', // base
-  //   '_primary', // shared+main
-  //   '_harmful', // shared+temp
-  //   '_purple', // shared+user
-  //   '_success', // initial
-  //   '_teal', // unique+main
-  //   '_warning', // unique+temp
-  //   '_pink', // unique+user
-  // ]
+  const button_styles = [
+    '_default', // primary + plock 0
+    '_warning', // primary + plock 1
+    '_harmful', // primary + plock 2
+    '_success', // regular + plock 1
+    '_primary', // regular + plock 1
+    '_teal', // regular + plock 2
+  ]
 
-  // $: btn_style = button_colors[form.tab + (form.dic < 0 ? 0 : 4)]
+  $: btn_style = button_styles[tform.local ? tform.plock : tform.plock + 3]
 
-  let show_attr_picker = false
+  let pick_cpos = false
+  let pick_attr = false
 </script>
 
 <Dialog actived={$ctrl.actived} on_close={ctrl.hide} class="vtform" _size="lg">
@@ -135,19 +135,20 @@
 
   <main class="body">
     <div class="main">
-      <div class="ptag">
-        <div class="cpos">
+      <div class="main-head">
+        <button class="cpos" on:click={() => (pick_cpos = !pick_cpos)}>
           <span class="plbl u-show-pl">Từ loại:</span>
-          <button use:tooltip={cpos_data.desc} data-anchor=".vtform">
-            <span>{cpos_data.name || 'Chưa rõ'}</span>
-            <strong>({tform.cpos})</strong>
-          </button>
-        </div>
+          <span class="ptag" use:tooltip={cpos_data.desc} data-anchor=".vtform">
+            <code>{tform.cpos}</code>
+            <span class="name">{cpos_data.name || 'Chưa rõ'}</span>
+            <SIcon name={tform.cpos == '_' ? 'lock-open' : 'lock'} />
+          </span>
+        </button>
 
         <button
           type="button"
           class="attr"
-          on:click={() => (show_attr_picker = !show_attr_picker)}>
+          on:click={() => (pick_attr = !pick_attr)}>
           <span class="plbl u-show-pm">Từ tính:</span>
           {#each attr_list as attr}
             <code use:tooltip={attr_info[attr]?.desc} data-anchor=".vtform"
@@ -159,7 +160,7 @@
         </button>
       </div>
 
-      <div class="text" class:_fresh={!tform.init.vstr}>
+      <div class="main-text" class:_fresh={!tform.init.vstr}>
         <input
           type="text"
           class="vstr"
@@ -180,12 +181,13 @@
 
     <footer class="foot">
       <button
-        class="m-btn _lg _fill _primary"
+        class="m-btn _lg _fill {btn_style} _send"
         data-kbd="↵"
-        disabled={!tform.changed()}
+        disabled={privi < tform.req_privi}
         on:click={send_form}>
         <SIcon name="send" />
         <span class="submit-text">Lưu</span>
+        <SIcon name="privi-{tform.req_privi}" iset="icons" />
       </button>
     </footer>
   </main>
@@ -193,8 +195,12 @@
   <HelpLink key={tform.init.zstr} />
 </Dialog>
 
-{#if show_attr_picker}
-  <AttrPicker bind:output={tform.attr} bind:actived={show_attr_picker} />
+{#if pick_cpos}
+  <CposPicker bind:output={tform.cpos} bind:actived={pick_cpos} />
+{/if}
+
+{#if pick_attr}
+  <AttrPicker bind:output={tform.attr} bind:actived={pick_attr} />
 {/if}
 
 <style lang="scss">
@@ -275,7 +281,20 @@
     @include bgcolor(bg-secd);
   }
 
-  .ptag {
+  .main {
+    display: block;
+    @include bdradi;
+
+    @include linesd(--bd-main, $inset: true);
+    @include bgcolor(main);
+
+    &:focus-within {
+      // @include linesd(primary, 4, $ndef: false);
+      @include bgcolor(secd);
+    }
+  }
+
+  .main-head {
     @include flex();
 
     justify-content: space-between;
@@ -295,49 +314,38 @@
   }
 
   .cpos {
-    display: flex;
-
+    display: inline-flex;
     gap: 0.25rem;
-    > button {
-      @include ftsize(sm);
-      display: inline-flex;
-      gap: 0.25rem;
-      padding: 0;
-      background: inherit;
-    }
+
+    padding: 0;
+    background: inherit;
+    @include fgcolor(tert);
+  }
+
+  .ptag {
+    @include ftsize(sm);
+    display: inline-flex;
+    align-items: center;
   }
 
   .attr {
-    margin-left: auto;
-    display: flex;
-    // align-items: center;
-
+    display: inline-flex;
     gap: 0.25rem;
+    // align-items: center;
+    margin-left: auto;
     padding: 0;
     background: inherit;
     line-height: 1.5rem;
 
     @include ftsize(sm);
+    @include fgcolor(tert);
 
     &:hover {
       @include fgcolor(primary);
     }
   }
 
-  .main {
-    display: block;
-    @include bdradi;
-
-    @include linesd(--bd-main, $inset: true);
-    @include bgcolor(main);
-
-    &:focus-within {
-      // @include linesd(primary, 4, $ndef: false);
-      @include bgcolor(secd);
-    }
-  }
-
-  .text {
+  .main-text {
     display: flex;
     $h-outer: 3.25rem;
     $h-inner: 2rem;
@@ -375,6 +383,10 @@
     @include flex-ca;
     gap: 0.75rem;
     padding-top: 0.75rem;
+
+    ._send {
+      margin-left: auto;
+    }
   }
 
   .fmsg {
