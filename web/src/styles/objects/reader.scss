@@ -161,8 +161,7 @@ p.cdata {
 }
 
 x-n,
-x-z,
-x-g {
+x-z {
   background-position: bottom bottom;
 
   // unknown
@@ -202,20 +201,30 @@ x-g {
 }
 
 x-g {
-  &:before {
-    display: inline-block;
+  --color: #{color(neutral, 5, 8)};
+
+  $colors: (red, orange, yellow, green, blue, indigo, purple);
+
+  @for $index from 1 through 7 {
+    $color: nth($colors, $index);
+    &[l='#{$index}'] {
+      --color: #{color($color, 5, 8)};
+    }
+  }
+
+  &:before,
+  &:after {
     font-size: smaller;
+    vertical-align: top;
+    color: var(--color);
+  }
+
+  &:before {
     content: '(';
-    vertical-align: text-top;
-    @include fgcolor(mute);
   }
 
   &:after {
-    display: inline-block;
-    font-size: smaller;
     content: ')';
-    vertical-align: text-top;
-    @include fgcolor(mute);
   }
 }
 

@@ -1,4 +1,4 @@
-import { render_ctree } from '$lib/mt_data_2'
+import { gen_ctree_text } from '$lib/mt_data_2'
 
 export class Vtform {
   // static from(key: string, dic: number = 0, privi = -1) {
@@ -132,7 +132,7 @@ export class Vtform {
 
       _ctx: {
         wn_id: +pdict.replace('book/', ''),
-        vtree: render_ctree(vtree, 0),
+        vtree: gen_ctree_text(vtree),
         zfrom,
       },
     }

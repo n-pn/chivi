@@ -3,7 +3,7 @@
 
   const groups = [
     ['At_h', 'At_t', 'Prfx', 'Sufx'],
-    ['Ndes', 'Npos', 'Nper', 'Ngrp', 'Nloc', 'Ntmp', 'Pn_d', 'Pn_i'],
+    ['Ndes', 'Ntmp', 'Nper', 'Nloc', 'Norg', 'Pn_d', 'Pn_i'],
     ['Hide', 'Asis', 'Capn', 'Capx', 'Undb', 'Undn'],
     ['Vint', 'Vdit', 'Vmod', 'Vpsy'],
   ]
@@ -21,9 +21,11 @@
   // prettier-ignore
   const on_close = (_?: any) => { actived = false }
 
-  const toggle_attr = (attr: string) => {
+  const toggle_attr = (attr: string, hide_after = true) => {
     if (output.includes(attr)) output = output.replace(attr, '').trim()
     else output = (output + ' ' + attr).trim()
+
+    if (hide_after) actived = false
   }
 
   $: attrs = output.trim().split(' ').filter(Boolean)
@@ -45,7 +47,8 @@
             class="attr"
             class:_active={active}
             class:_unused={!used}
-            on:click={() => toggle_attr(attr)}
+            on:click={() => toggle_attr(attr, true)}
+            on:contextmenu|preventDefault={() => toggle_attr(attr, false)}
             use:tooltip={desc}
             data-anchor=".attr-picker">
             <SIcon name={active ? 'check' : 'square'} />
@@ -92,7 +95,7 @@
     padding: 0;
     background: transparent;
 
-    line-height: 1.75rem;
+    line-height: 1.875rem;
     text-align: left;
 
     border: none;

@@ -101,7 +101,7 @@
     if (curr != prev) {
       if (prev) prev.classList.remove('focus')
       curr.classList.add('focus')
-      curr.scrollIntoView({ block: 'center', behavior: 'smooth' })
+      curr.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
       await lookup_data.from_cdata(data.lines, l_idx, zpath, pdict)
     }
 

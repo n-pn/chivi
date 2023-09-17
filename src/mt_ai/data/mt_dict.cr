@@ -111,27 +111,27 @@ class MT::MtDict
   end
 
   def load_db3!(name : String = @name)
-    ViTerm.db(name).open_ro do |db|
-      query = "select zstr, icpos, vstr, iattr, plock from #{ViTerm.schema.table}"
-
-      db.query_each(query) do |rs|
-        zstr = rs.read(String)
-        ipos = rs.read(Int32).unsafe_as(Int8)
-        vstr = rs.read(String)
-        attr = MtAttr.new(rs.read(Int32))
-        lock = rs.read(Int32).unsafe_as(Int8)
-        add(zstr, ipos: ipos, vstr: vstr, attr: attr, lock: lock)
-      end
-    end
-
     # ViTerm.db(name).open_ro do |db|
-    #   query = "select zstr, cpos, vstr, iattr from #{ViTerm.schema.table}"
+    #   query = "select zstr, icpos, vstr, iattr, plock from #{ViTerm.schema.table}"
 
     #   db.query_each(query) do |rs|
-    #     zstr, cpos, vstr, iattr = rs.read(String, String, String, Int32)
-    #     add(zstr, cpos: cpos, vstr: vstr, attr: MtAttr.new(iattr))
+    #     zstr = rs.read(String)
+    #     ipos = rs.read(Int32).unsafe_as(Int8)
+    #     vstr = rs.read(String)
+    #     attr = MtAttr.new(rs.read(Int32))
+    #     lock = rs.read(Int32).unsafe_as(Int8)
+    #     add(zstr, ipos: ipos, vstr: vstr, attr: attr, lock: lock)
     #   end
     # end
+
+    ViTerm.db(name).open_ro do |db|
+      query = "select zstr, cpos, vstr, attr from #{ViTerm.schema.table}"
+
+      db.query_each(query) do |rs|
+        zstr, cpos, vstr, attr = rs.read(String, String, String, String)
+        add(zstr, ipos: MtCpos[cpos], vstr: vstr, attr: MtAttr.parse_list(attr))
+      end
+    end
 
     self
   rescue ex

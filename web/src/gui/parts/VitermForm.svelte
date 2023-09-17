@@ -324,6 +324,7 @@
 
   .ptag {
     @include ftsize(sm);
+    gap: 0.2em;
     display: inline-flex;
     align-items: center;
   }

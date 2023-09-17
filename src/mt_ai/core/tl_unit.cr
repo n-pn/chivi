@@ -17,11 +17,11 @@ module MT::TlUnit
   }
 
   EXTRA_STR = {
-    '来' => "chừng",
-    '余' => "trên",
-    '多' => "hơn",
-    '第' => "thứ",
-    '几' => "mấy",
+    '来' => "chừng ",
+    '余' => "trên ",
+    '多' => "hơn ",
+    '第' => "thứ ",
+    '几' => "mấy ",
   }
 
   class Digit
@@ -115,11 +115,13 @@ module MT::TlUnit
         digits << Digit.new(char)
       when char.in?('０'..'９')
         digits << Digit.new(char - 0xfee0) # to half width
+      when char == '％'
+        suf_str = suf_str.empty? ? "%" : "#{suf_str}%"
       when extra = EXTRA_STR[char]?
-        pre_str = pre_str.empty? ? extra : "#{pre_str} #{extra}"
+        pre_str = pre_str.empty? ? extra : "#{pre_str}#{extra} "
       when !(int = HAN_TO_INT[char]?)
         Log.error { "#{char} not match any known type" }
-        pre_str = pre_str.empty? ? char.to_s : "#{pre_str} #{char} "
+        pre_str = pre_str.empty? ? char.to_s : "#{pre_str}#{char} "
       when int >= 0
         digits << Digit.new('０' + int) # convert to full width form
       else

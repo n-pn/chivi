@@ -71,57 +71,55 @@ export function render_ztext(input: CV.Cvtree, rmode = 1) {
   return out
 }
 
-export function render_ctree(node: CV.Cvtree, rmode = 1, sbuff = '') {
-  const [cpos, from, zlen, attr, body, vstr, dnum] = node
+export function gen_ctree_text([cpos, _idx, _len, _att, body]: CV.Cvtree) {
+  let text = `(${cpos}`
+
+  if (Array.isArray(body)) {
+    const orig = body.slice().sort(sort)
+    for (let i = 0; i < orig.length; i++) text += ' ' + gen_ctree_text(orig[i])
+  } else {
+    text += ' ' + body
+  }
+
+  return text + ')'
+}
+
+export function gen_ctree_html(node: CV.Cvtree, show_zh = true, level = 0) {
+  const [cpos, from, zlen, _attr, body, vstr, dnum] = node
   const upto = from + zlen
   const dpos = dnum % 10
   // const lock = Math.floor(dnum / 10)
 
-  if (rmode > 0) {
-    sbuff += `<x-g data-b=${from} data-e=${upto}>`
-  } else {
-    sbuff += `(`
-  }
+  let html = `<x-g l=${level % 8} data-b=${from} data-e=${upto}>`
 
-  if (rmode > 1) {
-    const { name } = cpos_info[cpos] || {}
-    sbuff += `<x-c data-tip="${name}" data-b=${from} data-e=${upto} data-c=${cpos}>${cpos}</x-c> `
-  } else {
-    sbuff += cpos + ' '
-  }
+  const { name } = cpos_info[cpos] || {}
+  html += `<x-c data-tip="${name}" data-b=${from} data-e=${upto} data-c=${cpos}>${cpos}</x-c>`
 
   if (Array.isArray(body)) {
     const orig = body.slice().sort(sort)
 
     for (let i = 0; i < orig.length; i++) {
-      if (i) sbuff += ' '
-      sbuff = render_ctree(orig[i], rmode, sbuff)
+      html += ' ' + gen_ctree_html(orig[i], show_zh, level + 1)
     }
   } else {
-    if (rmode == 3) {
-      const zesc = escape_htm(body)
-      sbuff += `<x-n d=${dpos} data-tip="${zesc}" data-b=${from} data-e=${upto} data-c=${cpos}>`
-      sbuff += escape_htm(vstr)
-      sbuff += `</x-n>`
-    } else if (rmode == 2) {
-      const vesc = escape_htm(vstr)
-      sbuff += `<x-n d=${dpos} data-tip="${vesc}" data-b=${from} data-e=${upto} data-c=${cpos}>`
-      for (let x = 0; x < body.length; x++) {
-        const b = from + x
-        sbuff += `<x-z d=${dpos} data-b=${b} data-e=${b + 1}>`
-        sbuff += escape_htm(body.charAt(x))
-        sbuff += `</x-z>`
-      }
-      sbuff += `</x-n>`
-    } else {
-      sbuff += escape_htm(body)
-    }
+    const zesc = escape_htm(body)
+    const vesc = escape_htm(vstr)
+    const [text, hint] = show_zh ? [zesc, vesc] : [vesc, zesc]
+
+    html += ` <x-n d=${dpos} data-tip="${hint}" data-b=${from} data-e=${upto} data-c=${cpos}>${text}</x-n>`
   }
 
-  if (rmode > 0) sbuff += '</x-g>'
-  else sbuff += `)`
+  return html + '</x-g>'
+}
 
-  return sbuff
+export function gen_vtran_html(
+  node: CV.Cvtree,
+  mode = 1,
+  cap = true,
+  und = true
+) {
+  let html = ''
+  let _lvl = 0
 }
 
 export function render_vdata(input: CV.Cvtree, rmode = 1, cap = true) {
@@ -146,6 +144,8 @@ export function render_vdata(input: CV.Cvtree, rmode = 1, cap = true) {
       if (!attr.includes('Hide')) {
         und = attr.includes('Undn')
         ;[vstr, cap] = apply_cap(vstr || '', cap, attr)
+      } else {
+        vstr = ''
       }
 
       if (rmode == 2) {

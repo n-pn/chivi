@@ -1,6 +1,11 @@
 <script lang="ts">
   import { ctrl, data, get_btran } from '$lib/stores/lookup_stores'
-  import { render_vdata, render_ztext, render_ctree } from '$lib/mt_data_2'
+  import {
+    render_vdata,
+    render_ztext,
+    gen_ctree_html,
+    gen_ctree_text,
+  } from '$lib/mt_data_2'
 
   import {
     data as vtform_data,
@@ -31,14 +36,14 @@
   }
 
   const copy_ctree = () => {
-    navigator.clipboard.writeText(render_ctree($data.cdata, 0))
+    navigator.clipboard.writeText(gen_ctree_text($data.cdata))
   }
 
   const reload_ctree = async () => {
     const text_headers = { 'Content-Type': 'text/plain' }
 
     const url = '/_ai/mt/reload?pdict=' + $data.pdict
-    const body = render_ctree($data.cdata, 0)
+    const body = gen_ctree_text($data.cdata)
     const init = { method: 'POST', body, headers: text_headers }
 
     const res = await fetch(url, init)
@@ -53,6 +58,8 @@
     if (!term) return
     reload_ctree()
   }
+
+  let ctree_show_zh = false
 </script>
 
 <Slider
@@ -98,12 +105,22 @@
       <h4 class="label">
         <span class="title">Cây ngữ pháp:</span>
         <span class="tools">
+          <label class="radio" data-tip="Hiển thị nghĩa tiếng Việt">
+            <input type="radio" bind:group={ctree_show_zh} value={false} />
+            <span>Nghĩa</span>
+          </label>
+
+          <label class="radio" data-tip="Hiển thị tiếng Trung gốc">
+            <input type="radio" bind:group={ctree_show_zh} value={true} />
+            <span>Trung</span>
+          </label>
+
           <button type="button" class="tools-btn" on:click={copy_ctree}
             >Sao chép</button>
         </span>
       </h4>
       <div class="cdata debug _ct">
-        {@html render_ctree($data.cdata, 2)}
+        {@html gen_ctree_html($data.cdata, ctree_show_zh)}
       </div>
 
       <h4 class="label">
@@ -206,12 +223,13 @@
       line-height: $line;
       overflow-y: visible;
 
-      :global(x-z) {
-        font-weight: 500;
-      }
-
       :global(x-n) {
-        border-bottom: none;
+        color: var(--active);
+        font-weight: 450;
+        border: 0;
+        &:hover {
+          border-bottom: 1px solid var(--border);
+        }
       }
     }
   }

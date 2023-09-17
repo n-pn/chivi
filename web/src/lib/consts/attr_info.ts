@@ -16,7 +16,6 @@ export default {
     desc: 'Trong trường hợp đặc biệt, đặt từ ở phía cuối của cụm (!)',
     used: true,
   },
-
   Prfx: {
     desc: 'Đánh dấu từ là tiền tố của một cụm từ (ít dùng)',
     used: true,
@@ -55,9 +54,9 @@ export default {
     desc: 'Các danh/đại từ chỉ người, gồm cả tên riêng, danh xưng, chức vụ',
     used: true,
   },
-  Ngrp: {
+  Norg: {
     desc: 'Danh/đại từ chỉ nhóm người, tổ chức, dân tộc, số nhiều',
-    used: false,
+    used: true,
   },
   Nloc: {
     desc: 'Danh/đại từ chỉ nơi chốn địa điểm, kể cả địa danh, tổ chức',

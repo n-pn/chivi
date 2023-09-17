@@ -118,15 +118,14 @@ class MT::AiData
     cpos, *tags = cpos.split('-')
 
     case cpos
-    when "NR" then attr = MtAttr::Npos
     when "NT" then attr = MtAttr::Ntmp
     else           attr = MtAttr::None
     end
 
     tags.each do |ctag|
       case ctag
-      when "PN"  then attr |= MtAttr[Nper, Npos]
-      when "TMP" then attr |= MtAttr[Ntmp]
+      when "PN"  then attr |= MtAttr::Nper
+      when "TMP" then attr |= MtAttr::Ntmp
       end
     end
 

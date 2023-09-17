@@ -94,7 +94,7 @@ class MT::ViTerm
       jb.field "cpos", @cpos
 
       jb.field "vstr", @vstr
-      jb.field "attr", @attr == "None" ? "" : @attr
+      jb.field "attr", @attr == "None" ? "" : @attr.sub("Npos", "").strip
 
       jb.field "uname", @uname
       jb.field "mtime", self.class.utime(@mtime)
@@ -108,7 +108,7 @@ class MT::ViTerm
       io << @zstr << '\t' << @cpos << '\t' << @vstr
 
       if @plock != 1
-        io << '\t' << @attr
+        io << '\t' << @attr.sub("Npos", "").strip
         io << '\t' << @uname << '\t' << @mtime
         io << '\t' << @plock
       elsif @uname != ""

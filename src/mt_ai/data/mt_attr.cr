@@ -24,13 +24,11 @@ enum MT::MtAttr
 
   # noun characteristics
 
-  Ndes # descriptive noun
-  Npos # possestive noun
-
   Nper # noun that referering to human being
-  Ngrp # group of human?
-
   Nloc # noun that referering to placement/location/organization
+  Norg # group of human?
+
+  Ndes # descriptive noun
   Ntmp # mark temporal noun
 
   # Nhrf = Sufx | Nper

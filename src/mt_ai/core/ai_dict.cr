@@ -53,7 +53,7 @@ class MT::AiDict
       @auto_dict.add(zstr, ipos, zstr, MtAttr[Asis, Capx])
     when MtCpos["URL"]
       vstr = CharUtil.normalize(zstr)
-      @auto_dict.add(zstr, ipos, vstr, MtAttr[Asis, Npos])
+      @auto_dict.add(zstr, ipos, vstr, MtAttr[Asis])
     when MtCpos::OD
       @auto_dict.add(zstr, ipos, init_od(zstr), :none)
     when MtCpos::CD
@@ -80,7 +80,7 @@ class MT::AiDict
 
     pchar = MAP_PCHAR[pchar]? || pchar
 
-    "#{fname_vstr}#{pchar}#{init_nr(lname)}"
+    "#{fname_vstr}#{pchar}#{lname_vstr}"
   end
 
   def init_od(zstr : String)
@@ -93,14 +93,16 @@ class MT::AiDict
 
   def init_cd(zstr : String)
     case
-    when zstr.starts_with?("分之") then "#{tl_unit(zstr[2..])} phần"
-    else                              tl_unit(zstr)
+    when zstr.starts_with?("分之")
+      "#{tl_unit(zstr[2..])} phần"
+    else
+      tl_unit(zstr)
     end
   end
 
   def tl_unit(zstr : String)
     case zstr
-    when /^[０-９．，－：～ ％]$/
+    when /^[０-９．，－：～％]$/
       CharUtil.to_halfwidth(zstr)
     else
       TlUnit.translate(zstr)

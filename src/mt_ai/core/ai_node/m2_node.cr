@@ -50,11 +50,11 @@ class MT::M2Node
     @flip = true
     return unless right.zstr == "的" && right.cpos == "DEG"
 
-    if possessive?(left)
+    if not_ktetic?(left)
+      right.set_term!(MtTerm.new("", MtAttr[:hide, :at_t]))
+    else
       right.set_vstr!("của")
       right.off_attr!(:hide)
-    else
-      right.set_term!(MtTerm.new("", MtAttr[:hide, :at_t]))
     end
   end
 
@@ -62,21 +62,16 @@ class MT::M2Node
     @flip = @left.ipos == MtCpos::OD || @right.zstr.includes?('之')
   end
 
-  private def possessive?(node : AiNode)
-    return true if node.attr.npos? || node.attr.nper?
-    return false if node.attr.ndes? || node.attr.ntmp?
+  private def not_ktetic?(node : AiNode)
+    return true if node.attr.includes?(MtAttr[Ndes, Ntmp])
+    return false if node.attr.includes?(MtAttr[Nper, Norg, Nloc])
 
-    while node.cpos == "NP"
-      # NOTE: remove recursion here?
+    while node.ipos == MtCpos::NP
       node = node.last
     end
 
-    case node.cpos
-    when "NP", "NR" then true
-    when "PN"       then node.attr.npos? || node.attr.nper?
-    when "NN", "NT" then !node.attr.ndes?
-    else                 false
-    end
+    return node.attr.nper? if node.ipos == MtCpos::PN
+    node.attr.includes?(MtAttr[Ndes, Ntmp]) || !node.cpos.in?("NP", "NR")
   end
 
   def fix_vcd!

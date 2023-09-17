@@ -11,7 +11,7 @@
   let icpos = 'DT'
 
   import { data, ctrl } from '$lib/stores/vtform_stores'
-  import { render_ctree, render_ztext, render_vdata } from '$lib/mt_data_2'
+  import { gen_ctree_html, render_ztext, render_vdata } from '$lib/mt_data_2'
 
   import VitermForm from '$gui/parts/VitermForm.svelte'
   import { browser } from '$app/environment'
@@ -40,7 +40,7 @@
     <span class="title">Cây ngữ pháp:</span>
   </h3>
   <div class="cdata debug _ct">
-    {@html render_ctree($data.vtree, 2)}
+    {@html gen_ctree_html($data.vtree, true)}
   </div>
 
   <br />
@@ -60,7 +60,7 @@
   </div>
 </article>
 
-{#if $ctrl.actived}<VitermForm />{/if}
+{#if $ctrl.actived}<VitermForm pdict="combine" />{/if}
 
 <style lang="scss">
   .label {

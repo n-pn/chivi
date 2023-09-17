@@ -29,18 +29,18 @@ $color-red: (
   9: #581717,
 ) !default;
 
-// source: tailwind amber
-$color-orange: (
-  0: #fffef7,
-  1: #faf2df,
-  2: #f3dba8,
-  3: #f7ce82,
-  4: #eeab46,
-  5: #d68010,
-  6: #ae5f0a,
-  7: #924b0c,
-  8: #7d3b0c,
-  9: #76350f,
+// source: tailwind yellow
+$color-yellow: (
+  0: #fefce8,
+  1: #fef9c3,
+  2: #fef08a,
+  3: #fde047,
+  4: #facc15,
+  5: #eab308,
+  6: #ca8a04,
+  7: #a16207,
+  8: #854d0e,
+  9: #713f12,
 ) !default;
 
 // source: tailwind emerald
@@ -83,6 +83,20 @@ $color-blue: (
   7: #0b5b89,
   8: #0b476b,
   9: #0b4160,
+) !default;
+
+// source: tailwind indigo
+$color-indigo: (
+  0: #eef2ff,
+  1: #e0e7ff,
+  2: #c7d2fe,
+  3: #a5b4fc,
+  4: #818cf8,
+  5: #6366f1,
+  6: #4f46e5,
+  7: #4338ca,
+  8: #3730a3,
+  9: #312e81,
 ) !default;
 
 // source: tailwind violet
@@ -147,9 +161,11 @@ $color-palette: (
   gray: $color-gray,
   red: $color-red,
   orange: $color-orange,
+  yellow: $color-yellow,
   green: $color-green,
   teal: $color-teal,
   blue: $color-blue,
+  indigo: $color-indigo,
   violet: $color-violet,
   purple: $color-purple,
   fuchsia: $color-fuchsia,
