@@ -34,7 +34,6 @@
   }
 
   $: min_privi = tform.local ? 0 : 1
-  $: max_plock = tform.init.plock + min_privi
 </script>
 
 <div class="opts">

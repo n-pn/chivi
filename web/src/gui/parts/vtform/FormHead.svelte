@@ -254,7 +254,7 @@
 
     > span {
       padding: 0 0.25rem;
-      @include bgcolor(secd);
+      @include bgcolor(tert);
       @include clamp($width: null);
     }
   }

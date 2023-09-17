@@ -246,6 +246,7 @@
       <SIcon name="brand-google" />
       <span class="lang">Anh</span>
     </button>
+
     <button
       class="btn _tl"
       on:click={() => run_btran(1)}
@@ -328,7 +329,7 @@
     line-height: 1.875rem;
     height: 1.875rem;
 
-    @include bgcolor(main);
+    @include bgcolor(secd);
     @include ftsize(sm);
     @include border;
     @include bdradi($loc: bottom);

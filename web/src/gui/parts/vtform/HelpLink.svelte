@@ -73,7 +73,7 @@
 <style lang="scss">
   footer {
     position: relative;
-    @include border(--bd-main, $loc: top);
+    @include border(--bd-soft, $loc: top);
   }
 
   .main {
