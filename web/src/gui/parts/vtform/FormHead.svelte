@@ -250,6 +250,8 @@
     line-height: 1rem;
     font-size: rem(12px);
 
+    @include fgcolor(tert);
+
     > span {
       padding: 0 0.25rem;
       @include bgcolor(secd);

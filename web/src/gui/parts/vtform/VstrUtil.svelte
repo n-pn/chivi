@@ -125,7 +125,7 @@
       class="btn _tl"
       class:_active={tform.vstr == tform.init.hviet}
       on:click={() => (tform.vstr = tform.init.hviet)}
-      use:tooltip={'Dịch bằng Google từ Trung sang Việt'}
+      use:tooltip={'Điền vào cụm từ Hán Việt'}
       data-anchor=".vtform">
       <SIcon name="letter-h" />
       <span class="lang">V</span>
@@ -408,8 +408,8 @@
     img {
       display: inline-block;
       // width: rem(12px);
-      opacity: 0.6;
-      width: 0.8em;
+      opacity: 0.7;
+      width: 0.9em;
       height: auto;
       margin-right: 0.05rem;
     }

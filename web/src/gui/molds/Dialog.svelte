@@ -14,6 +14,7 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
   class="wrap"
   on:click={() => on_close(false)}
@@ -89,7 +90,7 @@
     width: 50vw;
     max-width: 100%;
 
-    @include bgcolor(secd);
+    @include bgcolor(tert);
     @include shadow(1);
     @include darksd();
 

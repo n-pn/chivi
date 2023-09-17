@@ -278,7 +278,7 @@
     padding: 0.75rem;
     padding-top: 2rem;
 
-    @include bgcolor(bg-secd);
+    @include bgcolor(secd);
   }
 
   .main {
