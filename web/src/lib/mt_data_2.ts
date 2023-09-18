@@ -113,8 +113,8 @@ export function gen_ctree_html(node: CV.Cvtree, show_zh = true, level = 0) {
   return html + '</x-g>'
 }
 
-const is_quote_open = (vstr: string) => /^“|‘|\[/.test(vstr)
-const is_quote_stop = (vstr: string) => /”|’|\]$/.test(vstr)
+const is_quote_start = (vstr: string) => /^“|‘|\[/.test(vstr)
+const is_quote_final = (vstr: string) => /”|’|\]$/.test(vstr)
 
 function render_mtl(vstr: string, cpos: string) {
   switch (cpos) {
@@ -127,50 +127,72 @@ function render_mtl(vstr: string, cpos: string) {
   }
 }
 
+/////////////
+// if line contain quoted sentence then add cap to the first letter
+// observe:
+// - first element in list is quote start punctuation
+// - last element in is is quote final punctuation and the element before it is also a punctuation
+// - last element is some punctuation, this marks the end of sentence (without proper quote enclosure)
+function should_add_cap(list: Array<CV.Cvtree>) {
+  const head = list[0]
+  if (head[0] != 'PU' || !is_quote_start(head[5])) return false
+
+  const tail = list[list.length - 1]
+  if (tail[0] != 'PU') return false
+
+  return !is_quote_final(tail[5]) || list[list.length - 2][0] == 'PU'
+}
+
 export function gen_vtran_html(
   node: CV.Cvtree,
-  opts = { mode: 1, cap: true, und: true }
+  opts = { mode: 1, cap: true, und: true, lvl: 0 }
 ) {
+  opts.cap ||= true
+  opts.und ||= true
+  opts.lvl ||= 0
+
   const [cpos, zidx, zlen, attr, body, vstr, vdic] = node
   if (attr.includes('Hide')) return ''
 
   let html = ''
 
   if (Array.isArray(body)) {
-    const fvstr = body[0][5]
-    const lvstr = body[body.length - 1][5]
-
-    if (is_quote_open(fvstr) && is_quote_stop(lvstr)) {
-      const near_last = body[body.length - 2]
-      opts.cap ||= near_last[0] == 'PU'
-    }
+    opts.cap ||= should_add_cap(body)
 
     for (let i = 0; i < body.length; i++) {
       html += gen_vtran_html(body[i], opts)
     }
+
+    while (opts.lvl < 0) {
+      opts.lvl += 1
+      html = '<em>' + html
+    }
+
+    while (opts.lvl > 0) {
+      opts.lvl -= 1
+      html += '</em>'
+    }
   } else {
+    if (vstr.charAt(0) == '⟨') {
+      html += '<cite>'
+    } else if (is_quote_start(vstr)) {
+      html += '<em>'
+      opts.lvl += 1
+    }
+
     if (!opts.und && !attr.includes('Undb')) html += ' '
     opts.und = attr.includes('Undn')
 
-    const upto = zidx + zlen
-    const dtyp = vdic % 10
-
-    const fchar = vstr.charAt(0)
-
-    if (fchar == '“' || fchar == '‘' || fchar == '[') {
-      html = '<em>' + html
-    } else if (fchar == '⟨') {
-      html = '<cite>' + html
-    }
-
     const asis = /Capx|Asis/.test(attr)
-
     let vesc = escape_htm(vstr)
-    if (opts.cap && !asis) vesc = capitalize(vstr)
 
+    if (opts.cap && !asis) vesc = capitalize(vstr)
     opts.cap = (opts.cap && asis) || attr.includes('Capn')
 
     if (opts.mode == 2) {
+      const upto = zidx + zlen
+      const dtyp = vdic % 10
+
       html += `<x-n d=${dtyp} data-b=${zidx} data-e=${upto} data-c=${cpos}>`
       html += render_mtl(vesc, cpos)
       html += `</x-n>`
@@ -180,12 +202,11 @@ export function gen_vtran_html(
       html += vesc
     }
 
-    const lchar = vstr.charAt(vstr.length - 1)
-
-    if (lchar == '”' || lchar == '’' || lchar == ']') {
-      html += '</em>'
-    } else if (lchar == '⟩') {
+    if (vstr.charAt(0) == '⟩') {
       html += '</cite>'
+    } else if (is_quote_final(vstr)) {
+      html += '</em>'
+      opts.lvl -= 1
     }
   }
 
@@ -196,18 +217,13 @@ export function gen_vtran_text(
   node: CV.Cvtree,
   opts = { cap: true, und: true }
 ) {
-  const [_pos, zidx, zlen, attr, body, vstr, vdic] = node
+  const [_pos, _idx, _len, attr, body, vstr, vdic] = node
   if (attr.includes('Hide')) return ''
 
   let text = ''
 
   if (Array.isArray(body)) {
-    const fvstr = body[0][5]
-    const lvstr = body[body.length - 1][5]
-
-    if (is_quote_open(fvstr) && is_quote_stop(lvstr)) {
-      opts.cap ||= body[body.length - 2][0] == 'PU'
-    }
+    opts.cap ||= should_add_cap(body)
 
     for (let i = 0; i < body.length; i++) {
       text += gen_vtran_text(body[i], opts)
