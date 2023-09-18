@@ -109,7 +109,6 @@
   }
 
   $: render_mode = $config.r_mode == 2 ? 2 : 1
-  $: render_opts = { mode: render_mode, cap: true, und: true, _qc: 0 }
 
   afterNavigate(() => {
     $lookup_data.l_idx = -1
@@ -166,6 +165,7 @@
   class="reader app-fs-{$config.ftsize} app-ff-{$config.ftface}"
   style:--textlh="{$config.textlh}%">
   {#each data.lines as line, _idx}
+    {@const opts = { mode: render_mode, cap: true, und: true, _qc: 0 }}
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <svelte:element
@@ -173,7 +173,7 @@
       id="L{_idx}"
       class="cdata"
       on:click={() => ($lookup_data.l_idx = _idx)}>
-      {@html gen_vtran_html(line, render_opts)}
+      {@html gen_vtran_html(line, opts)}
       {#if _idx == 0 && cinfo.psize > 1}[{xargs.cpart}/{cinfo.psize}]{/if}
     </svelte:element>
   {/each}
