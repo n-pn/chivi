@@ -105,7 +105,7 @@ class MT::ViTermCtrl < AC::Base
       raise Unauthorized.new "Từ đã bị khoá, bạn cần quyền hạn tối thiểu là #{min_privi + 1} để đổi khoá"
     end
 
-    spawn form.save_to_disk!(_uname, fresh: prev_term.nil?)
+    spawn form.save_to_disk!(_uname, on_create: prev_term.nil?)
     _log_action("once", form, ldir: LOG_DIR)
 
     form.sync_with_dict!

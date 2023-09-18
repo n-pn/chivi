@@ -49,9 +49,15 @@ class MT::ViTermForm
     ViTerm.find(dict: @dname, zstr: @zstr, cpos: @old_cpos)
   end
 
-  def save_to_disk!(uname : String, mtime = ViTerm.mtime, fresh : Bool = true) : Nil
+  def save_to_disk!(uname : String, mtime = ViTerm.mtime, on_create : Bool = true) : Nil
+    on_delete = @vstr.empty? && !@attr.includes?("Hide")
+
     spawn do
-      ViDict.bump_stats!(@dname, mtime, fresh ? 1 : 0)
+      if on_create
+        ViDict.bump_stats!(@dname, mtime, 1) unless on_delete
+      elsif on_delete
+        ViDict.bump_stats!(@dname, mtime, -1)
+      end
     end
 
     spawn do
@@ -63,14 +69,16 @@ class MT::ViTermForm
       end
     end
 
-    term = ViTerm.new(
-      zstr: @zstr, cpos: @cpos,
-      vstr: @vstr, attr: @attr,
-      uname: uname, mtime: mtime,
-      plock: @plock
-    )
-
-    term.upsert!(db: ViTerm.db(@dname))
+    if on_delete
+      ViTerm.delete(dict: @dname, zstr: @zstr, cpos: @cpos)
+    else
+      ViTerm.new(
+        zstr: @zstr, cpos: @cpos,
+        vstr: @vstr, attr: @attr,
+        uname: uname, mtime: mtime,
+        plock: @plock
+      ).upsert!(db: ViTerm.db(@dname))
+    end
   end
 
   def sync_with_dict!

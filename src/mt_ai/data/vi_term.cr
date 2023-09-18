@@ -140,4 +140,10 @@ class MT::ViTerm
     query = @@schema.select_by_pkey + " limit 1"
     self.db(dict).query_one?(query, zstr, cpos, as: self)
   end
+
+  def self.delete(dict : String, zstr : String, cpos : String)
+    self.db(dict).open_rw do |db|
+      db.exec "delete from #{@@schema.table} where zstr = $1, cpos = $2", zstr, cpos
+    end
+  end
 end

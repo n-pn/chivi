@@ -90,21 +90,29 @@ class MT::MtDict
     entry[ipos] = term
   end
 
+  def del(zstr : String, ipos : Int8)
+    @data[zstr]?.try(&.delete(ipos))
+  end
+
   def load_tsv!(name : String = @name)
     db_path = ViTerm.db_path(name, "tsv")
     return self unless File.file?(db_path)
 
     File.each_line(db_path) do |line|
       cols = line.split('\t')
-      next if cols.size < 3
+      next if cols.size < 2
 
       zstr = cols[0]
       ipos = MtCpos[cols[1]]
-      vstr = cols[2]
+      vstr = cols[2]? || ""
       attr = MtAttr.parse_list(cols[3]?)
-      lock = cols[6]?.try(&.to_i8?) || 1_i8
 
-      add(zstr: zstr, ipos: ipos, vstr: vstr, attr: attr, lock: lock)
+      if vstr.empty? && !attr.hide?
+        self.del(zstr: zstr, ipos: ipos)
+      else
+        lock = cols[6]?.try(&.to_i8?) || 1_i8
+        self.add(zstr: zstr, ipos: ipos, vstr: vstr, attr: attr, lock: lock)
+      end
     end
 
     self
@@ -129,7 +137,13 @@ class MT::MtDict
 
       db.query_each(query) do |rs|
         zstr, cpos, vstr, attr = rs.read(String, String, String, String)
-        add(zstr, ipos: MtCpos[cpos], vstr: vstr, attr: MtAttr.parse_list(attr))
+
+        # TODO: rebuild iattr enum
+        attr = MtAttr.parse_list(attr)
+
+        # TODO: remove this line and purge database instead
+        next if vstr.empty? && !attr.hide?
+        self.add(zstr, ipos: MtCpos[cpos], vstr: vstr, attr: attr)
       end
     end
 
