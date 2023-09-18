@@ -167,6 +167,6 @@ class MT::MtDict
   end
 
   def self.get?(name : String)
-    ENTRIES[name]?
+    name == "regular" ? @@regular : ENTRIES[name]?
   end
 end

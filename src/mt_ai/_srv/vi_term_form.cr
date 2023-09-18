@@ -45,6 +45,8 @@ class MT::ViTermForm
     @old_cpos = @cpos if @old_cpos.blank?
   end
 
+  getter? on_delete : Bool { @vstr.empty? && !@attr.includes?("Hide") }
+
   def prev_term
     ViTerm.find(dict: @dname, zstr: @zstr, cpos: @old_cpos)
   end
@@ -53,10 +55,10 @@ class MT::ViTermForm
     on_delete = @vstr.empty? && !@attr.includes?("Hide")
 
     spawn do
-      if on_create
-        ViDict.bump_stats!(@dname, mtime, 1) unless on_delete
-      elsif on_delete
-        ViDict.bump_stats!(@dname, mtime, -1)
+      if self.on_delete?
+        ViDict.bump_stats!(@dname, mtime, -1) unless on_create
+      elsif on_create
+        ViDict.bump_stats!(@dname, mtime, 1)
       end
     end
 
@@ -82,22 +84,17 @@ class MT::ViTermForm
   end
 
   def sync_with_dict!
+    return unless mt_dict = MtDict.get?(@dname)
     ipos = MtCpos[@cpos]
-    case @dname
-    when "regular"
-      mt_term = make_term(:regular)
-      MtDict.regular.add(zstr, ipos: ipos, term: mt_term)
-    else
-      mt_term = make_term(:primary)
-      MtDict.get?(dname).try(&.add(zstr, ipos: ipos, term: mt_term))
-    end
-  end
 
-  def make_term(dtype : MtDtyp = :primary)
-    MtTerm.new(
-      vstr: @vstr,
-      attr: MtAttr.parse_list(@attr),
-      dnum: MtDnum.from(dtype: dtype, plock: @plock.to_i8)
-    )
+    if self.on_delete?
+      mt_dict.del(zstr, ipos)
+    else
+      attr = MtAttr.parse_list(@attr)
+      dnum = MtDnum.from(dtype: mt_dict.type, plock: @plock.to_i8)
+
+      mt_term = MtTerm.new(vstr: @vstr, attr: attr, dnum: dnum)
+      mt_dict.add(zstr, ipos: ipos, term: mt_term)
+    end
   end
 end
