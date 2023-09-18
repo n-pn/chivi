@@ -145,11 +145,12 @@ function should_add_cap(list: Array<CV.Cvtree>) {
 
 export function gen_vtran_html(
   node: CV.Cvtree,
-  opts = { mode: 1, cap: true, und: true, lvl: 0 }
+  opts = { mode: 1, cap: true, und: true, _qc: 0 },
+  _lvl = 0
 ) {
-  opts.cap ||= true
-  opts.und ||= true
-  opts.lvl ||= 0
+  opts.cap ??= true
+  opts.und ??= true
+  opts._qc ??= 0
 
   const [cpos, zidx, zlen, attr, body, vstr, vdic] = node
   if (attr.includes('Hide')) return ''
@@ -160,24 +161,14 @@ export function gen_vtran_html(
     opts.cap ||= should_add_cap(body)
 
     for (let i = 0; i < body.length; i++) {
-      html += gen_vtran_html(body[i], opts)
-    }
-
-    while (opts.lvl < 0) {
-      opts.lvl += 1
-      html = '<em>' + html
-    }
-
-    while (opts.lvl > 0) {
-      opts.lvl -= 1
-      html += '</em>'
+      html += gen_vtran_html(body[i], opts, _lvl + 1)
     }
   } else {
     if (vstr.charAt(0) == '⟨') {
       html += '<cite>'
     } else if (is_quote_start(vstr)) {
       html += '<em>'
-      opts.lvl += 1
+      opts._qc += 1
     }
 
     if (!opts.und && !attr.includes('Undb')) html += ' '
@@ -206,7 +197,19 @@ export function gen_vtran_html(
       html += '</cite>'
     } else if (is_quote_final(vstr)) {
       html += '</em>'
-      opts.lvl -= 1
+      opts._qc -= 1
+    }
+  }
+
+  if (_lvl == 0) {
+    while (opts._qc < 0) {
+      opts._qc += 1
+      html = '<em>' + html
+    }
+
+    while (opts._qc > 0) {
+      opts._qc -= 1
+      html += '</em>'
     }
   }
 

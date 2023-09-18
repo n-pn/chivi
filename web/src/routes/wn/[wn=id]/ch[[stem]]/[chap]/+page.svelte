@@ -75,8 +75,6 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  afterNavigate(() => ($lookup_data.l_idx = -1))
-
   $: pager = new Pager($page.url, { part: 1, mode: 'avail' })
 
   $: cinfo = data.cinfo
@@ -92,16 +90,18 @@
   $: zpath = `${rdata.cbase}-${xargs.cpart}`
   $: pdict = `book/${xargs.wn_id}`
 
+  let on_focus: HTMLElement
+
   const change_focus = async (l_idx: number) => {
-    if (!reader) return
+    const new_focus = document.getElementById('L' + l_idx)
 
-    const curr = document.getElementById('L' + l_idx)
-    const prev = reader.querySelector('.cdata.focus')
+    if (new_focus != on_focus) {
+      if (on_focus) on_focus.classList.remove('focus')
 
-    if (curr != prev) {
-      if (prev) prev.classList.remove('focus')
-      curr.classList.add('focus')
-      curr.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+      on_focus = new_focus
+      on_focus.classList.add('focus')
+
+      on_focus.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
       await lookup_data.from_cdata(data.lines, l_idx, zpath, pdict)
     }
 
@@ -109,7 +109,14 @@
   }
 
   $: render_mode = $config.r_mode == 2 ? 2 : 1
-  $: if (reader && $lookup_data.l_idx > -1) change_focus($lookup_data.l_idx)
+  $: render_opts = { mode: render_mode, cap: true, und: true, _qc: 0 }
+
+  afterNavigate(() => {
+    $lookup_data.l_idx = -1
+    if (on_focus) on_focus.classList.remove('focus')
+  })
+
+  $: if ($lookup_data.l_idx > -1) change_focus($lookup_data.l_idx)
 </script>
 
 <section class="mode-nav">
@@ -166,7 +173,7 @@
       id="L{_idx}"
       class="cdata"
       on:click={() => ($lookup_data.l_idx = _idx)}>
-      {@html gen_vtran_html(line, { mode: render_mode, cap: true, und: true })}
+      {@html gen_vtran_html(line, render_opts)}
       {#if _idx == 0 && cinfo.psize > 1}[{xargs.cpart}/{cinfo.psize}]{/if}
     </svelte:element>
   {/each}
