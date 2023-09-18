@@ -122,6 +122,7 @@
 <div class="util">
   <div class="util-main">
     <button
+      type="button"
       class="btn _tl"
       class:_active={tform.vstr == tform.init.hviet}
       on:click={() => (tform.vstr = tform.init.hviet)}
@@ -132,6 +133,7 @@
     </button>
 
     <button
+      type="button"
       class="btn _tl"
       on:click={() => (show_hints = !show_hints)}
       use:tooltip={'Thêm các gợi ý dịch nghĩa đã có sẵn'}
@@ -144,6 +146,7 @@
     <span class="sep" />
 
     <button
+      type="button"
       class="btn _tl"
       data-kbd="5"
       on:click={() => run_gtran(0)}
@@ -154,6 +157,7 @@
     </button>
 
     <button
+      type="button"
       class="btn _tl"
       data-kbd="6"
       on:click={() => run_btran(0)}
@@ -165,6 +169,7 @@
 
     <span class="sep" />
     <button
+      type="button"
       class="btn _tl"
       on:click={() => run_deepl(0)}
       use:tooltip={'Dịch bằng DeepL từ Trung sang Anh'}
@@ -173,6 +178,7 @@
       <span class="lang">E</span>
     </button>
     <button
+      type="button"
       class="btn"
       class:_active={show_trans}
       data-kbd="s"
@@ -185,6 +191,7 @@
 
     <div class="right">
       <button
+        type="button"
         class="btn"
         class:_active={tform.vstr == vstr_upper}
         data-kbd="a"
@@ -195,6 +202,7 @@
       </button>
 
       <button
+        type="button"
         class="btn"
         class:_active={tform.vstr == vstr_lower}
         data-kbd="s"
@@ -205,6 +213,7 @@
       </button>
 
       <button
+        type="button"
         class="btn"
         class:_active={show_caps}
         data-kbd="s"
@@ -218,6 +227,7 @@
       <span class="sep" />
 
       <button
+        type="button"
         class="btn"
         data-kbd="e"
         on:click={() => (tform = tform.clear())}
@@ -227,6 +237,7 @@
       </button>
 
       <button
+        type="button"
         class="btn"
         data-kbd="r"
         on:click={() => (tform = tform.reset())}
@@ -239,6 +250,7 @@
 
   <div class="util-more" class:_active={show_trans}>
     <button
+      type="button"
       class="btn _tl"
       on:click={() => run_gtran(1)}
       use:tooltip={'Dịch bằng Google từ Trung sang Anh'}
@@ -248,6 +260,7 @@
     </button>
 
     <button
+      type="button"
       class="btn _tl"
       on:click={() => run_btran(1)}
       use:tooltip={'Dịch bằng Bing từ Trung sang Anh'}
@@ -259,6 +272,7 @@
     <span class="sep" />
 
     <button
+      type="button"
       class="btn _tl"
       on:click={() => run_gtran(2)}
       use:tooltip={'Dịch bằng Google từ Nhật sang Anh'}
@@ -268,6 +282,7 @@
     </button>
 
     <button
+      type="button"
       class="btn _tl"
       on:click={() => run_btran(2)}
       use:tooltip={'Dịch bằng Bing từ Nhật sang Anh'}
@@ -277,6 +292,7 @@
     </button>
 
     <button
+      type="button"
       class="btn _tl"
       on:click={() => run_deepl(1)}
       use:tooltip={'Dịch bằng DeepL từ Nhật sang Anh'}
@@ -290,6 +306,7 @@
   <div class="util-more _right" class:_active={show_caps}>
     {#each [1, 2, 3] as num}
       <button
+        type="button"
         class="btn _{num}"
         class:_active={capped == num}
         data-kbd={num}

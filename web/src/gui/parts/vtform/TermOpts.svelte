@@ -38,6 +38,7 @@
 
 <div class="opts">
   <button
+    type="button"
     class="dict {tform.local ? 'local' : 'world'}"
     use:tooltip={dict_choice.desc}
     data-anchor=".vtform"
@@ -46,6 +47,7 @@
   </button>
 
   <button
+    type="button"
     class="lock _{tform.plock}"
     use:tooltip={'Đổi chế độ khóa từ'}
     data-anchor=".vtform"

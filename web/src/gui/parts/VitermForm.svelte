@@ -63,10 +63,10 @@
 
   let form_msg = ''
 
-  const send_form = async () => {
-    const action = '/_ai/terms/once'
-    const method = 'PUT'
+  const action = '/_ai/terms/once'
+  const method = 'PUT'
 
+  const send_form = async () => {
     const headers = { 'Content-type': 'application/json' }
     const body = tform.to_form_body(pdict, $data.vtree, zfrom)
 
@@ -132,10 +132,13 @@
     </button>
   </nav>
 
-  <main class="body">
+  <form class="body" {method} {action} on:submit|preventDefault={send_form}>
     <div class="main">
       <div class="main-head">
-        <button class="cpos" on:click={() => (pick_cpos = !pick_cpos)}>
+        <button
+          type="button"
+          class="cpos"
+          on:click={() => (pick_cpos = !pick_cpos)}>
           <span class="plbl u-show-pl">Từ loại:</span>
           <span class="ptag" use:tooltip={cpos_data.desc} data-anchor=".vtform">
             <code>{tform.cpos}</code>
@@ -182,14 +185,15 @@
       <button
         class="m-btn _lg _fill {btn_style} _send"
         data-kbd="↵"
+        type="submit"
         disabled={privi < tform.req_privi}
         on:click={send_form}>
         <SIcon name="send" />
-        <span class="submit-text">Lưu</span>
+        <span class="text">{tform.vstr ? 'Lưu' : 'Xoá'}</span>
         <SIcon name="privi-{tform.req_privi}" iset="icons" />
       </button>
     </footer>
-  </main>
+  </form>
 
   <HelpLink key={tform.init.zstr} />
 </Dialog>
