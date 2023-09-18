@@ -1,8 +1,8 @@
 <script lang="ts">
   import { ctrl, data, get_btran } from '$lib/stores/lookup_stores'
   import {
-    render_vdata,
-    render_ztext,
+    gen_vtran_html,
+    gen_ztext_html,
     gen_ctree_html,
     gen_ctree_text,
   } from '$lib/mt_data_2'
@@ -15,6 +15,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Slider from '$gui/molds/Slider.svelte'
   import VitermForm from '$gui/parts/VitermForm.svelte'
+  import { invalidate } from '$app/navigation'
 
   let zfrom = 0
   let zupto = 1
@@ -27,7 +28,7 @@
     zupto = +target.dataset.e
     const icpos = target.dataset.c || '_'
 
-    vtform_data.put($data.hviet, $data.cdata, zfrom, zupto, icpos)
+    vtform_data.put($data.zline, $data.hviet, $data.cdata, zfrom, zupto, icpos)
     vtform_ctrl.show(0)
   }
 
@@ -57,6 +58,7 @@
   const on_term_change = (term?: CV.Vtdata) => {
     if (!term) return
     reload_ctree()
+    invalidate('wn:cdata')
   }
 
   let ctree_show_zh = false
@@ -92,14 +94,14 @@
     </button>
   </svelte:fragment>
 
-  {#if $data.ztext}
+  {#if $data.zline}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <section class="cbody" on:click={handle_click}>
       <h4 class="label">Tiếng Trung:</h4>
 
       <div class="cdata _zh" lang="zh">
-        {@html render_ztext($data.cdata, 2)}
+        {@html gen_ztext_html($data.zline, $data.hviet)}
       </div>
 
       <h4 class="label">
@@ -139,7 +141,7 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div class="cdata debug _mt">
         {#if $data.cdata}
-          {@html render_vdata($data.cdata, 2)}
+          {@html gen_vtran_html($data.cdata, { mode: 2, cap: true, und: true })}
         {/if}
       </div>
 
@@ -156,13 +158,6 @@
               >Dịch từ Bing Edge!</button>
           </div>
         {/if}
-      </div>
-
-      <h4 class="label">Hán Việt:</h4>
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <div class="cdata debug _hv">
-        {@html render_vdata($data.hviet, 2)}
       </div>
     </section>
   {:else}
@@ -196,12 +191,6 @@
       line-height: $line;
       max-height: $line * 3 + 0.75rem;
       @include ftsize(lg);
-    }
-
-    &._hv {
-      $line: 1.125rem;
-      line-height: $line;
-      max-height: $line * 4 + 0.75rem;
     }
 
     &._mt {

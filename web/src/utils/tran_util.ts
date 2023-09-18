@@ -1,28 +1,29 @@
-import type { Ctree } from '$lib/mt_data_2'
+import { local_get } from '$lib/vcache'
 
-export type CtreeRes = { cdata: Array<Ctree>; tspan: number; error?: string }
+export type HvietRes = {
+  hviet: Array<[string, string]>
+  tspan: number
+  ztext?: Array<string>
+  error?: string
+}
+
 export type VtextRes = { cdata: Array<string>; tspan: number; error?: string }
 
-const hviet_cache = new Map<string, CtreeRes>()
 const btran_cache = new Map<string, VtextRes>()
 
 export async function get_wntext_hviet(
   zpath: string,
-  force = false,
+  force: boolean = false,
+  w_raw: boolean = false,
   fetch = globalThis.fetch
-): Promise<CtreeRes> {
-  const cached = force ? undefined : hviet_cache.get(zpath)
-  if (cached) return cached
+): Promise<HvietRes> {
+  return await local_get<HvietRes>(`hv:wn:${zpath}`, force, async () => {
+    const url = `/_sp/hviet?zpath=${zpath}&ftype=nctext&w_raw=${w_raw}`
+    const res = await fetch(url, { method: 'GET' })
 
-  const url = `/_ai/qt/hviet?zpath=${zpath}&force=${force}`
-  const res = await fetch(url, { method: 'GET' })
-
-  if (!res.ok) return { cdata: [], tspan: 0, error: await res.text() }
-
-  const cdata = await res.json()
-  if (!cdata.error) hviet_cache.set(zpath, cdata)
-
-  return cdata
+    if (res.ok) return await res.json()
+    return { hviet: [], tspan: 0, error: await res.text() }
+  })
 }
 
 export async function get_wntext_btran(

@@ -58,7 +58,7 @@
   import { page } from '$app/stores'
   import { Pager } from '$lib/pager'
   import { config } from '$lib/stores'
-  import { render_vdata } from '$lib/mt_data_2'
+  import { gen_vtran_html } from '$lib/mt_data_2'
 
   import {
     data as lookup_data,
@@ -166,7 +166,7 @@
       id="L{_idx}"
       class="cdata"
       on:click={() => ($lookup_data.l_idx = _idx)}>
-      {@html render_vdata(line, render_mode)}
+      {@html gen_vtran_html(line, { mode: render_mode, cap: true, und: true })}
       {#if _idx == 0 && cinfo.psize > 1}[{xargs.cpart}/{cinfo.psize}]{/if}
     </svelte:element>
   {/each}

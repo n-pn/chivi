@@ -82,7 +82,7 @@ enum MT::MtAttr
 
   @[AlwaysInline]
   def to_str
-    self.to_s.gsub(" | ", ' ')
+    self.none? ? "" : self.to_s.gsub(" | ", ' ')
   end
 
   @[AlwaysInline]

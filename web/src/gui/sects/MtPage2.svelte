@@ -10,7 +10,7 @@
   import { config } from '$lib/stores'
 
   // import SIcon from '$gui/atoms/SIcon.svelte'
-  import { render_vdata } from '$lib/mt_data_2'
+  import { gen_vtran_html } from '$lib/mt_data_2'
 
   export let data: { cdata: Array<CV.Cvtree>; _algo: string }
 
@@ -39,7 +39,11 @@
         class:debug
         class:focus={index == l_focus}
         on:click={() => (l_focus = index)}>
-        {@html render_vdata(cdata, debug ? 2 : 1)}
+        {@html gen_vtran_html(cdata, {
+          mode: debug ? 2 : 1,
+          cap: true,
+          und: true,
+        })}
       </svelte:element>
     {/each}
   </section>

@@ -1,6 +1,5 @@
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import { render_ztext } from '$lib/mt_data_2'
 
   import { ctrl, data } from '$lib/stores/vtform_stores'
 
@@ -9,9 +8,9 @@
   export let icpos: string
   export let hviet: string
 
-  $: zsize = $data.htree[2]
+  $: chars = Array.from($data.zline)
+  $: zsize = chars.length
 
-  $: chars = Array.from(render_ztext($data.htree, 0))
   $: [pre_chars, out_chars, suf_chars] = split_ztext(chars, zfrom, zupto)
 
   function split_ztext(chars: Array<String>, zfrom: number, zupto: number) {

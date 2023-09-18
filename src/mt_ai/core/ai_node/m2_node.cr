@@ -74,7 +74,7 @@ class MT::M2Node
       when MtCpos::PN
         return node.attr.nper?
       else
-        return false
+        return node.ipos == MtCpos::NN
       end
     end
 

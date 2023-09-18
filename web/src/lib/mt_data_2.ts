@@ -10,65 +10,66 @@ function capitalize(str: String) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
-function skip_space(und = false, attr = '') {
-  return und || attr.match(/Hide|Undb/)
-}
-
-function apply_cap(vstr: string, cap = false, attr = ''): [string, boolean] {
-  if (attr.includes('Hide')) return ['', cap]
-  if (attr.includes('Capx')) return [vstr, cap]
-  if (attr.includes('Asis') || !cap) return [vstr, attr.includes('Capn')]
-  return [capitalize(vstr), attr.includes('Capn')]
-}
-
-function render_vstr(vstr: string, cpos: string) {
-  const safe_vstr = escape_htm(vstr)
-
-  switch (cpos) {
-    case 'EM':
-      return `<pre>${safe_vstr}</pre>`
-    case 'URL':
-      return `<a href="${safe_vstr}" target=_blank rel=noreferrer>${safe_vstr}</a>`
-    default:
-      return safe_vstr
-  }
-}
-
 const sort = (a: CV.Cvtree, b: CV.Cvtree) => a[1] - b[1]
 
-export function render_ztext(input: CV.Cvtree, rmode = 1) {
-  let out = ''
+export function gen_ztext_text(input: CV.Cvtree) {
+  const stack = [input]
 
-  const queue = [input]
+  let text = ''
+
   while (true) {
-    const node = queue.pop()
+    const node = stack.pop()
     if (!node) break
 
-    const [_cpos, zidx, zlen, _attr, body, _vstr, vdic] = node
-
-    if (rmode > 1) {
-      out += `<x-n d=${vdic % 10} data-b=${zidx} data-e=${zidx + zlen}>`
-    }
+    const body = node[4]
 
     if (Array.isArray(body)) {
       const orig = body.slice().sort(sort)
-      for (let i = orig.length - 1; i >= 0; i--) queue.push(orig[i])
+      for (let i = orig.length - 1; i >= 0; i--) stack.push(orig[i])
     } else {
-      if (rmode == 0) {
-        out += body
-      } else {
-        for (let x = 0; x < body.length; x++) {
-          const idx = zidx + x
-          out += `<x-z d=${vdic % 10} data-b=${idx} data-e=${idx + 1}>`
-          out += escape_htm(body.charAt(x))
-          out += `</x-z>`
-        }
-      }
+      text += body
     }
-    if (rmode > 1) out += '</x-n>'
   }
 
-  return out
+  return text
+}
+
+export function gen_ztext_html(
+  ztext: string,
+  hviet: Array<[string, string]> = []
+) {
+  let html = ''
+
+  for (let i = 0; i < ztext.length; i++) {
+    const [hstr] = hviet[i] || []
+
+    html += `<x-z data-b=${i} data-e=${i + 1} data-tip="${hstr}">`
+    html += escape_htm(ztext.charAt(i))
+    html += `</x-z>`
+  }
+
+  return html
+}
+
+export function gen_hviet_text(hvarr: Array<[string, string]>, cap = false) {
+  let text = ''
+  let p_ws = false
+
+  for (const [hstr, attr] of hvarr) {
+    if (attr.includes('Hide')) continue
+
+    if (p_ws && !attr.includes('Undb')) text += ' '
+    p_ws = !attr.includes('Undn')
+
+    const asis = /Capx|Asis/.test(attr)
+
+    if (!cap || asis) text += hstr
+    else text += capitalize(hstr)
+
+    cap = (cap && asis) || attr.includes('Capn')
+  }
+
+  return text
 }
 
 export function gen_ctree_text([cpos, _idx, _len, _att, body]: CV.Cvtree) {
@@ -112,109 +113,137 @@ export function gen_ctree_html(node: CV.Cvtree, show_zh = true, level = 0) {
   return html + '</x-g>'
 }
 
-export function gen_vtran_html(
-  node: CV.Cvtree,
-  mode = 1,
-  cap = true,
-  und = true
-) {
-  let html = ''
-  let _lvl = 0
+const is_quote_open = (vstr: string) => /^“|‘|\[/.test(vstr)
+const is_quote_stop = (vstr: string) => /”|’|\]$/.test(vstr)
+
+function render_mtl(vstr: string, cpos: string) {
+  switch (cpos) {
+    case 'EM':
+      return `<x-em>${vstr}</x-em>`
+    case 'URL':
+      return `<a href="${vstr}" target=_blank rel=noreferrer>${vstr}</a>`
+    default:
+      return vstr
+  }
 }
 
-export function render_vdata(input: CV.Cvtree, rmode = 1, cap = true) {
-  let out = ''
-  let und = true
-  let lvl = 0
+export function gen_vtran_html(
+  node: CV.Cvtree,
+  opts = { mode: 1, cap: true, und: true }
+) {
+  const [cpos, zidx, zlen, attr, body, vstr, vdic] = node
+  if (attr.includes('Hide')) return ''
 
-  const queue = [input]
-  while (true) {
-    const node = queue.pop()
-    if (!node) break
+  let html = ''
 
-    let [cpos, zidx, zlen, attr, body, vstr, vdic] = node
+  if (Array.isArray(body)) {
+    const fvstr = body[0][5]
+    const lvstr = body[body.length - 1][5]
+
+    if (is_quote_open(fvstr) && is_quote_stop(lvstr)) {
+      const near_last = body[body.length - 2]
+      opts.cap ||= near_last[0] == 'PU'
+    }
+
+    for (let i = 0; i < body.length; i++) {
+      html += gen_vtran_html(body[i], opts)
+    }
+  } else {
+    if (!opts.und && !attr.includes('Undb')) html += ' '
+    opts.und = attr.includes('Undn')
+
     const upto = zidx + zlen
     const dtyp = vdic % 10
 
-    if (Array.isArray(body)) {
-      for (let i = body.length - 1; i >= 0; i--) queue.push(body[i])
+    const fchar = vstr.charAt(0)
+
+    if (fchar == '“' || fchar == '‘' || fchar == '[') {
+      html = '<em>' + html
+    } else if (fchar == '⟨') {
+      html = '<cite>' + html
+    }
+
+    const asis = /Capx|Asis/.test(attr)
+
+    let vesc = escape_htm(vstr)
+    if (opts.cap && !asis) vesc = capitalize(vstr)
+
+    opts.cap = (opts.cap && asis) || attr.includes('Capn')
+
+    if (opts.mode == 2) {
+      html += `<x-n d=${dtyp} data-b=${zidx} data-e=${upto} data-c=${cpos}>`
+      html += render_mtl(vesc, cpos)
+      html += `</x-n>`
+    } else if (opts.mode == 1) {
+      html += render_mtl(vesc, cpos)
     } else {
-      if (!skip_space(und, attr)) out += ' '
+      html += vesc
+    }
 
-      if (!attr.includes('Hide')) {
-        und = attr.includes('Undn')
-        ;[vstr, cap] = apply_cap(vstr || '', cap, attr)
-      } else {
-        vstr = ''
-      }
+    const lchar = vstr.charAt(vstr.length - 1)
 
-      if (rmode == 2) {
-        out += `<x-n d=${dtyp} data-b=${zidx} data-e=${upto} data-c=${cpos}>`
-        out += render_vstr(vstr, cpos)
-        out += `</x-n>`
-      } else if (rmode == 1) {
-        out += render_vstr(vstr, cpos)
-      } else {
-        out += escape_htm(vstr)
-      }
-
-      if (rmode > 0) {
-        const fchar = vstr.charAt(0)
-        if (fchar == '“' || fchar == '‘') {
-          out = '<em>' + out
-          lvl += 1
-        } else if (fchar == '⟨') {
-          out = '<cite>' + out
-        }
-
-        const lchar = vstr.charAt(vstr.length - 1)
-
-        if (lchar == '”' || lchar == '’') {
-          lvl -= 1
-          out += '</em>'
-        } else if (lchar == '⟩') {
-          out += '</cite>'
-        }
-      }
+    if (lchar == '”' || lchar == '’' || lchar == ']') {
+      html += '</em>'
+    } else if (lchar == '⟩') {
+      html += '</cite>'
     }
   }
 
-  if (rmode > 0) {
-    if (lvl < 0) for (; lvl; lvl++) out = '<em>' + out
-    else if (lvl > 0) for (; lvl; lvl--) out += '</em>'
-  }
-
-  return out
+  return html
 }
 
-export function find_node(input: CV.Cvtree, q_idx = 0, q_len = 0) {
-  const queue = [input]
+export function gen_vtran_text(
+  node: CV.Cvtree,
+  opts = { cap: true, und: true }
+) {
+  const [_pos, zidx, zlen, attr, body, vstr, vdic] = node
+  if (attr.includes('Hide')) return ''
 
-  while (true) {
-    const node = queue.pop()
-    if (!node) break
+  let text = ''
 
-    const [_cpos, n_idx, n_len, _attr, body] = node
+  if (Array.isArray(body)) {
+    const fvstr = body[0][5]
+    const lvstr = body[body.length - 1][5]
 
-    if (n_idx < q_idx) continue
-    if (n_idx > q_idx || n_len < q_len) break
-
-    if (!Array.isArray(body)) {
-      if (n_len == q_len) return node
-    } else {
-      if (n_len == q_len && body.length > 1) return node
-      for (let i = body.length - 1; i >= 0; i--) queue.push(body[i])
+    if (is_quote_open(fvstr) && is_quote_stop(lvstr)) {
+      opts.cap ||= body[body.length - 2][0] == 'PU'
     }
+
+    for (let i = 0; i < body.length; i++) {
+      text += gen_vtran_text(body[i], opts)
+    }
+  } else {
+    if (!opts.und && !attr.includes('Undb')) text += ' '
+    opts.und = attr.includes('Undn')
+
+    const asis = /Capx|Asis/.test(attr)
+
+    text += opts.cap && !asis ? capitalize(vstr) : vstr
+    opts.cap = (opts.cap && asis) || attr.includes('Capn')
   }
 
-  return null
+  return text
 }
 
-export function split_hviet_vstr(hstr: string, cpos: string, zlen: number) {
-  if (cpos == 'PU' || hstr.length == zlen) return Array.from(hstr)
+// export function find_node(input: CV.Cvtree, q_idx = 0, q_len = 0) {
+//   const queue = [input]
 
-  const harr = hstr.split(' ')
-  if (cpos == '_' || harr.length == zlen) return harr
+//   while (true) {
+//     const node = queue.pop()
+//     if (!node) break
 
-  return hstr.split(' ').flatMap((x) => x.split(/\p{P}/u))
-}
+//     const [_cpos, n_idx, n_len, _attr, body] = node
+
+//     if (n_idx < q_idx) continue
+//     if (n_idx > q_idx || n_len < q_len) break
+
+//     if (!Array.isArray(body)) {
+//       if (n_len == q_len) return node
+//     } else {
+//       if (n_len == q_len && body.length > 1) return node
+//       for (let i = body.length - 1; i >= 0; i--) queue.push(body[i])
+//     }
+//   }
+
+//   return null
+// }

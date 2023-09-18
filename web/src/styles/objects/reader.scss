@@ -160,8 +160,7 @@ p.cdata {
   }
 }
 
-x-n,
-x-z {
+x-n {
   background-position: bottom bottom;
 
   // unknown
@@ -248,15 +247,11 @@ x-c {
 
 x-z {
   font-family: Roboto, Noto Sans CJK, 'Microsoft Yahei', STXihei, sans-serif;
-
-  .cdata.debug & {
-    color: var(--active);
-  }
+  @include cv-node(gray);
+  @include cv-node(primary);
 
   &:hover {
-    // border-bottom: 1px solid var(--border);
-    // background: none;
-    background: linear-gradient(to top, var(--border) 0.75px, transparent 0);
+    color: var(--active);
   }
 }
 

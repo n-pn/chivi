@@ -2,8 +2,9 @@ import { error } from '@sveltejs/kit'
 import type { PageLoad } from './$types'
 import type { Ctree } from '$lib/mt_data_2'
 
-export const load = (async ({ fetch, parent }) => {
+export const load = (async ({ fetch, parent, depends }) => {
   const { rdata, xargs } = await parent()
+  depends('wn:cdata')
   return await load_data(rdata, xargs, fetch)
 }) satisfies PageLoad
 

@@ -25,7 +25,7 @@ struct MT::QtNode
     io << ' ' unless @attr.undent?(und)
     cap, und = @attr.render_vstr(io, @vstr, cap, und)
 
-    io << SEP << @_dic << SEP << @_idx << SEP << @_len
+    io << SEP << @_dic << SEP << @_idx << SEP << @zstr.size
     {cap, und}
   end
 
