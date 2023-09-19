@@ -40,6 +40,7 @@
   <button
     type="button"
     class="dict {tform.local ? 'local' : 'world'}"
+    data-kbd="o"
     use:tooltip={dict_choice.desc}
     data-anchor=".vtform"
     on:click={() => (tform.local = !tform.local)}>
@@ -49,6 +50,7 @@
   <button
     type="button"
     class="lock _{tform.plock}"
+    data-kbd="p"
     use:tooltip={'Đổi chế độ khóa từ'}
     data-anchor=".vtform"
     on:click={change_plock}

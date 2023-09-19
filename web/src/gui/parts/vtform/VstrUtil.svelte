@@ -125,6 +125,7 @@
       type="button"
       class="btn _tl"
       class:_active={tform.vstr == tform.init.hviet}
+      data-kbd="h"
       on:click={() => (tform.vstr = tform.init.hviet)}
       use:tooltip={'Điền vào cụm từ Hán Việt'}
       data-anchor=".vtform">
@@ -135,6 +136,7 @@
     <button
       type="button"
       class="btn _tl"
+      data-kbd="v"
       on:click={() => (show_hints = !show_hints)}
       use:tooltip={'Thêm các gợi ý dịch nghĩa đã có sẵn'}
       data-anchor=".vtform"
@@ -148,7 +150,7 @@
     <button
       type="button"
       class="btn _tl"
-      data-kbd="5"
+      data-kbd="g"
       on:click={() => run_gtran(0)}
       use:tooltip={'Dịch bằng Google từ Trung sang Việt'}
       data-anchor=".vtform">
@@ -159,7 +161,7 @@
     <button
       type="button"
       class="btn _tl"
-      data-kbd="6"
+      data-kbd="b"
       on:click={() => run_btran(0)}
       use:tooltip={'Dịch bằng Bing từ Trung sang Việt'}
       data-anchor=".vtform">
@@ -171,6 +173,7 @@
     <button
       type="button"
       class="btn _tl"
+      data-kbd="d"
       on:click={() => run_deepl(0)}
       use:tooltip={'Dịch bằng DeepL từ Trung sang Anh'}
       data-anchor=".vtform">
@@ -181,7 +184,7 @@
       type="button"
       class="btn"
       class:_active={show_trans}
-      data-kbd="s"
+      data-kbd="t"
       on:click={() => (show_trans = !show_trans)}
       use:tooltip={'Thêm các lựa chọn dịch ngoài'}
       data-anchor=".vtform">
@@ -216,7 +219,7 @@
         type="button"
         class="btn"
         class:_active={show_caps}
-        data-kbd="s"
+        data-kbd="f"
         on:click={() => (show_caps = !show_caps)}
         use:tooltip={'Thêm các lựa chọn viết hoa/thường'}
         data-anchor=".vtform">

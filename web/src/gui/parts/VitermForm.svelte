@@ -103,7 +103,7 @@
     <button
       class="htab _edit"
       class:_active={$ctrl.tab == 0}
-      data-kbd="x"
+      data-kbd="⌃`"
       on:click={() => ctrl.show(0)}>
       <SIcon name="package" />
       <span>Thêm sửa từ</span>
@@ -113,7 +113,7 @@
       type="button"
       class="htab _find"
       class:_active={$ctrl.tab == 1}
-      data-kbd="c"
+      data-kbd="⌃1"
       on:click={() => ctrl.show(1)}
       disabled>
       <SIcon name="compass" />
@@ -124,7 +124,7 @@
       type="button"
       class="htab _novel"
       class:_active={$ctrl.tab == 2}
-      data-kbd="v"
+      data-kbd="⌃2"
       on:click={() => ctrl.show(2)}
       disabled>
       <SIcon name="tools" />
@@ -138,6 +138,7 @@
         <button
           type="button"
           class="cpos"
+          data-kbd="u"
           on:click={() => (pick_cpos = !pick_cpos)}>
           <span class="plbl u-show-pl">Từ loại:</span>
           <span class="ptag" use:tooltip={cpos_data.desc} data-anchor=".vtform">
@@ -150,6 +151,7 @@
         <button
           type="button"
           class="attr"
+          data-kbd="i"
           on:click={() => (pick_attr = !pick_attr)}>
           <span class="plbl u-show-pm">Từ tính:</span>
           {#each attr_list as attr}
