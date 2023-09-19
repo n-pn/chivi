@@ -147,14 +147,18 @@ class MT::NpNode
       case node.ipos
       when MtCpos::NN, MtCpos::NP, MtCpos::NR
         list.insert(on_etc ? 0 : -1, node)
+        @_pos &-= 1
       when MtCpos::ADJP # if current node is short modifier
         break unless node.attr.prfx?
 
         # combine the noun list for phrase translation
         noun = make_node(list, attr: attr)
         list = node.attr.at_h? ? [node, noun] of AiNode : [noun, node] of AiNode
+
+        @_pos &-= 1
       when MtCpos::PU
-        break if @_pos < 0 || node.zstr[0] != '､'
+        # FIXME: check error in this part
+        break if @_pos == 0 || node.zstr[0] != '､'
 
         list.unshift(node)
         @_pos &-= 1
@@ -162,12 +166,11 @@ class MT::NpNode
         prev = self.peak_node
         break unless prev.in?(MtCpos::NN, MtCpos::NP, MtCpos::NR)
 
-        list.unshift(read_nn!([prev] of AiNode, on_etc))
+        @_pos &-= 1
+        list.unshift(@_pos >= 0 ? read_nn!([prev] of AiNode, on_etc) : prev)
       else
         break
       end
-
-      @_pos &-= 1
     end
 
     read_np!([make_node(list, attr: attr)] of AiNode)
