@@ -18,7 +18,8 @@ class MT::ViTermCtrl < AC::Base
     args = [] of String | Int32
 
     where_stmt = String.build do |sql|
-      sql << " where 1 = 1"
+      sql << "where 1 = 1"
+
       if zstr
         args << fix_query_str(zstr)
         sql << " and zstr like $" << args.size
@@ -58,13 +59,13 @@ class MT::ViTermCtrl < AC::Base
       sql << " offset $" << args.size
     end
 
-    terms, count = get_stats(dname.sub(':', '/'), where_stmt, args)
+    terms, total = get_stats(dname.sub(':', '/'), where_stmt, args)
 
     json = {
       items: terms,
       start: offset &+ 1,
       pgidx: pg_no,
-      pgmax: _pgidx(count, limit),
+      pgmax: _pgidx(total, limit),
     }
 
     render json: json
@@ -74,10 +75,14 @@ class MT::ViTermCtrl < AC::Base
     ViTerm.db(dname).open_ro do |db|
       terms = db.query_all("select * from terms #{where_stmt}", args: args, as: ViTerm)
 
-      args[-2] = args[-2].as(Int32) &* 3
-      count = db.query_one("select count(*) from terms #{where_stmt}", args: args, as: Int32)
+      if terms.size < args[-2].as(Int32)
+        count = terms.size
+      else
+        args[-2] = args[-2].as(Int32) &* 3
+        count = db.query_all("select rowid from terms #{where_stmt}", args: args, as: Int32).size
+      end
 
-      {terms, count &+ args[-2].as(Int32)}
+      {terms, count &+ args[-1].as(Int32)}
     end
   end
 

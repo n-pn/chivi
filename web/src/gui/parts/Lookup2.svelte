@@ -55,10 +55,11 @@
     $data.cdata = lines[0]
   }
 
-  const on_term_change = (term?: CV.Vtdata) => {
+  const on_term_change = async (term?: CV.Vtdata) => {
     if (!term) return
     reload_ctree()
-    invalidate('wn:cdata')
+    await invalidate('wn:cdata')
+    $data.l_idx = $data.l_idx
   }
 
   let ctree_show_zh = false
@@ -141,7 +142,8 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div class="cdata debug _mt">
         {#if $data.cdata}
-          {@html gen_vtran_html($data.cdata, { mode: 2, cap: true, und: true })}
+          {@const opts = { mode: 2, cap: true, und: true, _qc: 0 }}
+          {@html gen_vtran_html($data.cdata, opts)}
         {/if}
       </div>
 
