@@ -7,8 +7,8 @@ class MT::M3Node
   getter middle : AiNode
   getter right : AiNode
 
-  def initialize(@left, @middle, @right, @cpos, @_idx, @attr = :none, @ipos = MtCpos[cpos])
-    @zstr = "#{@left.zstr}#{@middle.zstr}#{@right.zstr}"
+  def initialize(@left, @middle, @right, @cpos, @_idx = left._idx, @attr = :none, @ipos = MtCpos[cpos])
+    @zstr = "#{left.zstr}#{middle.zstr}#{right.zstr}"
   end
 
   def translate!(dict : AiDict, rearrange : Bool = true)

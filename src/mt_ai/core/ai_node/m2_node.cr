@@ -8,7 +8,7 @@ class MT::M2Node
 
   @flip = false
 
-  def initialize(@left, @right, @cpos, @_idx, @attr = :none, @ipos = MtCpos[cpos])
+  def initialize(@left, @right, @cpos, @_idx = left._idx, @attr = :none, @ipos = MtCpos[cpos])
     @zstr = "#{@left.zstr}#{@right.zstr}"
   end
 
@@ -27,6 +27,8 @@ class MT::M2Node
     when MtCpos["VCD"] then fix_vcd!
     when MtCpos["VCP"] then fix_vcp!
     when MtCpos::QP    then fix_qp!
+    when MtCpos::NR
+      @flip = !right.attr.at_t?
     when MtCpos["DP"]
       @flip = !@left.attr.at_h?
     end
@@ -117,5 +119,9 @@ class MT::M2Node
 
   def last
     @right
+  end
+
+  def self.new_nr(left : AiNode, right : AiNode, attr = right.attr)
+    new(left, right, cpos: "NR", ipos: MtCpos::NR, attr: attr)
   end
 end

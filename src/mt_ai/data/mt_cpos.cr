@@ -92,6 +92,10 @@ class MT::MtCpos
   DP   = MAP["DP"]
   QP   = MAP["QP"]
   PP   = MAP["PP"]
+  DT   = MAP["DT"]
+  LCP  = MAP["LCP"]
+  CLP  = MAP["CLP"]
+  DNP  = MAP["DNP"]
   ADVP = MAP["ADVP"]
   ADJP = MAP["ADJP"]
 

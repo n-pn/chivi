@@ -119,6 +119,10 @@ enum MT::MtAttr
     end
   end
 
+  def turn_off(attr : self)
+    self & ~attr
+  end
+
   ###
 
   @@known_chars = {} of Char => self

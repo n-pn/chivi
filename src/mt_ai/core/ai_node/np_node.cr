@@ -4,12 +4,68 @@ require "./ai_rule"
 class MT::NpNode
   include AiNode
 
-  getter orig = [] of AiNode
+  getter orig : Array(AiNode)
   getter data = [] of AiNode
 
-  def initialize(@orig : Array(AiNode), @cpos, @_idx, @attr = :none, @ipos = MtCpos[cpos])
-    @_pos = 0
-    @zstr = orig.join(&.zstr)
+  def initialize(input : Array(AiNode), @cpos, @_idx = input.first._idx, @attr = :none, @ipos = MtCpos[cpos])
+    @zstr = input.join(&.zstr)
+
+    @orig = correct_input(input)
+    @_pos = @orig.size &- 1
+  end
+
+  private def correct_input(input : Array(AiNode))
+    pos = 0
+    max = input.size
+    res = Array(AiNode).new(initial_capacity: max)
+
+    while pos < max
+      node = input.unsafe_fetch(pos)
+      pos &+= 1
+
+      # TODO: split DP, QP
+      case node.ipos
+      when MtCpos::DP
+        dt_node, qp_node = AiRule.split_dp(node)
+        res << dt_node
+        res << qp_node if qp_node
+      when MtCpos::NR
+        if !(succ = input[pos]?)
+          res << node
+        elsif succ.attr.sufx?
+          succ.off_attr!(:sufx)
+          res << M2Node.new_nr(node, succ, attr: succ.attr)
+          pos &+= 1
+        elsif succ.ipos != MtCpos::NR
+          res << node << succ
+          pos &+= 1
+        else
+          res << node
+        end
+      when MtCpos::PU
+        if found = AiRule.find_matching_pu(input, node, _idx: pos, _max: max)
+          # TODO: check flipping
+          tail, fmax = found
+          list = input[pos...fmax]
+
+          if list.last.ipos == MtCpos::PU
+            node.add_attr!(:capn)
+            inner_node = MxNode.new(list, cpos: "IP", ipos: MtCpos::IP)
+          else
+            inner_node = NpNode.new(list, cpos: "NP", ipos: MtCpos::NP)
+          end
+
+          res << M3Node.new(node, inner_node, tail, cpos: "NP", ipos: MtCpos::NP)
+          pos = fmax
+        else
+          res << node
+        end
+      else
+        res << node
+      end
+    end
+
+    res
   end
 
   def z_each(&)
@@ -35,7 +91,7 @@ class MT::NpNode
   def translate!(dict : AiDict, rearrange : Bool = true)
     self.tl_whole!(dict: dict)
     @orig.each(&.translate!(dict, rearrange: rearrange))
-    @data = read_np!(dict, _max: @orig.size) if rearrange
+    @data = rearrange!(dict) if rearrange
   end
 
   ###
@@ -47,116 +103,108 @@ class MT::NpNode
 
   @[AlwaysInline]
   private def read_node
-    node = @orig[@_pos]
-    @_pos &+= 1
-    node
+    @orig[@_pos].tap { @_pos &-= 1 }
   end
 
-  private def read_np!(dict : AiDict, _max = @orig.size) : Array(AiNode)
-    data = Array(AiNode).new
-    return data unless first_node = @orig[@_pos]?
+  private def rearrange!(dict : AiDict) : Array(AiNode)
+    list = Array(AiNode).new
 
-    i_hd = 0
-    i_tl = -1
+    last = self.read_node if @orig.last.ipos == MtCpos::LCP
 
-    if first_node.first.ipos == MtCpos::PN
-      # TODO: handle PN as head
-      data << first_node
-      @_pos &+= 1
-      i_hd &+= 1
-    end
-
-    qp_node : AiNode? = nil # hold quantifier for correction
-
-    while @_pos < _max
+    while @_pos >= 0
       node = self.read_node
 
-      case node.ipos
-      when MtCpos::CD
-        data.insert(i_hd, node)
-        i_hd &+= 1
-      when MtCpos::OD
-        data.insert(i_tl, node)
-        i_tl &-= 1
-      when MtCpos::QP
-        qp_node = node
-        data.insert(i_hd, node)
-        i_hd &+= 1
-      when MtCpos::DP
-        dt_node, qp_node = AiRule.split_dp(node)
-        if dt_node.attr.at_h?
-          data.insert(i_hd, dt_node)
-          i_hd &+= 1
-        else
-          data.insert(i_tl, dt_node)
-          i_tl &-= 1
-        end
-
-        if qp_node
-          data.insert(i_hd, qp_node)
-          i_hd &+= 1
-        end
-      when MtCpos["CLP"]
-        # FIXME: split phrase if first element is CD
-        data.insert(i_hd, node)
-      when MtCpos["DNP"]
-        if node.attr.at_h?
-          data.insert(i_hd, node)
-          i_hd &+= 1
-        else
-          data.insert(i_tl, node)
-          i_tl &-= 1
-        end
-      when MtCpos::PU
-        if match_found = AiRule.find_matching_pu(orig, node, _idx: @_pos, _max: _max)
-          # TODO: check flipping
-          match_tail, match_max = match_found
-          node = read_pu!(dict, node, match_tail, match_max)
-          data.insert(i_hd, node)
-          @_pos = match_max
-        else
-          i_tl = -1
-          data.insert(i_tl, node)
-          i_hd = data.size
-        end
-      when MtCpos["CC"]
-        data.insert(i_tl, node)
-        i_hd = data.size &+ i_tl &+ 1
-      when MtCpos["PRN"], MtCpos["ETC"], MtCpos["FLR"]
-        data.insert(i_tl, node)
-        i_hd = data.size &+ i_tl &+ 1
-      when MtCpos::NN, MtCpos::NP, MtCpos::NR
-        # TODO: consume node
-
-        if qp_node
-          MtPair.fix_m_n_pair!(qp_node, node)
-          qp_node = nil
-        end
-
-        data.insert(i_hd, node)
-      else
-        data.insert(i_hd, node)
+      if @_pos >= 0 && node.ipos.in?(MtCpos::NN, MtCpos::NP, MtCpos::NR)
+        node = read_nn!([node] of AiNode, false)
+        node.tl_whole!(dict: dict)
       end
+
+      list.unshift(node)
     end
 
-    data
+    list.insert(last.attr.at_t? ? -1 : 0, last) if last
+    list
   end
 
-  def skip_node!
-    @_pos += 1
+  private def make_node(list : Array(AiNode), attr = list.last.attr,
+                        ipos = MtCpos::NN, cpos = MtCpos::ALL[ipos]) : AiNode
+    case list.size
+    when 1
+      list.first
+    when 2
+      M2Node.new(list.first, list.last, cpos: cpos, ipos: ipos, attr: attr)
+    else
+      MxNode.new(list, cpos: cpos, ipos: ipos, attr: attr)
+    end
   end
 
-  private def read_pu!(dict : AiDict, head : AiNode, tail : AiNode, _max : Int32)
-    inner_list = [] of AiNode
-    @_pos.upto(_max &- 2) { |_pos| inner_list << peak_node(_pos) }
+  private def read_nn!(list : Array(AiNode), on_etc = false) : AiNode
+    attr = list.last.attr
 
-    inner_cpos = inner_list.last.ipos == MtCpos::PU ? "IP" : "NP"
-    inner_node = NpNode.new(inner_list, inner_cpos, _idx: inner_list.first._idx)
-    inner_node.translate!(dict, true)
+    while @_pos >= 0
+      node = self.peak_node
 
-    outer_node = M3Node.new(head, inner_node, tail, "NP", _idx: head._idx)
-    outer_node.translate!(dict, true)
+      case node.ipos
+      when MtCpos::NN, MtCpos::NP, MtCpos::NR
+        list.insert(on_etc ? 0 : -1, node)
+      when MtCpos::ADJP # if current node is short modifier
+        break unless node.attr.prfx?
 
-    outer_node
+        # combine the noun list for phrase translation
+        noun = make_node(list, attr: attr)
+        list = node.attr.at_h? ? [node, noun] of AiNode : [noun, node] of AiNode
+      when MtCpos::PU
+        break if @_pos < 0 || node.zstr[0] != '､'
+
+        list.unshift(node)
+        @_pos &-= 1
+
+        prev = self.peak_node
+        break unless prev.in?(MtCpos::NN, MtCpos::NP, MtCpos::NR)
+
+        list.unshift(read_nn!([prev] of AiNode, on_etc))
+      else
+        break
+      end
+
+      @_pos &-= 1
+    end
+
+    read_np!([make_node(list, attr: attr)] of AiNode)
+  end
+
+  private def read_np!(list : Array(AiNode)) : AiNode
+    noun = list.last
+
+    while @_pos >= 0
+      node = self.peak_node
+
+      case node.ipos
+      when MtCpos::OD, MtCpos::CP, MtCpos::IP
+        list.push(node)
+      when MtCpos::QP
+        MtPair.fix_m_n_pair!(node, noun)
+        list.unshift(node)
+      when MtCpos::CD, MtCpos::CLP
+        list.unshift(node)
+      when MtCpos::DNP, MtCpos::ADJP, MtCpos::DT, MtCpos::DP
+        list.insert(node.attr.at_h? ? 0 : -1, node)
+      when MtCpos::LCP
+        list.push(node)
+      when MtCpos::PN
+        at_h = pron_at_head?(pron: node, noun: noun)
+        list.insert(at_h ? 0 : -1, node)
+      else
+        break
+      end
+
+      @_pos &-= 1
+    end
+
+    make_node(list, attr: noun.attr, ipos: MtCpos::NP, cpos: "NP")
+  end
+
+  private def pron_at_head?(pron : AiNode, noun : AiNode)
+    true
   end
 end

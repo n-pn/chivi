@@ -48,7 +48,11 @@ module MT::AiNode
     @dnum = term.dnum
   end
 
-  def set_vstr!(@vstr : String, @dnum : Int8 = MtDnum::Autogen_2.to_i8) : Nil
+  def set_vstr!(@vstr : String, @dnum : Int8 = MtDnum::Fixture_2.to_i8) : Nil
+  end
+
+  def has_attr?(attr : MtAttr)
+    @attr.includes?(attr)
   end
 
   def add_attr!(attr : MtAttr)
@@ -57,6 +61,10 @@ module MT::AiNode
 
   def off_attr!(attr : MtAttr)
     @attr &= ~attr
+  end
+
+  def same_attr?(other : self, attr : MtAttr)
+    self.attr & other.attr & attr != MtAttr::None
   end
 
   ###
