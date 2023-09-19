@@ -4,10 +4,12 @@ class MT::MxNode
   include AiNode
 
   getter list : Array(AiNode)
-  getter _ord : Array(Int32)? = nil
 
-  def initialize(@list, @cpos, @_idx = list.first._idx, @attr = :none, @ipos = MtCpos[cpos])
-    @zstr = list.join(&.zstr)
+  def initialize(@list, @cpos,
+                 @_idx = list.min_of(&._idx),
+                 @attr = :none,
+                 @ipos = MtCpos[cpos])
+    @zstr = list.sort_by(&._idx).join(&.zstr)
   end
 
   @[AlwaysInline]
@@ -19,15 +21,11 @@ class MT::MxNode
   ###
 
   def z_each(&)
-    @list.each { |node| yield node }
+    @list.sort_by(&._idx).each { |node| yield node }
   end
 
   def v_each(&)
-    if _ord = @_ord
-      _ord.each { |_idx| yield @list[_idx] }
-    else
-      @list.each { |node| yield node }
-    end
+    @list.each { |node| yield node }
   end
 
   def first

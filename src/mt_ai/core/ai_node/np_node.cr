@@ -126,16 +126,13 @@ class MT::NpNode
     list
   end
 
+  @[AlwaysInline]
   private def make_node(list : Array(AiNode), attr = list.last.attr,
                         ipos = MtCpos::NN, cpos = MtCpos::ALL[ipos]) : AiNode
-    case list.size
-    when 1
-      list.first
-    when 2
-      M2Node.new(list.first, list.last, cpos: cpos, ipos: ipos, attr: attr)
-    else
-      MxNode.new(list, cpos: cpos, ipos: ipos, attr: attr)
-    end
+    return list.first if list.size == 1
+
+    _idx = list.min_of(&._idx)
+    MxNode.new(list, _idx: _idx, cpos: cpos, ipos: ipos, attr: attr)
   end
 
   private def read_nn!(list : Array(AiNode), on_etc = false) : AiNode
@@ -152,10 +149,11 @@ class MT::NpNode
         break unless node.attr.prfx?
 
         # combine the noun list for phrase translation
-        noun = make_node(list, attr: attr)
-        list = node.attr.at_h? ? [node, noun] of AiNode : [noun, node] of AiNode
-
+        noun = make_node(list, attr: attr, ipos: MtCpos::NN, cpos: "NN")
         @_pos &-= 1
+
+        return M2Node.new_nn(node, noun, flip: node.attr.at_h?) if @_pos < 0
+        list = node.attr.at_h? ? [node, noun] of AiNode : [noun, node] of AiNode
       when MtCpos::PU
         # FIXME: check error in this part
         break if @_pos == 0 || node.zstr[0] != '､'
@@ -190,7 +188,10 @@ class MT::NpNode
         list.unshift(node)
       when MtCpos::CD, MtCpos::CLP
         list.unshift(node)
-      when MtCpos::DNP, MtCpos::ADJP, MtCpos::DT, MtCpos::DP
+      when MtCpos::ADJP
+        noun = make_node(list, attr: noun.attr, ipos: MtCpos::NP, cpos: "NP")
+        list = [M2Node.new_nn(node, noun, flip: node.attr.at_h?)] of AiNode
+      when MtCpos::DNP, MtCpos::DT, MtCpos::DP
         list.insert(node.attr.at_h? ? 0 : -1, node)
       when MtCpos::LCP
         list.push(node)

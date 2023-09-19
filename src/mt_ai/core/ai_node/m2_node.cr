@@ -6,7 +6,7 @@ class MT::M2Node
   getter left : AiNode
   getter right : AiNode
 
-  @flip = false
+  property flip = false
 
   def initialize(@left, @right, @cpos, @_idx = left._idx, @attr = :none, @ipos = MtCpos[cpos])
     @zstr = "#{@left.zstr}#{@right.zstr}"
@@ -20,16 +20,14 @@ class MT::M2Node
 
   private def rearrange!(dict : AiDict) : Nil
     case @ipos
+    when MtCpos::DNP   then fix_dnp!
     when MtCpos["DVP"] then fix_dvp!
-    when MtCpos["DNP"] then fix_dnp!
     when MtCpos["LCP"] then fix_lcp!
     when MtCpos["VRD"] then fix_vrd!
     when MtCpos["VCD"] then fix_vcd!
     when MtCpos["VCP"] then fix_vcp!
     when MtCpos::QP    then fix_qp!
-    when MtCpos::NR
-      @flip = !right.attr.at_t?
-    when MtCpos["DP"]
+    when MtCpos::DP
       @flip = !@left.attr.at_h?
     end
   end
@@ -50,7 +48,7 @@ class MT::M2Node
     end
 
     @flip = true
-    return unless right.zstr == "的" && right.cpos == "DEG"
+    return unless right.zstr == "的" && right.ipos == MtCpos["DEG"]
 
     if possestive?(left)
       right.set_vstr!("của")
@@ -121,7 +119,11 @@ class MT::M2Node
     @right
   end
 
-  def self.new_nr(left : AiNode, right : AiNode, attr = right.attr)
-    new(left, right, cpos: "NR", ipos: MtCpos::NR, attr: attr)
+  def self.new_nr(left : AiNode, right : AiNode, attr = right.attr, flip = right.attr.at_h?)
+    new(left, right, cpos: "NR", ipos: MtCpos::NR, attr: attr).tap(&.flip = flip)
+  end
+
+  def self.new_nn(left : AiNode, right : AiNode, attr = right.attr, flip = true)
+    new(left, right, cpos: "NN", ipos: MtCpos::NN, attr: attr).tap(&.flip = flip)
   end
 end
