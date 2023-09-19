@@ -150,10 +150,9 @@ class MT::NpNode
 
         # combine the noun list for phrase translation
         noun = make_node(list, attr: attr, ipos: MtCpos::NN, cpos: "NN")
-        @_pos &-= 1
+        list = [M2Node.new_nn(node, noun, flip: !node.attr.at_h?)] of AiNode
 
-        return M2Node.new_nn(node, noun, flip: node.attr.at_h?) if @_pos < 0
-        list = node.attr.at_h? ? [node, noun] of AiNode : [noun, node] of AiNode
+        @_pos &-= 1
       when MtCpos::PU
         # FIXME: check error in this part
         break if @_pos == 0 || node.zstr[0] != '､'
@@ -190,7 +189,7 @@ class MT::NpNode
         list.unshift(node)
       when MtCpos::ADJP
         noun = make_node(list, attr: noun.attr, ipos: MtCpos::NP, cpos: "NP")
-        list = [M2Node.new_nn(node, noun, flip: node.attr.at_h?)] of AiNode
+        list = [M2Node.new_nn(node, noun, flip: !node.attr.at_h?)] of AiNode
       when MtCpos::DNP, MtCpos::DT, MtCpos::DP
         list.insert(node.attr.at_h? ? 0 : -1, node)
       when MtCpos::LCP

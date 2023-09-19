@@ -5,9 +5,20 @@ module MT::AiRule
   extend self
 
   def split_dp(node : AiNode)
-    # TODO: split CD and M
-    return {node, nil} unless node.is_a?(M2Node)
-    {node.left, node.right}
+    case node
+    when M1Node
+      fchar = node.zstr[0]
+      return {node, nil} unless fchar.in?('这', '那') && node.zstr.size > 1
+
+      left = M0Node.new(fchar.to_s, cpos: "DT", _idx: node._idx, ipos: MtCpos::DT)
+      right = M0Node.new(node.zstr[1..], cpos: "QP", _idx: node._idx &+ 1, ipos: MtCpos::QP)
+
+      {left, right}
+    when M2Node
+      {node.left, node.right}
+    else
+      {node, nil}
+    end
   end
 
   PUNCT_MATCH_PAIR = {
