@@ -3,10 +3,18 @@ require "../../_util/text_util"
 
 @[Flags]
 # word peculiarity
+# sort by most common types
 enum MT::MtAttr
-  # reusable flags
-  Hide # ignore content
-  Asis # do not add cap
+  # nominal characteristics
+
+  Ndes # descriptive noun
+  Ntmp # mark temporal noun
+
+  Nper # noun that referering to human being
+  Nloc # noun that referering to placement/location/organization
+  Norg # group of human?
+
+  # shared characteristics
 
   At_h # put this in head position of a grammar structure
   At_t # put this in tail position of a grammar structure
@@ -16,38 +24,31 @@ enum MT::MtAttr
 
   # grammar/punctuation:
 
+  Hide # ignore content
+  Asis # do not add cap
+
   Capn # grammar: capitalize the word after this
   Capx # grammar: capitalize the word after this instead capitalize this word
 
   Undb # grammar: do not add whitespace before this word
   Undn # grammar: do not add whitespace after this word
 
-  # noun characteristics
+  # verbal characteristics
 
-  Nper # noun that referering to human being
-  Nloc # noun that referering to placement/location/organization
-  Norg # group of human?
-
-  Ndes # descriptive noun
-  Ntmp # mark temporal noun
-
-  # Nhrf = Sufx | Nper
-  # Nspc = Sufx | Nloc
-
-  # pronoun
-
-  Pn_d # demonstrative pronoun
-  Pn_i # interrogative pronoun
-
-  # verb characteristics
-
-  Vint # intransitive verb
-  Vdit # ditransitive verb
+  Vpst # positive verb
 
   Vmod # modal verbs
   Vpsy # psychological verb
 
-  # adverb
+  Vint # intransitive verb
+  Vdit # ditransitive verb
+
+  # pronoun types (unused)
+
+  Pn_d # demonstrative pronoun
+  Pn_i # interrogative pronoun
+
+  # adverb types (unused)
 
   # Dneg # negative
   # Ddeg # degree
@@ -58,27 +59,10 @@ enum MT::MtAttr
   # Dcor # correl
   # Dman # manner
 
-  # complement
-
-  # Cres # Bổ ngữ kết quả
-  # Cdeg # Bổ ngữ mức độ
-  # Cdir # Bổ ngữ xu hướng
-  # Cpot # Bổ ngữ khả năng
-  # Csta # Bổ ngữ tình trạng
-  # Cqua # Bổ ngữ số lượng
-  # Ctim # Bổ ngữ thời gian
-
-  # quantifier
-
-  # Qtim
-  # Qver
-  # Qnou
-  # Qmas
-  # Qwei
-  # Qdis
-  # Qmon
-
-  ###
+  @[AlwaysInline]
+  def turn_off(attr : self)
+    self & ~attr
+  end
 
   @[AlwaysInline]
   def to_str
@@ -117,10 +101,6 @@ enum MT::MtAttr
     when self.asis? || !cap then {vstr, self.capn?}
     else                         {TextUtil.capitalize(vstr), self.capn?}
     end
-  end
-
-  def turn_off(attr : self)
-    self & ~attr
   end
 
   ###

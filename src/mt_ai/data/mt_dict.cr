@@ -120,32 +120,17 @@ class MT::MtDict
   end
 
   def load_db3!(name : String = @name)
-    # ViTerm.db(name).open_ro do |db|
-    #   query = "select zstr, icpos, vstr, iattr, plock from #{ViTerm.schema.table}"
-
-    #   db.query_each(query) do |rs|
-    #     zstr = rs.read(String)
-    #     epos = rs.read(Int32).unsafe_as(Int8)
-    #     vstr = rs.read(String)
-    #     attr = MtAttr.new(rs.read(Int32))
-    #     lock = rs.read(Int32).unsafe_as(Int8)
-    #     add(zstr, epos: epos, vstr: vstr, attr: attr, lock: lock)
-    #   end
-    # end
-
     ViTerm.db(name).open_ro do |db|
-      query = "select zstr, cpos, vstr, attr from #{ViTerm.schema.table}"
+      query = "select zstr, ipos, vstr, iatt from #{ViTerm.schema.table}"
 
       db.query_each(query) do |rs|
-        zstr, cpos, vstr, attr = rs.read(String, String, String, String)
+        zstr, ipos, vstr, iatt = rs.read(String, Int32, String, Int32)
+
+        epos = MtEpos.new(ipos.to_i8)
 
         # TODO: rebuild iattr enum
-        attr = MtAttr.parse_list(attr)
+        attr = MtAttr.new(iatt)
 
-        # TODO: remove this line and purge database instead
-        next if vstr.empty? && !attr.hide?
-
-        epos = MtEpos.parse?(cpos) || MtEpos::X
         self.add(zstr, epos: epos, vstr: vstr, attr: attr)
       end
     end

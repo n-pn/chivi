@@ -96,4 +96,9 @@ export default {
     desc: 'Động từ tâm lý (từ loại con của động từ)',
     used: false,
   },
+
+  Vpst: {
+    desc: 'Động từ mang ý nghĩa tích cực, dịch `bị` sang `được`',
+    used: true,
+  },
 }

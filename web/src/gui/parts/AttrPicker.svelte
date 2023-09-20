@@ -2,10 +2,11 @@
   import attr_info from '$lib/consts/attr_info'
 
   const groups = [
+    ['Ndes', 'Ntmp', 'Nper', 'Nloc', 'Norg'],
     ['At_h', 'At_t', 'Prfx', 'Sufx'],
-    ['Ndes', 'Ntmp', 'Nper', 'Nloc', 'Norg', 'Pn_d', 'Pn_i'],
     ['Hide', 'Asis', 'Capn', 'Capx', 'Undb', 'Undn'],
-    ['Vint', 'Vdit', 'Vmod', 'Vpsy'],
+    ['Vpst', 'Vmod', 'Vpsy', 'Vint', 'Vdit'],
+    ['Pn_d', 'Pn_i'],
   ]
 </script>
 

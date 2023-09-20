@@ -57,9 +57,9 @@ class MT::MtTrie
 
   def load_db3!(dname : String = @dname)
     ViTerm.db(dname).open_ro do |db|
-      db.query_each("select zstr, vstr, iattr from terms") do |rs|
-        zstr, vstr, iattr = rs.read(String, String, Int32)
-        add(zstr, vstr, MtAttr.new(iattr))
+      db.query_each("select zstr, vstr, iatt from terms") do |rs|
+        zstr, vstr, iatt = rs.read(String, String, Int32)
+        add(zstr, vstr, attr: MtAttr.new(iatt))
       end
     end
 

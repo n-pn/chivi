@@ -1,4 +1,5 @@
 require "./mt_attr"
+require "./mt_epos"
 
 struct MT::MtTerm
   getter vstr : String
