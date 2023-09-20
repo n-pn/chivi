@@ -67,12 +67,11 @@
     {#each tabs as { name, list }}
       <h3 id="cpos-{name}-group">{name}</h3>
       <div class="cpos-list">
-        {#each list as [cpos, { name, desc, used }]}
+        {#each list as [cpos, { name, desc }]}
           {@const active = cpos == output}
           <button
             class="cpos-item"
             class:_active={active}
-            class:_unused={!used}
             data-cpos={cpos}
             use:tooltip={desc}
             data-anchor=".cpos-picker"
@@ -85,10 +84,6 @@
       </div>
     {/each}
   </section>
-
-  <footer class="foot">
-    <p><code>∗</code>: Những từ loại chưa có tác dụng!</p>
-  </footer>
 </Dialog>
 
 <style lang="scss">
@@ -194,20 +189,12 @@
         @include linesd(primary, 8, $ndef: false);
       }
     }
-
-    &._unused {
-      @include fgcolor(mute);
-      font-style: italic;
-      &:after {
-        content: '∗';
-      }
-    }
   }
 
-  .foot {
-    @include flex-ca;
-    @include fgcolor(tert);
-    font-style: italic;
-    @include ftsize(sm);
-  }
+  // .foot {
+  //   @include flex-ca;
+  //   @include fgcolor(tert);
+  //   font-style: italic;
+  //   @include ftsize(sm);
+  // }
 </style>

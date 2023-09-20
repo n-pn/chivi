@@ -144,7 +144,7 @@
           <span class="ptag" use:tooltip={cpos_data.desc} data-anchor=".vtform">
             <code>{tform.cpos}</code>
             <span class="name">{cpos_data.name || 'Chưa rõ'}</span>
-            <SIcon name={tform.cpos == '_' ? 'lock-open' : 'lock'} />
+            <SIcon name={tform.cpos == 'X' ? 'lock-open' : 'lock'} />
           </span>
         </button>
 

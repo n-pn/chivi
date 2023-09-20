@@ -70,7 +70,7 @@ function extract_term(input: Data): CV.Vtdata {
     return {
       zstr: zstr,
       vstr: hviet,
-      cpos: '_',
+      cpos: 'X',
       attr: '',
       plock: -1,
       local: true,

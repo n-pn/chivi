@@ -110,8 +110,8 @@
         type="button"
         class="m-input"
         on:click={() => (show_cpos_picker = !show_cpos_picker)}>
-        <code>{form.cpos || '_'}</code>
-        <span>{cpos_info[form.cpos || '_']?.name}</span>
+        <code>{form.cpos || 'X'}</code>
+        <span>{cpos_info[form.cpos || 'X']?.name}</span>
       </button>
     </div>
 

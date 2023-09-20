@@ -26,7 +26,7 @@
 
     zfrom = +target.dataset.b
     zupto = +target.dataset.e
-    const icpos = target.dataset.c || '_'
+    const icpos = target.dataset.c || 'X'
 
     vtform_data.put($data.zline, $data.hviet, $data.cdata, zfrom, zupto, icpos)
     vtform_ctrl.show(0)
