@@ -5,10 +5,9 @@ require "../shared/crawling"
 class CrawlYsbook < CrawlTask
   def db_seed_tasks(entry : Entry, json : String)
     return unless json.starts_with?('{')
+    spawn CrUtil.post_raw_data("books/info", json)
 
     spawn do
-      CrUtil.post_raw_data("books/info", json)
-
       loop do
         ysbook = ZR::Ysbook.from_raw_json(json)
         ysbook.upsert!

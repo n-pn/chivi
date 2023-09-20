@@ -1,5 +1,5 @@
 require "../shared/crawling"
-require "../../zroot/json_parser/raw_yscrit"
+require "../../zroot/raw_json/raw_yscrit"
 
 class CrawlYscritByUser < CrawlTask
   def db_seed_tasks(entry : Entry, json : String)
@@ -78,6 +78,7 @@ class CrawlYscritByUser < CrawlTask
   SELECT_STMT = <<-SQL
     select encode(yl_id, 'hex'), book_total from yslists
     where book_total > book_count
+    order by (book_total - book_count) desc
     SQL
 
   def self.gen_queue_init(fix_db_stat : Bool = true)

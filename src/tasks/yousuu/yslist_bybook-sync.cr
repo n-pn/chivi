@@ -1,5 +1,5 @@
 require "../shared/crawling"
-require "../../zroot/json_parser/raw_yslist"
+require "../../zroot/raw_json/raw_yslist"
 
 class YslistCrawlByBook < CrawlTask
   def db_seed_tasks(entry : Entry, json : String)
