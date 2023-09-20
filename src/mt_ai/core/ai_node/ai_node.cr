@@ -1,16 +1,14 @@
 require "../ai_dict"
 
 module MT::AiNode
-  getter zstr : String = ""
+  getter zstr = ""
+  getter vstr = ""
 
-  getter cpos : String = ""
-  getter ipos : Int8 = 0_i8
+  getter epos = MtEpos::X
+  getter attr = MtAttr::None
 
-  getter vstr : String = ""
-  getter attr : MtAttr = MtAttr::None
-
-  getter dnum : Int8 = -1_i8
-  getter _idx : Int32 = 0
+  getter dnum = -1_i8
+  getter _idx = 0
 
   abstract def z_each(& : AiNode ->)
   abstract def v_each(& : AiNode ->)
@@ -18,25 +16,25 @@ module MT::AiNode
   abstract def last
 
   def tl_whole!(dict : AiDict)
-    dict.get?(@zstr, @ipos).try { |term| self.set_term!(term) }
+    dict.get?(@zstr, @epos).try { |term| self.set_term!(term) }
   end
 
-  def find_by_ipos(ipos : Int8)
+  def find_by_epos(epos : MtEpos)
     z_each do |node|
-      return node if node.ipos == ipos
+      return node if node.epos == epos
       unless node.is_a?(M0Node)
-        found = node.find_by_ipos(ipos)
+        found = node.find_by_epos(epos)
         return found if found
       end
     end
   end
 
-  def find_by_ipos(*ipos : Int8)
+  def find_by_epos(*epos : MtEpos)
     z_each do |node|
-      return node if node.ipos.in?(*ipos)
+      return node if node.epos.in?(*epos)
 
       unless node.is_a?(M0Node)
-        found = node.find_by_ipos(*ipos)
+        found = node.find_by_epos(*epos)
         return found if found
       end
     end
@@ -71,9 +69,9 @@ module MT::AiNode
 
   def inspect(io : IO)
     io << '('.colorize.dark_gray
-    io << @cpos.colorize.bold
+    io << @epos.to_s.colorize.bold
     # io << ':' << @_idx
-    inspect_inner(io)
+    inspect_inner(io) rescue puts self
 
     io << ' ' << @attr unless @attr.none?
     io << ')'.colorize.dark_gray
@@ -102,7 +100,7 @@ module MT::AiNode
 
   def to_json(jb : JSON::Builder) : Nil
     jb.array do
-      jb.string @cpos
+      jb.string @epos.to_s
       jb.number @_idx
       jb.number @zstr.size
       jb.string(@attr.none? ? "" : @attr.to_str)

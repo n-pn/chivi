@@ -36,7 +36,7 @@ class MT::ViTermForm
     @vstr = @vstr.gsub(/\p{C}+/, " ").strip.unicode_normalize(:nfkc)
     @vstr = VietUtil.fix_tones(@vstr)
 
-    @cpos = "_" unless @cpos.in?(MtCpos::ALL)
+    @cpos = "X" unless MtEpos.parse?(@cpos)
     @attr = MtAttr.parse_list(@attr).to_str
 
     @dname = @dname.sub(':', '/')
@@ -85,16 +85,16 @@ class MT::ViTermForm
 
   def sync_with_dict!
     return unless mt_dict = MtDict.get?(@dname)
-    ipos = MtCpos[@cpos]
+    epos = MtEpos.parse(@cpos)
 
     if self.on_delete?
-      mt_dict.del(zstr, ipos)
+      mt_dict.del(zstr, epos)
     else
       attr = MtAttr.parse_list(@attr)
       dnum = MtDnum.from(dtype: mt_dict.type, plock: @plock.to_i8)
 
       mt_term = MtTerm.new(vstr: @vstr, attr: attr, dnum: dnum)
-      mt_dict.add(zstr, ipos: ipos, term: mt_term)
+      mt_dict.add(zstr, epos: epos, term: mt_term)
     end
   end
 end

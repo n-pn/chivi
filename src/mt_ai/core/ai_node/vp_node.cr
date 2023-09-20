@@ -6,7 +6,7 @@ class MT::VpNode
   getter orig = [] of AiNode
   getter data = [] of AiNode
 
-  def initialize(@orig, @cpos, @_idx, @attr = :none, @ipos = MtCpos[cpos])
+  def initialize(@orig, @epos, @_idx, @attr = :none)
     @_pos = 0
     @zstr = orig.join(&.zstr)
   end
@@ -58,7 +58,7 @@ class MT::VpNode
     i_hd = 0
     i_tl = -1
 
-    v_node = @orig.reverse_each.find(@orig.last) { |x| MtCpos.verb?(x.ipos) }
+    v_node = @orig.reverse_each.find(@orig.last, &.epos.verb?)
     v_stem = v_node.first.zstr
 
     n_node = nil
@@ -66,12 +66,12 @@ class MT::VpNode
     while @_pos < _max
       node = read_node
 
-      case node.ipos
-      when MtCpos::ADVP
+      case node.epos
+      when .advp?
         node = AiRule.heal_advp!(dict, node)
         data.insert(i_tl, node)
         i_tl -= 1 if node._idx < v_node._idx && node.attr.at_t?
-      when MtCpos::PP
+      when .pp?
         if node._idx < v_node._idx
           node = AiRule.heal_pp!(dict, node, v_node)
           data.insert(i_tl, node)
@@ -79,7 +79,7 @@ class MT::VpNode
         else
           data.insert(i_tl, node)
         end
-      when MtCpos::AS
+      when MtEpos::AS
         if node.zstr == "了" && @_pos == _max && !node.attr.asis?
           node.set_vstr!("rồi")
           node.off_attr!(:hide)
@@ -89,13 +89,13 @@ class MT::VpNode
           data.insert(i_hd, node)
           i_hd += 1
         end
-      when MtCpos::IP
+      when .ip?
         if !n_node && v_stem == "想"
           v_node.set_vstr!("muốn")
         end
 
         data.insert(i_tl, node)
-      when MtCpos::NP
+      when .np?
         # TODO: fix meaning
         if node.attr.nper? && v_stem == "想"
           v_node.set_vstr!("nhớ")

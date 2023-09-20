@@ -3,12 +3,12 @@ require "./ai_node"
 class MT::M0Node
   include AiNode
 
-  def initialize(@zstr, @cpos, @_idx, @attr = :none, @ipos = MtCpos[cpos])
+  def initialize(@zstr, @epos, @attr : MtAttr = :none, @_idx : Int32 = 0)
   end
 
   @[AlwaysInline]
   def translate!(dict : AiDict, rearrange : Bool = true) : Nil
-    self.set_term!(dict.get(@zstr, @ipos))
+    self.set_term!(dict.get(@zstr, @epos))
   end
 
   def z_each(&)

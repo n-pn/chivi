@@ -3,29 +3,29 @@ require "./ai_node"
 class MT::M3Node
   include AiNode
 
-  getter left : AiNode
-  getter middle : AiNode
-  getter right : AiNode
+  getter lhsn : AiNode
+  getter midn : AiNode
+  getter rhsn : AiNode
 
-  def initialize(@left, @middle, @right, @cpos, @_idx = left._idx, @attr = :none, @ipos = MtCpos[cpos])
-    @zstr = "#{left.zstr}#{middle.zstr}#{right.zstr}"
+  def initialize(@lhsn, @midn, @rhsn, @epos, @attr = :none, @_idx = lhsn._idx)
+    @zstr = {lhsn, midn, rhsn}.join(&.zstr)
   end
 
   def translate!(dict : AiDict, rearrange : Bool = true)
     self.tl_whole!(dict: dict)
-    {@left, @middle, @right}.each(&.translate!(dict, rearrange: rearrange))
+    {@lhsn, @midn, @rhsn}.each(&.translate!(dict, rearrange: rearrange))
     self.rearrange!(dict) if rearrange
   end
 
   private def rearrange!(dict : AiDict) : Nil
-    case @cpos
-    when "VPT"
-      return unless @right.zstr == "住"
-      @right.set_vstr!(vstr: "nổi")
-    when "VNV"
-      return unless @left.zstr == @right.zstr
-      # if vstr = MAP_VND_INFIX[@middle.zstr]?
-      #   @middle.set_vstr!(vstr: vstr)
+    case @epos
+    when .vpt?
+      return unless @rhsn.zstr == "住"
+      @rhsn.set_vstr!(vstr: "nổi")
+    when .vnv?
+      return unless @lhsn.zstr == @rhsn.zstr
+      # if vstr = MAP_VND_INFIX[@midn.zstr]?
+      #   @midn.set_vstr!(vstr: vstr)
       # end
     end
   end
@@ -37,22 +37,22 @@ class MT::M3Node
   ###
 
   def z_each(&)
-    yield left
-    yield middle
-    yield right
+    yield lhsn
+    yield midn
+    yield rhsn
   end
 
   def v_each(&)
-    yield left
-    yield middle
-    yield right
+    yield lhsn
+    yield midn
+    yield rhsn
   end
 
   def first
-    @left
+    @lhsn
   end
 
   def last
-    @right
+    @rhsn
   end
 end

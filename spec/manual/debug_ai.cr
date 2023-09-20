@@ -23,4 +23,4 @@ puts "--------------------------------".colorize.dark_gray
 puts "Total time used (including loading dicts): #{(Time.monotonic - time).total_milliseconds.round}ms".colorize.red
 
 # puts dict.to_json
-# puts MT::MtCpos::MAP
+# puts MT::MtEpos::MAP

@@ -4,8 +4,8 @@ enum MT::MtDtyp : Int8
   Unknown = 0 # reserved
   Primary = 1 # book dict/priv dict/fixture dict that override regular terms
   Regular = 2 # glossaries shared for all books/projects
-  Hintpri = 3 # cpos type "_" in primary dict
-  Hintreg = 4 # cpos type "_" in regular dict
+  Hintpri = 3 # cpos type "X" in primary dict
+  Hintreg = 4 # cpos type "X" in regular dict
   Autogen = 5 # entries auto translated by system
   Fixture = 6 # redefined by translation machine
 end
@@ -62,8 +62,8 @@ class MT::MtDict
   end
 
   @[AlwaysInline]
-  def get?(zstr : String, ipos : Int8)
-    @data[zstr]?.try(&.[ipos]?)
+  def get?(zstr : String, epos : MtEpos)
+    @data[zstr]?.try(&.[epos.value]?)
   end
 
   @[AlwaysInline]
@@ -75,23 +75,23 @@ class MT::MtDict
   ####
 
   @[AlwaysInline]
-  def add(zstr : String, ipos : Int8, vstr : String, attr : MtAttr, lock = 0_i8) : MtTerm
+  def add(zstr : String, epos : MtEpos, vstr : String, attr : MtAttr, lock = 0_i8) : MtTerm
     dnum = MtDnum.from(dtype: @type, plock: lock)
-    add(zstr: zstr, ipos: ipos, term: MtTerm.new(vstr, attr: attr, dnum: dnum))
+    add(zstr: zstr, epos: epos, term: MtTerm.new(vstr, attr: attr, dnum: dnum))
   end
 
   @[AlwaysInline]
   def add(zstr : String, cpos : String, term : MtTerm) : MtTerm
-    add(zstr: zstr, ipos: MtCpos[cpos], term: term)
+    add(zstr: zstr, epos: MtEpos.parse(cpos), term: term)
   end
 
-  def add(zstr : String, ipos : Int8, term : MtTerm) : MtTerm
+  def add(zstr : String, epos : MtEpos, term : MtTerm) : MtTerm
     entry = @data[zstr] ||= {} of Int8 => MtTerm
-    entry[ipos] = term
+    entry[epos.value] = term
   end
 
-  def del(zstr : String, ipos : Int8)
-    @data[zstr]?.try(&.delete(ipos))
+  def del(zstr : String, epos : MtEpos)
+    @data[zstr]?.try(&.delete(epos.value))
   end
 
   def load_tsv!(name : String = @name)
@@ -103,15 +103,16 @@ class MT::MtDict
       next if cols.size < 2
 
       zstr = cols[0]
-      ipos = MtCpos[cols[1]]
+      epos = MtEpos.parse?(cols[1]) || MtEpos::X
+
       vstr = cols[2]? || ""
       attr = MtAttr.parse_list(cols[3]?)
 
       if vstr.empty? && !attr.hide?
-        self.del(zstr: zstr, ipos: ipos)
+        self.del(zstr: zstr, epos: epos)
       else
         lock = cols[6]?.try(&.to_i8?) || 1_i8
-        self.add(zstr: zstr, ipos: ipos, vstr: vstr, attr: attr, lock: lock)
+        self.add(zstr: zstr, epos: epos, vstr: vstr, attr: attr, lock: lock)
       end
     end
 
@@ -124,11 +125,11 @@ class MT::MtDict
 
     #   db.query_each(query) do |rs|
     #     zstr = rs.read(String)
-    #     ipos = rs.read(Int32).unsafe_as(Int8)
+    #     epos = rs.read(Int32).unsafe_as(Int8)
     #     vstr = rs.read(String)
     #     attr = MtAttr.new(rs.read(Int32))
     #     lock = rs.read(Int32).unsafe_as(Int8)
-    #     add(zstr, ipos: ipos, vstr: vstr, attr: attr, lock: lock)
+    #     add(zstr, epos: epos, vstr: vstr, attr: attr, lock: lock)
     #   end
     # end
 
@@ -143,7 +144,9 @@ class MT::MtDict
 
         # TODO: remove this line and purge database instead
         next if vstr.empty? && !attr.hide?
-        self.add(zstr, ipos: MtCpos[cpos], vstr: vstr, attr: attr)
+
+        epos = MtEpos.parse?(cpos) || MtEpos::X
+        self.add(zstr, epos: epos, vstr: vstr, attr: attr)
       end
     end
 

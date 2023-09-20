@@ -54,7 +54,7 @@ class MT::ViTerm
 
   def self.new(cols : Array(String))
     zstr, cpos, vstr = cols
-    # raise "invalid #{cpos}" unless cpos.in?(MtCpos::ALL)
+    # raise "invalid #{cpos}" unless cpos.in?(MtEpos::ALL)
 
     zstr = CharUtil.to_canon(zstr, true)
     vstr = vstr.empty? ? "" : VietUtil.fix_tones(vstr)
@@ -84,7 +84,7 @@ class MT::ViTerm
   end
 
   def fix_enums!
-    @icpos = MtCpos[@cpos].to_i
+    @icpos = MtEpos.parse(@cpos).to_i
     @iattr = MtAttr.parse_list!(@attr).to_i
   end
 

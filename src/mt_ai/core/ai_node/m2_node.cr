@@ -3,63 +3,62 @@ require "./ai_node"
 class MT::M2Node
   include AiNode
 
-  getter left : AiNode
-  getter right : AiNode
+  getter lhsn : AiNode
+  getter rhsn : AiNode
 
-  property flip = false
+  getter flip = false
 
-  def initialize(@left, @right, @cpos, @_idx = left._idx, @attr = :none, @ipos = MtCpos[cpos])
-    @zstr = "#{@left.zstr}#{@right.zstr}"
+  def initialize(@lhsn, @rhsn, @epos, @attr = :none, @flip = false, @_idx = lhsn._idx)
+    @zstr = {lhsn, rhsn}.join(&.zstr)
   end
 
   def translate!(dict : AiDict, rearrange : Bool = true) : Nil
     self.tl_whole!(dict: dict)
-    {@left, @right}.each(&.translate!(dict, rearrange: rearrange))
+    {@lhsn, @rhsn}.each(&.translate!(dict, rearrange: rearrange))
     self.rearrange!(dict) if rearrange
   end
 
   private def rearrange!(dict : AiDict) : Nil
-    case @ipos
-    when MtCpos::DNP   then fix_dnp!
-    when MtCpos["DVP"] then fix_dvp!
-    when MtCpos["LCP"] then fix_lcp!
-    when MtCpos["VRD"] then fix_vrd!
-    when MtCpos["VCD"] then fix_vcd!
-    when MtCpos["VCP"] then fix_vcp!
-    when MtCpos::QP    then fix_qp!
-    when MtCpos::DP
-      @flip = !@left.attr.at_h?
+    case @epos
+    when .dnp? then fix_dnp!
+    when .dvp? then fix_dvp!
+    when .lcp? then fix_lcp!
+    when .vrd? then fix_vrd!
+    when .vcd? then fix_vcd!
+    when .vcp? then fix_vcp!
+    when .qp?  then fix_qp!
+    when .dp?  then @flip = !@lhsn.attr.at_h?
     end
   end
 
   def fix_lcp!
-    @flip = !right.attr.at_t?
+    @flip = !rhsn.attr.at_t?
   end
 
   def fix_dvp!
     # TODO
-    # pp [left, right]
+    # pp [lhsn, rhsn]
   end
 
   def fix_dnp!
-    if @left.attr.at_h?
+    if @lhsn.attr.at_h?
       @attr = :at_h
       return
     end
 
     @flip = true
-    return unless right.zstr == "的" && right.ipos == MtCpos["DEG"]
+    return unless rhsn.zstr == "的" && rhsn.epos.deg?
 
-    if possestive?(left)
-      right.set_vstr!("của")
-      right.off_attr!(:hide)
+    if possestive?(lhsn)
+      rhsn.set_vstr!("của")
+      rhsn.off_attr!(:hide)
     else
-      right.set_term!(MtTerm.new("", MtAttr[:hide, :at_t]))
+      rhsn.set_term!(MtTerm.new("", attr: MtAttr[Hide, At_t]))
     end
   end
 
   def fix_qp!
-    @flip = @left.ipos == MtCpos::OD || @right.zstr.includes?('之')
+    @flip = @lhsn.epos.od? || @rhsn.zstr.includes?('之')
   end
 
   private def possestive?(node : AiNode)
@@ -67,14 +66,14 @@ class MT::M2Node
       return false if node.attr & MtAttr[Ndes, Ntmp] != MtAttr::None
       return true if node.attr & MtAttr[Nper, Norg, Nloc] != MtAttr::None
 
-      case node.ipos
-      when MtCpos::NP
+      case node.epos
+      when .np?
         return true if node.is_a?(M0Node)
         node = node.last
-      when MtCpos::PN
+      when .nn?
         return node.attr.nper?
       else
-        return node.ipos == MtCpos::NN
+        return node.epos.nn?
       end
     end
 
@@ -82,48 +81,40 @@ class MT::M2Node
   end
 
   def fix_vcd!
-    MtPair.vcd_pair.fix_if_match!(@right, @left, MtStem.verb_stem(@left.zstr))
+    MtPair.vcd_pair.fix_if_match!(@rhsn, @lhsn, MtStem.verb_stem(@lhsn.zstr))
   end
 
   def fix_vcp!
-    MtPair.vcp_pair.fix_if_match!(@right, @left, MtStem.verb_stem(@left.zstr))
+    MtPair.vcp_pair.fix_if_match!(@rhsn, @lhsn, MtStem.verb_stem(@lhsn.zstr))
   end
 
   def fix_vrd!
-    @left.find_by_ipos(MtCpos::AS).try(&.add_attr!(MtAttr[Asis, Hide]))
-    MtPair.vrd_pair.fix_if_match!(@right, @left, MtStem.verb_stem(@left.zstr))
+    @lhsn.find_by_epos(MtEpos::AS).try(&.add_attr!(MtAttr[Asis, Hide]))
+    MtPair.vrd_pair.fix_if_match!(@rhsn, @lhsn, MtStem.verb_stem(@lhsn.zstr))
   end
 
   ###
 
   def z_each(&)
-    yield left
-    yield right
+    yield lhsn
+    yield rhsn
   end
 
   def v_each(&)
     if @flip
-      yield right
-      yield left
+      yield rhsn
+      yield lhsn
     else
-      yield left
-      yield right
+      yield lhsn
+      yield rhsn
     end
   end
 
   def first
-    @left
+    @lhsn
   end
 
   def last
-    @right
-  end
-
-  def self.new_nr(left : AiNode, right : AiNode, attr = right.attr, flip = right.attr.at_h?)
-    new(left, right, cpos: "NR", ipos: MtCpos::NR, attr: attr).tap(&.flip = flip)
-  end
-
-  def self.new_nn(left : AiNode, right : AiNode, attr = right.attr, flip = true)
-    new(left, right, cpos: "NN", ipos: MtCpos::NN, attr: attr).tap(&.flip = flip)
+    @rhsn
   end
 end

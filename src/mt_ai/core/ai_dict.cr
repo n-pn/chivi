@@ -27,13 +27,13 @@ class MT::AiDict
     }
   end
 
-  def get(zstr : String, ipos : Int8) : MtTerm
-    get?(zstr, ipos) || get_alt?(zstr) || init(zstr, ipos)
+  def get(zstr : String, epos : MtEpos) : MtTerm
+    get?(zstr, epos) || get_alt?(zstr) || init(zstr, epos)
   end
 
-  def get?(zstr : String, ipos : Int8)
+  def get?(zstr : String, epos : MtEpos)
     @dict_list.each do |dict|
-      dict.get?(zstr, ipos).try { |found| return found }
+      dict.get?(zstr, epos).try { |found| return found }
     end
   end
 
@@ -43,29 +43,29 @@ class MT::AiDict
     end
   end
 
-  def init(zstr : String, ipos : Int8) : MtTerm
-    case ipos
-    when MtCpos::PU
+  def init(zstr : String, epos : MtEpos) : MtTerm
+    case epos
+    when .pu?
       vstr = CharUtil.normalize(zstr)
       attr = MtAttr.parse_punct(zstr)
-      @auto_dict.add(zstr, ipos, vstr, attr)
-    when MtCpos::EM
-      @auto_dict.add(zstr, ipos, zstr, MtAttr[Asis, Capx])
-    when MtCpos["URL"]
+      @auto_dict.add(zstr, epos, vstr, attr)
+    when .em?
+      @auto_dict.add(zstr, epos, zstr, MtAttr[Asis, Capx])
+    when .url?
       vstr = CharUtil.normalize(zstr)
-      @auto_dict.add(zstr, ipos, vstr, MtAttr[Asis])
-    when MtCpos::OD
-      @auto_dict.add(zstr, ipos, init_od(zstr), :none)
-    when MtCpos::CD
-      @auto_dict.add(zstr, ipos, init_cd(zstr), :none)
-    when MtCpos::VV
-      @auto_dict.add(zstr, ipos, init_vv(zstr), :none)
-    when MtCpos::NR
+      @auto_dict.add(zstr, epos, vstr, MtAttr[Asis])
+    when .od?
+      @auto_dict.add(zstr, epos, init_od(zstr), :none)
+    when .cd?
+      @auto_dict.add(zstr, epos, init_cd(zstr), :none)
+    when .vv?
+      @auto_dict.add(zstr, epos, init_vv(zstr), :none)
+    when .nr?
       vstr = init_nr(zstr)
-      @auto_dict.add(zstr, ipos, vstr, :none)
+      @auto_dict.add(zstr, epos, vstr, :none)
     else
       vstr = QtCore.tl_hvword(zstr)
-      @auto_dict.add(zstr, ipos, vstr, :none)
+      @auto_dict.add(zstr, epos, vstr, :none)
     end
   end
 
@@ -75,8 +75,8 @@ class MT::AiDict
     fname, pchar, lname = zstr.partition(/[\p{P}]/)
     return QtCore.tl_hvname(zstr) if pchar.empty?
 
-    fname_vstr = get?(fname, MtCpos::NR).try(&.vstr) || QtCore.tl_hvname(fname)
-    lname_vstr = get?(lname, MtCpos::NR).try(&.vstr) || QtCore.tl_hvname(lname)
+    fname_vstr = get?(fname, :NR).try(&.vstr) || QtCore.tl_hvname(fname)
+    lname_vstr = get?(lname, :NR).try(&.vstr) || QtCore.tl_hvname(lname)
 
     pchar = MAP_PCHAR[pchar[0]]? || pchar
 
@@ -131,30 +131,19 @@ class MT::AiDict
     case
     when match = MtPair.vrd_pair.find_any(zstr)
       a_zstr, b_term = match
-      a_term = get(a_zstr, MtCpos::VV)
+      a_term = get(a_zstr, :VV)
       "#{a_term.vstr} #{b_term.a_vstr}"
     when zstr[-1] == '了'
-      a_term = get(zstr[..-2], MtCpos::VV)
+      a_term = get(zstr[..-2], :VV)
       "#{a_term.vstr} rồi"
     when zstr[0] == '一'
-      b_term = get(zstr[1..], MtCpos::VV)
+      b_term = get(zstr[1..], :VV)
       "#{b_term.vstr} một phát"
     when zstr[0] == '吓'
-      b_term = get(zstr[1..], MtCpos::VV)
+      b_term = get(zstr[1..], :VV)
       "dọa #{b_term.vstr}"
     else
       QtCore.tl_hvword(zstr)
     end
   end
-
-  # def self.get_special?(astr : String, bstr : String)
-  #   MtDict.special.get?(astr, bstr).try(&.[0])
-  # end
-
-  # def self.get_special?(astr : String, *bstr : String)
-  #   MtDict.special.get?(astr, *bstr).try(&.[0])
-  # end
-
-  ###########
-
 end

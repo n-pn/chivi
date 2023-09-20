@@ -4,27 +4,29 @@ require "./ai_rule/*"
 module MT::AiRule
   extend self
 
-  def split_dp(node : AiNode)
-    case node
-    when M1Node
-      fchar = node.zstr[0]
-      return {node, nil} unless fchar.in?('这', '那') && node.zstr.size > 1
+  # def split_dp(node : AiNode, &)
+  #   case node
+  #   when M1Node
+  #     if node.zstr.size < 2 || !node.zstr[0].in?('这', '那')
+  #       yield node
+  #     else
+  #       lhsn = M0Node.new(node.zstr[0].to_s, epos: :DT, _idx: node._idx)
+  #       rhsn = M0Node.new(node.zstr[1..], epos: :QP, _idx: node._idx + 1)
 
-      left = M0Node.new(fchar.to_s, cpos: "DT", _idx: node._idx, ipos: MtCpos::DT)
-      right = M0Node.new(node.zstr[1..], cpos: "QP", _idx: node._idx &+ 1, ipos: MtCpos::QP)
-
-      {left, right}
-    when M2Node
-      {node.left, node.right}
-    else
-      {node, nil}
-    end
-  end
+  #       yield lhsn
+  #       yield rhsn
+  #     end
+  #   when M2Node
+  #     yield node.lhsn
+  #     yield node.rhsn
+  #   else
+  #     yield node
+  #   end
+  # end
 
   PUNCT_MATCH_PAIR = {
     '“' => '”',
     '‘' => '’',
-    '〈' => '〉',
     '〈' => '〉',
     '（' => '）',
   }
@@ -36,7 +38,7 @@ module MT::AiRule
     while _idx < _max
       node = list.unsafe_fetch(_idx)
       _idx &+= 1
-      return {node, _idx} if node.ipos == MtCpos::PU && node.zstr[-1] == match_char
+      return {node, _idx} if node.epos.pu? && node.zstr[-1] == match_char
     end
   end
 end
