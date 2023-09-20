@@ -115,8 +115,7 @@ class MT::NpNode
       node = self.read_node
 
       if @_pos >= 0 && node.ipos.in?(MtCpos::NN, MtCpos::NP, MtCpos::NR)
-        node = read_nn!([node] of AiNode, false)
-        node.tl_whole!(dict: dict)
+        node = read_nn!(dict: dict, list: [node] of AiNode, on_etc: false)
       end
 
       list.unshift(node)
@@ -127,15 +126,19 @@ class MT::NpNode
   end
 
   @[AlwaysInline]
-  private def make_node(list : Array(AiNode), attr = list.last.attr,
+  private def make_node(dict : AiDict,
+                        list : Array(AiNode),
+                        attr = list.last.attr,
                         ipos = MtCpos::NN, cpos = MtCpos::ALL[ipos]) : AiNode
     return list.first if list.size == 1
 
     _idx = list.min_of(&._idx)
-    MxNode.new(list, _idx: _idx, cpos: cpos, ipos: ipos, attr: attr)
+    node = MxNode.new(list, _idx: _idx, cpos: cpos, ipos: ipos, attr: attr)
+
+    node.tap(&.tl_whole!(dict: dict))
   end
 
-  private def read_nn!(list : Array(AiNode), on_etc = false) : AiNode
+  private def read_nn!(dict : AiDict, list : Array(AiNode), on_etc = false) : AiNode
     attr = list.last.attr
 
     while @_pos >= 0
@@ -149,9 +152,10 @@ class MT::NpNode
         break unless node.attr.prfx?
 
         # combine the noun list for phrase translation
-        noun = make_node(list, attr: attr, ipos: MtCpos::NN, cpos: "NN")
-        list = [M2Node.new_nn(node, noun, flip: !node.attr.at_h?)] of AiNode
+        noun = make_node(dict: dict, list: list, attr: attr, ipos: MtCpos::NN, cpos: "NN")
+        node = M2Node.new_nn(node, noun, flip: !node.attr.at_h?).tap(&.tl_whole!(dict))
 
+        list = [node] of AiNode
         @_pos &-= 1
       when MtCpos::PU
         # FIXME: check error in this part
@@ -164,16 +168,16 @@ class MT::NpNode
         break unless prev.in?(MtCpos::NN, MtCpos::NP, MtCpos::NR)
 
         @_pos &-= 1
-        list.unshift(@_pos >= 0 ? read_nn!([prev] of AiNode, on_etc) : prev)
+        list.unshift(@_pos >= 0 ? read_nn!(dict, [prev] of AiNode, on_etc) : prev)
       else
         break
       end
     end
 
-    read_np!([make_node(list, attr: attr)] of AiNode)
+    read_np!(dict, list: [make_node(dict, list, attr: attr)] of AiNode)
   end
 
-  private def read_np!(list : Array(AiNode)) : AiNode
+  private def read_np!(dict : AiDict, list : Array(AiNode)) : AiNode
     noun = list.last
 
     while @_pos >= 0
@@ -188,8 +192,9 @@ class MT::NpNode
       when MtCpos::CD, MtCpos::CLP
         list.unshift(node)
       when MtCpos::ADJP
-        noun = make_node(list, attr: noun.attr, ipos: MtCpos::NP, cpos: "NP")
-        list = [M2Node.new_nn(node, noun, flip: !node.attr.at_h?)] of AiNode
+        noun = make_node(dict, list, attr: noun.attr, ipos: MtCpos::NP, cpos: "NP")
+        node = M2Node.new_nn(node, noun, flip: !node.attr.at_h?).tap(&.tl_whole!(dict))
+        list = [node] of AiNode
       when MtCpos::DNP, MtCpos::DT, MtCpos::DP
         list.insert(node.attr.at_h? ? 0 : -1, node)
       when MtCpos::LCP
@@ -204,7 +209,7 @@ class MT::NpNode
       @_pos &-= 1
     end
 
-    make_node(list, attr: noun.attr, ipos: MtCpos::NP, cpos: "NP")
+    make_node(dict, list, attr: noun.attr, ipos: MtCpos::NP, cpos: "NP")
   end
 
   private def pron_at_head?(pron : AiNode, noun : AiNode)
