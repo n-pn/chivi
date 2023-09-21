@@ -90,11 +90,9 @@ module MT::AiNode
   ###
 
   def to_txt(io : IO, cap : Bool, und : Bool)
-    if @dnum >= 0
+    if @dnum >= 0 || self.is_a?(M0Node)
       io << ' ' unless @attr.undent?(und: und)
       @attr.render_vstr(io, @vstr, cap: cap, und: und)
-    elsif self.is_a?(M0Node)
-      raise "translation missing!"
     else
       self.v_each { |node| cap, und = node.to_txt(io, cap: cap, und: und) }
       {cap, und}

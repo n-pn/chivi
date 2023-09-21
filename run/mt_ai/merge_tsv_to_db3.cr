@@ -53,14 +53,13 @@ def merge_to_db(file : String)
   puts [file, inputs.size]
 
   outputs = inputs.each_value.compact_map do |input|
-    vstr = fix_vstr(input.vstr, input.attr)
-    next if vstr.empty?
+    next if input.vstr.empty?
 
     MT::ViTerm.new(
       zstr: input.zstr,
-      cpos: fix_cpos(input.cpos),
-      vstr: vstr,
-      attr: fix_attr(input.attr),
+      cpos: input.cpos,
+      vstr: input.vstr,
+      attr: input.attr,
       uname: input.uname,
       mtime: input.mtime,
       plock: input.plock
@@ -74,7 +73,8 @@ def merge_to_db(file : String)
   end
 end
 
-INP = "/2tb/app.chivi/var/mtapp/mt_ai/"
+INP = "/2tb/app.chivi/var/mt_db/mt_ai/"
+# merge_to_db "#{INP}regular.tsv"
 
 Dir.glob("#{INP}*.tsv").each { |file| merge_to_db(file) }
 Dir.glob("#{INP}_old/*.tsv").each { |file| merge_to_db(file) }

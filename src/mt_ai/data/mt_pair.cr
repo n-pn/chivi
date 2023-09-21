@@ -84,6 +84,7 @@ class MT::MtPair
   class_getter m_n_pair : self { new("m_n_pair").load_tsv! }
   class_getter p_v_pair : self { new("p_v_pair").load_tsv! }
   class_getter v_n_pair : self { new("v_n_pair").load_tsv! }
+  class_getter d_v_pair : self { new("d_v_pair").load_tsv! }
 
   class_getter vcd_pair : self { new("vcd_pair").load_tsv! }
   class_getter vcp_pair : self { new("vcp_pair").load_tsv! }

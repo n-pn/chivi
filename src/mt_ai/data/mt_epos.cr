@@ -70,11 +70,18 @@ enum MT::MtEpos : Int8
   NH # name suffixes
   NC # center nouns
 
+  @[AlwaysInline]
   def verb?
-    self == VV || self == VP
+    self == VV || self == VP || self == VA || self == VC || self == VE
   end
 
+  @[AlwaysInline]
   def noun?
     self == NP || self == NN || self == NR || self == NT
+  end
+
+  @[AlwaysInline]
+  def is?(epos : self)
+    self.value == epos.value
   end
 end

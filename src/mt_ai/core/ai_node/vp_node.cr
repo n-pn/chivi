@@ -40,74 +40,130 @@ class MT::VpNode
 
   @[AlwaysInline]
   private def peak_node(_pos = @_pos)
-    @orig.unsafe_fetch(_pos)
+    @orig[_pos]
   end
 
   @[AlwaysInline]
   private def read_node
-    node = @orig.unsafe_fetch(@_pos)
-    @_pos &+= 1
-    node
+    @orig[@_pos].tap { @_pos &+= 1 }
   end
 
   ##
 
   def read_vp!(dict : AiDict, _max = @orig.size) : Array(AiNode)
-    data = [] of AiNode
+    head = [] of AiNode
 
-    i_hd = 0
-    i_tl = -1
-
-    v_node = @orig.reverse_each.find(@orig.last, &.epos.verb?)
-    v_stem = v_node.first.zstr
-
-    n_node = nil
-
-    while @_pos < _max
+    verb = while @_pos < _max
       node = read_node
+      break node if node.epos.verb?
+      head << node
+    end
 
+    return head unless verb
+
+    data = [] of AiNode
+    tail = [] of AiNode
+
+    head.each do |node|
       case node.epos
       when .advp?
-        node = AiRule.heal_advp!(dict, node)
-        data.insert(i_tl, node)
-        i_tl -= 1 if node._idx < v_node._idx && node.attr.at_t?
+        fix_d_v_pair!(node, verb)
+        # TODO: check if aspect existed
       when .pp?
-        if node._idx < v_node._idx
-          node = AiRule.heal_pp!(dict, node, v_node)
-          data.insert(i_tl, node)
-          i_tl -= 1 if node.attr.at_t?
-        else
-          data.insert(i_tl, node)
-        end
-      when MtEpos::AS
-        if node.zstr == "了" && @_pos == _max && !node.attr.asis?
-          node.set_vstr!("rồi")
-          node.off_attr!(:hide)
-          data.insert(i_tl, node)
-        else
-          # TODO: add tense if no adverb
-          data.insert(i_hd, node)
-          i_hd += 1
-        end
-      when .ip?
-        if !n_node && v_stem == "想"
-          v_node.set_vstr!("muốn")
-        end
+        fix_p_v_pair!(node, verb)
+      end
 
-        data.insert(i_tl, node)
-      when .np?
-        # TODO: fix meaning
-        if node.attr.nper? && v_stem == "想"
-          v_node.set_vstr!("nhớ")
-        end
-
-        n_node = node
-        data.insert(i_tl, node)
+      if node.attr.at_t?
+        tail << node
       else
-        data.insert(i_tl, node)
+        data << node
       end
     end
 
+    # TODO: split verb?
+    data << read_vo!(dict, verb, _max)
+    tail.reverse_each { |node| data << node }
+
+    while @_pos < _max
+      data << self.read_node
+    end
+
     data
+  end
+
+  def read_vo!(dict : AiDict, verb : AiNode, _max : Int32)
+    iobj = dobj = nil
+
+    while @_pos < _max
+      node = self.peak_node
+
+      case node.epos
+      when .is?(:AS)
+        verb = M2Node.new(verb, node, :VP, attr: verb.attr)
+        verb.tl_whole!(dict: dict)
+      when .is?(:QP)
+        verb = M2Node.new(verb, node, :VP, attr: verb.attr)
+      when .is?(:NP)
+        break if dobj
+        break unless !iobj && node.attr.nper? || verb.attr.vdit?
+        iobj = node
+      when .vv?, .ip?, .vp?, .pp?
+        break if dobj
+        dobj = node
+      else
+        break
+      end
+
+      @_pos &+= 1
+    end
+
+    if iobj && !dobj
+      dobj = iobj
+      iobj = nil
+    elsif !dobj
+      return verb
+    end
+
+    stem = verb.first
+
+    case stem.zstr
+    when "想" then fix_xiang!(stem, dobj)
+    end
+
+    iobj ? M3Node.new(verb, iobj, dobj, epos: :VP) : M2Node.new(verb, dobj, epos: :VP)
+  end
+
+  def fix_xiang!(vv_node : AiNode, do_node : AiNode) : Nil
+    do_node = do_node.first if do_node.epos.is?(:IP)
+
+    case do_node.epos
+    when .vp?, .vv?, .pp?
+      vv_node.set_vstr!("muốn")
+    when .np?
+      vv_node.set_vstr!("nhớ")
+    else
+      vv_node.set_vstr!("nghĩ")
+    end
+  end
+
+  def fix_d_v_pair!(ad_node : AiNode, vv_node : AiNode) : Nil
+    case ad_node.zstr
+    when "好"
+      ad_node.set_vstr!(vv_node.epos.is?(:VA) ? "thật" : "dễ")
+    when "多"
+      ad_node.set_vstr!(vv_node.epos.is?(:VA) ? "bao" : "nhiều")
+    end
+
+    MtPair.d_v_pair.fix_if_match!(ad_node, vv_node)
+  end
+
+  def fix_p_v_pair!(pp_node : AiNode, vv_node : AiNode) : Nil
+    return unless p_node = pp_node.find_by_epos(:P)
+    MtPair.p_v_pair.fix_if_match!(p_node, vv_node)
+    pp_node.add_attr!(p_node.attr)
+  end
+
+  def fix_v_o_pair!(vv_node : AiNode, nn_node : AiNode) : Nil
+    # TODO!
   end
 end

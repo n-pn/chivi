@@ -3,7 +3,7 @@ require "../../src/_data/_data"
 require "../../src/zroot/corpus"
 
 CORPUS = ZR::Corpus.new("yousuu/ysrepl")
-CORPUS.init_dbs!(no_vdata: true)
+CORPUS.init_dbs!(no_vtran: true, no_ctree: true)
 
 LIMIT = 1000
 

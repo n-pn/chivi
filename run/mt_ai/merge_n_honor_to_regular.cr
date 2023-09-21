@@ -1,10 +1,7 @@
-ENV["MT_DIR"] = "/2tb/app.chivi/var/mt_db/mt_ai"
+# ENV["MT_DIR"] = "/2tb/app.chivi/var/mt_db/mt_ai"
 
 require "../../src/mt_ai/data/vi_term"
 require "../../src/mt_ai/core/qt_core"
-# existing = MT::ViTerm.db("regular").open_ro do |db|
-#   db.query_all("select ipos, zstr from terms", as: {Int32, String}).to_set
-# end
 
 nh_lines = File.read_lines("var/mtdic/honors.tsv").reject!(&.blank?)
 

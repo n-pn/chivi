@@ -30,44 +30,42 @@ class ZR::Corpus
 
   ###
 
-  getter zhead_rw : DB::Connection { Zhead.db("#{@zname}-zhead").open_rw }
-  getter zline_rw : DB::Connection { Zline.db("#{@zname}-zline").open_rw }
-  getter vtran_rw : DB::Connection { Vdata.db("#{@zname}-vtran").open_rw }
-  getter ctree_rw : DB::Connection { Vdata.db("#{@zname}-ctree").open_rw }
+  getter zhead_db : Crorm::SQ3
+  getter zline_db : Crorm::SQ3
+  getter vtran_db : Crorm::SQ3
+  getter ctree_db : Crorm::SQ3
 
   def initialize(@zname : String)
     # Dir.mkdir_p(File.dirname("#{DIR}/#{zname}"))
+
+    @zhead_db = Zhead.db("#{@zname}-zhead")
+    @zline_db = Zline.db("#{@zname}-zline")
+    @vtran_db = Vdata.db("#{@zname}-vtran")
+    @ctree_db = Vdata.db("#{@zname}-ctree")
   end
 
-  def init_dbs!(no_zhead = false, no_zline = false, no_vtran = false, no_ctree = false)
-    puts self.zhead_rw.scalar "select 'init zhead'" unless no_zhead
-    puts self.zline_rw.scalar "select 'init zline'" unless no_zline
-    puts self.vtran_rw.scalar "select 'init vtran'" unless no_vtran
-    puts self.ctree_rw.scalar "select 'init ctree'" unless no_ctree
-  end
+  getter zhead_rw : DB::Connection { @zhead_db.open_rw }
+  getter zline_rw : DB::Connection { @zline_db.open_rw }
+  getter vtran_rw : DB::Connection { @vtran_db.open_rw }
+  getter ctree_rw : DB::Connection { @ctree_db.open_rw }
 
-  def open_tx(&)
-    open_tx
+  def open_tx(zhead = true, zline = true, vtran = false, ctree = false, &)
+    self.zhead_rw.exec("begin") if zhead
+    self.zline_rw.exec("begin") if zline
+    self.vtran_rw.exec("begin") if vtran
+    self.ctree_rw.exec("begin") if ctree
+
     yield
-    close_tx
-  end
 
-  def open_tx
-    @zhead_rw.try(&.exec("begin"))
-    @zline_rw.try(&.exec("begin"))
-    @vtran_rw.try(&.exec("begin"))
-  end
-
-  def close_tx
-    @zhead_rw.try(&.exec("commit"))
-    @zline_rw.try(&.exec("commit"))
-    @vtran_rw.try(&.exec("commit"))
-  end
-
-  def finalize
-    @zhead_rw.try(&.close) rescue nil
-    @zline_rw.try(&.close) rescue nil
-    @vtran_rw.try(&.close) rescue nil
+    self.zhead_rw.exec("commit") if zhead
+    self.zline_rw.exec("commit") if zline
+    self.vtran_rw.exec("commit") if vtran
+    self.ctree_rw.exec("commit") if ctree
+  ensure
+    @zhead_rw = nil
+    @zline_rw = nil
+    @vtran_rw = nil
+    @ctree_rw = nil
   end
 
   ZLINE_UPSERT_QUERY = <<-SQL
