@@ -15,7 +15,7 @@ class MT::MtPair
       new(
         a_vstr: cols[0],
         a_attr: cols[1]?.try { |x| MtAttr.parse_list(x) },
-        b_vstr: cols[2]?,
+        b_vstr: cols[2]?.try { |x| x.empty? ? nil : x },
         b_attr: cols[3]?.try { |x| MtAttr.parse_list(x) },
       )
     end
@@ -58,7 +58,7 @@ class MT::MtPair
     a_node.set_vstr!(found.a_vstr)
 
     return unless a_attr = found.a_attr
-    a_node.add_attr!(a_attr)
+    a_node.set_attr!(a_attr)
 
     return unless b_vstr = found.b_vstr
     a_node.set_vstr!(b_vstr)

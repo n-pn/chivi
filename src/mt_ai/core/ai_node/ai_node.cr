@@ -40,6 +40,22 @@ module MT::AiNode
     end
   end
 
+  def is?(epos : MtEpos)
+    @epos == epos
+  end
+
+  def is?(&)
+    yield @epos
+  end
+
+  def attr?(attr : MtAttr)
+    @att == MtAttr
+  end
+
+  def attr?(&)
+    yield @attr
+  end
+
   def set_epos!(@epos : MtEpos) : Nil
   end
 
@@ -54,6 +70,9 @@ module MT::AiNode
 
   def has_attr?(attr : MtAttr)
     @attr.includes?(attr)
+  end
+
+  def set_attr!(@attr : MtAttr)
   end
 
   def add_attr!(attr : MtAttr)

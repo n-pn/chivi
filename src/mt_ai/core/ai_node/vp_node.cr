@@ -64,13 +64,15 @@ class MT::VpNode
     data = [] of AiNode
     tail = [] of AiNode
 
+    stem = find_stem(verb)
+
     head.each do |node|
       case node.epos
       when .advp?
-        fix_d_v_pair!(node, verb)
+        fix_d_v_pair!(node, stem)
         # TODO: check if aspect existed
       when .pp?
-        fix_p_v_pair!(node, verb)
+        fix_p_v_pair!(node, stem)
       end
 
       if node.attr.at_t?
@@ -102,6 +104,7 @@ class MT::VpNode
         verb = M2Node.new(verb, node, :VP, attr: verb.attr)
         verb.tl_whole!(dict: dict)
       when .is?(:QP)
+        break if dobj || !@orig[@_pos &+ 1]?.try(&.epos.noun?)
         verb = M2Node.new(verb, node, :VP, attr: verb.attr)
       when .is?(:NP)
         break if dobj
@@ -124,21 +127,33 @@ class MT::VpNode
       return verb
     end
 
-    stem = verb.first
+    stem = find_stem(verb)
 
     case stem.zstr
-    when "想" then fix_xiang!(stem, dobj)
+    when "想" then fix_vm_xiang!(stem, dobj)
+    when "会" then fix_vm_hui!(stem, dobj)
+    else
+      fix_v_n_pair!(stem, dobj) if dobj.epos.noun?
     end
 
     iobj ? M3Node.new(verb, iobj, dobj, epos: :VP) : M2Node.new(verb, dobj, epos: :VP)
   end
 
-  def fix_xiang!(vv_node : AiNode, do_node : AiNode) : Nil
+  def fix_vm_xiang!(vv_node : AiNode, do_node : AiNode) : Nil
     do_node = do_node.first if do_node.epos.is?(:IP)
 
     case do_node.epos
     when .vp?, .vv?, .pp?
       vv_node.set_vstr!("muốn")
+
+      while !do_node.is_a?(M0Node)
+        do_node = do_node.first
+      end
+
+      return unless do_node.zstr == "要"
+
+      do_node.set_vstr!("")
+      do_node.add_attr!(:Hide)
     when .np?
       vv_node.set_vstr!("nhớ")
     else
@@ -146,12 +161,21 @@ class MT::VpNode
     end
   end
 
+  def fix_vm_hui!(vv_node : AiNode, do_node : AiNode) : Nil
+    # TODO!
+  end
+
   def fix_d_v_pair!(ad_node : AiNode, vv_node : AiNode) : Nil
     case ad_node.zstr
     when "好"
       ad_node.set_vstr!(vv_node.epos.is?(:VA) ? "thật" : "dễ")
     when "多"
-      ad_node.set_vstr!(vv_node.epos.is?(:VA) ? "bao" : "nhiều")
+      if vv_node.epos.is?(:VA)
+        ad_node.set_vstr!("bao")
+      else
+        ad_node.set_vstr!("nhiều")
+        ad_node.add_attr!(:at_t)
+      end
     end
 
     MtPair.d_v_pair.fix_if_match!(ad_node, vv_node)
@@ -159,11 +183,21 @@ class MT::VpNode
 
   def fix_p_v_pair!(pp_node : AiNode, vv_node : AiNode) : Nil
     return unless p_node = pp_node.find_by_epos(:P)
+
     MtPair.p_v_pair.fix_if_match!(p_node, vv_node)
-    pp_node.add_attr!(p_node.attr)
+    pp_node.add_attr!(:At_t) if p_node.attr.at_t?
   end
 
-  def fix_v_o_pair!(vv_node : AiNode, nn_node : AiNode) : Nil
-    # TODO!
+  def fix_v_n_pair!(vv_node : AiNode, nn_node : AiNode) : Nil
+    MtPair.v_n_pair.fix_if_match!(vv_node, nn_node)
+  end
+
+  @[AlwaysInline]
+  def find_stem(node : AiNode) : AiNode
+    while node.epos.is?(:VP) && !node.is_a?(M0Node)
+      node = node.first
+    end
+
+    node
   end
 end
