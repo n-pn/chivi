@@ -27,6 +27,7 @@ class MT::NpNode
         if !(succ = input[pos]?)
           res << node
         elsif succ.attr.sufx?
+          succ.set_epos!(:NH)
           attr = succ.attr.turn_off(MtAttr[Sufx, At_h])
           res << M2Node.new(node, succ, epos: :NR, attr: attr, flip: succ.attr.at_h?)
           pos &+= 1

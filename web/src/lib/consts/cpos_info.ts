@@ -314,4 +314,20 @@ export default {
     desc: 'Các cụm từ khác không hợp với các loại từ còn lại',
     type: 'phrase',
   },
+
+  NF: {
+    name: 'Họ người',
+    desc: 'Các từ dành cho họ của người, làm tên riêng đi kèm với danh xưng phía sau',
+    type: 'word',
+  },
+  NS: {
+    name: 'Danh xưng',
+    desc: 'Xưng hô, nghề nghiệp của người như tỷ tỷ, muội muội, đại nhân, lão sư, tiểu thư',
+    type: 'word',
+  },
+  NC: {
+    name: 'Danh từ trung tâm',
+    desc: 'Cụm danh từ khi có cụm định ngữ 的/之 phía trước',
+    type: 'phrase',
+  },
 }

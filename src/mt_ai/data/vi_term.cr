@@ -69,6 +69,33 @@ class MT::ViTerm
     @iatt = MtAttr.parse_list(attr).to_i
   end
 
+  def ipos=(cpos : MtEpos)
+    @cpos = cpos.to_s
+    @ipos = cpos.to_i
+  end
+
+  def ipos=(@cpos : String)
+    @ipos = MtEpos.parse(cpos).to_i
+  end
+
+  def cpos=(cpos : MtEpos)
+    @cpos = cpos.to_s
+    @ipos = cpos.to_i
+  end
+
+  def cpos=(@cpos : String)
+    @ipos = MtEpos.parse(cpos).to_i
+  end
+
+  def attr=(attr : MtAttr)
+    @attr = attr.to_str
+    @iatt = attr.to_i
+  end
+
+  def attr=(@attr : String)
+    @iatt = MtAttr.parse_list(attr).to_i
+  end
+
   def to_json(jb : JSON::Builder)
     jb.object do
       jb.field "zstr", @zstr

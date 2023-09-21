@@ -65,6 +65,11 @@ enum MT::MtEpos : Int8
   VSB  # verb compounds formed by a modifier + a head
   OTH  # other types
 
+  # # additional
+  NF # name prefixes
+  NH # name suffixes
+  NC # center nouns
+
   def verb?
     self == VV || self == VP
   end

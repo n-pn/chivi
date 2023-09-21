@@ -1,7 +1,7 @@
 ENV["MT_DIR"] = "/2tb/app.chivi/var/mt_db/mt_ai"
 
-require "../src/mt_ai/data/vi_term"
-require "../src/mt_ai/core/qt_core"
+require "../../src/mt_ai/data/vi_term"
+require "../../src/mt_ai/core/qt_core"
 
 class OldViTerm
   include DB::Serializable
@@ -39,7 +39,7 @@ def fix_attr(attr)
   attr.gsub(/None|Npos/, "").strip
 end
 
-def transform(file : String)
+def merge_to_db(file : String)
   inputs = {} of {String, String} => OldViTerm
 
   File.each_line(file) do |line|
@@ -76,6 +76,6 @@ end
 
 INP = "/2tb/app.chivi/var/mtapp/mt_ai/"
 
-Dir.glob("#{INP}*.tsv").each { |file| transform(file) }
-Dir.glob("#{INP}_old/*.tsv").each { |file| transform(file) }
-Dir.glob("#{INP}book/*.tsv").each { |file| transform(file) }
+Dir.glob("#{INP}*.tsv").each { |file| merge_to_db(file) }
+Dir.glob("#{INP}_old/*.tsv").each { |file| merge_to_db(file) }
+Dir.glob("#{INP}book/*.tsv").each { |file| merge_to_db(file) }
