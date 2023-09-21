@@ -59,7 +59,7 @@ function extract_term(input: Data): CV.Vtdata {
 
     return {
       zstr: zstr,
-      vstr: gen_vtran_text(vnode, { cap: false, und: true }),
+      vstr: gen_vtran_text(vnode, { cap: false, und: true }, true),
       cpos,
       attr,
       plock: Math.floor(dnum / 10),

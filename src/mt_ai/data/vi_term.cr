@@ -24,10 +24,10 @@ class MT::ViTerm
     )
     SQL
 
-  DIR = "var/mt_db"
+  DIR = ENV["MT_DIR"]? || "var/mt_db/mt_ai"
 
   def self.db_path(dname : String, type : String = "db3")
-    "#{DIR}/mt_ai/#{dname}.#{type}"
+    "#{DIR}/#{dname}.#{type}"
   end
 
   ###
@@ -114,19 +114,19 @@ class MT::ViTerm
   end
 
   def self.find(dict : String, zstr : String, cpos : String)
-    self.find(dict, zstr, ipos: MtEpos.parse(cpos).to_i16)
+    self.find(dict, zstr, ipos: MtEpos.parse(cpos).to_i)
   end
 
-  def self.find(dict : String, zstr : String, ipos : Int16)
+  def self.find(dict : String, zstr : String, ipos : Int32)
     query = @@schema.select_by_pkey + " limit 1"
     self.db(dict).query_one?(query, zstr, ipos, as: self)
   end
 
   def self.delete(dict : String, zstr : String, cpos : String)
-    self.delete(dict, zstr, ipos: MtEpos.parse(cpos).to_i16)
+    self.delete(dict, zstr, ipos: MtEpos.parse(cpos).to_i)
   end
 
-  def self.delete(dict : String, zstr : String, ipos : Int16)
+  def self.delete(dict : String, zstr : String, ipos : Int32)
     self.db(dict).open_rw do |db|
       query = "delete from #{@@schema.table} where zstr = $1, ipos = $2"
       db.exec query, zstr, ipos

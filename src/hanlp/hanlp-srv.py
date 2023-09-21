@@ -46,7 +46,7 @@ MTL_EG = init_mtl(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ERNIE_G
 
 
 def call_mtl_task(mtl_pipeline, lines):
-    doc = mtl_pipeline(lines[0])
+    doc = mtl_pipeline([lines[0]])
 
     for line in lines[1:]:
         line_doc = mtl_pipeline(line)
@@ -64,7 +64,7 @@ def render_con_data(con_data):
     output = ''
 
     for con_line in con_data:
-        output += re.sub('\\n(\\s+)', ' ', str(con_line))
+        output += re.sub('\\n(\\s*)', ' ', str(con_line))
         output += '\n'
 
     return output

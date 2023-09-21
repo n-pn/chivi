@@ -63,6 +63,7 @@ enum MT::MtEpos : Int8
   VPT  # potential form V-de-R or V-bu-R
   VRD  # verb resultative compound
   VSB  # verb compounds formed by a modifier + a head
+  OTH  # other types
 
   def verb?
     self == VV || self == VP

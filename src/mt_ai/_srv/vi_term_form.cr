@@ -60,6 +60,8 @@ class MT::ViTermForm
       elsif on_create
         ViDict.bump_stats!(@dname, mtime, 1)
       end
+    rescue ex
+      Log.error(exception: ex) { to_json }
     end
 
     spawn do

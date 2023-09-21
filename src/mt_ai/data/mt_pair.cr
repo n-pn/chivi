@@ -53,7 +53,7 @@ class MT::MtPair
   end
 
   def fix_if_match!(a_node : AiNode, b_node : AiNode, b_stem = b_node.zstr) : Nil
-    return unless found = self.get?(a_node.zstr, b_stem, "X")
+    return unless found = self.get?(a_node.zstr, b_stem, "_")
 
     a_node.set_vstr!(found.a_vstr)
 

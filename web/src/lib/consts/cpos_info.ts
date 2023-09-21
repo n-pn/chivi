@@ -309,4 +309,9 @@ export default {
     desc: 'Cụm từ đằng trước thường không có ý nghĩa',
     type: 'phrase',
   },
+  OTH: {
+    name: 'Các từ khác',
+    desc: 'Các cụm từ khác không hợp với các loại từ còn lại',
+    type: 'phrase',
+  },
 }

@@ -218,10 +218,11 @@ export function gen_vtran_html(
 
 export function gen_vtran_text(
   node: CV.Cvtree,
-  opts = { cap: true, und: true }
+  opts = { cap: true, und: true },
+  _raw = false
 ) {
-  const [_pos, _idx, _len, attr, body, vstr, vdic] = node
-  if (attr.includes('Hide')) return ''
+  const [_pos, _idx, _len, attr, body, vstr] = node
+  if (attr.includes('Hide')) return _raw ? vstr : ''
 
   let text = ''
 

@@ -129,6 +129,6 @@ class MT::AiData
       end
     end
 
-    {MtEpos.parse(cpos), attr}
+    {MtEpos.parse?(cpos) || MtEpos::OTH, attr}
   end
 end
