@@ -44,35 +44,21 @@
   }
 
   const load_btran_data = async () => {
-    const btran = await get_nctext_btran($data.zpath, true, true)
-    $data.btran = btran.lines
+    const btran = await get_nctext_btran($data.zpath, false, true)
+    if (btran.error) alert(btran.error)
+    $data.btran = btran.lines || []
   }
 
   const load_ctree_data = async () => {
-    const ctree = await get_nctext_mtran($data.zpath, true, true, $data.m_alg)
-    $data.ctree = ctree.lines
+    const ctree = await get_nctext_mtran($data.zpath, false, true, $data.m_alg)
+    $data.ctree = ctree.lines || []
   }
 
   const copy_ctree = () => {
     navigator.clipboard.writeText(gen_ctree_text(ctree))
   }
 
-  const reload_ctree = async () => {
-    const text_headers = { 'Content-Type': 'text/plain' }
-
-    const url = '/_ai/mt/reload?pdict=' + $data.pdict
-    const body = gen_ctree_text($data.ctree[l_idx])
-    const init = { method: 'POST', body, headers: text_headers }
-
-    const res = await fetch(url, init)
-    if (!res.ok) return alert(await res.text())
-
-    const { lines } = await res.json()
-
-    $data.ctree[l_idx] = lines[0]
-  }
-
-  const on_term_change = async (term?: CV.Vtdata) => {
+  const on_term_change = async (term?: CV.Vtdata | boolean) => {
     if (!term) return
     await load_ctree_data()
     await invalidate('wn:cdata')
@@ -158,7 +144,7 @@
           <button
             type="button"
             class="tools-btn"
-            on:click={reload_ctree}
+            on:click={() => on_term_change(true)}
             data-tip="Dịch lại sau khi đã thay đổi nghĩa của từ"
             >Dịch lại</button>
         </span>

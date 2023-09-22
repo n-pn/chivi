@@ -13,6 +13,7 @@ export async function local_get<T>(
   }
 
   const data = (await fetch()) as T
+
   if (!data['error']) {
     try {
       localStorage.setItem(c_key, JSON.stringify(data))
@@ -24,7 +25,7 @@ export async function local_get<T>(
   return data
 }
 
-export function local_del<T>(c_key: string) {
+export function local_del(c_key: string) {
   if (!browser) return null
   return localStorage.removeItem(c_key)
 }

@@ -18,7 +18,9 @@ export async function btran(text: string, tab: number, no_cap = true) {
 
   try {
     const res = await fetch(url, { method: 'POST', body: text, headers })
-    results[key] = await res.text()
+    const { lines = [] } = await res.json()
+
+    results[key] = lines[0] || ''
     return results[key]
   } catch (ex) {
     console.log(ex)

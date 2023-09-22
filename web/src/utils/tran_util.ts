@@ -46,9 +46,8 @@ export async function get_nctext_hviet(
   return await local_get<CV.Hvdata>(c_key, reuse, async () => {
     const url = `/_ai/hviet?zpath=${zpath}&w_raw=${w_raw}&ftype=nctext`
     const res = await fetch(url, { method: 'GET' })
-    if (res.ok) return await res.json()
-    console.log('error!')
 
+    if (res.ok) return await res.json()
     return { hviet: [], error: await res.text() }
   })
 }

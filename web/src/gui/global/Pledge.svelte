@@ -15,6 +15,11 @@
         này sẽ có rất nhiều lỗi, mong các bạn thông cảm. Có thắc mắc xin liên hệ
         Facebook của trang hoặc Discord (kéo xuống dưới cùng để xem liên kết).
       </strong>
+      <br />
+      <em>
+        Cập nhật ngày 23/09/2023: Tính năng dịch bằng Bing + Dịch máy kiểu cũ đã
+        mở trở lại. Các bạn bấm vào chỗ [Dịch tạm] để xem.
+      </em>
     </p>
     {#if $_user.privi < 0}
       <a class="pledge" href="/_auth/signup">

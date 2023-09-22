@@ -82,7 +82,7 @@ class SP::TranCtrl < AC::Base
     lines = Btran.translate(_read_body.lines, source: sl, target: tl, no_cap: no_cap)
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
 
-    render json: {lines: lines, tspan: tspan}
+    render json: {lines: lines.map(&.[1]), tspan: tspan}
   rescue ex
     Log.error(exception: ex) { ex.message }
     render json: {lines: [] of String, error: ex.message}
