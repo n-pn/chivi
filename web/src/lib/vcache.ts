@@ -13,7 +13,6 @@ export async function local_get<T>(
   }
 
   const data = (await fetch()) as T
-
   if (!data['error']) {
     try {
       localStorage.setItem(c_key, JSON.stringify(data))

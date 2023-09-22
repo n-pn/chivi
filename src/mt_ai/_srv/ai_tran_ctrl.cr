@@ -1,10 +1,11 @@
 require "./_mt_ctrl_base"
 
 class MT::AiTranCtrl < AC::Base
-  base "/_ai/mt"
+  base "/_ai"
 
-  @[AC::Route::GET("/wnchap")]
-  def wnchap(cpath : String, pdict : String = "combine", _algo : String = "avail")
+  @[AC::Route::GET("/qtran")]
+  def qtran(cpath : String, pdict : String = "combine",
+            _algo : String = "avail", force : Bool = false)
     start = Time.monotonic
     _auto_gen = _privi >= 0
     input, _algo = MtTranUtil.get_wntext_con_data(cpath, _algo, _auto_gen)
@@ -14,11 +15,13 @@ class MT::AiTranCtrl < AC::Base
     lines = input.map { |line| ai_mt.tl_from_con_data(line) }
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
 
-    json = {lines: lines, tspan: tspan, _algo: _algo}
+    mtime = Time.utc.to_unix
+    json = {lines: lines, mtime: mtime, tspan: tspan, _algo: _algo}
+
     render json: json
   rescue ex
     Log.error(exception: ex) { [cpath, pdict] }
-    render 455, ex.message
+    render json: {lines: [] of String, error: ex.message}
   end
 
   @[AC::Route::POST("/reload")]

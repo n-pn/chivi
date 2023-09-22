@@ -22,6 +22,3 @@
     {#if _idx == 0 && cinfo.psize > 1}[{xargs.cpart}/{cinfo.psize}]{/if}
   </svelte:element>
 {/each}
-
-<style lang="scss">
-</style>

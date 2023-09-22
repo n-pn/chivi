@@ -182,7 +182,6 @@
     l_idx = -1
     if (on_focus) on_focus.classList.remove('focus')
     update_memo(false)
-    localStorage.clear()
   })
 
   $: zsize = data.rdata.sizes[xargs.cpart]

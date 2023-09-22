@@ -61,10 +61,11 @@ export async function get_nctext_mtran(
   fetch = globalThis.fetch
 ): Promise<CV.Mtdata> {
   const c_key = `mt:1:nc:${zpath}:${_algo}`
+
   return await local_get<CV.Mtdata>(c_key, reuse, async () => {
     const pdict = 'book/' + zpath.split('/')[0]
 
-    const url = `/_ai/mt/wnchap?cpath=${zpath}&pdict=${pdict}&_algo=${_algo}&force=${force}`
+    const url = `/_ai/qtran?cpath=${zpath}&pdict=${pdict}&_algo=${_algo}&force=${force}`
     const res = await fetch(url, { method: 'GET' })
 
     if (res.ok) return await res.json()
