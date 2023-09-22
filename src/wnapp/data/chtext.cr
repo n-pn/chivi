@@ -151,6 +151,16 @@ class WN::Chtext
     File.read(self.wn_path(p_idx))
   end
 
+  # def load_part_from_copus(p_idx : Int32 = 1)
+  #   zorig = "#{@chap.ch_no}-#{@chap.cksum}-#{p_idx}"
+
+  #   @corpus.get_texts_by_zorig(zorig) || begin
+  #     lines = File.read(self.wn_path(p_idx))
+  #     u8_ids, _ = @corpus.add_part!(zorig)
+  #     {u8_ids, lines}
+  #   end
+  # end
+
   def nlp_path(p_idx : Int32, alg = "hmeg", ext = "con")
     self.class.nlp_path(
       wn_id: @stem.wn_id, ch_no: @chap.ch_no,

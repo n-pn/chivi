@@ -9,12 +9,12 @@ class ZR::Corpus
   end
 
   @[AlwaysInline]
-  def self.line_cksum(lines : Enumerable(String))
-    lines.map { |line| line_cksum(line) }
+  def self.line_cksum(lines : Array(String))
+    Slice(UInt64).new(lines.size) { |i| line_cksum(lines[i]) }
   end
 
   @[AlwaysInline]
-  def self.u8_ids_to_bytes(u8_ids : Enumerable(UInt64))
+  def self.u8_ids_to_bytes(u8_ids : Slice(UInt64))
     Slice(UInt64).new(u8_ids.size) { |i| u8_ids[i] }.to_unsafe_bytes
   end
 
@@ -24,6 +24,14 @@ class ZR::Corpus
     lines.map! { |x| CharUtil.to_canon(x) } if to_canon
     lines
   end
+
+  CACHE = {} of String => self
+
+  def self.load(zname : String)
+    CACHE[zname] ||= new(zname)
+  end
+
+  ###
 
   DIR = "var/zroot/corpus"
   Dir.mkdir_p(DIR)
@@ -116,7 +124,7 @@ class ZR::Corpus
     {u8_ids, true}
   end
 
-  def add_data!(vtype : String, u8_ids : Array(UInt64), vdatas : Array(String))
+  def add_data!(vtype : String, u8_ids : Slice(UInt64), vdatas : Array(String))
     raise "data not match" unless u8_ids.size == vdatas.size
 
     count = 0
@@ -128,6 +136,34 @@ class ZR::Corpus
     end
 
     count
+  end
+
+  def get_texts_by_zorig(zorig : String)
+    get_texts_by_zorig { nil }
+  end
+
+  def get_texts_by_zorig(zorig : String, &)
+    u1_ids = @zhead_db.open_ro do |db|
+      query = "select u1_ids from zheads where zorig = $1 limit 1"
+      db.query_one?(query, zorig, as: Bytes)
+    end
+
+    if u1_ids
+      u8_ids = u1_ids.unsafe_slice_of(UInt64)
+      {get_texts_from_ids(u8_ids), u8_ids}
+    else
+      yield
+    end
+  end
+
+  def get_texts_from_ids(u8_ids : Slice(UInt64))
+    @zline_db.open_ro do |db|
+      query = "select coalesce(zline, '') from zlines where i8_id = $1 limit 1"
+
+      Array(String).new(u8_ids.size) do |i|
+        db.query_one(query, u8_ids[i].unsafe_as(Int64), as: String)
+      end
+    end
   end
 
   ###

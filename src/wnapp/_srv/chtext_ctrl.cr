@@ -2,6 +2,7 @@ require "./_wn_ctrl_base"
 require "../../_util/diff_util"
 
 require "../data/viuser/chtext_full_edit"
+require "../../zroot/corpus"
 
 require "./forms/chtext_line_form"
 require "./forms/chtext_full_form"
@@ -67,7 +68,7 @@ class WN::ChtextCtrl < AC::Base
   end
 
   @[AC::Route::GET("/:ch_no/parts")]
-  def parts(wn_id : Int32, sname : String, ch_no : Int32)
+  def all_parts(wn_id : Int32, sname : String, ch_no : Int32)
     wnseed = get_wnseed(wn_id, sname)
     chinfo = wnseed.load_chap(ch_no)
     chtext = Chtext.new(wnseed, chinfo)
@@ -85,6 +86,24 @@ class WN::ChtextCtrl < AC::Base
     end
 
     render json: {cksum: cksum, parts: parts, _hmeg: _hmeg, _hmeb: _hmeb}
+  end
+
+  WN_DIR = "var/wnapp/chtext"
+
+  @[AC::Route::GET("/:ch_no/:p_idx")]
+  def show_part(wn_id : Int32, ch_no : Int32, cksum : String, p_idx : Int32)
+    store = ZR::Corpus.load("nctext/#{wn_id}")
+    zorig = "#{ch_no}-#{cksum}-#{p_idx}"
+
+    lines, u8_ids = store.get_texts_by_zorig(zorig) do
+      fpath = "#{WN_DIR}/#{wn_id}/#{zorig}.txt"
+      input = File.read_lines(fpath, chomp: true)
+      slice, _ = store.add_part!(zorig, input)
+      {input, slice}
+    end
+
+    l_ids = Array(String).new(u8_ids.size) { |i| u8_ids[i].to_s(base: 32) }
+    render json: {lines: lines, l_ids: l_ids}
   end
 
   def guard_edit_privi(wn_id : Int32, sname : String)
