@@ -3,7 +3,6 @@ require "../../src/_data/_data"
 require "../../src/zroot/corpus"
 
 CORPUS = ZR::Corpus.new("yousuu/ylname")
-CORPUS.init_dbs!(no_vdata: true)
 
 LIMIT = 1000
 QUERY = <<-SQL
@@ -24,7 +23,7 @@ start.upto(limit) do |page|
 
   saved = 0
 
-  CORPUS.open_tx do
+  CORPUS.open_tx(vtran: false, ctree: false) do
     input.each do |yl_id, ztext|
       ztext = CharUtil.to_canon(ztext)
       saved &+= 1 if !ztext.empty? && CORPUS.add_part!(yl_id, [ztext])[1]

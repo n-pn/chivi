@@ -3,7 +3,6 @@ require "../../src/_data/_data"
 require "../../src/zroot/corpus"
 
 CORPUS = ZR::Corpus.new("wnovel/author")
-CORPUS.init_dbs!(no_vdata: true)
 
 LIMIT = 1000
 
@@ -25,7 +24,7 @@ start.upto(limit) do |page|
 
   saved = 0
 
-  CORPUS.open_tx do
+  CORPUS.open_tx(vtran: false, ctree: false) do
     input.each do |wn_id, author|
       next if author.empty?
       author = CharUtil.to_canon(author)
