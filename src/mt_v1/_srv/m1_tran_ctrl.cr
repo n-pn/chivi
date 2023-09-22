@@ -6,6 +6,29 @@ require "../../_data/logger/qtran_xlog"
 class M1::TranCtrl < AC::Base
   base "/_m1/qtran"
 
+  TEXT_DIR = "var/wnapp/chtext"
+
+  @[AC::Route::GET("/")]
+  def file(zpath : String, ftype : String = "nctext", wn_id : Int32 = 0, w_raw : Bool = false)
+    start = Time.monotonic
+
+    mcore = MtCore.init(wn_id, user: _uname)
+
+    plain = false
+    lines = [] of String
+
+    fpath = "#{TEXT_DIR}/#{zpath}.txt"
+
+    File.each_line(fpath, chomp: true) do |line|
+      data = plain ? mcore.cv_plain(line) : mcore.cv_title(line)
+      lines << data.to_txt
+      plain = true
+    end
+
+    tspan = (Time.monotonic - start).total_milliseconds.round(2)
+    render json: {lines: lines, tspan: tspan}
+  end
+
   @w_user : String = ""
   @w_init : Bool = false
 
@@ -34,16 +57,6 @@ class M1::TranCtrl < AC::Base
     cvmtl = qtran.cv_wrap(_uname, w_init: @w_init) { |io, engine| cv_post(io, engine) }
 
     render json: {cvmtl: cvmtl, ztext: qtran.input, wn_id: wn_id}
-  end
-
-  @[AC::Route::GET("/wnchap")]
-  def tl_wnchap(cpath : String, wn_id : Int32 = 0, format = "mtl", label : String? = nil)
-    qtran = TranData.load_cached("chaps", cpath, wn_id, format)
-    cvmtl = qtran.cv_wrap(w_user: @w_user, w_init: @w_init) do |io, engine|
-      cv_chap(io, engine, w_title: true, label: label)
-    end
-
-    render json: {cvmtl: cvmtl, ztext: qtran.input}
   end
 
   @[AC::Route::GET("/wntext")]

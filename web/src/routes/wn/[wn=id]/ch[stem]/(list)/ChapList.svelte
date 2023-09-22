@@ -40,7 +40,7 @@
       {@const [lock_text, lock_icon, lock_iset] = map_privi(chinfo.ch_no)}
 
       <a
-        href="{base_url}/{chinfo.ch_no}-{chinfo.uslug}"
+        href="{base_url}/{chinfo.ch_no}"
         class="chinfo"
         class:_active={chinfo.ch_no == mark_ch_no}
         rel="nofollow">

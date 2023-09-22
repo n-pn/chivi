@@ -39,4 +39,17 @@ class MT::QtCore
 
     stack
   end
+
+  def tokenize_file(fpath : String)
+    File.each_line(fpath, chomp: true) do |line|
+      next if line.empty?
+      yield tokenize(line)
+    end
+  end
+
+  def translate_file(fpath : String)
+    texts = [] of String
+    tokenize_file(fpath) { |data| texts << data.to_txt }
+    texts
+  end
 end

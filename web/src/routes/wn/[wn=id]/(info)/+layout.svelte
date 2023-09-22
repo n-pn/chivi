@@ -15,7 +15,6 @@
   $: _curr = map_tab_from_route($page.route.id || '')
 
   function map_tab_from_route(route_id: string) {
-    if (route_id.includes('/ch')) return '/ch'
     if (route_id.includes('/uc')) return '/uc'
     if (route_id.includes('/ul')) return '/ul'
     if (route_id.includes('/gd')) return '/gd'

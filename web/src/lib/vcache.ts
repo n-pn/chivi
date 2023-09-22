@@ -1,24 +1,31 @@
 import { browser } from '$app/environment'
 
 export async function local_get<T>(
-  ckey: string,
-  reset: boolean = false,
-  fetcher: () => Promise<T>
+  c_key: string,
+  reuse: boolean = true,
+  fetch: () => Promise<T>
 ) {
-  if (!reset && browser) {
-    const cached = sessionStorage.getItem(ckey)
-    if (cached) return JSON.parse(cached) as T
+  if (!browser) return (await fetch()) as T
+
+  if (reuse) {
+    const prev = localStorage.getItem(c_key)
+    if (prev) return JSON.parse(prev) as T
   }
 
-  const new_data = (await fetcher()) as T
-  if (!new_data['error'] && browser) {
-    sessionStorage.setItem(ckey, JSON.stringify(new_data))
+  const data = (await fetch()) as T
+
+  if (!data['error']) {
+    try {
+      localStorage.setItem(c_key, JSON.stringify(data))
+    } catch (ex) {
+      alert(ex.message)
+    }
   }
 
-  return new_data
+  return data
 }
 
-export function local_del<T>(ckey: string) {
+export function local_del<T>(c_key: string) {
   if (!browser) return null
-  return sessionStorage.removeItem(ckey)
+  return localStorage.removeItem(c_key)
 }

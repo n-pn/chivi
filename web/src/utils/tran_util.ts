@@ -1,46 +1,73 @@
 import { local_get } from '$lib/vcache'
 
-export type HvietRes = {
-  hviet: Array<[string, string]>
-  tspan: number
-  ztext?: Array<string>
-  error?: string
-}
-
-export type VtextRes = { cdata: Array<string>; tspan: number; error?: string }
-
-const btran_cache = new Map<string, VtextRes>()
-
-export async function get_wntext_hviet(
+export async function get_nctext_btran(
   zpath: string,
-  force: boolean = false,
-  w_raw: boolean = false,
+  reuse = true,
+  force = false,
   fetch = globalThis.fetch
-): Promise<HvietRes> {
-  return await local_get<HvietRes>(`hv:wn:${zpath}`, force, async () => {
-    const url = `/_sp/hviet?zpath=${zpath}&ftype=nctext&w_raw=${w_raw}`
+): Promise<CV.Qtdata> {
+  const c_key = `bv1:nc:${zpath}`
+  return await local_get<CV.Qtdata>(c_key, reuse, async () => {
+    const url = `/_sp/btran?zpath=${zpath}&force=${force}`
     const res = await fetch(url, { method: 'GET' })
 
     if (res.ok) return await res.json()
-    return { hviet: [], tspan: 0, error: await res.text() }
+    return { lines: [], error: await res.text() }
   })
 }
 
-export async function get_wntext_btran(
+export async function get_nctext_qtran(
   zpath: string,
+  reuse = true,
   force = false,
   fetch = globalThis.fetch
-): Promise<VtextRes> {
-  const cached = force ? undefined : btran_cache.get(zpath)
-  if (cached) return cached
+): Promise<CV.Qtdata> {
+  const c_key = `m1:1:nc:${zpath}`
 
-  const url = `/_ai/qt/btran?zpath=${zpath}&force=${force}`
-  const res = await fetch(url, { method: 'GET' })
+  return await local_get<CV.Qtdata>(c_key, reuse, async () => {
+    if (!force) return { lines: [], error: 'n/a' }
 
-  if (!res.ok) return { cdata: [], tspan: 0, error: await res.text() }
+    const wn_id = zpath.split('/')[0]
+    const url = `/_m1/qtran?zpath=${zpath}&wn_id=${wn_id}&type=nctext`
+    const res = await fetch(url, { method: 'GET' })
 
-  const cdata = await res.json()
-  if (!cdata.error) btran_cache.set(zpath, cdata)
+    if (res.ok) return await res.json()
+    return { lines: [], error: await res.text() }
+  })
+}
 
-  return cdata
+export async function get_nctext_hviet(
+  zpath: string,
+  reuse: boolean = true,
+  w_raw: boolean = false,
+  fetch = globalThis.fetch
+): Promise<CV.Hvdata> {
+  const c_key = `hv:1:nc:${zpath}:${w_raw}`
+  return await local_get<CV.Hvdata>(c_key, reuse, async () => {
+    const url = `/_ai/hviet?zpath=${zpath}&w_raw=${w_raw}&ftype=nctext`
+    const res = await fetch(url, { method: 'GET' })
+    if (res.ok) return await res.json()
+    console.log('error!')
+
+    return { hviet: [], error: await res.text() }
+  })
+}
+
+export async function get_nctext_mtran(
+  zpath: string,
+  reuse: boolean = true,
+  force: boolean = false,
+  _algo: string = 'avail',
+  fetch = globalThis.fetch
+): Promise<CV.Mtdata> {
+  const c_key = `mt:1:nc:${zpath}:${_algo}`
+  return await local_get<CV.Mtdata>(c_key, reuse, async () => {
+    const pdict = 'book/' + zpath.split('/')[0]
+
+    const url = `/_ai/mt/wnchap?cpath=${zpath}&pdict=${pdict}&_algo=${_algo}&force=${force}`
+    const res = await fetch(url, { method: 'GET' })
+
+    if (res.ok) return await res.json()
+    return { lines: [], error: await res.text() }
+  })
 }

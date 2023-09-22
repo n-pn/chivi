@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import os, re
+import os, re, gc
 
 os.environ["HANLP_HOME"] = "/2tb/var.hanlp/.hanlp"
 # os.environ["CUDA_VISIBLE_DEVICES"] = ""
@@ -25,40 +25,53 @@ def merge_pos_into_con(doc: Document):
         doc = doc.squeeze()
     return doc
 
-def init_mtl(type):
-    mtl = hanlp.load(type)
 
-    del mtl['dep']
-    del mtl['sdp']
-    del mtl['srl']
+KINDS = {
+    hm_es: hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_SMALL_ZH,
+    hm_eb: hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_BASE_ZH,
+    hm_eg: hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ERNIE_GRAM_ZH,
 
-    del mtl['ner/pku']
-    del mtl['ner/msra']
-    del mtl['ner/ontonotes']
+    om_es: hanlp.pretrained.mtl.OPEN_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_SMALL_ZH,
+    om_eb: hanlp.pretrained.mtl.OPEN_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_BASE_ZH,
+    om_eg: hanlp.pretrained.mtl.OPEN_TOK_POS_NER_SRL_DEP_SDP_CON_ERNIE_GRAM_ZH,
+}
 
-    del mtl['pos/pku']
-    del mtl['pos/863']
+CACHE = {}
 
-    return mtl
+def load_task(kind):
+    if kind in CACHE:
+        return CACHE[kind]
 
-MTL_EB = init_mtl(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_BASE_ZH)
-MTL_EG = init_mtl(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ERNIE_GRAM_ZH)
+    mtl_task = hanlp.load(KINDS[kind])
+
+    del mtl_task['dep']
+    del mtl_task['sdp']
+    del mtl_task['srl']
+
+    del mtl_task['ner/pku']
+    del mtl_task['ner/msra']
+    del mtl_task['ner/ontonotes']
+
+    del mtl_task['pos/pku']
+    del mtl_task['pos/863']
+
+    CACHE[kind] = mtl_task
+    return mtl_task
 
 
-def call_mtl_task(mtl_pipeline, lines):
-    doc = mtl_pipeline([lines[0]])
+def call_mtl_task(mtl_task, inp_lines):
+    mtl_data = mtl_task([inp_lines[0]])
 
-    for line in lines[1:]:
-        line_doc = mtl_pipeline(line)
+    for line in inp_lines[1:]:
+        mtl_line = mtl_task(line)
 
         for key in doc:
-            doc[key].append(line_doc[key])
+            mtl_data[key].append(mtl_line[key])
 
-    return doc
+    torch.cuda.empty_cache()
+    gc.collect()
 
-def read_txt_file(inp_path):
-    with open(inp_path, 'r') as inp_file:
-        return inp_file.read().split('\n')
+    return mtl_data
 
 def render_con_data(con_data):
     output = ''
@@ -69,56 +82,27 @@ def render_con_data(con_data):
 
     return output
 
+
+def read_txt_file(inp_path):
+    with open(inp_path, 'r') as inp_file:
+        return inp_file.read().split('\n')
+
 app = Flask(__name__)
 
-## electra base
+@app.route("/mtl_file/<kind>", methods=['GET'])
+def mtl_from_file(kind):
+    inp_data = read_txt_file(request.args.get('file', ''))
 
-@app.route("/hm_eb/file", methods=['GET'])
-def mtl_electra_base_file():
-    torch.cuda.empty_cache()
-
-    inp_path = request.args.get('file', '')
-    inp_data = read_txt_file(inp_path)
-
-    mtl_data = call_mtl_task(MTL_EB, inp_data)
+    mtl_data = call_mtl_task(load_task(kind), inp_data)
     con_text = render_con_data(mtl_data["con"])
 
     return con_text
 
-
-@app.route("/hm_eb/text", methods=['POST'])
-def mtl_electra_base_text():
-    torch.cuda.empty_cache()
+@app.route("/mtl_text/<kind>", methods=['POST'])
+def mtl_from_text():
     inp_data = request.get_data(as_text=True).split('\n')
 
-    mtl_data = call_mtl_task(MTL_EB, inp_data)
-    con_text = render_con_data(mtl_data["con"])
-
-    return con_text
-
-
-## ernie gram
-
-@app.route("/hm_eg/file", methods=['GET'])
-def mtl_ernie_gram_file():
-    torch.cuda.empty_cache()
-
-    inp_path = request.args.get('file', '')
-    inp_data = read_txt_file(inp_path)
-
-    mtl_data = call_mtl_task(MTL_EG, inp_data)
-    con_text = render_con_data(mtl_data["con"])
-
-    return con_text
-
-
-@app.route("/hm_eg/text", methods=['POST'])
-def mtl_ernie_gram_text():
-    torch.cuda.empty_cache()
-
-    inp_data = request.get_data(as_text=True).split('\n')
-
-    mtl_data = call_mtl_task(MTL_EG, inp_data)
+    mtl_data = call_mtl_task(load_task(kind), inp_data)
     con_text = render_con_data(mtl_data["con"])
 
     return con_text

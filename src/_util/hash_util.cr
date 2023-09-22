@@ -179,6 +179,8 @@ module HashUtil
   #     end
   #   {% end %}
   # end
+
+  # puts fnv_1a_64("坚定不移沿着中国特色社会主义道路前进")
 end
 
 # puts HashUtil.digest32("95410")

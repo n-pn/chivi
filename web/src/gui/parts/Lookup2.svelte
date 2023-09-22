@@ -1,11 +1,13 @@
 <script lang="ts">
-  import { ctrl, data, get_btran } from '$lib/stores/lookup_stores'
+  import { ctrl, data } from '$lib/stores/lookup_stores'
   import {
     gen_vtran_html,
     gen_ztext_html,
     gen_ctree_html,
     gen_ctree_text,
   } from '$lib/mt_data_2'
+
+  import { get_nctext_btran, get_nctext_mtran } from '$utils/tran_util'
 
   import {
     data as vtform_data,
@@ -17,8 +19,17 @@
   import VitermForm from '$gui/parts/VitermForm.svelte'
   import { invalidate } from '$app/navigation'
 
+  export let l_idx = 0
+  export let l_max = 0
+
   let zfrom = 0
   let zupto = 1
+
+  $: ztext = $data.ztext[l_idx]
+  $: hviet = $data.hviet[l_idx]
+  $: ctree = $data.ctree[l_idx]
+  $: btran = $data.btran[l_idx]
+  $: qtran = $data.qtran[l_idx]
 
   const node_names = ['X-N', 'X-C', 'X-Z']
   function handle_click({ target }) {
@@ -28,23 +39,29 @@
     zupto = +target.dataset.e
     const icpos = target.dataset.c || 'X'
 
-    vtform_data.put($data.zline, $data.hviet, $data.cdata, zfrom, zupto, icpos)
+    vtform_data.put(ztext, hviet, ctree, zfrom, zupto, icpos)
     vtform_ctrl.show(0)
   }
 
-  const call_btran = async () => {
-    $data.btran = await get_btran($data.zpath, $data.l_idx, true)
+  const load_btran_data = async () => {
+    const btran = await get_nctext_btran($data.zpath, true, true)
+    $data.btran = btran.lines
+  }
+
+  const load_ctree_data = async () => {
+    const ctree = await get_nctext_mtran($data.zpath, true, true, $data.m_alg)
+    $data.ctree = ctree.lines
   }
 
   const copy_ctree = () => {
-    navigator.clipboard.writeText(gen_ctree_text($data.cdata))
+    navigator.clipboard.writeText(gen_ctree_text(ctree))
   }
 
   const reload_ctree = async () => {
     const text_headers = { 'Content-Type': 'text/plain' }
 
     const url = '/_ai/mt/reload?pdict=' + $data.pdict
-    const body = gen_ctree_text($data.cdata)
+    const body = gen_ctree_text($data.ctree[l_idx])
     const init = { method: 'POST', body, headers: text_headers }
 
     const res = await fetch(url, init)
@@ -52,14 +69,13 @@
 
     const { lines } = await res.json()
 
-    $data.cdata = lines[0]
+    $data.ctree[l_idx] = lines[0]
   }
 
   const on_term_change = async (term?: CV.Vtdata) => {
     if (!term) return
-    reload_ctree()
+    await load_ctree_data()
     await invalidate('wn:cdata')
-    $data.l_idx = $data.l_idx
   }
 
   let ctree_show_zh = false
@@ -79,7 +95,8 @@
       type="button"
       class="-btn"
       data-kbd="↑"
-      on:click={data.move_up}
+      disabled={l_idx == 0}
+      on:click={() => (l_idx -= 1)}
       data-tip="Chuyển lên dòng trên"
       data-tip-loc="bottom">
       <SIcon name="arrow-up" />
@@ -88,21 +105,26 @@
       type="button"
       class="-btn"
       data-kbd="↓"
-      on:click={data.move_down}
+      on:click={() => (l_idx += 1)}
+      disabled={l_idx == l_max}
       data-tip="Chuyển xuống dòng dưới"
       data-tip-loc="bottom">
       <SIcon name="arrow-down" />
     </button>
   </svelte:fragment>
 
-  {#if $data.zline}
+  {#if l_idx < l_max}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <section class="cbody" on:click={handle_click}>
       <h4 class="label">Tiếng Trung:</h4>
 
       <div class="cdata _zh" lang="zh">
-        {@html gen_ztext_html($data.zline, $data.hviet)}
+        {#if ztext && hviet}
+          {@html gen_ztext_html(ztext, hviet)}
+        {:else}
+          <p class="empty">Chưa có tiếng trung!</p>
+        {/if}
       </div>
 
       <h4 class="label">
@@ -123,7 +145,11 @@
         </span>
       </h4>
       <div class="cdata debug _ct">
-        {@html gen_ctree_html($data.cdata, ctree_show_zh)}
+        {#if ctree}
+          {@html gen_ctree_html(ctree, ctree_show_zh)}
+        {:else}
+          <p class="empty">Chưa có cây ngữ pháp</p>
+        {/if}
       </div>
 
       <h4 class="label">
@@ -138,25 +164,25 @@
         </span>
       </h4>
 
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div class="cdata debug _mt">
-        {#if $data.cdata}
+        {#if ctree}
           {@const opts = { mode: 2, cap: true, und: true, _qc: 0 }}
-          {@html gen_vtran_html($data.cdata, opts)}
+          {@html gen_vtran_html(ctree, opts)}
+        {:else}
+          <p class="empty">Chưa có kết quả dịch máy</p>
         {/if}
       </div>
 
       <h4 class="label">Bing Edge:</h4>
       <div class="cdata debug _tl">
-        {#if $data.btran}
-          {$data.btran}
+        {#if btran}
+          {btran}
         {:else}
           <div class="blank">
             <div>
               <em>Chưa có kết quả dịch sẵn.</em>
             </div>
-            <button class="m-btn _sm _primary" on:click={call_btran}
+            <button class="m-btn _sm _primary" on:click={load_btran_data}
               >Dịch từ Bing Edge!</button>
           </div>
         {/if}

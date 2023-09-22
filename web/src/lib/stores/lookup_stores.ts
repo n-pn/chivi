@@ -1,84 +1,97 @@
 import { writable, get } from 'svelte/store'
 
-import { get_wntext_btran, get_wntext_hviet } from '$utils/tran_util'
-
-import { gen_ztext_text } from '$lib/mt_data_2'
-
-export const ctrl = {
-  ...writable({ actived: false, enabled: true }),
-  hide: (enabled = true) => ctrl.set({ enabled, actived: false }),
-  show(forced = true) {
-    const { enabled, actived } = get(ctrl)
-    if (actived || forced || enabled) ctrl.set({ enabled, actived: true })
-  },
-}
-
-export async function get_btran(zpath: string, l_idx: number, force = false) {
-  const { cdata } = await get_wntext_btran(zpath, force)
-  return cdata[l_idx]
-}
+import {
+  get_nctext_btran,
+  get_nctext_hviet,
+  get_nctext_qtran,
+  get_nctext_mtran,
+} from '$utils/tran_util'
 
 export interface Data {
   zpath: string
   pdict: string
 
-  l_idx: number
-  l_max: number
+  ztext: Array<string>
+  hviet: Array<Array<[string, string]>>
+  btran: Array<string>
+  qtran: Array<string>
 
-  zline: string
-  hviet: Array<[string, string]>
-
-  cdata: CV.Cvtree
-  btran: string
+  ctree: Array<CV.Cvtree>
+  m_alg: string
 }
 
 const init_data = {
-  zpath: '',
   pdict: '',
-  l_idx: -1,
-  l_max: 0,
+  zpath: '',
 
   hviet: [],
-  zline: '',
-
-  btran: '',
-  cdata: undefined,
+  ztext: [],
+  btran: [],
+  qtran: [],
+  ctree: [],
+  m_alg: 'avail',
 }
 
 export const data = {
   ...writable<Data>(init_data),
-  async from_cdata(
-    lines: Array<CV.Cvtree>,
-    l_idx: number,
-    zpath = '',
-    pdict = ''
-  ) {
-    const l_max = lines.length
-    if (l_idx >= l_max) l_idx = l_max - 1
+  async put(zpath: string, pdict: string, opts: Partial<Data> = {}) {
+    const zdata = get(data)
+    if (zdata.zpath == zpath) opts = { ...zdata, ...opts }
 
-    const cdata = lines[l_idx]
+    data.set({
+      pdict,
+      zpath,
+      ztext: opts.ztext || [],
+      hviet: opts.hviet || [],
+      btran: opts.btran || [],
+      qtran: opts.qtran || [],
+      ctree: opts.ctree || [],
+      m_alg: opts.m_alg || 'avail',
+    })
+  },
+}
 
-    let zline = gen_ztext_text(cdata)
-    let hviet = []
+async function fill_data(page: Data) {
+  if (page.ztext.length == 0 || page.hviet.length == 0) {
+    const hviet = await get_nctext_hviet(page.zpath, true, true)
+    page.ztext = hviet.ztext || []
+    page.hviet = hviet.hviet || []
+  }
 
-    const chap_hviet = await get_wntext_hviet(zpath, false, true)
+  if (page.btran.length == 0) {
+    const btran = await get_nctext_btran(page.zpath, true, false)
+    page.btran = btran.lines || []
+  }
 
-    if (!chap_hviet.error) {
-      hviet = chap_hviet.hviet[l_idx]
-      zline = chap_hviet.ztext[l_idx]
+  if (page.qtran.length == 0) {
+    const qtran = await get_nctext_qtran(page.zpath, true, false)
+    page.qtran = qtran.lines || []
+  }
+
+  if (page.ctree.length == 0) {
+    const mtran = await get_nctext_mtran(page.zpath, true, false, page.m_alg)
+    page.ctree = mtran.lines || []
+  }
+
+  return page
+}
+
+export const ctrl = {
+  ...writable({ actived: false, enabled: true, zpath: '' }),
+  hide: (enabled = true) => {
+    ctrl.update(({ zpath }) => ({ actived: false, enabled, zpath }))
+  },
+  async show(forced = true) {
+    const zpage = get(data)
+    let { enabled, actived, zpath } = get(ctrl)
+
+    if (zpage.zpath != zpath) {
+      zpath = zpage.zpath
+      data.set(await fill_data(zpage))
     }
 
-    const btran = await get_btran(zpath, l_idx)
-    data.set({ zpath, pdict, l_idx, l_max, zline, btran, cdata, hviet })
-  },
-
-  move_up() {
-    const l_idx = get(data).l_idx - 1
-    if (l_idx >= 0) data.update((x) => ({ ...x, l_idx }))
-  },
-
-  move_down() {
-    const l_idx = get(data).l_idx + 1
-    if (l_idx < get(data).l_max) data.update((x) => ({ ...x, l_idx }))
+    if (forced || actived || enabled) {
+      ctrl.set({ enabled, zpath, actived: true })
+    }
   },
 }

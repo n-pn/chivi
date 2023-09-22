@@ -12,7 +12,7 @@ class MT::AiTranCtrl < AC::Base
     ai_mt = AiCore.new(pdict)
 
     lines = input.map { |line| ai_mt.tl_from_con_data(line) }
-    tspan = (Time.monotonic - start).total_milliseconds.to_i
+    tspan = (Time.monotonic - start).total_milliseconds.round(2)
 
     json = {lines: lines, tspan: tspan, _algo: _algo}
     render json: json
@@ -29,7 +29,7 @@ class MT::AiTranCtrl < AC::Base
     input = _read_body.lines(chomp: true)
     trees = input.map { |line| ai_mt.tl_from_con_data(line) }
 
-    tspan = (Time.monotonic - start).total_milliseconds.to_i
+    tspan = (Time.monotonic - start).total_milliseconds.round(2)
     json = {lines: trees, tspan: tspan}
 
     render json: json

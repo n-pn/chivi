@@ -17,7 +17,7 @@
     let sname = ubmemo.sname || '~draft'
 
     return {
-      href: chap_path(bslug, sname, chidx, cpart),
+      href: chap_path(`/wn/${bslug}/ch${sname}`, chidx, { cpart, rtype: 'ai' }),
       icon: locked ? 'player-skip-forward' : 'player-play',
       text: ubmemo.chidx > 0 ? 'Đọc tiếp' : 'Đọc thử',
       mute: ubmemo.chidx < 0,
@@ -26,7 +26,7 @@
 </script>
 
 <div class="user-action">
-  <a class="m-btn _fill _primary" href="{root_path}/ch">
+  <a class="m-btn _fill _primary" href="{root_path}/chaps">
     <SIcon name="list" />
     <span>Chương tiết</span>
   </a>

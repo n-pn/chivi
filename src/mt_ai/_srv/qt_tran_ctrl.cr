@@ -2,30 +2,51 @@
 require "./_mt_ctrl_base"
 
 class MT::QtTranCtrl < AC::Base
-  base "/_ai/qt"
+  base "/_ai"
 
-  @[AC::Route::GET("/hviet")]
-  def hviet(zpath : String, force : Bool = false)
-    start = Time.monotonic
+  TEXT_DIR = "var/wnapp/chtext"
 
-    lines = MtTranUtil.read_txt(zpath)
-    cdata = lines.map { |line| MT::QtCore.hv_word.tokenize(line) }
-
-    tspan = (Time.monotonic - start).total_milliseconds.to_i
-    render json: {cdata: cdata, tspan: tspan}
-  rescue ex
-    Log.error(exception: ex) { ex.message }
-    render json: {cdata: [] of String, tspan: 0, eror: ex.message}
+  private def gen_fpath(zpath : String, ftype : String)
+    case ftype
+    when "nctext" then "#{TEXT_DIR}/#{zpath}.txt"
+    else               raise "unsupported!"
+    end
   end
 
-  @[AC::Route::GET("/btran")]
-  def btran(zpath : String, force : Bool = false)
+  @[AC::Route::GET("/hviet")]
+  def hviet_file(zpath : String, ftype : String = "nctext", w_raw : Bool = false)
     start = Time.monotonic
-    btran = MtTranUtil.get_wntext_btran_data(zpath, force: force)
 
-    tspan = (Time.monotonic - start).total_milliseconds.to_i
-    render json: {cdata: btran, tspan: tspan}
+    fpath = gen_fpath(zpath, ftype)
+    ztext = File.read_lines(fpath, chomp: true)
+
+    mcore = QtCore.hv_word
+    hviet = ztext.map { |line| HvietToVarr.new(mcore.tokenize(line)) }
+
+    tspan = (Time.monotonic - start).total_milliseconds.round(2)
+    mtime = Time.utc.to_unix
+
+    ztext.clear unless w_raw
+    render json: {hviet: hviet, ztext: ztext, tspan: tspan, mtime: mtime}
   rescue ex
-    render json: {cdata: [] of String, tspan: 0, eror: ex.message}
+    Log.error(exception: ex) { ex.message }
+    render json: {hviet: [] of String, error: ex.message}
+  end
+
+  @[AC::Route::POST("/hviet")]
+  def hviet_text
+    start = Time.monotonic
+    mcore = QtCore.hv_word
+
+    hviet = [] of HvietToVarr
+    _read_body.each_line { |line| hviet << HvietToVarr.new(mcore.tokenize(line)) }
+
+    tspan = (Time.monotonic - start).total_milliseconds.round(2)
+    mtime = Time.utc.to_unix
+
+    render json: {hviet: hviet, tspan: tspan, mtime: mtime}
+  rescue ex
+    Log.error(exception: ex) { ex.message }
+    render json: {hviet: [] of String, error: ex.message}
   end
 end
