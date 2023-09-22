@@ -173,6 +173,7 @@
 
     if (target == reader) return
     l_idx = +target.dataset.line
+    lookup_ctrl.show(true)
   }
 
   let l_idx = -1

@@ -26,7 +26,9 @@ class M1::TranCtrl < AC::Base
     end
 
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
-    render json: {lines: lines, tspan: tspan}
+    mtime = Time.utc.to_unix
+
+    render json: {lines: lines, mtime: mtime, tspan: tspan}
   end
 
   @w_user : String = ""

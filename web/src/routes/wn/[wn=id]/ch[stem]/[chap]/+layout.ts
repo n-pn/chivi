@@ -1,3 +1,5 @@
+export const ssr = false
+
 import { error } from '@sveltejs/kit'
 
 import { _pgidx } from '$lib/kit_path'
@@ -37,9 +39,7 @@ export const load = (async ({ url, parent, params, fetch }) => {
   }
 
   const xargs = get_xargs(wn_id, cinfo.psize, url)
-  const ztext = await load_text(rdata.cbase, sname, xargs.cpart, fetch)
-
-  return { cinfo, rdata, xargs, ztext, _meta, _title }
+  return { cinfo, rdata, xargs, _meta, _title }
 }) satisfies PageLoad
 
 function get_rtype_from_path(path: string) {
@@ -70,19 +70,4 @@ function get_xargs(wn_id: number, psize: number, url: URL) {
     default:
       return { wn_id, cpart, rtype: 'ai', rmode: rmode || 'avail' }
   }
-}
-
-const load_text = async (
-  cbase: string,
-  sname: string,
-  cpart: number,
-  fetch = globalThis.fetch
-) => {
-  const [wn_id, ch_no, cksum] = cbase.split(/[\/\-]/)
-  const url = `/_wn/texts/${wn_id}/${sname}/${ch_no}/${cpart}?cksum=${cksum}`
-
-  const res = await fetch(url)
-
-  if (res.ok) return res.json()
-  else return { lines: [], l_ids: [] }
 }
