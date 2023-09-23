@@ -181,7 +181,7 @@ class CV::Gdroot
     @viuser_id = Viuser.get_id(sname[1..]) if sname.starts_with?('@')
 
     @oname = "Danh sách chương [#{sname}] truyện [#{wninfo.btitle_vi}]"
-    @olink = "#{wninfo.canonical_path}/ch/#{sname}"
+    @olink = "#{wninfo.canonical_path}/ch#{sname}"
 
     @title = "Bình luận danh sách chương [#{sname}] truyện [#{wninfo.btitle_vi}]"
     @tslug = "binh-luan-danh-sach-chuong-#{sname}-truyen-#{wninfo.bslug}"
@@ -198,7 +198,7 @@ class CV::Gdroot
     @viuser_id = Viuser.get_id(sname[1..]) if sname.starts_with?('@')
 
     @oname = "Chương ##{ch_no} nguồn [#{sname}] truyện [#{wninfo.btitle_vi}]"
-    @olink = "#{wninfo.canonical_path}/ch/#{sname}/#{ch_no}"
+    @olink = "#{wninfo.canonical_path}/ch#{sname}/#{ch_no}"
 
     @title = "Bình luận chương ##{ch_no} nguồn [#{sname}] truyện [#{wninfo.btitle_vi}]"
     @tslug = "binh-luan-chuong-#{ch_no}-nguon-#{sname}-truyen-#{wninfo.bslug}"

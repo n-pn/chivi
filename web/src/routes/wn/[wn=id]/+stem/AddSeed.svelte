@@ -16,7 +16,7 @@
     const body = { wn_id: nvinfo.id, sname, s_bid }
     try {
       await api_call(`/_wn/seeds`, body, 'PUT')
-      await goto(`/wn/${nvinfo.bslug}/ch/${sname}`)
+      await goto(`/wn/${nvinfo.bslug}/ch${sname}`)
     } catch (ex) {
       err = ex.body.message
     }

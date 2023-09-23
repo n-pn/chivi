@@ -33,7 +33,7 @@ tests = [
   {"!uukanshu", 33933},
   {"!xbiquge", 48680},
   {"!ptwxz", 14836},
-  {"!bxwx_gg", 64721},
+  # {"!bxwx_gg", 64721},
   {"!yannuozw", "XV1RAgA"},
   {"!133txt", 9},
   {"!jingcaiyuedu", "dl0Zn2"},
@@ -46,13 +46,16 @@ tests = [
   {"!uuks_org", 28834},
   {"!b5200_org", 160872},
   {"!paoshu8", 198663},
-  {"!ymxwx", 31577},
+  # {"!ymxwx", 31577},
   {"!xklxsw", 119080},
   {"!wenku8", 1985},
   {"!paopaoxs", 234492},
   {"!hotupub", 771},
   {"!51shucheng", "guichuideng"},
-  {"!tasim", 2777},
+  {"!tasim", 1582},
+
+  # ymxwx => ymoxuan.net
+  # ibiquxs => ibiquxs.info
 
   # dead:
 

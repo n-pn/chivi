@@ -18,7 +18,8 @@ export async function local_get<T>(
     try {
       localStorage.setItem(c_key, JSON.stringify(data))
     } catch (ex) {
-      alert(ex.message)
+      console.log(ex.message)
+      localStorage.clear()
     }
   }
 

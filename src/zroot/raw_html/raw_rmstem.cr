@@ -67,8 +67,8 @@ class ZR::RawRmstem
     case href
     when .starts_with?("http") then href
     when .starts_with?("//")   then "https//:#{href}"
-    when .starts_with?('/')    then "#{@base}#{href}"
-    else                            "#{@base}.#{href}"
+    when .starts_with?('/')    then "#{@host.base_url}#{href}"
+    else                            "#{@base}/#{href}"
     end
   end
 

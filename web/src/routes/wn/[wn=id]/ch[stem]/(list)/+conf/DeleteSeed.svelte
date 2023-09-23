@@ -16,7 +16,7 @@
   async function delete_seed() {
     try {
       await api_call(edit_url, {}, 'DELETE')
-      goto(`/wn/${bslug}/ch/~draft`)
+      goto(`/wn/${bslug}/ch~draft`)
     } catch (ex) {
       alert(ex.body.message)
     }

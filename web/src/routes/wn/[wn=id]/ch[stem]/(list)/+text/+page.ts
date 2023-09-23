@@ -22,7 +22,7 @@ export async function load({ url: { searchParams }, fetch, parent, params }) {
 }
 
 function page_meta({ bslug, vtitle }, sname: string, ch_no: number) {
-  const chap_url = `/wn/${bslug}/ch/${sname}/${ch_no}-`
+  const chap_url = `/wn/${bslug}/ch${sname}/${ch_no}`
 
   return {
     left_nav: [
