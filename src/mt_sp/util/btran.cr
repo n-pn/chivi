@@ -2,23 +2,11 @@ require "json"
 require "uuid"
 require "http/client"
 
-class SP::Btran
-  ENDPOINT = "https://api.cognitive.microsofttranslator.com"
+module SP::Btran
+  extend self
+  API = "https://api.cognitive.microsofttranslator.com"
 
-  @headers : HTTP::Headers
-  @client : HTTP::Client
-
-  def initialize(key : String, region : String? = "southeastasia")
-    @headers = HTTP::Headers{
-      "Ocp-Apim-Subscription-Key" => key,
-      "Content-type"              => "application/json",
-    }
-
-    @headers["Ocp-Apim-Subscription-Region"] = region if region && !region.empty?
-    @client = HTTP::Client.new(URI.parse(ENDPOINT))
-  end
-
-  struct Output
+  struct TranlateOutput
     record Entry, text : String do
       include JSON::Serializable
     end
@@ -27,59 +15,27 @@ class SP::Btran
     getter translations : Array(Entry)
   end
 
-  def translate(terms : Enumerable(String),
-                source = "zh", target = "vi",
-                no_cap : Bool = false)
-    source = "zh-Hans" if source == "zh"
-    @headers["X-ClientTraceId"] = UUID.random.to_s
+  def call_tran_api(headers : HTTP::Headers, input : Array(String),
+                    sl : String = "zh", tl : String = "vi", no_cap : Bool = false)
+    sl = "zh-Hans" if sl == "zh"
+    href = "/translate?from=#{sl}&to=#{tl}&api-version=3.0&textType=plain"
+    body = input.map { |x| {text: no_cap ? "*," + x : x} }.to_json
 
-    params = URI::Params.build do |form|
-      form.add "api-version", "3.0"
-      form.add "from", source
-      form.add "to", target
-    end
+    client = HTTP::Client.new(URI.parse(API))
+    client.connect_timeout = 2
+    client.read_timeout = 5
 
-    body = terms.map { |x| {text: no_cap ? "*," + x : x} }.to_json
+    client.post(href, headers: headers, body: body) do |res|
+      raise res.body unless res.status.success?
+      output = Array(TranlateOutput).from_json(res.body_io)
+      raise "size mismatch" if output.size != input.size
 
-    url = "/translate?" + params.to_s
-    res = @client.post(url, headers: @headers, body: body)
-    raise res.body unless res.status.success?
-
-    output = Array(Output).from_json(res.body)
-
-    raise "size mismatch" if output.size != terms.size
-
-    output.map_with_index do |entry, i|
-      term = terms[i]
-
-      data = entry.translations.map do |item|
-        text = item.text
-        no_cap ? text.sub(/^\*,\s/, "") : text
-      end
-
-      {term, data.join('\t')}
+      output = output.map(&.translations.first.text)
+      no_cap ? output.map!(&.sub(/^[\P{L}]+/, "")) : output
     end
   end
 
-  def lookup(terms : Enumerable(String))
-    @headers["X-ClientTraceId"] = UUID.random.to_s
-
-    params = URI::Params.build do |form|
-      form.add "api-version", "3.0"
-      form.add "from", "en"
-      form.add "to", ""
-    end
-
-    body = terms.map { |x| {Text: x} }.to_json
-
-    url = "/dictionary/lookup?" + params.to_s
-    res = @client.post(url, headers: @headers, body: body)
-    raise res.body unless res.status.success?
-
-    Array(LookupResult).from_json(res.body)
-  end
-
-  class LookupResult
+  class LookupOutput
     include JSON::Serializable
 
     @[JSON::Field(key: "normalizedSource")]
@@ -128,89 +84,92 @@ class SP::Btran
     end
   end
 
+  def call_dict_api(headers : HTTP::Headers, terms : Enumerable(String), sl : String = "zh", tl : String = "en")
+    sl = "zh-Hans" if sl == "zh"
+    url = "#{API}/dictionary/lookup?from=#{sl}&to=#{tl}&api-version=3.0&textType=plain"
+    body = terms.map { |x| {text: x} }.to_json
+
+    HTTP::Client.post(url, headers: headers, body: body) do |res|
+      raise res.body unless res.status.success?
+      Array(LookupOutput).from_json(res.body)
+    end
+  end
+
+  def subkey_headers(key : String, region : String = "")
+    headers = HTTP::Headers{
+      "Ocp-Apim-Subscription-Key" => key,
+      "Content-type"              => "application/json",
+      "X-ClientTraceId"           => UUID.random.to_s,
+    }
+
+    headers["Ocp-Apim-Subscription-Region"] = region unless region.blank?
+    headers
+  end
+
+  def bearer_headers(key : String)
+    HTTP::Headers{
+      "Authorization"   => "Bearer #{key}",
+      "Content-type"    => "application/json",
+      "X-ClientTraceId" => UUID.random.to_s,
+    }
+  end
+
+  @@keys : Array({String, String}) = read_keys({{ read_file("#{__DIR__}/btran.tsv") }})
+
+  def read_keys(input : String)
+    input.lines.compact_map do |line|
+      args = line.split('\t')
+      {args[0], args[1]? || ""} if args.size > 1 && args[2]? == "work"
+    end
+  end
+
   ####
 
-  @@clients : Array(self) = begin
-    lines = {{ read_file("#{__DIR__}/btran.tsv").split('\n') }}
-
-    lines.each_with_object([] of Btran) do |line, list|
-      args = line.split('\t')
-      next unless key = args[0]?
-      next unless args[2]? == "work"
-      list << Btran.new(key, args[1]?)
-    end
+  def translate(input : Array(String), sl : String = "zh", tl : String = "vi", no_cap : Bool = false)
+    raise "no more available client" unless key_data = @@keys.last?
+    headers = subkey_headers(*key_data)
+    call_tran_api(headers, input, sl: sl, tl: tl, no_cap: no_cap)
+  rescue ex
+    Log.warn { ex }
+    raise ex unless @@keys.pop?
+    translate(input, sl: sl, tl: tl, no_cap: no_cap)
   end
 
-  def self.translate(terms : Enumerable(String),
-                     source = "zh", target = "vi",
-                     no_cap : Bool = false)
-    raise "no more available client" unless client = @@clients.sample
-    translate(client, terms, source: source, target: target, no_cap: no_cap)
+  def self.free_translate(input : Array(String), sl : String = "zh", tl : String = "vi", no_cap : Bool = false) : Array(String)
+    headers = bearer_headers(self.free_token)
+    call_tran_api(headers, input, sl: sl, tl: tl, no_cap: no_cap)
+  rescue ex
+    Log.warn { ex }
+    @@free_token = nil
+    translate(input, sl: sl, tl: tl, no_cap: no_cap)
   end
 
-  def self.translate(client : self, terms : Enumerable(String),
-                     source : String, target : String,
-                     no_cap : Bool)
-    client.translate(terms, source: source, target: target, no_cap: no_cap)
-  rescue err
-    Log.warn { "error using bing translation: #{err.message}" }
-
-    if err.message.try(&.starts_with?("size mismatch"))
-      translate(client, terms, source: source, target: target, no_cap: no_cap)
-    else
-      @@clients.reject!(&.== client)
-      translate(terms, source: source, target: target, no_cap: no_cap)
-    end
-  end
-
-  def self.lookup(terms : Enumerable(String))
-    raise "no more available client" unless client = @@clients.sample
-    lookup(client, terms)
-  end
-
-  def self.lookup(client : self, terms : Enumerable(String))
-    client.lookup(terms)
-  rescue err
-    Log.warn { "error using bing translation: #{err.message}" }
-
-    if err.message.try(&.starts_with?("size mismatch"))
-      lookup(client, terms)
-    else
-      @@clients.reject!(&.== client)
-      lookup(terms)
-    end
+  def self.free_translate(text : String, sl : String = "zh", tl : String = "vi", no_cap : Bool = false)
+    free_translate([text], sl: sl, tl: tl, no_cap: no_cap)
   end
 
   @@free_token : String? = nil
-  @@free_token_expiry = Time.utc
+  @@free_until = Time.utc
 
   def self.free_token : String
-    if free_token = @@free_token
-      return free_token if @@free_token_expiry >= Time.utc
-    end
+    @@free_token.try { |token| return token if @@free_until >= Time.utc }
 
-    @@free_token_expiry = Time.utc + 5.minutes
-    @@free_token = HTTP::Client.get("https://edge.microsoft.com/translate/auth", &.body_io.gets_to_end)
+    client = HTTP::Client.new(URI.parse("https://edge.microsoft.com"))
+    client.connect_timeout = 2
+    client.read_timeout = 5
+
+    @@free_until = Time.utc + 5.minutes
+    @@free_token = client.get("/translate/auth", &.body_io.gets_to_end)
   end
 
-  def self.free_translate(text : String, target = "vi")
-    free_translate({text}, target)
-  end
-
-  def self.free_translate(words : Enumerable(String), target = "vi")
-    endpoint = "https://api.cognitive.microsofttranslator.com/translate?from=zh-Hans&to=#{target}&api-version=3.0&textType=plain"
-    body = words.map { |text| {Text: text} }.to_json
-
-    headers = HTTP::Headers{
-      "Authorization" => "Bearer #{self.free_token}",
-      "Content-Type"  => "application/json",
-    }
-
-    HTTP::Client.post(endpoint, headers: headers, body: body) do |res|
-      raise res.body_io.gets_to_end unless res.status.success?
-      output = Array(Output).from_json(res.body_io)
-      output.map(&.translations.first.text)
-    end
+  def lookup(input : Array(String), sl : String = "zh", tl : String = "vi")
+    raise "no more available client" unless key_data = @@keys.last?
+    headers = subkey_headers(*key_data)
+    call_dict_api(headers, input, sl: sl, tl: tl)
+  rescue ex
+    Log.warn { ex }
+    raise ex unless @@keys.pop?
+    lookup(input, sl: sl, tl: tl)
   end
 end
 
@@ -218,4 +177,4 @@ end
 # puts SP::Btran.translate(test).to_pretty_json
 # puts SP::Btran.lookup(["in", "out"]).to_pretty_json
 
-# puts SP::Btran.free_translate(["*,朱铁崖", "卢修斯", "同文"])
+puts SP::Btran.free_translate(["朱铁崖", "卢修斯", "同文"], no_cap: true)

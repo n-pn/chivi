@@ -33,7 +33,7 @@ class SP::DefnCtrl < AC::Base
       query = "select defn from defns where word = ? limit 1"
 
       if defn = db.query_one?(query, word, as: String)
-        Array(Btran::LookupResult::Translation).from_json(defn)
+        Array(Btran::LookupOutput::Translation).from_json(defn)
       else
         defn = Btran.lookup([word]).first.translations
         db.exec BING_UPSERT_QUERY, word, defn.to_json, Time.utc.to_unix

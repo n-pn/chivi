@@ -23,7 +23,6 @@ class SP::TranCtrl < AC::Base
     hviet = MT::QtCore.hv_word.translate_file(gen_fpath(zpath, ftype))
 
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
-
     render json: {lines: hviet, tspan: tspan}
   rescue ex
     Log.error(exception: ex) { ex.message }
@@ -60,16 +59,18 @@ class SP::TranCtrl < AC::Base
       mtime = stat.modification_time.to_unix
     elsif force
       input = File.read_lines("#{TEXT_DIR}/#{zpath}.txt", chomp: true)
-      lines = Btran.free_translate(input, target: "vi")
+      lines = Btran.free_translate(input, tl: "vi")
+
       spawn File.write(bv_path, lines.join('\n'))
       mtime = Time.utc.to_unix
     else
       lines = [] of String
       mtime = 0_i64
+      error = "n/a"
     end
 
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
-    render json: {lines: lines, tspan: tspan, mtime: mtime}
+    render json: {lines: lines, tspan: tspan, mtime: mtime, error: error}
   rescue ex
     Log.error(exception: ex) { ex.message }
     render json: {lines: [] of String, error: ex.message}
@@ -79,10 +80,10 @@ class SP::TranCtrl < AC::Base
   def btran_text(sl : String = "zh", tl : String = "vi", no_cap : Bool = false)
     start = Time.monotonic
 
-    lines = Btran.translate(_read_body.lines, source: sl, target: tl, no_cap: no_cap)
+    lines = Btran.translate(_read_body.lines, sl: sl, tl: tl, no_cap: no_cap)
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
 
-    render json: {lines: lines.map(&.[1]), tspan: tspan}
+    render json: {lines: lines, tspan: tspan}
   rescue ex
     Log.error(exception: ex) { ex.message }
     render json: {lines: [] of String, error: ex.message}
