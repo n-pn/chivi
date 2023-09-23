@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 
-import os, re, gc
+import os, re, gc, glob
 
 os.environ["HANLP_HOME"] = "/2tb/var.hanlp/.hanlp"
-# os.environ["CUDA_VISIBLE_DEVICES"] = ""
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 import hanlp, torch
 from flask import Flask, request
@@ -20,8 +20,6 @@ def load_task(kind):
         mtl_task = hanlp.load(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_BASE_ZH)
     elif kind == 'hm_eg':
         mtl_task = hanlp.load(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ERNIE_GRAM_ZH)
-    else:
-        raise 'Unsupported type!'
 
     del mtl_task['dep']
     del mtl_task['sdp']
@@ -30,8 +28,6 @@ def load_task(kind):
     del mtl_task['pos/pku']
     del mtl_task['pos/863']
     del mtl_task['tok/coarse']
-
-    mtl_task['tok/fine'].dict_combine = {}
 
     CACHE[kind] = mtl_task
     return mtl_task
@@ -48,8 +44,8 @@ def add_names_to_task(tok_task, mtl_line):
         tok_task.dict_combine[word] = word
 
 def call_mtl_task(mtl_task, inp_lines):
-    mtl_data = mtl_task([inp_lines[0]])
     tok_task = mtl_task['tok/fine']
+    mtl_data = mtl_task([inp_lines[0]])
 
     for line in inp_lines[1:]:
         mtl_line = mtl_task(line)
@@ -73,38 +69,32 @@ def render_con_data(con_data):
 
     return output
 
-def read_txt_file(inp_path, encoding='utf-8'):
+
+def read_txt_file(inp_path):
     with open(inp_path, 'r') as inp_file:
         return inp_file.read().split('\n')
 
-app = Flask(__name__)
-
-@app.route("/mtl_file/<kind>", methods=['GET'])
-def mtl_from_file(kind):
-    inp_path = request.args.get('file', '')
+def analyze_file(mtl_task, inp_path):
     inp_data = read_txt_file(inp_path)
 
-    mtl_data = call_mtl_task(load_task(kind), inp_data)
-    mtl_path = inp_path.replace('.txt', f'{kind}.mtl').replace('chtext', f'nlp_wn')
+    mtl_data = call_mtl_task(mtl_task, inp_data)
+    con_text = render_con_data(mtl_data["con"])
+
+    con_path = inp_path.replace('.txt', '.hmeg.con')
+    mtl_path = inp_path.replace('.txt', '.hmeg.mtl')
 
     with open(mtl_path, 'w', encoding='utf-8') as mtl_file:
         mtl_file.write(mtl_data.to_json())
 
-    con_text = render_con_data(mtl_data['con'])
-    return con_text
+    with open(con_path, 'w', encoding='utf-8') as con_file:
+        for con_line in mtl_data["con"]:
+            con_file.write(re.sub('\\n(\\s*)', ' ', str(con_line)))
+            con_file.write('\n')
 
-@app.route("/mtl_text/<kind>", methods=['POST'])
-def mtl_from_text():
-    inp_data = request.get_data(as_text=True).split('\n')
-    mtl_data = call_mtl_task(load_task(kind), inp_data)
+mtl_task = load_task('hm_eg')
 
-    con_text = render_con_data(mtl_data['con'])
-    return con_text
+files = glob.glob("var/wnapp/chtext/28353/*.txt")
 
-## start app
-
-if __name__ == '__main__':
-    # app.run(debug=True, port=5556)
-
-    from waitress import serve
-    serve(app, port=5555)
+for file in files:
+  print(file)
+  analyze_file(mtl_task, file)

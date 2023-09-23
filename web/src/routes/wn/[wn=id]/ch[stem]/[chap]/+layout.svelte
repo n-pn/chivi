@@ -13,13 +13,17 @@
         text: 'Đã có sẵn',
         desc: 'Chọn kết quả phân tích ngữ pháp có sẵn, ưu tiên Ernie Gram',
       },
-      hm_eg: {
-        text: 'Ernie Gram',
-        desc: 'HanLP Closed-source MTL ERNIE_GRAM_ZH',
+      hm_es: {
+        text: 'Electra Small',
+        desc: 'HanLP_Closed_MTL_ELECTRA_SMALL_ZH',
       },
       hm_eb: {
         text: 'Electra Base',
-        desc: 'HanLP Closed-source MTL ELECTRA_BASE_ZH',
+        desc: 'HanLP_Closed_MTL_ELECTRA_BASE_ZH',
+      },
+      hm_eg: {
+        text: 'Ernie Gram',
+        desc: 'HanLP Closed-source MTL ERNIE_GRAM_ZH',
       },
     },
 

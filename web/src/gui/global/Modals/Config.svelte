@@ -20,9 +20,10 @@
   ]
 
   const c_algos = [
-    ['Hmeg', 'hmeg', 'Chọn mô-dun Ernie Gram'],
-    ['Hmeb', 'hmeb', 'Chọn mô-đun Electra Base'],
-    ['Auto', 'auto', 'Tự động chọn dữ liệu đang có sẵn'],
+    ['HM_ES', 'hm_es', 'Chọn mô-đun Electra Small'],
+    ['HM_EB', 'hm_eb', 'Chọn mô-đun Electra Base'],
+    ['HM_EG', 'hm_eg', 'Chọn mô-dun Ernie Gram'],
+    ['AVAIL', 'avail', 'Tự động chọn dữ liệu đang có sẵn'],
   ]
 
   const dual_kinds = [
