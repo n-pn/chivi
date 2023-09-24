@@ -34,7 +34,7 @@ declare namespace CV {
   interface Mtdata {
     lines: Array<CV.Cvtree>
     tspan: number
-    mtime: number
+    mtime?: number
     error?: string
     _algo?: string
   }
@@ -42,14 +42,14 @@ declare namespace CV {
   interface Qtdata {
     lines: Array<string>
     tspan: number
-    mtime: number
+    mtime?: number
     error?: string
   }
 
   interface Hvdata {
     hviet: Array<Array<[string, string]>>
     tspan: number
-    mtime: number
+    mtime?: number
     ztext?: Array<string>
     error?: string
   }

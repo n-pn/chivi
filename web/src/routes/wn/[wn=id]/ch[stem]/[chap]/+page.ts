@@ -8,5 +8,5 @@ export const load = (async ({ fetch, parent, depends }) => {
   const cpath = `${rdata.cbase}-${xargs.cpart}`
   const _algo = xargs.rmode
 
-  return await get_nctext_mtran(cpath, true, true, _algo, fetch)
+  return await get_nctext_mtran(cpath, true, _algo, 'force-cache', fetch)
 }) satisfies PageLoad

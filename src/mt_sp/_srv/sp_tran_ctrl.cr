@@ -7,6 +7,14 @@ require "../util/*"
 class SP::TranCtrl < AC::Base
   base "/_sp"
 
+  @[AC::Route::GET("/hname")]
+  def hname(input : String)
+    render text: MT::QtCore.tl_hvname(input)
+  rescue ex
+    Log.error(exception: ex) { ex.message }
+    render text: ex.message
+  end
+
   TEXT_DIR = "var/wnapp/chtext"
   TRAN_DIR = "var/wnapp/chtran"
 
@@ -22,8 +30,13 @@ class SP::TranCtrl < AC::Base
     start = Time.monotonic
     hviet = MT::QtCore.hv_word.translate_file(gen_fpath(zpath, ftype))
 
+    mtime = Time.utc.to_unix
+
+    cache_control 7.days
+    add_etag mtime.to_s
+
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
-    render json: {lines: hviet, tspan: tspan}
+    render json: {lines: hviet, mtime: mtime, tspan: tspan}
   rescue ex
     Log.error(exception: ex) { ex.message }
     render json: {hviet: [] of String, error: ex.message}
@@ -57,7 +70,7 @@ class SP::TranCtrl < AC::Base
     if stat = File.info?(bv_path)
       lines = File.read_lines(bv_path)
       mtime = stat.modification_time.to_unix
-    elsif force
+    elsif force && _privi >= 0
       input = File.read_lines("#{TEXT_DIR}/#{zpath}.txt", chomp: true)
       lines = Btran.free_translate(input, tl: "vi")
 
@@ -67,6 +80,11 @@ class SP::TranCtrl < AC::Base
       lines = [] of String
       mtime = 0_i64
       error = "n/a"
+    end
+
+    unless mtime == 0
+      cache_control 7.days, "private"
+      add_etag mtime.to_s
     end
 
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
@@ -82,6 +100,8 @@ class SP::TranCtrl < AC::Base
 
     lines = Btran.translate(_read_body.lines, sl: sl, tl: tl, no_cap: no_cap)
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
+
+    cache_control 7.days, "private"
 
     render json: {lines: lines, tspan: tspan}
   rescue ex

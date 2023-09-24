@@ -101,18 +101,6 @@
 
         <a href="/hd/tat-ca-ve-vcoin" class="m-btn _xs">Giải thích</a>
       </div>
-
-      <div class="info">
-        <div>
-          <span class="lbl">Giới hạn ký tự dịch thuật:</span>
-          <strong class:exceed={$_user.point_today >= $_user.point_limit}
-            >{$_user.point_today}</strong>
-          <span class="sep">/</span>
-          <span>{$_user.point_limit}</span>
-        </div>
-
-        <a href="/me/qtran-xlog" class="m-btn _xs">Lịch sử</a>
-      </div>
     </section>
   {/if}
 

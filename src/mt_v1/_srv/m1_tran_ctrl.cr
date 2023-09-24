@@ -28,6 +28,9 @@ class M1::TranCtrl < AC::Base
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
     mtime = Time.utc.to_unix
 
+    cache_control 7.days
+    add_etag mtime.to_s
+
     render json: {lines: lines, mtime: mtime, tspan: tspan}
   end
 

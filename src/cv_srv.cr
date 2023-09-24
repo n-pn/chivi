@@ -182,6 +182,18 @@ abstract class AC::Base
       File.open(log_file, "a", &.puts(action.to_json))
     end
   end
+
+  def cache_control(max_age : Time::Span | Time::MonthSpan, extra : String = "public")
+    cache_control(max_age.total_seconds.to_i, extra: extra)
+  end
+
+  def cache_control(max_age : Int32 = 5, extra : String = "public")
+    response.headers["Cache-Control"] = "max-age=#{max_age}, #{extra}"
+  end
+
+  def add_etag(etag : String | Int)
+    response.headers["ETag"] = %{"#{etag}"}
+  end
 end
 
 class ErrorHandler

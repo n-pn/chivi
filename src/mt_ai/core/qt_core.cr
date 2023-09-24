@@ -10,14 +10,16 @@ class MT::QtCore
 
   def self.tl_hvname(str : String)
     return CharUtil.normalize(str) unless str.matches?(/\p{Han}/)
-    self.hv_name.tokenize(str).to_txt(cap: false)
+    self.hv_name.tokenize(str).to_txt(cap: true)
   end
 
   def self.tl_hvword(str : String, cap : Bool = false)
+    return CharUtil.normalize(str) unless str.matches?(/\p{Han}/)
     self.hv_word.tokenize(str).to_txt(cap: cap)
   end
 
   def self.tl_pinyin(str : String, cap : Bool = false)
+    return CharUtil.normalize(str) unless str.matches?(/\p{Han}/)
     self.pin_yin.tokenize(str).to_txt(cap: cap)
   end
 

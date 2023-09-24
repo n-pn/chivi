@@ -44,13 +44,14 @@
   }
 
   const load_btran_data = async () => {
-    const btran = await get_nctext_btran($data.zpath, false, true)
+    const btran = await get_nctext_btran($data.zpath, true, 'no-cache')
     if (btran.error) alert(btran.error)
     $data.btran = btran.lines || []
   }
 
   const load_ctree_data = async () => {
-    const ctree = await get_nctext_mtran($data.zpath, false, true, $data.m_alg)
+    const { zpath, m_alg } = $data
+    const ctree = await get_nctext_mtran(zpath, true, m_alg, 'no-cache')
     $data.ctree = ctree.lines || []
   }
 

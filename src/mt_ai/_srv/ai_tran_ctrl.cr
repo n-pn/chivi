@@ -4,9 +4,10 @@ class MT::AiTranCtrl < AC::Base
   base "/_ai"
 
   @[AC::Route::GET("/qtran")]
-  def qtran(cpath : String, pdict : String = "combine",
-            _algo : String = "avail", force : Bool = false)
+  def qtran_file(cpath : String, pdict : String = "combine",
+                 _algo : String = "avail", force : Bool = false)
     start = Time.monotonic
+
     _auto_gen = _privi >= 0
     input, _algo = MtTranUtil.get_wntext_con_data(cpath, _algo, _auto_gen)
 
@@ -16,6 +17,10 @@ class MT::AiTranCtrl < AC::Base
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
 
     mtime = Time.utc.to_unix
+
+    cache_control 7.days
+    add_etag mtime.to_s
+
     json = {lines: lines, mtime: mtime, tspan: tspan, _algo: _algo}
 
     render json: json

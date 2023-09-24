@@ -21,13 +21,13 @@ async function load_data(rdata: CV.Chdata, xopts: CV.Chopts, fetch: CV.Fetch) {
 
   switch (xopts.rmode) {
     case 'be_zv':
-      return await get_nctext_btran(cpath, true, true, fetch)
+      return await get_nctext_btran(cpath, true, 'force-cache', fetch)
     case 'qt_v1':
-      return await get_nctext_qtran(cpath, true, true, fetch)
+      return await get_nctext_qtran(cpath, 'force-cache', fetch)
 
     // case 'hviet':
     default:
-      const data = await get_nctext_hviet(cpath, true, true, fetch)
+      const data = await get_nctext_hviet(cpath, true, 'force-cache', fetch)
       const { hviet, tspan, mtime, error } = data
       const lines = hviet.map((hvarr) => gen_hviet_text(hvarr, true))
       return { lines, tspan, mtime, error }

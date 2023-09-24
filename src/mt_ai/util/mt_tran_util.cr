@@ -59,17 +59,12 @@ module MT::MtTranUtil
 
   def call_hanlp_file_api(txt_path : String, con_path : String, _algo : String)
     link = "#{CV_ENV.lp_host}/mtl_file/#{_algo}?file=#{txt_path}"
+    Dir.mkdir_p(File.dirname(con_path))
 
     HTTP::Client.get(link) do |res|
       raise "error: #{res.body}" unless res.status.success?
-
       cdata = res.body_io.gets_to_end
-
-      spawn do
-        Dir.mkdir_p(File.dirname(con_path))
-        File.write(con_path, cdata)
-      end
-
+      spawn File.write(con_path, cdata)
       {cdata.lines, _algo}
     end
   end

@@ -1,5 +1,3 @@
-export const ssr = false
-
 import { error } from '@sveltejs/kit'
 
 import { _pgidx } from '$lib/kit_path'

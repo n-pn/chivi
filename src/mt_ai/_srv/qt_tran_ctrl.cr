@@ -26,6 +26,9 @@ class MT::QtTranCtrl < AC::Base
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
     mtime = Time.utc.to_unix
 
+    cache_control 7.days
+    add_etag mtime.to_s
+
     ztext.clear unless w_raw
     render json: {hviet: hviet, ztext: ztext, tspan: tspan, mtime: mtime}
   rescue ex
