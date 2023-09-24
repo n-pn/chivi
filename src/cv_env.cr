@@ -23,8 +23,9 @@ module CV_ENV
 
   class_getter log_severity : Log::Severity = self.production? ? Log::Severity::Error : Log::Severity::Debug
 
-  class_getter be_port = ENV["CV_BE_PORT"]?.try(&.to_i?) || 5010 # current api server
-  class_getter wn_port = ENV["CV_WN_PORT"]?.try(&.to_i?) || 5020 # current api server
+  class_getter be_port = ENV["CV_BE_PORT"]?.try(&.to_i?) || 5010 #
+  class_getter wn_port = ENV["CV_WN_PORT"]?.try(&.to_i?) || 5020 #
+  class_getter up_port = ENV["CV_UP_PORT"]?.try(&.to_i?) || 5030 #
 
   class_getter m1_port = ENV["CV_M1_PORT"]?.try(&.to_i?) || 5110 # mt_v1 engine
   class_getter ai_port = ENV["CV_AI_PORT"]?.try(&.to_i?) || 5120 # mt_v2 engine
@@ -35,13 +36,14 @@ module CV_ENV
   class_getter lp_port = ENV["HANLP_PORT"]?.try(&.to_i?) || 5555 # hanlp server
 
   class_getter be_host = "http://localhost:#{be_port}"
-
   class_getter wn_host = "http://localhost:#{wn_port}"
-  class_getter ys_host = "http://localhost:#{ys_port}"
+  class_getter up_host = "http://localhost:#{up_port}"
 
   class_getter m1_host = "http://localhost:#{m1_port}"
   class_getter ai_host = "http://localhost:#{ai_port}"
+
   class_getter sp_host = "http://localhost:#{sp_port}"
+  class_getter ys_host = "http://localhost:#{ys_port}"
 
   class_getter lp_host = "http://localhost:#{lp_port}"
 end

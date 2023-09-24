@@ -18,6 +18,9 @@ targets:
   wnapp-srv:
     main: src/wnapp/wnapp-srv.cr
 
+  upapp-srv:
+    main: src/upapp/upapp-srv.cr
+
   mt_sp-srv:
     main: src/mt_sp/mt_sp-srv.cr
 

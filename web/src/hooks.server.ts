@@ -17,6 +17,7 @@ export const handle = (async ({ event, resolve }) => {
 const api_hosts = {
   _db: `127.0.0.1:${import.meta.env.VITE_BE_PORT || 5010}`,
   _wn: `127.0.0.1:${import.meta.env.VITE_WN_PORT || 5020}`,
+  _up: `127.0.0.1:${import.meta.env.VITE_WN_PORT || 5030}`,
 
   _m1: `127.0.0.1:${import.meta.env.VITE_M1_PORT || 5110}`,
   _ai: `127.0.0.1:${import.meta.env.VITE_AI_PORT || 5120}`,

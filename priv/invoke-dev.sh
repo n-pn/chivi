@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+# set -euo pipefail
 
 export GC_INITIAL_HEAP_SIZE=4G
 export CV_ENV=development

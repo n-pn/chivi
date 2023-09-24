@@ -52,24 +52,26 @@ export const data = {
 }
 
 async function fill_data(page: Data) {
+  const { zpath, m_alg } = page
+
   if (page.ztext.length == 0 || page.hviet.length == 0) {
-    const hviet = await get_nctext_hviet(page.zpath, true, true)
+    const hviet = await get_nctext_hviet(zpath, true, 'force-cache')
     page.ztext = hviet.ztext || []
     page.hviet = hviet.hviet || []
   }
 
   if (page.btran.length == 0) {
-    const btran = await get_nctext_btran(page.zpath, true, false)
+    const btran = await get_nctext_btran(zpath, false, 'force-cache')
     page.btran = btran.lines || []
   }
 
   if (page.qtran.length == 0) {
-    const qtran = await get_nctext_qtran(page.zpath, true, false)
+    const qtran = await get_nctext_qtran(zpath, 'reload')
     page.qtran = qtran.lines || []
   }
 
   if (page.ctree.length == 0) {
-    const mtran = await get_nctext_mtran(page.zpath, true, false, page.m_alg)
+    const mtran = await get_nctext_mtran(zpath, false, m_alg, 'force-cache')
     page.ctree = mtran.lines || []
   }
 
