@@ -6,7 +6,7 @@ class MT::M2Node
   getter lhsn : AiNode
   getter rhsn : AiNode
 
-  getter flip = false
+  getter? flip = false
 
   def initialize(@lhsn, @rhsn, @epos, @attr = :none, @flip = false, @_idx = lhsn._idx)
     @zstr = {lhsn, rhsn}.join(&.zstr)
@@ -26,8 +26,20 @@ class MT::M2Node
     when .vrd? then fix_vrd!
     when .vcd? then fix_vcd!
     when .vcp? then fix_vcp!
+    when .vnv? then fix_vnv!
     when .qp?  then fix_qp!
     when .dp?  then @flip = !@lhsn.attr.at_h?
+    end
+  end
+
+  def fix_vnv!
+    AiRule.fix_vnv_lhs!(@lhsn)
+
+    case @rhsn.zstr[0]
+    when '没', '不'
+      @rhsn.set_vstr!("hay không")
+    when '一'
+      @rhsn.set_vstr!("thử #{@lhsn.vstr}")
     end
   end
 

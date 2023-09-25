@@ -20,26 +20,27 @@ class MT::M3Node
   private def rearrange!(dict : AiDict) : Nil
     case @epos
     when .vpt?
-      return unless @rhsn.zstr == "住"
-      @rhsn.set_vstr!(vstr: "nổi")
+      @rhsn.set_vstr!(vstr: "nổi") if @rhsn.zstr == "住"
     when .vnv?
-      return unless @lhsn.zstr == @rhsn.zstr
-      # if vstr = MAP_VND_INFIX[@midn.zstr]?
-      #   @midn.set_vstr!(vstr: vstr)
-      # end
+      fix_vnv! if @lhsn.zstr == @rhsn.zstr
     end
   end
 
-  # MAP_VND_INFIX = {
-  #   "一" => "chút",
-  # }
+  def fix_vnv!
+    AiRule.fix_vnv_lhs!(@lhsn)
 
-  ###
+    case @midn.zstr
+    when "没", "不"
+      @midn.set_vstr!("không")
+      @rhsn.set_vstr!("hay")
+      @midn, @rhsn = @rhsn, @midn
+    when "一"
+      @midn.set_vstr!("thử")
+    end
+  end
 
   def z_each(&)
-    yield lhsn
-    yield midn
-    yield rhsn
+    [lhsn, midn, rhsn].sort_by(&._idx).each { |node| yield node }
   end
 
   def v_each(&)

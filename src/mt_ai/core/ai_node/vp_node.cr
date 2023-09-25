@@ -84,7 +84,7 @@ class MT::VpNode
 
     # TODO: split verb?
     data << read_vo!(dict, verb, _max)
-    tail.reverse_each { |node| data << node }
+    tail.reverse_each { |x| data << x }
 
     while @_pos < _max
       data << self.read_node
@@ -127,6 +127,8 @@ class MT::VpNode
       return verb
     end
 
+    verb, tail = split_vnv!(verb) if verb.epos.vnv?
+
     stem = find_stem(verb)
 
     case stem.zstr
@@ -136,7 +138,16 @@ class MT::VpNode
       fix_v_n_pair!(stem, dobj) if dobj.epos.noun?
     end
 
-    iobj ? M3Node.new(verb, iobj, dobj, epos: :VP) : M2Node.new(verb, dobj, epos: :VP)
+    list = [verb] of AiNode
+    list << iobj if iobj
+    list << dobj
+    list << tail if tail
+
+    case list.size
+    when 1 then list.first
+    when 2 then M2Node.new(list.first, list.last, epos: :VP)
+    else        MxNode.new(list, epos: :VP)
+    end
   end
 
   def fix_vm_xiang!(vv_node : AiNode, do_node : AiNode) : Nil
@@ -199,5 +210,27 @@ class MT::VpNode
     end
 
     node
+  end
+
+  def split_vnv!(verb : M3Node)
+    if verb.rhsn.zstr.in?("没", "不")
+      tail = M2Node.new(verb.midn, verb.rhsn, epos: :VP)
+      {verb.lhsn, tail}
+    else
+      {verb, nil}
+    end
+  end
+
+  def split_vnv!(verb : M2Node)
+    if verb.rhsn.zstr[0].in?("没", "不")
+      {verb.lhsn, verb.rhsn}
+      # {verb.lhsn, tail}
+    else
+      {verb, nil}
+    end
+  end
+
+  def split_vnv!(verb : AiNode)
+    {verb, nil}
   end
 end

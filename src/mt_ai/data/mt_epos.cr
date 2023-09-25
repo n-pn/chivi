@@ -72,12 +72,12 @@ enum MT::MtEpos : Int8
 
   @[AlwaysInline]
   def verb?
-    self == VV || self == VP || self == VA || self == VC || self == VE
+    self.in?(VA, VC, VE, VV, VCD, VCP, VNV, VP, VPT, VRD, VSB)
   end
 
   @[AlwaysInline]
   def noun?
-    self == NP || self == NN || self == NR || self == NT
+    self.in?(NN, NR, NT, NP, NF, NH, NC)
   end
 
   @[AlwaysInline]

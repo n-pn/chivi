@@ -41,4 +41,11 @@ module MT::AiRule
       return {node, _idx} if node.epos.pu? && node.zstr[-1] == match_char
     end
   end
+
+  def fix_vnv_lhs!(node : AiNode) : Nil
+    case node.zstr
+    when "是" then node.set_vstr!("phải")
+    when "会" then node.set_vstr!("biết")
+    end
+  end
 end
