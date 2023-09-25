@@ -55,12 +55,12 @@ async function fill_data(page: Data) {
   const { zpath, m_alg } = page
 
   if (page.hviet.length == 0) {
-    const hviet = await get_nctext_hviet(zpath, false, 'force-cache')
+    const hviet = await get_nctext_hviet(zpath, false, 'default')
     page.hviet = hviet.hviet || []
   }
 
   if (page.btran.length == 0) {
-    const btran = await get_nctext_btran(zpath, false, 'force-cache')
+    const btran = await get_nctext_btran(zpath, false, 'default')
     page.btran = btran.lines || []
   }
 
@@ -70,7 +70,7 @@ async function fill_data(page: Data) {
   }
 
   if (page.ctree.length == 0) {
-    const mtran = await get_nctext_mtran(zpath, false, m_alg, 'force-cache')
+    const mtran = await get_nctext_mtran(zpath, false, m_alg, 'default')
     page.ctree = mtran.lines || []
   }
 

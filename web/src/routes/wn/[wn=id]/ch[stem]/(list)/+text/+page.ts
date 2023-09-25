@@ -7,7 +7,7 @@ type ZtextRaw = { ztext: string; title: string; chdiv: string }
 
 export async function load({ url: { searchParams }, fetch, parent, params }) {
   const wn_id = parseInt(params.wn, 10)
-  const sname = params.seed
+  const sname = params.stem
   const ch_no = parseInt(searchParams.get('ch_no'), 10)
 
   const api_url = `/_wn/texts/${wn_id}/${sname}/${ch_no}`

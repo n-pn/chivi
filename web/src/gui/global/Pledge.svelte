@@ -11,14 +11,13 @@
   <div class="app-vessel">
     <p class="pledge">
       <strong>
-        Trang web đang đập đi làm lại, bắt đầu từ phần máy dịch. Trong quá trình
-        này sẽ có rất nhiều lỗi, mong các bạn thông cảm. Có thắc mắc xin liên hệ
-        Facebook của trang hoặc Discord (kéo xuống dưới cùng để xem liên kết).
+        Trang web làm lại, nếu gặp lỗi làm ơn liên hệ trực tiếp qua Facebook của
+        trang hoặc Discord (kéo xuống dưới cùng để xem liên kết).
       </strong>
       <br />
       <em>
         Cập nhật ngày 23/09/2023: Tính năng dịch bằng Bing + Dịch máy kiểu cũ đã
-        mở trở lại. Các bạn bấm vào chỗ [Dịch tạm] để xem.
+        mở trở lại. Các bạn bấm vào chỗ [Dịch thô] để xem.
       </em>
     </p>
     {#if $_user.privi < 0}

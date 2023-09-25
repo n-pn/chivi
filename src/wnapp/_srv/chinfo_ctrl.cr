@@ -47,16 +47,16 @@ class WN::ChinfoCtrl < AC::Base
     plock = wnseed.read_privi(_uname)
     plock &-= 1 if ch_no <= wnseed.lower_read_privi_count
 
-    ztext = [] of String
-    status = 200
+    ztext = [chinfo.ztitle]
 
     if _privi < plock
-      status = 413
+      error = 413
     else
       chtext = Chtext.new(wnseed, chinfo)
-      cksum = chtext.get_cksum!(_uname, _mode: rmode)
+      cksum = chtext.get_cksum!(_uname, _mode: rmode) rescue ""
+
       if cksum.empty?
-        status = 414
+        error = 414
       else
         fpath = chtext.wn_path(p_idx, cksum)
         ztext = File.read_lines(fpath, chomp: true)
@@ -67,22 +67,22 @@ class WN::ChinfoCtrl < AC::Base
     output = {
       cinfo: chinfo,
       rdata: {
-        spath: "#{wn_id}/#{ch_no}-#{cksum}-#{p_idx}",
+        spath: cksum ? "#{wn_id}/#{ch_no}-#{cksum}-#{p_idx}" : "",
         plock: plock,
         rlink: chinfo.rlink,
 
         mtime: mtime,
-        zsize: chinfo.sizes[p_idx],
+        zsize: chinfo.sizes[p_idx]? || 0,
         ztext: ztext,
 
         _curr: p_idx > 1 ? "#{ch_no}_#{p_idx}" : ch_no.to_s,
         _prev: prev_href(wnseed, chinfo, p_idx),
         _succ: succ_href(wnseed, chinfo, p_idx),
       },
-
+      error: error,
     }
 
-    render status, json: output
+    render 200, json: output
   end
 
   private def prev_href(stem, chap, part)

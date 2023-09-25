@@ -16,10 +16,8 @@ class MT::AiTranCtrl < AC::Base
     lines = input.map { |line| ai_mt.tl_from_con_data(line) }
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
 
+    cache_control 3.seconds
     mtime = Time.utc.to_unix
-
-    cache_control 7.days
-    add_etag mtime.to_s
 
     json = {lines: lines, mtime: mtime, tspan: tspan, _algo: _algo}
 

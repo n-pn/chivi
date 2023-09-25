@@ -2,9 +2,10 @@ require "../../src/mt_ai/core/*"
 
 time = Time.monotonic
 
-text = ARGV[0]? || "(TOP (IP (IP (PU “) (INTJ (IJ 嗯)) (PU ，) (VP (ADVP (AD 确实)) (VP (VE 有) (NP (QP (CD 一些)) (NP (NN 问题))))) (PU ，) (IP (ADVP (AD 不过)) (VP (VV 放心))) (PU ，) (CP (IP (NP (PN 我)) (VP (VV 会) (VP (VRD (VV 处理) (VA 好))))) (SP 的)) (PU 。) (PU ”)) (IP (NP (NR 雅克)) (VP (VP (VV 笑) (AS 着)) (VP (VV 说道)))) (PU ，) (IP (LCP (NP (NN 言语)) (LC 之中)) (VP (ADVP (AD 满)) (VP (VC 是) (NP (NN 自信))))) (PU ，) (IP (NP (PN 他)) (VP (VP (ADVP (AD 缓步)) (VP (VV 来到) (NP (DNP (NP (NN 妻子)) (DEG 的)) (NP (NN 面前))))) (PU ，) (VP (ADVP (AD 慢慢)) (VP (VRD (VV 蹲) (VV 下来)))) (PU ，) (VP (DVP (VP (VA 小心翼翼)) (DEV 的)) (VP (VV 伏) (PP (P 在) (LCP (NP (NN 肚子)) (LC 上))))) (PU ，) (VP (VP (VV 笑) (AS 着)) (VP (VV 说道) (PU ：) (CP (PU “) (CP (IP (NP (NR 娜拉)) (PU ，) (NP (NN 爸爸)) (VP (VV 回来))) (SP 啦)) (PU ，) (CP (IP (VP (VNV (VE 有) (AD 没) (VE 有)) (VP (VV 想) (NP (NN 爸爸))))) (SP 啊))))))) (PU 。) (PU ”)))"
+text = ARGV[0]? || "(TOP (IP (NP (PU “) (NP (DNP (NP (NN 水泥地)) (DEG 的)) (NP (NN 缘故))) (PU ？) (PU ”)) (IP (NP (NR 高栋)) (VP (VP (VV 当) (AS 了) (NP (QP (ADVP (AD 这么)) (QP (CD 多) (CLP (M 年)))) (NP (NN 刑警)))) (PU ，) (VP (ADVP (AD 自然)) (VP (VV 知道) (NP (NN 常识)))))) (PU ，) (IP (IP (IP (NP (NN 脚印)) (VP (PP (P 在) (NP (CP (CP (IP (VP (VA 干净))) (DEC 的))) (NP (NN 水泥地上)))) (ADVP (AD 很)) (ADVP (AD 难)) (VP (VRD (VV 保留) (VA 完整))))) (PU ，) (ADVP (CC 但)) (NP (PN 他)) (VP (VV 看) (NP (DNP (NP (PN 这里)) (DEG 的)) (NP (NN 路面))))) (PU ，) (IP (PP (P 由于) (IP (NP (NN 旁边)) (VP (VC 是) (NP (ADJP (JJ 荒)) (NP (NN 田)))))) (PU ，) (IP (NP (NN 路边)) (VP (VE 有) (NP (CP (CP (IP (VP (ADVP (AD 挺)) (VP (VA 多)))) (DEC 的))) (NP (NN 泥沙))))))) (PU ，) (IP (ADVP (AD 照理)) (NP (NN 脚印)) (VP (ADVP (AD 也)) (VP (VV 该) (VP (VV 能) (VP (VV 留下来)))))) (PU 。)))
+"
 
-dict = ARGV[1]? || "book/7154"
+dict = ARGV[1]? || "book/54963"
 
 data = MT::AiCore.new(dict).tl_from_con_data(text)
 

@@ -49,6 +49,7 @@ export async function get_nctext_mtran(
   const url = `/_ai/qtran?cpath=${zpath}&pdict=${pdict}&_algo=${_algo}&force=${force}`
   const res = await fetch(url, { cache })
 
-  if (res.ok) return await res.json()
-  return { lines: [], tspan: 0, error: await res.text() }
+  if (!res.ok) return { lines: [], tspan: 0, error: await res.text() }
+
+  return await res.json()
 }

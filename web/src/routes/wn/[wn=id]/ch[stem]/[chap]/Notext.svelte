@@ -12,11 +12,11 @@
 
   export let _onload = false
 
-  $: ({ nvinfo, wnchap } = data)
+  $: ({ nvinfo, cinfo, rdata } = data)
 
-  $: search = `"${nvinfo.ztitle}" ${wnchap.title}`
+  $: search = `"${nvinfo.ztitle}" ${rdata.ztext[0].replace('　', ' ')}`
   $: seed_href = seed_path(nvinfo.bslug, data.curr_seed.sname)
-  $: edit_href = `${seed_href}/+text?ch_no=${wnchap.ch_no}`
+  $: edit_href = `${seed_href}/+text?ch_no=${cinfo.ch_no}`
 
   const reload_chap = async () => {
     _onload = true
@@ -26,14 +26,14 @@
   }
 </script>
 
-<article class="article island notext">
-  {#if $_user.privi < wnchap.privi}
-    <h1>Bạn không đủ quyền hạn để xem chương {wnchap.ch_no}.</h1>
+<section class="notext">
+  {#if $_user.privi < rdata.plock}
+    <h1>Bạn không đủ quyền hạn để xem chương {cinfo.ch_no}.</h1>
 
     <p>
       <strong>
         Quyền hạn tối thiểu để xem chương hiện tại: <x-chap
-          >{wnchap.privi}</x-chap>
+          >{rdata.plock}</x-chap>
       </strong>
     </p>
 
@@ -44,7 +44,7 @@
           màn hình để đăng nhập hoặc đăng ký tài khoản mới.
         {:else}
           Quyền hạn hiện tại của bạn là {$_user.privi}, nâng cấp quyền hạn lên
-          <strong>{wnchap.privi}</strong> để xem nội dung chương tiết.
+          <strong>{rdata.plock}</strong> để xem nội dung chương tiết.
         {/if}
       </em>
     </p>
@@ -92,6 +92,21 @@
       Nếu bạn đang xem chương tiết từ [Nguồn khác], khả năng cao là nguồn đó đã
       chết trước khi hệ thống kịp lưu text gốc vào ổ cứng.
     </p>
+
+    {#if rdata.rlink}
+      <p>
+        Chương tiết có liên kết tới nguồn ngoài. Hãy kiểm tra xem nguồn còn đang
+        hoạt động hay không: <a href={rdata.rlink} target="_blank"
+          >{rdata.rlink}</a>
+      </p>
+      <p>
+        <em
+          >Lưu ý: Một số nguồn còn sống, nhưng có cài đặt tường lửa phía trước
+          thì hệ thống cũng không tải xuống được. Một số nguồn khác có thể cấm
+          truy cập theo vùng địa lý.
+        </em>
+      </p>
+    {/if}
 
     <h2>Các biện pháp khắc phục:</h2>
     <p>
@@ -166,7 +181,7 @@
       <button
         class="m-btn _harmful"
         on:click={reload_chap}
-        disabled={$_user.privi < wnchap.privi}>
+        disabled={$_user.privi < rdata.plock}>
         <SIcon name="rotate-rectangle" spin={_onload} />
         <span>Tải lại nguồn</span>
       </button>
@@ -183,7 +198,7 @@
       </a>
     </div>
   {/if}
-</article>
+</section>
 
 <style lang="scss">
   .notext {
@@ -257,10 +272,6 @@
   .actions {
     @include flex-ca($gap: 0.75rem);
     padding-bottom: 0.75rem;
-
-    &:last-of-type {
-      @include border(--bd-soft, $loc: bottom);
-    }
   }
 
   x-seed {

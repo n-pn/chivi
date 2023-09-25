@@ -1,12 +1,10 @@
-import { error } from '@sveltejs/kit'
-
 import { _pgidx } from '$lib/kit_path'
 import { api_get } from '$lib/api_call'
 import { seed_nav, nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 
-type Chdata = { cinfo: CV.Wnchap; rdata: CV.Chpart }
+type Chdata = { cinfo: CV.Wnchap; rdata: CV.Chpart; error?: number }
 
 export const load = (async ({ url, parent, params, fetch }) => {
   const wn_id = parseInt(params.wn, 10)
@@ -16,7 +14,7 @@ export const load = (async ({ url, parent, params, fetch }) => {
   if (p_idx < 1) p_idx = 1
 
   const cinfo_path = `/_wn/chaps/${wn_id}/${sname}/${ch_no}/${p_idx}`
-  const { cinfo, rdata } = await api_get<Chdata>(cinfo_path, fetch)
+  const { cinfo, rdata, error } = await api_get<Chdata>(cinfo_path, fetch)
 
   const { nvinfo } = await parent()
 
@@ -32,7 +30,8 @@ export const load = (async ({ url, parent, params, fetch }) => {
   }
 
   const xargs = get_xargs(wn_id, p_idx, rdata, url) as CV.Chopts
-  return { cinfo, rdata, xargs, _meta, _title }
+
+  return { cinfo, rdata, error, xargs, _meta, _title }
 }) satisfies PageLoad
 
 function get_rtype_from_path(path: string) {

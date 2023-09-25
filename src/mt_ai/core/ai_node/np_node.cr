@@ -41,7 +41,7 @@ class MT::NpNode
         if found = AiRule.find_matching_pu(input, node, _idx: pos, _max: max)
           # TODO: check flipping
           tail, fmax = found
-          list = input[pos...fmax]
+          list = input[pos..(fmax - 2)]
 
           if list.last.epos.pu?
             node.add_attr!(:capn)

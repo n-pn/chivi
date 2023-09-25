@@ -1,6 +1,5 @@
 require "http/client"
 require "../../cv_env"
-require "../../mt_sp/util/*"
 
 module MT::MtTranUtil
   extend self
@@ -35,7 +34,7 @@ module MT::MtTranUtil
     when _algo == "hm_eb" then con_path = hmeb_path
     when _algo == "hm_eg" then con_path = hmeg_path
     when File.file?(hmes_path) # mode == avail
-      return read_con_file(hmeg_path, "hm_es")
+      return read_con_file(hmes_path, "hm_es")
     when File.file?(hmeg_path) # mode == avail
       return read_con_file(hmeg_path, "hm_eg")
     when File.file?(hmeb_path) # mode == avail

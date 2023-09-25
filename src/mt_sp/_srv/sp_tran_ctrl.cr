@@ -66,17 +66,20 @@ class SP::TranCtrl < AC::Base
     start = Time.monotonic
 
     bv_path = "#{TRAN_DIR}/#{zpath}.bzv.txt"
-    status = 201
 
     if stat = File.info?(bv_path)
       lines = File.read_lines(bv_path)
       mtime = stat.modification_time.to_unix
+      status = 200
     elsif force && _privi >= 0
       input = File.read_lines("#{TEXT_DIR}/#{zpath}.txt", chomp: true)
       lines = Btran.free_translate(input, tl: "vi")
-
-      spawn File.write(bv_path, lines.join('\n'))
       mtime = Time.utc.to_unix
+      status = 201
+      spawn do
+        Dir.mkdir_p(File.dirname(bv_path))
+        File.write(bv_path, lines.join('\n'))
+      end
     else
       lines = [] of String
       mtime = 0_i64
@@ -85,7 +88,7 @@ class SP::TranCtrl < AC::Base
     end
 
     unless mtime == 0
-      cache_control 7.days, "private"
+      cache_control 7.days
       add_etag mtime.to_s
     end
 

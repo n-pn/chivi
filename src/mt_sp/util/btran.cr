@@ -176,5 +176,3 @@ end
 # test = "能源、表情".split("、")
 # puts SP::Btran.translate(test).to_pretty_json
 # puts SP::Btran.lookup(["in", "out"]).to_pretty_json
-
-puts SP::Btran.free_translate(["朱铁崖", "卢修斯", "同文"], no_cap: true)

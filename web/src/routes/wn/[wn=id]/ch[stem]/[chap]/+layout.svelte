@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   const main_tabs = [
     { type: 'ai', mode: 'auto', icon: 'language', text: 'Dịch máy' },
-    { type: 'qt', icon: 'bolt', text: 'Dịch tạm' },
+    { type: 'qt', icon: 'bolt', text: 'Dịch thô' },
     { type: 'tl', icon: 'ballpen', text: 'Dịch tay' },
     { type: 'cf', icon: 'tool', text: 'Công cụ' },
   ]
@@ -93,7 +93,7 @@
     : stem_path
 
   $: pager = new Pager($page.url, { type: 'ai', mode: 'auto' })
-  $: vtran = $page.data.vtran
+  $: vtran = $page.data.vtran || {}
 
   import {
     data as lookup_data,
@@ -101,6 +101,7 @@
   } from '$lib/stores/lookup_stores'
   import { rel_time_vp } from '$utils/time_utils'
   import { browser } from '$app/environment'
+  import Notext from './Notext.svelte'
 
   async function update_memo(locking: boolean) {
     if ($_user.privi < 0) return
@@ -131,9 +132,8 @@
   }
 
   $: crumb = [
-    { text: 'Truyện chữ', href: `/wn` },
     { text: nvinfo.vtitle, href: `/wn/${nvinfo.bslug}` },
-    { text: `Mục lục: [${curr_seed.sname}]`, href: stem_path },
+    { text: `[${curr_seed.sname}]`, href: stem_path },
     { text: cinfo.chdiv || 'Chính văn' },
     { text: cinfo.title },
   ]
@@ -182,7 +182,7 @@
     let m_alg = ''
 
     let ztext = rdata.ztext
-    let zdata = $page.data.vtran.lines
+    let zdata = vtran.lines || []
 
     if (xargs.rtype == 'ai') {
       rmode = 'ctree'
@@ -201,11 +201,7 @@
   }
 </script>
 
-<Crumb items={crumb}>
-  {#if cinfo.psize > 1}
-    <div class="crumb"><span>Phần {xargs.p_idx}/{cinfo.psize}</span></div>
-  {/if}
-</Crumb>
+<Crumb items={crumb} />
 
 <!-- <nav class="nav-list">
   {#each links as [mode, text, dtip]}
@@ -219,7 +215,9 @@
   {/each}
 </nav> -->
 
-<article class="article island">
+<article
+  class="article island app-fs-{$config.ftsize} app-ff-{$config.ftface}"
+  style:--textlh="{$config.textlh}%">
   <header class="head">
     {#each main_tabs as { type, icon, text }}
       <a
@@ -283,15 +281,20 @@
     </nav>
   {/if}
 
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div
-    bind:this={reader}
-    class="reader app-fs-{$config.ftsize} app-ff-{$config.ftface}"
-    style:--textlh="{$config.textlh}%"
-    on:click|capture={handle_click}>
-    <slot />
-  </div>
+  {#if data.error}
+    <Notext {data} />
+  {:else if vtran.error}
+    <section class="error">
+      <h1>Lỗi hệ thống:</h1>
+      <p class="error-message">{vtran.error}</p>
+    </section>
+  {:else}
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <div bind:this={reader} class="reader" on:click|capture={handle_click}>
+      <slot />
+    </div>
+  {/if}
 </article>
 
 <Footer>
@@ -449,18 +452,6 @@
     min-height: 50vh;
     @include fgcolor(secd);
 
-    :global(cite) {
-      font-style: normal;
-      font-variant: small-caps;
-    }
-
-    :global(.cdata) {
-      cursor: pointer;
-      @include bp-min(tl) {
-        @include padding-x(var(--gutter));
-      }
-    }
-
     // @include border(--bd-soft, $loc: top);
   }
 
@@ -527,5 +518,9 @@
     padding-bottom: 0.5rem;
     @include flex-cy;
     gap: 0.5rem;
+  }
+
+  .error {
+    padding: var(--gutter);
   }
 </style>
