@@ -103,8 +103,8 @@ class WN::Chinfo
       jb.field "chdiv", @vchdiv.empty? ? @zchdiv : @vchdiv
 
       jb.field "psize", self.psize
-      jb.field "mtime", @mtime
 
+      jb.field "mtime", @mtime
       jb.field "flags", Chflag.new(@_flag).to_s
     }
   end

@@ -235,8 +235,6 @@ x-c {
 
   &:hover {
     border-bottom: 1px solid var(--border);
-    background: none;
-    // background: linear-gradient(to top, var(--border) 0.75px, transparent 0);
   }
 
   &:after {
@@ -257,7 +255,7 @@ x-z {
 
 x-n {
   .cdata:hover &,
-  .cdata.debug &,
+  .cdata.focus &,
   &:hover {
     border-bottom: 1px solid var(--border);
     background: none;

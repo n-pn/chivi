@@ -39,7 +39,7 @@ class SP::TranCtrl < AC::Base
     render json: {lines: hviet, mtime: mtime, tspan: tspan}
   rescue ex
     Log.error(exception: ex) { ex.message }
-    render json: {hviet: [] of String, error: ex.message}
+    render 500, json: {hviet: [] of String, error: ex.message}
   end
 
   @[AC::Route::POST("/hviet")]
@@ -58,7 +58,7 @@ class SP::TranCtrl < AC::Base
     render json: {lines: hviet, tspan: tspan}
   rescue ex
     Log.error(exception: ex) { ex.message }
-    render json: {lines: [] of String, error: ex.message}
+    render 500, json: {lines: [] of String, error: ex.message}
   end
 
   @[AC::Route::GET("/btran")]
@@ -66,6 +66,7 @@ class SP::TranCtrl < AC::Base
     start = Time.monotonic
 
     bv_path = "#{TRAN_DIR}/#{zpath}.bzv.txt"
+    status = 201
 
     if stat = File.info?(bv_path)
       lines = File.read_lines(bv_path)
@@ -80,6 +81,7 @@ class SP::TranCtrl < AC::Base
       lines = [] of String
       mtime = 0_i64
       error = "n/a"
+      status = 404
     end
 
     unless mtime == 0
@@ -88,10 +90,10 @@ class SP::TranCtrl < AC::Base
     end
 
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
-    render json: {lines: lines, tspan: tspan, mtime: mtime, error: error}
+    render status, json: {lines: lines, tspan: tspan, mtime: mtime, error: error}
   rescue ex
     Log.error(exception: ex) { ex.message }
-    render json: {lines: [] of String, error: ex.message}
+    render 500, json: {lines: [] of String, error: ex.message}
   end
 
   @[AC::Route::POST("/btran")]
@@ -106,7 +108,7 @@ class SP::TranCtrl < AC::Base
     render json: {lines: lines, tspan: tspan}
   rescue ex
     Log.error(exception: ex) { ex.message }
-    render json: {lines: [] of String, error: ex.message}
+    render 500, json: {lines: [] of String, error: ex.message}
   end
 
   @[AC::Route::POST("/deepl")]

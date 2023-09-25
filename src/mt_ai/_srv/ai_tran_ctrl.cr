@@ -26,7 +26,7 @@ class MT::AiTranCtrl < AC::Base
     render json: json
   rescue ex
     Log.error(exception: ex) { [cpath, pdict] }
-    render json: {lines: [] of String, error: ex.message}
+    render 500, json: {lines: [] of String, error: ex.message}
   end
 
   @[AC::Route::POST("/reload")]

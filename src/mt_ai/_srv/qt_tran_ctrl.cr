@@ -33,7 +33,7 @@ class MT::QtTranCtrl < AC::Base
     render json: {hviet: hviet, ztext: ztext, tspan: tspan, mtime: mtime}
   rescue ex
     Log.error(exception: ex) { ex.message }
-    render json: {hviet: [] of String, error: ex.message}
+    render 500, json: {hviet: [] of String, error: ex.message}
   end
 
   @[AC::Route::POST("/hviet")]
@@ -50,6 +50,6 @@ class MT::QtTranCtrl < AC::Base
     render json: {hviet: hviet, tspan: tspan, mtime: mtime}
   rescue ex
     Log.error(exception: ex) { ex.message }
-    render json: {hviet: [] of String, error: ex.message}
+    render 500, json: {hviet: [] of String, error: ex.message}
   end
 end

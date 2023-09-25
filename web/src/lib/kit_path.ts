@@ -31,15 +31,16 @@ const default_rmode = {
   cf: 'add_term',
 }
 
-export function chap_path(croot: string, ch_no: number, xargs) {
-  const { rtype, cpart, rmode } = xargs
-
-  let href = `${croot}/${ch_no}`
+export function chap_path(
+  root: string,
+  chap: number | string,
+  { rtype, rmode }
+) {
+  let href = `${root}/${chap}`
   if (rtype != 'ai') href += '/' + rtype
 
   const params = new URLSearchParams()
 
-  if (cpart > 1) params.append('part', cpart.toString())
   if (rmode && rmode != default_rmode[rtype]) params.append('mode', rmode)
 
   const search = params.toString()

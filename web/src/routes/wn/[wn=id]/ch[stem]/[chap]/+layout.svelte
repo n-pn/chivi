@@ -28,13 +28,13 @@
     },
 
     qt: {
-      be_zv: {
-        text: 'Bing Edge',
-        desc: 'Dịch bằng Bing Translator thông qua Edge API',
-      },
       qt_v1: {
         text: 'Máy dịch cũ',
         desc: 'Kết quả dịch từ máy dịch phiên bản cũ',
+      },
+      be_zv: {
+        text: 'Bing Edge',
+        desc: 'Dịch bằng Bing Translator thông qua Edge API',
       },
       hviet: {
         text: 'Hán Việt',
@@ -83,46 +83,21 @@
   $: ch_no = cinfo.ch_no
   $: total = curr_seed.chmax
 
-  $: croot = seed_path(nvinfo.bslug, curr_seed.sname)
-  $: paths = gen_paths(croot, cinfo, xargs)
+  $: stem_path = seed_path(nvinfo.bslug, curr_seed.sname)
+  $: prev_path = rdata._prev
+    ? chap_path(stem_path, rdata._prev, xargs)
+    : stem_path
 
-  $: zpath = `${rdata.cbase}-${xargs.cpart}`
-  $: pdict = `book/${xargs.wn_id}`
+  $: next_path = rdata._succ
+    ? chap_path(stem_path, rdata._succ, xargs)
+    : stem_path
 
-  $: pager = new Pager($page.url, { part: 1, type: 'ai', mode: 'auto' })
-
-  function gen_paths(croot: string, { ch_no, psize }, xopts: CV.Chopts) {
-    const curr = chap_path(croot, ch_no, xopts)
-    const prev = gen_prev_path(croot, ch_no, xopts)
-    const next = gen_next_path(croot, ch_no, xopts, psize)
-    return { curr, prev, next }
-  }
-
-  function gen_prev_path(croot: string, ch_no: number, xopts: CV.Chopts) {
-    if (ch_no < 2) return croot
-
-    const cpart = xopts.cpart
-
-    if (cpart < 2) {
-      return chap_path(croot, ch_no - 1, { ...xopts, cpart: -1 })
-    } else {
-      return chap_path(croot, ch_no, { ...xopts, cpart: cpart - 1 })
-    }
-  }
-
-  function gen_next_path(croot: string, ch_no: number, xopts, psize: number) {
-    const cpart = xopts.cpart
-    if (cpart < psize) {
-      return chap_path(croot, ch_no, { ...xopts, cpart: cpart + 1 })
-    } else {
-      return chap_path(croot, ch_no + 1, { ...xopts, cpart: 1 })
-    }
-  }
+  $: pager = new Pager($page.url, { type: 'ai', mode: 'auto' })
+  $: vtran = $page.data.vtran
 
   import {
     data as lookup_data,
     ctrl as lookup_ctrl,
-    type Data as LookupData,
   } from '$lib/stores/lookup_stores'
   import { rel_time_vp } from '$utils/time_utils'
   import { browser } from '$app/environment'
@@ -158,7 +133,7 @@
   $: crumb = [
     { text: 'Truyện chữ', href: `/wn` },
     { text: nvinfo.vtitle, href: `/wn/${nvinfo.bslug}` },
-    { text: `Mục lục: [${curr_seed.sname}]`, href: croot },
+    { text: `Mục lục: [${curr_seed.sname}]`, href: stem_path },
     { text: cinfo.chdiv || 'Chính văn' },
     { text: cinfo.title },
   ]
@@ -181,15 +156,13 @@
   }
 
   let l_idx = -1
-  $: l_max = ($page.data.lines || []).length
+  $: l_max = rdata.ztext.length
 
   afterNavigate(() => {
     l_idx = -1
     if (on_focus) on_focus.classList.remove('focus')
     update_memo(false)
   })
-
-  $: zsize = data.rdata.sizes[xargs.cpart]
 
   $: if (browser && l_idx >= 0) {
     const new_focus = document.getElementById('L' + l_idx)
@@ -207,7 +180,9 @@
   $: {
     let rmode = xargs.rmode
     let m_alg = ''
-    let zdata = $page.data.lines
+
+    let ztext = rdata.ztext
+    let zdata = $page.data.vtran.lines
 
     if (xargs.rtype == 'ai') {
       rmode = 'ctree'
@@ -218,13 +193,17 @@
       zdata = []
     }
 
-    lookup_data.put(zpath, pdict, { [rmode]: zdata, m_alg })
+    lookup_data.put(xargs.spath, `book/${xargs.wn_id}`, {
+      ztext,
+      [rmode]: zdata,
+      m_alg,
+    })
   }
 </script>
 
 <Crumb items={crumb}>
   {#if cinfo.psize > 1}
-    <div class="crumb"><span>Phần {xargs.cpart}/{cinfo.psize}</span></div>
+    <div class="crumb"><span>Phần {xargs.p_idx}/{cinfo.psize}</span></div>
   {/if}
 </Crumb>
 
@@ -244,7 +223,7 @@
   <header class="head">
     {#each main_tabs as { type, icon, text }}
       <a
-        href={chap_path(croot, ch_no, { ...xargs, rtype: type, rmode: '' })}
+        href={chap_path(stem_path, ch_no, { rtype: type, rmode: '' })}
         class="htab"
         class:_active={xargs.rtype == type}>
         <SIcon name={icon} />
@@ -259,7 +238,7 @@
       <button
         class="chip-link _active"
         on:click={() => (change_mode = !change_mode)}>
-        <span>{read_modes[xargs.rtype][xargs.rmode].text}</span>
+        <span>{read_modes[xargs.rtype][xargs.rmode]?.text}</span>
         <SIcon name="chevron-down" />
       </button>
     </div>
@@ -268,20 +247,20 @@
       <div class="stat-group">
         <span class="stat-entry" data-tip="Số ký tự tiếng Trung">
           <SIcon name="file-analytics" />
-          <span class="stat-value">{zsize}</span>
+          <span class="stat-value">{rdata.zsize}</span>
           <span class="stat-label"> chữ</span>
         </span>
-        {#if $page.data.tspan}
+        {#if vtran?.tspan}
           <div class="stat-entry" data-tip="Thời gian chạy máy dịch">
             <SIcon name="clock" />
-            <span class="stat-value">{$page.data.tspan}ms</span>
+            <span class="stat-value">{vtran.tspan}ms</span>
           </div>
         {/if}
 
-        {#if $page.data.mtime}
+        {#if vtran?.mtime}
           <div class="stat-entry" data-tip="Thay đổi lần cuối">
             <SIcon name="calendar" />
-            <span class="stat-value">{rel_time_vp($page.data.mtime)}</span>
+            <span class="stat-value">{rel_time_vp(vtran.mtime)}</span>
           </div>
         {/if}
       </div>
@@ -318,9 +297,9 @@
 <Footer>
   <div class="navi">
     <a
-      href={paths.prev}
+      href={prev_path}
       class="m-btn navi-item"
-      class:_disable={ch_no < 2}
+      class:_disable={!rdata._prev}
       data-key="74"
       data-kbd="←">
       <SIcon name="chevron-left" />
@@ -328,7 +307,7 @@
     </a>
 
     <a
-      href="{croot}{ch_no > 32 ? `?pg=${_pgidx(ch_no)}` : ''}"
+      href="{stem_path}{ch_no > 32 ? `?pg=${_pgidx(ch_no)}` : ''}"
       class="m-btn _success"
       data-kbd="h">
       <SIcon name="list" />
@@ -356,9 +335,9 @@
     {/if}
 
     <a
-      href={paths.next}
+      href={next_path}
       class="m-btn _fill navi-item"
-      class:_primary={ch_no < total}
+      class:_primary={rdata._succ}
       data-key="75"
       data-kbd="→">
       <span>Kế tiếp</span>

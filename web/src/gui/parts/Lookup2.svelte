@@ -18,6 +18,7 @@
   import Slider from '$gui/molds/Slider.svelte'
   import VitermForm from '$gui/parts/VitermForm.svelte'
   import { invalidate } from '$app/navigation'
+  import { page } from '$app/stores'
 
   export let l_idx = 0
   export let l_max = 0
@@ -52,7 +53,12 @@
   const load_ctree_data = async () => {
     const { zpath, m_alg } = $data
     const ctree = await get_nctext_mtran(zpath, true, m_alg, 'no-cache')
-    $data.ctree = ctree.lines || []
+
+    if ($page.data.xargs?.rtype != 'ai') {
+      $data.ctree = ctree.lines || []
+    } else {
+      await invalidate('wn:cdata')
+    }
   }
 
   const copy_ctree = () => {
@@ -62,7 +68,6 @@
   const on_term_change = async (term?: CV.Vtdata | boolean) => {
     if (!term) return
     await load_ctree_data()
-    await invalidate('wn:cdata')
   }
 
   let ctree_show_zh = false
@@ -93,7 +98,7 @@
       class="-btn"
       data-kbd="↓"
       on:click={() => (l_idx += 1)}
-      disabled={l_idx == l_max}
+      disabled={l_idx + 1 == l_max}
       data-tip="Chuyển xuống dòng dưới"
       data-tip-loc="bottom">
       <SIcon name="arrow-down" />

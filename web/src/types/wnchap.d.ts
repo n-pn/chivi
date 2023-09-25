@@ -12,12 +12,18 @@ declare namespace CV {
     flags: string
   }
 
-  interface Chdata {
-    privi: number
+  interface Chpart {
+    spath: string
+    plock: number
     rlink: string
 
-    cbase: string
-    sizes: number[]
+    ztext: Array<String>
+    zsize: number
+    mtime: number
+
+    _curr: string
+    _prev: string
+    _succ: string
   }
 
   interface Chlist extends Paginate {
@@ -26,7 +32,8 @@ declare namespace CV {
 
   interface Chopts {
     wn_id: number
-    cpart: number
+    p_idx: number
+    spath: string
     rtype: string
     rmode: string
   }

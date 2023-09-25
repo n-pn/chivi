@@ -54,9 +54,8 @@ export const data = {
 async function fill_data(page: Data) {
   const { zpath, m_alg } = page
 
-  if (page.ztext.length == 0 || page.hviet.length == 0) {
-    const hviet = await get_nctext_hviet(zpath, true, 'force-cache')
-    page.ztext = hviet.ztext || []
+  if (page.hviet.length == 0) {
+    const hviet = await get_nctext_hviet(zpath, false, 'force-cache')
     page.hviet = hviet.hviet || []
   }
 

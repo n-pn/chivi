@@ -11,7 +11,7 @@ class WN::Wnstem
   class_getter db : DB::Database = PGDB
 
   include Crorm::Model
-  schema "wnseeds", :postgres
+  schema "wnseeds", :postgres, strict: false
 
   field id : Int32, auto: true
 
@@ -31,8 +31,8 @@ class WN::Wnstem
 
   field mtime : Int64 = 0
 
-  # field created_at : Time = Time.utc
-  # field updated_at : Time = Time.utc
+  field created_at : Time = Time.utc
+  field updated_at : Time = Time.utc
 
   @[DB::Field(ignore: true, auto: true)]
   getter chap_list : Crorm::SQ3 { Chinfo.load(@wn_id, @sname, @s_bid) }

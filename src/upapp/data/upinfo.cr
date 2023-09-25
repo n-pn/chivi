@@ -29,6 +29,10 @@ class UP::Upinfo
 
   timestamps
 
+  def initialize(@zname, @vname = "", @labels = [] of String)
+    after_initialize
+  end
+
   def after_initialize
     @labels.map! { |label| MT::QtCore.tl_hvword(label.strip, cap: true) }
     @labels.reject!(&.blank?).uniq!
