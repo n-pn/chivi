@@ -1,13 +1,13 @@
 require "./_up_ctrl_base"
 
-class UP::UpinfoCtrl < AC::Base
-  base "/_up/projs"
+class UP::UpstemCtrl < AC::Base
+  base "/_up/stems"
 
   @[AC::Route::GET("/")]
   def index(uname : String? = nil)
     pg_no, limit, offset = _paginate(min: 25, max: 100)
 
-    items = Upinfo.get_all(uname, limit, offset)
+    items = Upstem.get_all(uname, limit, offset)
     total = items.size == limit ? limit &+ 1 : limit
 
     json = {
@@ -20,7 +20,7 @@ class UP::UpinfoCtrl < AC::Base
   end
 
   @[AC::Route::POST("/", body: form)]
-  def create(form : Upinfo)
+  def create(form : Upstem)
     guard_privi 1, "tạo dự án cá nhân"
 
     form.id = nil
@@ -33,7 +33,7 @@ class UP::UpinfoCtrl < AC::Base
 
   @[AC::Route::GET("/:up_id")]
   def show(up_id : Int32)
-    if info = Upinfo.find(up_id)
+    if info = Upstem.find(up_id)
       render json: info
     else
       render 404, text: "Dự án không tồn tại"
@@ -41,10 +41,10 @@ class UP::UpinfoCtrl < AC::Base
   end
 
   @[AC::Route::POST("/:up_id", body: form)]
-  def update(up_id : Int32, form : Upinfo)
+  def update(up_id : Int32, form : Upstem)
     guard_privi 1, "sửa dự án cá nhân"
 
-    unless term = Upinfo.find(up_id, _privi < 4 ? _uname : nil)
+    unless term = Upstem.find(up_id, _privi < 4 ? _uname : nil)
       render 404, "Dự án không tồn tại hoặc bạn không đủ quyền hạn"
       return
     end

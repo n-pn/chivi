@@ -16,6 +16,7 @@
     gen_ztext_html,
     gen_ctree_html,
     gen_ctree_text,
+    gen_vtran_text,
   } from '$lib/mt_data_2'
 
   import {
@@ -135,6 +136,7 @@
           <button
             type="button"
             class="-btn"
+            disabled={!ztext}
             data-tip="Sao chép text gốc vào clipboard"
             data-tip-loc="bottom"
             data-tip-pos="right"
@@ -152,23 +154,16 @@
 
       <Window title="Ngữ pháp:" class="cdata _ct" --lc="3">
         <svelte:fragment slot="tools">
-          <label
-            class="radio -btn"
-            data-tip="Hiển thị nghĩa tiếng Việt"
+          <button
+            type="button"
+            class="-btn"
+            data-tip="Hiển thị nghĩa tiếng Việt/tiếng Trung gốc"
             data-tip-loc="bottom"
-            data-tip-pos="right">
-            <input type="radio" bind:group={ctree_show_zh} value={false} />
-            <span>VI</span>
-          </label>
-
-          <label
-            class="radio -btn"
-            data-tip="Hiển thị tiếng Trung gốc"
-            data-tip-loc="bottom"
-            data-tip-pos="right">
-            <input type="radio" bind:group={ctree_show_zh} value={true} />
-            <span>CN</span>
-          </label>
+            data-tip-pos="right"
+            disabled={!ctree}
+            on:click={() => (ctree_show_zh = !ctree_show_zh)}>
+            <SIcon name="letter-{ctree_show_zh ? 'z' : 'v'}" />
+          </button>
 
           <button
             type="button"
@@ -176,6 +171,7 @@
             data-tip="Sao chép cây ngữ pháp vào clipboard"
             data-tip-loc="bottom"
             data-tip-pos="right"
+            disabled={!ctree}
             on:click={() => copy_to_clipboard(gen_ctree_text(ctree))}>
             <SIcon name="copy" />
           </button>
@@ -196,7 +192,18 @@
             data-tip="Dịch lại sau khi đã thay đổi nghĩa của từ"
             data-tip-loc="bottom"
             data-tip-pos="right">
-            <SIcon name="rewind" />
+            <SIcon name="refresh-dot" />
+          </button>
+
+          <button
+            type="button"
+            class="-btn"
+            data-tip="Sao chép dịch máy vào clipboard"
+            data-tip-loc="bottom"
+            data-tip-pos="right"
+            disabled={!ctree}
+            on:click={() => copy_to_clipboard(gen_vtran_text(ctree))}>
+            <SIcon name="copy" />
           </button>
         </svelte:fragment>
         {#if ctree}
@@ -207,21 +214,20 @@
         {/if}
       </Window>
 
-      <Window title="Dịch GPT Kiếm hiệp:" class="_vi _sm" --lc="3">
-        {#if c_gpt}
-          {c_gpt}
-        {:else}
-          <div class="blank">
-            <div>
-              <em>Chưa có kết quả dịch sẵn.</em>
-            </div>
-            <button class="m-btn _xs _primary" on:click={load_c_gpt_data}
-              >Gọi công cụ!</button>
-          </div>
-        {/if}
-      </Window>
-
       <Window title="Bing Translation:" class="_bv _sm" --lc="3">
+        <svelte:fragment slot="tools">
+          <button
+            type="button"
+            class="-btn"
+            data-tip="Sao chép bản dịch vào clipboard"
+            data-tip-loc="bottom"
+            data-tip-pos="right"
+            disabled={!btran}
+            on:click={() => copy_to_clipboard(btran)}>
+            <SIcon name="copy" />
+          </button>
+        </svelte:fragment>
+
         {#if btran}
           {btran}
         {:else}
@@ -235,7 +241,47 @@
         {/if}
       </Window>
 
+      <Window title="Dịch GPT Tiên hiệp:" class="_vi _sm" --lc="3">
+        <svelte:fragment slot="tools">
+          <button
+            type="button"
+            class="-btn"
+            data-tip="Sao chép bản dịch vào clipboard"
+            data-tip-loc="bottom"
+            data-tip-pos="right"
+            disabled={!c_gpt}
+            on:click={() => copy_to_clipboard(c_gpt)}>
+            <SIcon name="copy" />
+          </button>
+        </svelte:fragment>
+
+        {#if c_gpt}
+          {c_gpt}
+        {:else}
+          <div class="blank">
+            <div>
+              <em>Chưa có kết quả dịch sẵn.</em>
+            </div>
+            <button class="m-btn _xs _primary" on:click={load_c_gpt_data}
+              >Gọi công cụ!</button>
+          </div>
+        {/if}
+      </Window>
+
       <Window title="Dịch máy cũ:" class="_qt _sm" --lc="3">
+        <svelte:fragment slot="tools">
+          <button
+            type="button"
+            class="-btn"
+            data-tip="Sao chép bản dịch vào clipboard"
+            data-tip-loc="bottom"
+            data-tip-pos="right"
+            disabled={!qtran}
+            on:click={() => copy_to_clipboard(qtran)}>
+            <SIcon name="copy" />
+          </button>
+        </svelte:fragment>
+
         {#if qtran}
           {qtran}
         {:else}
@@ -265,13 +311,6 @@
       &:hover {
         border-bottom: 1px solid var(--border);
       }
-    }
-  }
-
-  .radio {
-    padding-right: 0.25em;
-    span {
-      font-style: normal;
     }
   }
 

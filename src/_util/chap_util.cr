@@ -4,6 +4,16 @@ require "./text_util"
 module ChapUtil
   extend self
 
+  def split_ztext(ztext : String)
+    lines = [] of String
+
+    ztext.each_line do |line|
+      lines << TextUtil.canon_clean(line) unless line.blank?
+    end
+
+    lines
+  end
+
   def clean_zchdiv(chdiv : String)
     chdiv = chdiv.gsub(/《.*》/, "").gsub(/\n|\t|\s{2,}/, '　')
     TextUtil.canon_clean(chdiv)

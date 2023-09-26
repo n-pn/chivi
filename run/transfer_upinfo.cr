@@ -1,10 +1,10 @@
 ENV["CV_ENV"] = "production"
 
 require "../src/_data/wnovel/wninfo"
-require "../src/upapp/data/upinfo"
+require "../src/upapp/data/upstem"
 require "../src/wnapp/data/wnseed"
 
-existed = PGDB.query_all("select viuser_id, coalesce(wninfo_id, 0) from upinfos", as: {Int32, Int32}).to_set
+existed = PGDB.query_all("select viuser_id, coalesce(wninfo_id, 0) from upstems", as: {Int32, Int32}).to_set
 
 select_query = "select * from wnseeds where sname like '@%' and chap_total > 0 order by id asc"
 
@@ -37,7 +37,7 @@ outputs = inputs.map do |input|
   zname = "［#{vbook.author_zh}］#{vbook.btitle_zh} [wn:#{input.wn_id}]"
   vname = "[#{vbook.author_vi}] #{vbook.btitle_hv} [wn:#{input.wn_id}]"
   labels = [vbook.author_vi, "wn:#{input.wn_id}"]
-  entry = UP::Upinfo.new(zname, vname, labels)
+  entry = UP::Upstem.new(zname, vname, labels)
 
   entry.viuser_id = viusers[input.sname[1..]]
   entry.wninfo_id = input.wn_id

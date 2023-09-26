@@ -8,8 +8,6 @@
 
   export let title = ''
   export let state = 1
-
-  $: next_state = (state + 1) % 3
 </script>
 
 <section>
@@ -63,6 +61,9 @@
       &._active,
       &:hover {
         @include fgcolor(primary, 5);
+      }
+      &:disabled {
+        @include fgcolor(mute);
       }
     }
   }

@@ -1,6 +1,6 @@
 -- +micrate Up
 -- SQL in section 'Up' is executed when this migration is applied
-CREATE TABLE upinfos(
+CREATE TABLE upstems(
   id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   -- linking
   viuser_id integer NOT NULL REFERENCES viusers(id) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -13,6 +13,7 @@ CREATE TABLE upinfos(
   vintro text NOT NULL DEFAULT '',
   labels text[] NOT NULL DEFAULT '{}',
   -- ordering and filtering
+  sname varchar NOT NULL DEFAULT '',
   mtime bigint NOT NULL DEFAULT 0,
   guard smallint NOT NULL DEFAULT 0,
   -- stats
@@ -23,18 +24,18 @@ CREATE TABLE upinfos(
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX upinfos_zname_idx ON upinfos USING gin(zname gin_trgm_ops) WITH (fastupdate = OFF);
+CREATE INDEX upstems_zname_idx ON upstems USING gin(zname gin_trgm_ops) WITH (fastupdate = OFF);
 
-CREATE INDEX upinfos_vname_idx ON upinfos USING gin(vname gin_trgm_ops) WITH (fastupdate = OFF);
+CREATE INDEX upstems_vname_idx ON upstems USING gin(vname gin_trgm_ops) WITH (fastupdate = OFF);
 
-CREATE INDEX upinfos_labels_idx ON upinfos USING gin(labels);
+CREATE INDEX upstems_labels_idx ON upstems USING gin(labels);
 
-CREATE INDEX upinfos_viuser_idx ON upinfos(viuser_id);
+CREATE INDEX upstems_viuser_idx ON upstems(viuser_id);
 
-CREATE INDEX upinfos_wninfo_idx ON upinfos(wninfo_id);
+CREATE INDEX upstems_wninfo_idx ON upstems(wninfo_id);
 
-CREATE INDEX upinfos_sorted_idx ON upinfos(mtime);
+CREATE INDEX upstems_sorted_idx ON upstems(mtime);
 
 -- +micrate Down
 -- SQL section 'Down' is executed when this migration is rolled back
-DROP TABLE upinfos;
+DROP TABLE upstems;

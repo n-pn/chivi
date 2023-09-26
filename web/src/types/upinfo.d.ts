@@ -1,6 +1,8 @@
 declare namespace CV {
-  interface Upinfo {
+  interface Upstem {
     id: number
+    sname: string
+
     viuser_id: number
     wninfo_id: number
 

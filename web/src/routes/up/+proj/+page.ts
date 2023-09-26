@@ -2,7 +2,7 @@ import { nav_link } from '$utils/header_util'
 import { api_get } from '$lib/api_call'
 import type { PageLoad } from './$types'
 
-const empty_form: Partial<CV.Upinfo> = {
+const empty_form: Partial<CV.Upstem> = {
   id: 0,
   wninfo_id: 0,
 
@@ -31,7 +31,7 @@ export const load = (async ({ url: { searchParams }, fetch }) => {
 
   if (id) {
     const href = `/_up/projs/${id}`
-    form = await api_get<CV.Upinfo>(href, fetch)
+    form = await api_get<CV.Upstem>(href, fetch)
   }
 
   return { form, _meta, _title: 'Thêm/sửa dự án cá nhân' }
