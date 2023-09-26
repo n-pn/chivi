@@ -120,4 +120,18 @@ class SP::TranCtrl < AC::Base
     response.content_type = "text/plain; charset=utf-8"
     render text: output.join('\n', &.[1])
   end
+
+  @[AC::Route::POST("/c_gpt")]
+  def c_gpt_text
+    url = "http://51.79.230.157:9090/"
+    body = {test_key: _read_body}.to_json
+    headers = HTTP::Headers{"Content-Type" => "application/json"}
+
+    HTTP::Client.post(url, headers: headers, body: body) do |res|
+      raise res.body unless res.status.success?
+
+      json = NamedTuple(result: String).from_json(res.body_io.gets_to_end)
+      render text: json[:result]
+    end
+  end
 end

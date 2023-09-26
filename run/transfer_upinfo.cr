@@ -1,3 +1,5 @@
+ENV["CV_ENV"] = "production"
+
 require "../src/_data/wnovel/wninfo"
 require "../src/upapp/data/upinfo"
 require "../src/wnapp/data/wnseed"
@@ -7,6 +9,7 @@ existed = PGDB.query_all("select viuser_id, coalesce(wninfo_id, 0) from upinfos"
 select_query = "select * from wnseeds where sname like '@%' and chap_total > 0 order by id asc"
 
 viusers = PGDB.query_all("select uname, id from viusers", as: {String, Int32}).to_h
+inverts = viusers.invert
 
 record Wninfo,
   btitle_zh : String,
@@ -50,5 +53,12 @@ outputs = inputs.map do |input|
 end
 
 PGDB.transaction do |tx|
-  outputs.each(&.upsert!(db: tx.connection))
+  cnn = tx.connection
+  query = "update wnseeds set s_bid = $1 where wn_id = $2 and sname = $3 returning s_bid"
+  outputs.each do |output|
+    output = output.upsert!(db: cnn)
+
+    sname = "@" + inverts[output.viuser_id]
+    puts cnn.query_one?(query, output.id.to_s, output.wninfo_id, sname, as: String)
+  end
 end

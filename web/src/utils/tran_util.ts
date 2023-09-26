@@ -53,3 +53,8 @@ export async function get_nctext_mtran(
 
   return await res.json()
 }
+
+export async function from_custom_gpt(input: string, fetch = globalThis.fetch) {
+  const res = await fetch('/_sp/c_gpt', { method: 'POST', body: input })
+  return await res.text()
+}

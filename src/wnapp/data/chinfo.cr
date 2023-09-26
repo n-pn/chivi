@@ -53,15 +53,10 @@ class WN::Chinfo
     );
     SQL
 
-  OLD_DIR = "var/zroot/wnchap"
-  NEW_DIR = "var/wnapp/chinfo"
+  DIR = "var/wn_db/stems"
 
-  def self.db_path(wn_id : Int32, sname : String)
-    "#{NEW_DIR}/#{wn_id}/#{sname}.db3"
-  end
-
-  def self.old_db_path(sname : String, sn_id : String)
-    "#{OLD_DIR}/#{sname}/#{sn_id}.db3"
+  def self.db_path(sname : String, sn_id : String)
+    "#{DIR}/#{sname}/#{sn_id}.db3"
   end
 
   ###
@@ -242,25 +237,12 @@ class WN::Chinfo
 
   CACHE = {} of String => Crorm::SQ3
 
-  def self.load(wn_id : Int32, sname : String, sn_id : String)
-    CACHE["#{wn_id}/#{sname}"] ||= begin
-      new_path = self.db_path(wn_id, sname)
-      old_path = self.old_db_path(sname, sn_id)
-
-      if !File.file?(new_path) && File.file?(old_path)
-        File.copy(old_path, new_path)
-      end
-
-      self.db(wn_id, sname)
-    end
+  def self.load(sname : String, sn_id : String)
+    CACHE["#{sname}/#{sn_id}"] ||= self.db(sname, sn_id)
   end
 
-  def self.load(wn_id : Int32, sname : String)
-    CACHE["#{wn_id}/#{sname}"] ||= self.db(wn_id, sname)
-  end
-
-  def self.init!(wn_id : Int32, sname : String, sn_id : String, force : Bool = false) : Bool
-    repo = self.load(wn_id, sname, sn_id)
+  def self.init!(sname : String, sn_id : String, force : Bool = false) : Bool
+    repo = self.load(sname, sn_id)
     return false if !force && self.chap_count(repo) > 0
     import_old!(repo, sname, sn_id) rescue false
   end

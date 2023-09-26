@@ -1,3 +1,14 @@
+<script context="module" lang="ts">
+  const states = {
+    ztext: 1,
+    ctree: 1,
+    hviet: 1,
+    btran: 1,
+    qtran: 1,
+    c_gpt: 1,
+  }
+</script>
+
 <script lang="ts">
   import { ctrl, data } from '$lib/stores/lookup_stores'
   import {
@@ -7,7 +18,11 @@
     gen_ctree_text,
   } from '$lib/mt_data_2'
 
-  import { get_nctext_btran, get_nctext_mtran } from '$utils/tran_util'
+  import {
+    get_nctext_btran,
+    get_nctext_mtran,
+    from_custom_gpt,
+  } from '$utils/tran_util'
 
   import {
     data as vtform_data,
@@ -16,10 +31,11 @@
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Slider from '$gui/molds/Slider.svelte'
+  import Window from './Sideline/Window.svelte'
   import VitermForm from '$gui/parts/VitermForm.svelte'
+
   import { invalidate } from '$app/navigation'
   import { page } from '$app/stores'
-
   export let l_idx = 0
   export let l_max = 0
 
@@ -31,6 +47,7 @@
   $: ctree = $data.ctree[l_idx]
   $: btran = $data.btran[l_idx]
   $: qtran = $data.qtran[l_idx]
+  $: c_gpt = $data.c_gpt[l_idx]
 
   const node_names = ['X-N', 'X-C', 'X-Z']
   function handle_click({ target }) {
@@ -50,6 +67,10 @@
     $data.btran = btran.lines || []
   }
 
+  const load_c_gpt_data = async () => {
+    const vtext = await from_custom_gpt(ztext)
+    $data.c_gpt[l_idx] = vtext
+  }
   const load_ctree_data = async () => {
     const { zpath, m_alg } = $data
     const ctree = await get_nctext_mtran(zpath, true, m_alg, 'no-cache')
@@ -61,8 +82,8 @@
     }
   }
 
-  const copy_ctree = () => {
-    navigator.clipboard.writeText(gen_ctree_text(ctree))
+  const copy_to_clipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
   }
 
   const on_term_change = async (term?: CV.Vtdata | boolean) => {
@@ -109,64 +130,98 @@
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <section class="cbody" on:click={handle_click}>
-      <h4 class="label">Tiếng Trung:</h4>
+      <Window title="Tiếng Trung" class="_zh _lg" --lc="2">
+        <svelte:fragment slot="tools">
+          <button
+            type="button"
+            class="-btn"
+            data-tip="Sao chép text gốc vào clipboard"
+            data-tip-loc="bottom"
+            data-tip-pos="right"
+            on:click={() => copy_to_clipboard(ztext)}>
+            <SIcon name="copy" />
+          </button>
+        </svelte:fragment>
 
-      <div class="cdata _zh" lang="zh">
-        {#if ztext && hviet}
-          {@html gen_ztext_html(ztext, hviet)}
+        {#if ztext}
+          {@html gen_ztext_html(ztext, hviet || [])}
         {:else}
           <p class="empty">Chưa có tiếng trung!</p>
         {/if}
-      </div>
+      </Window>
 
-      <h4 class="label">
-        <span class="title">Cây ngữ pháp:</span>
-        <span class="tools">
-          <label class="radio" data-tip="Hiển thị nghĩa tiếng Việt">
+      <Window title="Ngữ pháp:" class="cdata _ct" --lc="3">
+        <svelte:fragment slot="tools">
+          <label
+            class="radio -btn"
+            data-tip="Hiển thị nghĩa tiếng Việt"
+            data-tip-loc="bottom"
+            data-tip-pos="right">
             <input type="radio" bind:group={ctree_show_zh} value={false} />
-            <span>Nghĩa</span>
+            <span>VI</span>
           </label>
 
-          <label class="radio" data-tip="Hiển thị tiếng Trung gốc">
+          <label
+            class="radio -btn"
+            data-tip="Hiển thị tiếng Trung gốc"
+            data-tip-loc="bottom"
+            data-tip-pos="right">
             <input type="radio" bind:group={ctree_show_zh} value={true} />
-            <span>Trung</span>
+            <span>CN</span>
           </label>
 
-          <button type="button" class="tools-btn" on:click={copy_ctree}
-            >Sao chép</button>
-        </span>
-      </h4>
-      <div class="cdata debug _ct">
+          <button
+            type="button"
+            class="-btn"
+            data-tip="Sao chép cây ngữ pháp vào clipboard"
+            data-tip-loc="bottom"
+            data-tip-pos="right"
+            on:click={() => copy_to_clipboard(gen_ctree_text(ctree))}>
+            <SIcon name="copy" />
+          </button>
+        </svelte:fragment>
         {#if ctree}
           {@html gen_ctree_html(ctree, ctree_show_zh)}
         {:else}
           <p class="empty">Chưa có cây ngữ pháp</p>
         {/if}
-      </div>
+      </Window>
 
-      <h4 class="label">
-        <span class="title">Dịch máy:</span>
-        <span class="tools">
+      <Window title="Dịch máy:" class="cdata" --lc="4">
+        <svelte:fragment slot="tools">
           <button
             type="button"
-            class="tools-btn"
+            class="-btn"
             on:click={() => on_term_change(true)}
             data-tip="Dịch lại sau khi đã thay đổi nghĩa của từ"
-            >Dịch lại</button>
-        </span>
-      </h4>
-
-      <div class="cdata debug _mt">
+            data-tip-loc="bottom"
+            data-tip-pos="right">
+            <SIcon name="rewind" />
+          </button>
+        </svelte:fragment>
         {#if ctree}
           {@const opts = { mode: 2, cap: true, und: true, _qc: 0 }}
           {@html gen_vtran_html(ctree, opts)}
         {:else}
           <p class="empty">Chưa có kết quả dịch máy</p>
         {/if}
-      </div>
+      </Window>
 
-      <h4 class="label">Bing Edge:</h4>
-      <div class="cdata debug _tl">
+      <Window title="Dịch GPT Kiếm hiệp:" class="_vi _sm" --lc="3">
+        {#if c_gpt}
+          {c_gpt}
+        {:else}
+          <div class="blank">
+            <div>
+              <em>Chưa có kết quả dịch sẵn.</em>
+            </div>
+            <button class="m-btn _xs _primary" on:click={load_c_gpt_data}
+              >Gọi công cụ!</button>
+          </div>
+        {/if}
+      </Window>
+
+      <Window title="Bing Translation:" class="_bv _sm" --lc="3">
         {#if btran}
           {btran}
         {:else}
@@ -174,11 +229,21 @@
             <div>
               <em>Chưa có kết quả dịch sẵn.</em>
             </div>
-            <button class="m-btn _sm _primary" on:click={load_btran_data}
+            <button class="m-btn _xs _primary" on:click={load_btran_data}
               >Dịch từ Bing Edge!</button>
           </div>
         {/if}
-      </div>
+      </Window>
+
+      <Window title="Dịch máy cũ:" class="_qt _sm" --lc="3">
+        {#if qtran}
+          {qtran}
+        {:else}
+          <div class="blank">
+            <em>Chưa có kết quả dịch sẵn.</em>
+          </div>
+        {/if}
+      </Window>
     </section>
   {:else}
     <div class="empty">Bấm vào đoạn văn để xem giải nghĩa!</div>
@@ -192,86 +257,26 @@
 <style lang="scss">
   .cbody {
     padding: 0 0.75rem;
-  }
 
-  .cdata {
-    padding: 0.25rem 0.5rem;
-
-    text-align: justify;
-    text-justify: auto;
-
-    @include bgcolor(tert);
-
-    @include border;
-    @include bdradi;
-    @include scroll;
-
-    &._zh {
-      $line: 1.5rem;
-      line-height: $line;
-      max-height: $line * 3 + 0.75rem;
-      @include ftsize(lg);
-    }
-
-    &._mt {
-      $line: 1.25rem;
-      line-height: $line;
-      max-height: $line * 6 + 0.75rem;
-      font-size: rem(17px);
-    }
-
-    &._tl {
-      $line: 1.125rem;
-      line-height: $line;
-      max-height: $line * 5 + 0.75rem;
-      font-size: rem(15px);
-    }
-
-    &._ct {
-      $line: 1.25rem;
-      line-height: $line;
-      overflow-y: visible;
-
-      :global(x-n) {
-        color: var(--active);
-        font-weight: 450;
-        border: 0;
-        &:hover {
-          border-bottom: 1px solid var(--border);
-        }
+    :global(.cdata._ct x-n) {
+      color: var(--active);
+      font-weight: 450;
+      border: 0;
+      &:hover {
+        border-bottom: 1px solid var(--border);
       }
     }
   }
 
-  .label {
-    display: flex;
-
-    margin-top: 0.5rem;
-    margin-bottom: 0.25rem;
-
-    // padding: 0 0.75rem;
-    font-weight: 500;
-    line-height: 1rem;
-
-    @include ftsize(sm);
-
-    > .tools {
-      margin-left: auto;
-    }
-  }
-
-  .tools-btn {
-    background: none;
-    color: currentColor;
-    font-style: italic;
-    &:hover {
-      @include fgcolor(primary, 5);
+  .radio {
+    padding-right: 0.25em;
+    span {
+      font-style: normal;
     }
   }
 
   .blank {
     @include flex-ca;
-    flex-direction: column;
     gap: 0.25rem;
     height: 100%;
     padding: 0.25rem 0;

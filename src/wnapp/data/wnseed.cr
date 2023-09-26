@@ -35,19 +35,19 @@ class WN::Wnstem
   field updated_at : Time = Time.utc
 
   @[DB::Field(ignore: true, auto: true)]
-  getter chap_list : Crorm::SQ3 { Chinfo.load(@wn_id, @sname, @s_bid) }
+  getter chap_list : Crorm::SQ3 { Chinfo.load(@sname, @s_bid) }
 
   @[DB::Field(ignore: true, auto: true)]
   getter seed_type : SeedType { SeedType.parse(sname) }
 
   #########
 
-  def initialize(@wn_id, @sname, @s_bid = wn_id.to_s, @privi = 2_i16)
+  def initialize(@wn_id, @sname, @s_bid = "~#{wn_id}", @privi = 2_i16)
   end
 
   def init!(force : Bool = false) : Nil
-    return unless force || @_flag < 0 || !File.file?(Chinfo.db_path(@wn_id, @sname))
-    return unless Chinfo.init!(@wn_id, @sname, @s_bid)
+    return unless force || @_flag < 0 || !File.file?(Chinfo.db_path(@sname, @s_bid))
+    return unless Chinfo.init!(@sname, @s_bid)
 
     @_flag = -@_flag
 

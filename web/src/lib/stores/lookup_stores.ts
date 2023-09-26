@@ -18,6 +18,8 @@ export interface Data {
 
   ctree: Array<CV.Cvtree>
   m_alg: string
+
+  c_gpt: Array<string>
 }
 
 const init_data = {
@@ -30,6 +32,7 @@ const init_data = {
   qtran: [],
   ctree: [],
   m_alg: 'avail',
+  c_gpt: [],
 }
 
 export const data = {
@@ -47,6 +50,7 @@ export const data = {
       qtran: opts.qtran || [],
       ctree: opts.ctree || [],
       m_alg: opts.m_alg || 'avail',
+      c_gpt: [],
     })
   },
 }

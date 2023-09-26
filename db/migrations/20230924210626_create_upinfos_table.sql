@@ -8,12 +8,12 @@ CREATE TABLE upinfos(
   -- heading
   zname citext NOT NULL DEFAULT '',
   vname citext NOT NULL DEFAULT '',
-  uslug varchar NOT NULL default '',
+  uslug varchar NOT NULL DEFAULT '',
   -- introduction
   vintro text NOT NULL DEFAULT '',
-  labels citext[] NOT NULL DEFAULT '{}',
+  labels text[] NOT NULL DEFAULT '{}',
   -- ordering and filtering
-  mtime bigint not null default 0,
+  mtime bigint NOT NULL DEFAULT 0,
   guard smallint NOT NULL DEFAULT 0,
   -- stats
   chap_count integer NOT NULL DEFAULT 0,
@@ -23,12 +23,14 @@ CREATE TABLE upinfos(
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX upinfos_zname_idx ON upinfos USING gin(zname gin_trgm_ops) WITH (fastupdate = off);
-CREATE INDEX upinfos_vname_idx ON upinfos USING gin(vname gin_trgm_ops) WITH (fastupdate = off);
+CREATE INDEX upinfos_zname_idx ON upinfos USING gin(zname gin_trgm_ops) WITH (fastupdate = OFF);
+
+CREATE INDEX upinfos_vname_idx ON upinfos USING gin(vname gin_trgm_ops) WITH (fastupdate = OFF);
 
 CREATE INDEX upinfos_labels_idx ON upinfos USING gin(labels);
 
 CREATE INDEX upinfos_viuser_idx ON upinfos(viuser_id);
+
 CREATE INDEX upinfos_wninfo_idx ON upinfos(wninfo_id);
 
 CREATE INDEX upinfos_sorted_idx ON upinfos(mtime);
