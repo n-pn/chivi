@@ -14,11 +14,11 @@ def load_task(kind):
     if kind in CACHE:
         return CACHE[kind]
 
-    if kind == 'hm_es':
+    if kind == 'mtl_1':
         mtl_task = hanlp.load(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_SMALL_ZH)
-    elif kind == 'hm_eb':
+    elif kind == 'mtl_2':
         mtl_task = hanlp.load(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_BASE_ZH)
-    elif kind == 'hm_eg':
+    elif kind == 'mtl_3':
         mtl_task = hanlp.load(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ERNIE_GRAM_ZH)
     else:
         raise 'Unsupported type!'

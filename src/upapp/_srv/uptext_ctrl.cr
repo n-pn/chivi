@@ -24,18 +24,18 @@ class UP::UptextCtrl < AC::Base
     cinfo = get_cinfo(ustem, ch_no)
 
     parts = [] of String
-    hm_es = [] of Bool
-    hm_eg = [] of Bool
-    hm_eb = [] of Bool
+    mtl_1 = [] of Bool
+    mtl_3 = [] of Bool
+    mtl_2 = [] of Bool
 
     0.upto(cinfo.psize) do |p_idx|
       parts << cinfo.load_part!(p_idx, ftype: "raw.txt").join('\n')
-      hm_es << File.file?(cinfo.file_path(p_idx, ftype: "hm_es.con"))
-      hm_eb << File.file?(cinfo.file_path(p_idx, ftype: "hm_eb.con"))
-      hm_eg << File.file?(cinfo.file_path(p_idx, ftype: "hm_eg.con"))
+      mtl_1 << File.file?(cinfo.file_path(p_idx, ftype: "mtl_1.con"))
+      mtl_2 << File.file?(cinfo.file_path(p_idx, ftype: "mtl_2.con"))
+      mtl_3 << File.file?(cinfo.file_path(p_idx, ftype: "mtl_3.con"))
     end
 
-    json = {cksum: cinfo.cksum, parts: parts, hm_es: hm_es, hm_eg: hm_eg, hm_eb: hm_eb}
+    json = {cksum: cinfo.cksum, parts: parts, mtl_1: mtl_1, mtl_3: mtl_3, mtl_2: mtl_2}
     render json: json
   end
 

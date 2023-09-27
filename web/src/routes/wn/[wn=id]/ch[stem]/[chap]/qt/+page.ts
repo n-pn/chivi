@@ -1,8 +1,9 @@
 import {
-  get_nctext_btran,
-  get_nctext_qtran,
-  get_nctext_hviet,
+  call_btran_file,
+  call_qtran_file,
+  call_hviet_file,
 } from '$utils/tran_util'
+
 import { gen_hviet_text } from '$lib/mt_data_2'
 
 import type { PageLoad } from './$types'
@@ -16,18 +17,23 @@ export const load = (async ({ fetch, parent, depends }) => {
   return { vtran }
 }) satisfies PageLoad
 
+const rinit = { cache: 'force-cache' } as RequestInit
+
 async function load_data({ spath, rmode }: CV.Chopts, fetch: CV.Fetch) {
   if (!spath) return { lines: [], mtime: 0, tspan: 0 }
 
+  const finit = { fpath: spath, ftype: 'nc', force: true }
+
   switch (rmode) {
     case 'be_zv':
-      return await get_nctext_btran(spath, true, 'force-cache', fetch)
+      return await call_btran_file(finit, rinit, fetch)
+
     case 'qt_v1':
-      return await get_nctext_qtran(spath, 'force-cache', fetch)
+      return await call_qtran_file(finit, rinit, fetch)
 
     // case 'hviet':
     default:
-      const data = await get_nctext_hviet(spath, true, 'force-cache', fetch)
+      const data = await call_hviet_file(finit, rinit, fetch)
       const { hviet, tspan, mtime, error } = data
       const lines = hviet.map((hvarr) => gen_hviet_text(hvarr, true))
       return { lines, hviet, tspan, mtime, error }

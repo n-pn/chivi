@@ -6,20 +6,15 @@ require "../../_data/logger/qtran_xlog"
 class M1::TranCtrl < AC::Base
   base "/_m1/qtran"
 
-  TEXT_DIR = "var/wnapp/chtext"
-
   @[AC::Route::GET("/")]
-  def file(zpath : String, ftype : String = "nctext", wn_id : Int32 = 0, w_raw : Bool = false)
+  def file(fpath : String, ftype : String = "nc", wn_id : Int32 = 0)
     start = Time.monotonic
-
     mcore = MtCore.init(wn_id, user: _uname)
 
     plain = false
     lines = [] of String
 
-    fpath = "#{TEXT_DIR}/#{zpath}.txt"
-
-    File.each_line(fpath, chomp: true) do |line|
+    ChapData.new(fpath, ftype).read_raw do |line|
       data = plain ? mcore.cv_plain(line) : mcore.cv_title(line)
       lines << data.to_txt
       plain = true

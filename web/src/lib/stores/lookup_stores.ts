@@ -1,102 +1,96 @@
 import { writable, get } from 'svelte/store'
 
 import {
-  get_nctext_btran,
-  get_nctext_hviet,
-  get_nctext_qtran,
-  get_nctext_mtran,
+  call_btran_file,
+  call_hviet_file,
+  call_qtran_file,
+  call_mtran_file,
 } from '$utils/tran_util'
 
 export interface Data {
-  zpath: string
   pdict: string
+  fpath: string
+  ftype: string
 
   ztext: Array<string>
   hviet: Array<Array<[string, string]>>
+
   btran: Array<string>
   qtran: Array<string>
+  c_gpt: Array<string>
 
   ctree: Array<CV.Cvtree>
   m_alg: string
-
-  c_gpt: Array<string>
 }
 
 const init_data = {
-  pdict: '',
-  zpath: '',
+  pdict: 'combine',
+  fpath: '',
+  ftype: 'nc',
 
   hviet: [],
   ztext: [],
   btran: [],
   qtran: [],
   ctree: [],
-  m_alg: 'avail',
   c_gpt: [],
+
+  m_alg: 'avail',
 }
 
 export const data = {
   ...writable<Data>(init_data),
-  async put(zpath: string, pdict: string, opts: Partial<Data> = {}) {
-    const zdata = get(data)
-    if (zdata.zpath == zpath) opts = { ...zdata, ...opts }
-
-    data.set({
-      pdict,
-      zpath,
-      ztext: opts.ztext || [],
-      hviet: opts.hviet || [],
-      btran: opts.btran || [],
-      qtran: opts.qtran || [],
-      ctree: opts.ctree || [],
-      m_alg: opts.m_alg || 'avail',
-      c_gpt: [],
-    })
+  async put(new_data: Partial<Data> = {}) {
+    const old_data = get(data)
+    if (old_data.fpath == new_data.fpath) {
+      data.set({ ...old_data, ...old_data })
+    } else {
+      data.set({ ...init_data, ...new_data })
+    }
   },
-}
 
-async function fill_data(page: Data) {
-  const { zpath, m_alg } = page
+  async load_data(rinit: RequestInit = { cache: 'default' }) {
+    const zdata = get(data)
 
-  if (page.hviet.length == 0) {
-    const hviet = await get_nctext_hviet(zpath, false, 'default')
-    page.hviet = hviet.hviet || []
-  }
+    const { fpath, ftype, pdict, m_alg } = zdata
+    const finit = { fpath, ftype, pdict, m_alg, force: false }
 
-  if (page.btran.length == 0) {
-    const btran = await get_nctext_btran(zpath, false, 'default')
-    page.btran = btran.lines || []
-  }
+    if (zdata.hviet.length == 0) {
+      const hviet = await call_hviet_file(finit, rinit)
+      zdata.hviet = hviet.hviet || []
+    }
 
-  if (page.qtran.length == 0) {
-    const qtran = await get_nctext_qtran(zpath, 'reload')
-    page.qtran = qtran.lines || []
-  }
+    if (zdata.btran.length == 0) {
+      const btran = await call_btran_file(finit, rinit)
+      zdata.btran = btran.lines || []
+    }
 
-  if (page.ctree.length == 0) {
-    const mtran = await get_nctext_mtran(zpath, false, m_alg, 'default')
-    page.ctree = mtran.lines || []
-  }
+    if (zdata.qtran.length == 0) {
+      const qtran = await call_qtran_file(finit, rinit)
+      zdata.qtran = qtran.lines || []
+    }
 
-  return page
+    if (zdata.ctree.length == 0) {
+      const mtran = await call_mtran_file(finit, rinit)
+      zdata.ctree = mtran.lines || []
+    }
+
+    data.set(zdata)
+  },
 }
 
 export const ctrl = {
-  ...writable({ actived: false, enabled: true, zpath: '' }),
+  ...writable({ actived: false, enabled: true, fpath: '' }),
   hide: (enabled = true) => {
-    ctrl.update(({ zpath }) => ({ actived: false, enabled, zpath }))
+    ctrl.update(({ fpath }) => ({ actived: false, enabled, fpath }))
   },
   async show(forced = true) {
     const zpage = get(data)
-    let { enabled, actived, zpath } = get(ctrl)
+    let { enabled, actived, fpath } = get(ctrl)
 
-    if (zpage.zpath != zpath) {
-      zpath = zpage.zpath
-      data.set(await fill_data(zpage))
-    }
-
-    if (forced || actived || enabled) {
-      ctrl.set({ enabled, zpath, actived: true })
+    if (actived || forced) {
+      if (fpath != zpage.fpath) data.load_data()
+      ctrl.set({ enabled, fpath: zpage.fpath, actived: true })
     }
   },
 }

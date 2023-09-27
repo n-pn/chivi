@@ -1,6 +1,7 @@
 require "../../cv_srv"
 require "../core/*"
-require "../util/*"
+
+require "../../_util/chap_data"
 
 abstract class AC::Base
 end

@@ -20,9 +20,9 @@
   ]
 
   const c_algos = [
-    ['HM_ES', 'hm_es', 'Chọn mô-đun Electra Small'],
-    ['HM_EB', 'hm_eb', 'Chọn mô-đun Electra Base'],
-    ['HM_EG', 'hm_eg', 'Chọn mô-dun Ernie Gram'],
+    ['HM_ES', 'mtl_1', 'Chọn mô-đun Electra Small'],
+    ['HM_EB', 'mtl_2', 'Chọn mô-đun Electra Base'],
+    ['HM_EG', 'mtl_3', 'Chọn mô-dun Ernie Gram'],
     ['AVAIL', 'avail', 'Tự động chọn dữ liệu đang có sẵn'],
   ]
 

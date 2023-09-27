@@ -4,16 +4,18 @@ class MT::AiTranCtrl < AC::Base
   base "/_ai"
 
   @[AC::Route::GET("/qtran")]
-  def qtran_file(cpath : String, pdict : String = "combine",
-                 _algo : String = "avail", force : Bool = false)
+  def qtran_file(fpath : String, ftype : String = "nc",
+                 pdict : String = "combine", _algo : String = "avail",
+                 force : Bool = false)
     start = Time.monotonic
+    force = force && _privi >= 0
 
-    _auto_gen = _privi >= 0
-    input, _algo = MtTranUtil.get_wntext_con_data(cpath, _algo, _auto_gen)
+    cdata = ChapData.new(fpath, ftype)
+    mdata, _algo = cdata.read_con(_algo, force: force)
 
     ai_mt = AiCore.new(pdict)
 
-    lines = input.map { |line| ai_mt.tl_from_con_data(line) }
+    lines = mdata.map { |line| ai_mt.tl_from_con_data(line) }
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
 
     cache_control 3.seconds
@@ -23,7 +25,7 @@ class MT::AiTranCtrl < AC::Base
 
     render json: json
   rescue ex
-    Log.error(exception: ex) { [cpath, pdict] }
+    Log.error(exception: ex) { [fpath, pdict] }
     render 500, json: {lines: [] of String, error: ex.message}
   end
 
@@ -43,40 +45,4 @@ class MT::AiTranCtrl < AC::Base
     Log.error(exception: ex) { input }
     render 455, ex.message
   end
-
-  # @[AC::Route::GET("/debug/ztext")]
-  # def debug(ztext : String, pdict : String = "rand/fixture")
-  #   _algo = _read_cookie("c_algo") || "auto"
-  #   cdata = AiTranUtil.get_con_data_from_hanlp(ztext, _algo)
-
-  #   aidata = AiCore.new(pdict, true).tl_from_con_data(cdata)
-
-  #   output = {
-  #     ztext: ztext,
-  #     cdata: cdata,
-
-  #     cjo_a: aidata.to_cjo(true, false),
-  #     mtl_b: AiTranUtil.get_v1_qtran_mtl(ztext, pdict),
-  #     txt_b: AiTranUtil.call_free_btran(ztext, "bzv"),
-  #   }
-
-  #   render json: output
-  # end
-
-  # TODO: reimplement this
-  # @[AC::Route::POST("/preview")]
-  # def preview(cdata : String, pdict : String = "rand/fixture")
-  #   aidata = AiCore.new(pdict, true).tl_from_con_data(cdata)
-
-  #   output = {
-  #     ztext: aidata.zstr,
-  #     cdata: cdata,
-
-  #     mtl_a: aidata.to_mtl(true, false),
-  #     mtl_b: AiTranUtil.get_v1_qtran_mtl(aidata.zstr, pdict),
-  #     txt_b: AiTranUtil.call_free_btran(aidata.zstr),
-  #   }
-
-  #   render json: output
-  # end
 end

@@ -3,9 +3,6 @@ declare namespace CV {
     id: number
     sname: string
 
-    viuser_id: number
-    wninfo_id: number
-
     zname: string
     vname: string
     uslug: string
@@ -18,5 +15,8 @@ declare namespace CV {
 
     chap_count: number
     word_count: number
+
+    viuser_id: number
+    wninfo_id: number
   }
 }

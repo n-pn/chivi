@@ -33,8 +33,9 @@ class UP::UpstemCtrl < AC::Base
 
   @[AC::Route::GET("/:up_id")]
   def show(up_id : Int32)
-    if info = Upstem.find(up_id)
-      render json: info
+    if ustem = Upstem.find(up_id)
+      json = {ustem: ustem, chaps: ustem.top_chaps(4)}
+      render json: json
     else
       render 404, text: "Dự án không tồn tại"
     end

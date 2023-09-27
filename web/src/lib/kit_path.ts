@@ -9,6 +9,11 @@ export function scrub_params(
   return params
 }
 
+export const stem_path = (sroot: string, pg_no = 1) => {
+  if (pg_no < 33) return sroot
+  return `${sroot}?pg=${_pgidx(pg_no)}`
+}
+
 export function book_path(bslug: string, child: string = '') {
   return child ? `/wn/${bslug}/${child}` : `/wn/${bslug}`
 }

@@ -1,14 +1,3 @@
-<script context="module" lang="ts">
-  const states = {
-    ztext: 1,
-    ctree: 1,
-    hviet: 1,
-    btran: 1,
-    qtran: 1,
-    c_gpt: 1,
-  }
-</script>
-
 <script lang="ts">
   import { ctrl, data } from '$lib/stores/lookup_stores'
   import {
@@ -20,8 +9,8 @@
   } from '$lib/mt_data_2'
 
   import {
-    get_nctext_btran,
-    get_nctext_mtran,
+    call_btran_file,
+    call_mtran_file,
     from_custom_gpt,
   } from '$utils/tran_util'
 
@@ -62,8 +51,19 @@
     vtform_ctrl.show(0)
   }
 
+  $: finit = {
+    fpath: $data.fpath,
+    ftype: 'nc',
+    pdict: $data.pdict,
+    m_alg: $data.m_alg,
+    force: true,
+  }
+
+  const rinit = { no: 'force-cache' } as RequestInit
+
   const load_btran_data = async () => {
-    const btran = await get_nctext_btran($data.zpath, true, 'no-cache')
+    const btran = await call_btran_file(finit, rinit)
+
     if (btran.error) alert(btran.error)
     $data.btran = btran.lines || []
   }
@@ -72,24 +72,23 @@
     const vtext = await from_custom_gpt(ztext)
     $data.c_gpt[l_idx] = vtext
   }
-  const load_ctree_data = async () => {
-    const { zpath, m_alg } = $data
-    const ctree = await get_nctext_mtran(zpath, true, m_alg, 'no-cache')
 
+  const load_ctree_data = async () => {
     if ($page.data.xargs?.rtype != 'ai') {
+      const ctree = await call_mtran_file(finit, rinit)
       $data.ctree = ctree.lines || []
     } else {
       await invalidate('wn:cdata')
     }
   }
 
-  const copy_to_clipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-  }
-
   const on_term_change = async (term?: CV.Vtdata | boolean) => {
     if (!term) return
     await load_ctree_data()
+  }
+
+  const copy_to_clipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
   }
 
   let ctree_show_zh = false

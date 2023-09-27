@@ -10,7 +10,9 @@ class UP::UpchapCtrl < AC::Base
     # TODO: restrict user access
 
     _pg_no, limit, offset = _paginate(min: 32, max: 64)
-    render json: ustem.get_chaps(chmin: offset, limit: limit)
+    chaps = ustem.get_chaps(chmin: offset, limit: limit)
+
+    render json: chaps
   end
 
   @[AC::Route::GET("/:ch_no/:p_idx")]

@@ -28,7 +28,7 @@ class UP::Chinfo
   DB_ROOT = "var/up_db/stems"
 
   def self.db_path(sname : String, sn_id : String | Int32, db_root = DB_ROOT)
-    "#{db_root}/#{sname}/#{sn_id}.db3"
+    "#{db_root}/#{sname}/#{sn_id}-cinfo.db3"
   end
 
   ###

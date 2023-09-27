@@ -13,15 +13,15 @@
         text: 'Đã có sẵn',
         desc: 'Chọn kết quả phân tích ngữ pháp có sẵn, ưu tiên Ernie Gram',
       },
-      hm_es: {
+      mtl_1: {
         text: 'Electra Small',
         desc: 'HanLP_Closed_MTL_ELECTRA_SMALL_ZH',
       },
-      hm_eb: {
+      mtl_2: {
         text: 'Electra Base',
         desc: 'HanLP_Closed_MTL_ELECTRA_BASE_ZH',
       },
-      hm_eg: {
+      mtl_3: {
         text: 'Ernie Gram',
         desc: 'HanLP Closed-source MTL ERNIE_GRAM_ZH',
       },
@@ -193,11 +193,10 @@
       zdata = []
     }
 
-    lookup_data.put(xargs.spath, `book/${xargs.wn_id}`, {
-      ztext,
-      [rmode]: zdata,
-      m_alg,
-    })
+    const pdict = `book/${xargs.wn_id}`
+    const fpath = xargs.spath
+    const data = { pdict, fpath, ftype: 'nc', ztext, [rmode]: zdata, m_alg }
+    lookup_data.put(data)
   }
 </script>
 

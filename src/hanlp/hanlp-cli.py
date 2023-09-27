@@ -14,11 +14,11 @@ def load_task(kind):
     if kind in CACHE:
         return CACHE[kind]
 
-    if kind == 'hm_es':
+    if kind == 'mtl_1':
         mtl_task = hanlp.load(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_SMALL_ZH)
-    elif kind == 'hm_eb':
+    elif kind == 'mtl_2':
         mtl_task = hanlp.load(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_BASE_ZH)
-    elif kind == 'hm_eg':
+    elif kind == 'mtl_3':
         mtl_task = hanlp.load(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ERNIE_GRAM_ZH)
 
     del mtl_task['dep']
@@ -91,7 +91,7 @@ def analyze_file(mtl_task, inp_path):
             con_file.write(re.sub('\\n(\\s*)', ' ', str(con_line)))
             con_file.write('\n')
 
-mtl_task = load_task('hm_eg')
+mtl_task = load_task('mtl_3')
 
 files = glob.glob("var/wnapp/chtext/28353/*.txt")
 

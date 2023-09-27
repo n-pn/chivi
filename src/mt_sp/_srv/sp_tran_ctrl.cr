@@ -18,17 +18,13 @@ class SP::TranCtrl < AC::Base
   TEXT_DIR = "var/wnapp/chtext"
   TRAN_DIR = "var/wnapp/chtran"
 
-  private def gen_fpath(zpath : String, ftype : String)
-    case ftype
-    when "nctext" then "#{TEXT_DIR}/#{zpath}.txt"
-    else               raise "unsupported!"
-    end
-  end
-
   @[AC::Route::GET("/hviet")]
-  def hviet_file(zpath : String, ftype = "nctext")
+  def hviet_file(fpath : String, ftype = "nc")
     start = Time.monotonic
-    hviet = MT::QtCore.hv_word.translate_file(gen_fpath(zpath, ftype))
+    mcore = MT::QtCore.hv_word
+
+    ztext = ChapData.new(fpath, ftype).read_raw
+    hviet = ztext.map { |line| mcore.tokenize(line).to_txt }
 
     mtime = Time.utc.to_unix
 
@@ -62,23 +58,23 @@ class SP::TranCtrl < AC::Base
   end
 
   @[AC::Route::GET("/btran")]
-  def btran_file(zpath : String, ftype : String = "nctext", force : Bool = true)
+  def btran_file(fpath : String, ftype : String = "nc", force : Bool = true)
     start = Time.monotonic
+    cdata = ChapData.new(fpath, ftype)
 
-    bv_path = "#{TRAN_DIR}/#{zpath}.bzv.txt"
+    tl_path = cdata.vtl_file_path("bzv.txt")
 
-    if stat = File.info?(bv_path)
-      lines = File.read_lines(bv_path)
+    if stat = File.info?(tl_path)
+      lines = File.read_lines(tl_path)
       mtime = stat.modification_time.to_unix
       status = 200
     elsif force && _privi >= 0
-      input = File.read_lines("#{TEXT_DIR}/#{zpath}.txt", chomp: true)
-      lines = Btran.free_translate(input, tl: "vi")
+      lines = Btran.free_translate(cdata.read_raw, tl: "vi")
       mtime = Time.utc.to_unix
       status = 201
       spawn do
-        Dir.mkdir_p(File.dirname(bv_path))
-        File.write(bv_path, lines.join('\n'))
+        Dir.mkdir_p(File.dirname(tl_path))
+        File.write(tl_path, lines.join('\n'))
       end
     else
       lines = [] of String

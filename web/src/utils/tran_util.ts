@@ -1,56 +1,61 @@
-export async function get_nctext_btran(
-  zpath: string,
-  force = false,
-  cache: RequestCache = 'force-cache',
+export type FileReqInit = {
+  fpath: string
+  ftype: string
+  force: boolean
+  pdict?: string
+  wn_id?: number
+  m_alg?: string
+}
+
+export async function call_btran_file(
+  { fpath, ftype = 'nc', force = false }: FileReqInit,
+  rinit: RequestInit = { cache: 'force-cache' },
   fetch = globalThis.fetch
 ): Promise<CV.Qtdata> {
-  const url = `/_sp/btran?zpath=${zpath}&force=${force}`
-  const res = await fetch(url, { cache })
+  const url = `/_sp/btran?fpath=${fpath}&ftype=${ftype}&force=${force}`
+  const res = await fetch(url, rinit)
 
   if (res.ok) return await res.json()
   return { lines: [], tspan: 0, error: await res.text() }
 }
 
-export async function get_nctext_qtran(
-  zpath: string,
-  cache: RequestCache = 'force-cache',
+export async function call_qtran_file(
+  { fpath, ftype = 'nc', wn_id = 0 }: FileReqInit,
+  rinit: RequestInit = { cache: 'force-cache' },
   fetch = globalThis.fetch
 ): Promise<CV.Qtdata> {
-  const wn_id = zpath.split('/')[0]
-  const url = `/_m1/qtran?zpath=${zpath}&wn_id=${wn_id}&type=nctext`
-  const res = await fetch(url, { cache })
+  wn_id ||= +fpath.split('/')[0]
+  const url = `/_m1/qtran?fpath=${fpath}&ftype=${ftype}&wn_id=${wn_id}`
+  const res = await fetch(url, rinit)
 
   if (res.ok) return await res.json()
   return { lines: [], tspan: 0, error: await res.text() }
 }
 
-export async function get_nctext_hviet(
-  zpath: string,
-  w_raw: boolean = false,
-  cache: RequestCache = 'force-cache',
+export async function call_hviet_file(
+  { fpath, ftype = 'nc' }: FileReqInit,
+  rinit: RequestInit = { cache: 'force-cache' },
   fetch = globalThis.fetch
 ): Promise<CV.Hvdata> {
-  const url = `/_ai/hviet?zpath=${zpath}&w_raw=${w_raw}&ftype=nctext`
-  const res = await fetch(url, { cache })
+  const url = `/_ai/hviet?fpath=${fpath}&ftype=${ftype}`
+  const res = await fetch(url, rinit)
 
   if (res.ok) return await res.json()
   return { hviet: [], tspan: 0, error: await res.text() }
 }
 
-export async function get_nctext_mtran(
-  zpath: string,
-  force: boolean = false,
-  _algo: string = 'avail',
-  cache: RequestCache = 'force-cache',
+export async function call_mtran_file(
+  { fpath, ftype = 'nc', force = false, m_alg, pdict }: FileReqInit,
+  rinit: RequestInit = { cache: 'force-cache' },
   fetch = globalThis.fetch
 ): Promise<CV.Mtdata> {
-  const pdict = 'book/' + zpath.split('/')[0]
+  m_alg ||= 'avail'
+  pdict ||= 'book/' + fpath.split('/')[0]
 
-  const url = `/_ai/qtran?cpath=${zpath}&pdict=${pdict}&_algo=${_algo}&force=${force}`
-  const res = await fetch(url, { cache })
+  const url = `/_ai/qtran?fpath=${fpath}&ftype=${ftype}&pdict=${pdict}&_algo=${m_alg}&force=${force}`
+  const res = await fetch(url, rinit)
 
   if (!res.ok) return { lines: [], tspan: 0, error: await res.text() }
-
   return await res.json()
 }
 

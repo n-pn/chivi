@@ -13,7 +13,7 @@ const mdsvexConfig = {
   smartypants: { dashes: 'oldschool' },
   remarkPlugins: [breaks],
   rehypePlugins: [],
-  layout: path.resolve(_cwd, 'src/routes/hd/layout.svelte'),
+  layout: path.resolve(_cwd, 'src/routes/hd/hd-layout.svelte'),
 }
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -33,6 +33,7 @@ export default {
   kit: {
     adapter: adapter(),
     version: { pollInterval: 60000 },
+    inlineStyleThreshold: 1024,
   },
   onwarn: (warning, handler) => {
     if (warning.code.startsWith('a11y')) return

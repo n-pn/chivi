@@ -77,7 +77,7 @@ class UP::Upstem
 
   def self.find(id : Int32, uname : Nil = nil)
     query = @@schema.select_stmt(&.<< "where id = $1 limit 1")
-    self.db.query_one?(query, as: self)
+    self.db.query_one?(query, id, as: self)
   end
 
   def self.find(id : Int32, uname : String)
@@ -88,7 +88,7 @@ class UP::Upstem
         SQL
     end
 
-    self.db.query_one?(query, as: self)
+    self.db.query_one?(query, id, uname, as: self)
   end
 
   def self.get_all(uname : String, limit = 50, offset = 0)
