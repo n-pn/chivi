@@ -21,9 +21,10 @@ class MT::ViTermForm
   getter old_cpos : String = ""
 
   struct Context
-    getter wn_id : Int32
-    getter vtree : String
-    getter zfrom : Int32
+    getter fpath : String = ""
+    getter ftype : String = ""
+    getter vtree : String = ""
+    getter zfrom : Int32 = 0
     include JSON::Serializable
   end
 
@@ -52,16 +53,14 @@ class MT::ViTermForm
   end
 
   def save_to_disk!(uname : String, mtime = ViTerm.mtime, on_create : Bool = true) : Nil
-    on_delete = @vstr.empty? && !@attr.includes?("Hide")
-
     spawn do
-      if self.on_delete?
-        ViDict.bump_stats!(@dname, mtime, -1) unless on_create
-      elsif on_create
-        ViDict.bump_stats!(@dname, mtime, 1)
+      vidict = ViDict.load(@dname)
+
+      if on_create
+        vidict.update_stats!(mtime, 1)
+      elsif on_delete?
+        vidict.update_stats!(mtime, -1)
       end
-    rescue ex
-      Log.error(exception: ex) { to_json }
     end
 
     spawn do
@@ -73,7 +72,7 @@ class MT::ViTermForm
       end
     end
 
-    if on_delete
+    if on_delete?
       ViTerm.delete(dict: @dname, zstr: @zstr, cpos: @cpos)
     else
       ViTerm.new(

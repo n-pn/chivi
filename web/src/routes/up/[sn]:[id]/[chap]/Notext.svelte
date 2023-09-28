@@ -32,10 +32,8 @@
     </p>
 
     <p>
-      <em>
-        (*) Công thức tính: <code
-          >số lượng chữ / 100_000 * hệ số nhân = số vcoin cần thiết</code>
-      </em>
+      <em> Công thức tính: </em>
+      <code>số lượng chữ / 100_000 * hệ số nhân = số vcoin cần thiết</code>
       <br />
       Hệ số nhân hiện tại của dự án: <strong class="em">{ustem.multp}</strong>.
       <em>(Thử liên hệ với chủ sở hữu dự án nếu thấy chưa phù hợp!)</em>

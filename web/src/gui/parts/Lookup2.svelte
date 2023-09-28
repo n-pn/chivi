@@ -53,7 +53,7 @@
 
   $: finit = {
     fpath: $data.fpath,
-    ftype: 'nc',
+    ftype: $data.ftype,
     pdict: $data.pdict,
     m_alg: $data.m_alg,
     force: true,
@@ -79,6 +79,7 @@
       $data.ctree = ctree.lines || []
     } else {
       await invalidate('wn:cdata')
+      $data.ctree = $page.data.vtran.lines
     }
   }
 
@@ -296,7 +297,11 @@
 </Slider>
 
 {#if $vtform_ctrl.actived}
-  <VitermForm pdict={$data.pdict} on_close={on_term_change} />
+  <VitermForm
+    pdict={$data.pdict}
+    fpath={$data.fpath}
+    ftype={$data.ftype}
+    on_close={on_term_change} />
 {/if}
 
 <style lang="scss">

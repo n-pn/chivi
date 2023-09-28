@@ -120,7 +120,13 @@ export class Vtform {
   //   return req_privi(this.dic, this.tab)
   // }
 
-  to_form_body(pdict: string, vtree: CV.Cvtree, zfrom: number) {
+  to_form_body(
+    pdict: string,
+    vtree: CV.Cvtree,
+    zfrom: number,
+    fpath: string = '',
+    ftype: string = ''
+  ) {
     return {
       zstr: this.zstr,
       vstr: this.vstr,
@@ -131,7 +137,8 @@ export class Vtform {
       dname: this.local ? pdict : 'regular',
 
       _ctx: {
-        wn_id: +pdict.replace('book/', ''),
+        fpath,
+        ftype,
         vtree: gen_ctree_text(vtree),
         zfrom,
       },

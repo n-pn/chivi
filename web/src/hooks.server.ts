@@ -52,32 +52,10 @@ export const handleError = (({ event, error }) => {
   return { message: error.toString(), code: 'UNKNOWN' }
 }) satisfies HandleServerError
 
-// import * as fs from 'fs'
-// fs.mkdirSync('tmp/_user', { recursive: true })
-
-type CachedUser = { user: App.CurrentUser; expiry: number }
-
-const cached_users: Record<string, CachedUser> = {}
 const session_url = `http://${api_hosts._db}/_db/_self`
 
-const get_hash = (cookie: string) => cookie && cookie.replace('/', '_')
-
 async function getSession(event: RequestEvent): Promise<App.CurrentUser> {
-  const hash = get_hash(event.cookies.get('_a')) || 'guest'
-  let cached_user = cached_users[hash]
-
-  const now_unix = new Date().getTime() / 1000
-  if (cached_user && cached_user.expiry >= now_unix) {
-    return cached_user.user
-  }
-
   const req_init = { headers: { cookie: event.request.headers.get('cookie') } }
   const response = await globalThis.fetch(session_url, req_init)
-
-  if (!response.ok && cached_user) return cached_user.user
-
-  const user = (await response.json()) as App.CurrentUser
-  cached_users[hash] = { user, expiry: now_unix + 10 }
-
-  return user
+  return (await response.json()) as App.CurrentUser
 }

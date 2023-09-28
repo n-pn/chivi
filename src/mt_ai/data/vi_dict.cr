@@ -5,7 +5,9 @@ class MT::ViDict
     case dname
     when "regular", "suggest"  then 1
     when .starts_with?("book") then 0
+    when .starts_with?("wn")   then 0
     when .starts_with?("priv") then 0
+    when .starts_with?("up")   then 0
     else                            2
     end
   end
@@ -21,7 +23,9 @@ class MT::ViDict
     def self.from_name(dname : String)
       case dname
       when .starts_with?("book") then Book
+      when .starts_with?("wn")   then Book
       when .starts_with?("priv") then Priv
+      when .starts_with?("up")   then Priv
       when .starts_with?("rand") then Rand
       else                            Uniq
       end
@@ -74,8 +78,8 @@ class MT::ViDict
     @dtype = dtype.to_i
   end
 
-  def update_stats!(@mtime : Int64, total : Int32)
-    self.class.bump_stats!(dname: @dname, mtime: mtime, total_change: total - @total)
+  def update_stats!(@mtime : Int32, change : Int32 = 1)
+    self.class.bump_stats!(dname: @dname, mtime: mtime, change: change)
     @total = total
     self
   end
@@ -84,7 +88,7 @@ class MT::ViDict
   #   @total = self.class.db.bump_stats!(dname: @dname, mtime: mtime)
   # end
 
-  def self.bump_stats!(dname : String, mtime : Int64, total_change : Int32 = 1)
+  def self.bump_stats!(dname : String, mtime : Int64, change : Int32 = 1)
     query = <<-SQL
       update dicts
       set mtime = $1, total = total + $2
@@ -92,7 +96,7 @@ class MT::ViDict
       returning total
       SQL
 
-    db.open_rw &.exec(query, mtime, total_change, dname)
+    db.open_rw &.exec(query, mtime, change, dname)
   end
 
   def to_json(jb : JSON::Builder)
@@ -109,6 +113,11 @@ class MT::ViDict
   end
 
   ####
+  CACHE = {} of String => self
+
+  def self.load(dname : String)
+    CACHE[dname] ||= self.find(dname) || new(dname).insert!
+  end
 
   def self.find(dname : String) : self | Nil
     self.get(dname, &.<< "where dname = $1")

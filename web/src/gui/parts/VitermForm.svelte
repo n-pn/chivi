@@ -24,6 +24,9 @@
   import HelpLink from './vtform/HelpLink.svelte'
 
   export let pdict: string
+  export let fpath = ''
+  export let ftype = ''
+
   export let on_close = (_term?: CV.Vtdata) => {}
   onDestroy(() => on_close(null))
 
@@ -68,7 +71,7 @@
 
   const send_form = async () => {
     const headers = { 'Content-type': 'application/json' }
-    const body = tform.to_form_body(pdict, $data.vtree, zfrom)
+    const body = tform.to_form_body(pdict, $data.vtree, zfrom, fpath, ftype)
 
     const init = { body: JSON.stringify(body), method, headers }
     const res = await fetch(action, init)

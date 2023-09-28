@@ -87,6 +87,8 @@ class UP::UpchapCtrl < AC::Base
     end
   end
 
+  GET_VCOIN_SQL = "select vcoin from viusers where id = $1"
+
   SUB_VCOIN_SQL = <<-SQL
     update viusers set vcoin = vcoin - $1
     where id = $2 and vcoin >= $1
@@ -98,10 +100,13 @@ class UP::UpchapCtrl < AC::Base
   private def exchange_vcoin(from_vu : Int32, to_user : Int32, vcoin : Int32, reason : String)
     vcoin = vcoin / 1000 # TODO: convert vcoin to dong
 
-    return unless remain = PGDB.query_one?(SUB_VCOIN_SQL, vcoin, from_vu, as: Float64)
-    PGDB.exec ADD_VCOIN_SQL, from_vu, to_user
+    avail = PGDB.query_one?(GET_VCOIN_SQL, from_vu, as: Float64)
+    return if !avail || avail < vcoin
 
-    CV::Xvoin.new(
+    return unless remain = PGDB.query_one?(SUB_VCOIN_SQL, vcoin, from_vu, as: Float64)
+    PGDB.exec ADD_VCOIN_SQL, vcoin, to_user
+
+    CV::Xvcoin.new(
       kind: :privi_ug, sender_id: from_vu, target_id: to_user,
       amount: vcoin, reason: reason,
     ).insert!

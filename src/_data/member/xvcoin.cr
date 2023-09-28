@@ -1,7 +1,7 @@
 require "../_data"
 require "../member/unotif"
 
-class CV::Xvoin
+class CV::Xvcoin
   enum Kind : Int32
     Normal = 10
 
