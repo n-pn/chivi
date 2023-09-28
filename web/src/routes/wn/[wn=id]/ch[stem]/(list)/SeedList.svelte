@@ -1,44 +1,29 @@
 <script lang="ts">
   import { page } from '$app/stores'
-  import { get_user } from '$lib/stores'
-  const _user = get_user()
-
-  import SIcon from '$gui/atoms/SIcon.svelte'
 
   import type { LayoutData } from './$types'
-  import { book_path, seed_path } from '$lib/kit_path'
+  import { seed_path } from '$lib/kit_path'
   export let data: LayoutData
 
   $: ({ nvinfo, seed_list, curr_seed } = data)
 
-  $: pgidx = +$page.url.searchParams.get('pg') || 1
-
-  $: uname = '@' + $_user.uname
-  $: _self = find_or_init(seed_list, uname)
-
-  function find_or_init(seed_list: { users: CV.Chroot[] }, sname: string) {
-    const found = seed_list.users.find((x) => x.sname == sname)
-    return found || { sname, chmax: 0, utime: 0, stype: 0 }
-  }
-
-  let show_bg = false
+  $: pg_no = +$page.url.searchParams.get('pg') || 1
 </script>
 
 <div class="seed-list">
   <a
-    href={seed_path(nvinfo.bslug, seed_list.chivi.sname, pgidx)}
+    href={seed_path(nvinfo.bslug, '~avail', pg_no)}
     class="seed-name"
-    class:_active={seed_list.chivi.sname == curr_seed.sname}
-    data-tip="Danh sách chương chính thức"
+    class:_active={'~avail' == curr_seed.sname}
     data-tip-loc="bottom">
-    <div class="seed-label">Chính thức</div>
+    <div class="seed-label">Tổng hợp</div>
     <div class="seed-stats">
-      <strong>{seed_list.chivi.chmax}</strong> chương
+      <strong>{seed_list.avail.chmax}</strong> chương
     </div>
   </a>
 
   <a
-    href={seed_path(nvinfo.bslug, seed_list.draft.sname, pgidx)}
+    href={seed_path(nvinfo.bslug, seed_list.draft.sname, pg_no)}
     class="seed-name"
     class:_active={seed_list.draft.sname == curr_seed.sname}
     data-tip="Danh sách chương tạm thời"
@@ -49,69 +34,18 @@
     </div>
   </a>
 
-  {#each seed_list.users as seed}
-    {@const { sname, chmax } = seed}
-    {#if chmax > 0 && sname != uname}
-      <a
-        href={seed_path(nvinfo.bslug, sname, pgidx)}
-        class="seed-name"
-        class:_active={sname == curr_seed.sname}
-        data-tip="Danh sách chương cá nhân của {sname}"
-        data-tip-loc="bottom">
-        <div class="seed-label">{sname}</div>
-        <div class="seed-stats"><strong>{chmax}</strong> chương</div>
-      </a>
-    {/if}
-  {/each}
-
-  {#if _self && $_user.privi > 0}
-    <a
-      href={seed_path(nvinfo.bslug, _self.sname, pgidx)}
-      class="seed-name"
-      class:_active={_self.sname == curr_seed.sname}
-      data-tip="Danh sách chương của cá nhân bạn"
-      data-tip-loc="bottom">
-      <div class="seed-label">Của bạn</div>
-      <div class="seed-stats"><strong>{_self.chmax}</strong> chương</div>
-    </a>
-  {/if}
-
-  <button
-    class="seed-name _btn"
-    class:_active={show_bg}
-    data-tip="Các nguồn text nâng cao dành cho người dùng cao cấp"
-    data-tip-loc="bottom"
-    on:click={() => (show_bg = !show_bg)}>
-    <div class="seed-label">Nguồn khác</div>
+  <a
+    href={seed_path(nvinfo.bslug, '~chivi', pg_no)}
+    class="seed-name"
+    class:_active={seed_list.chivi.sname == curr_seed.sname}
+    data-tip="Danh sách chương chính thức"
+    data-tip-loc="bottom">
+    <div class="seed-label">Chính thức</div>
     <div class="seed-stats">
-      <strong>{seed_list.globs.length}</strong> nguồn
+      <strong>{seed_list.chivi.chmax}</strong> chương
     </div>
-  </button>
+  </a>
 </div>
-
-{#if show_bg}
-  <div class="seed-list -extra">
-    {#each seed_list.globs as { sname, chmax }}
-      <a
-        href={seed_path(nvinfo.bslug, sname, pgidx)}
-        class="seed-name _sub"
-        class:_active={sname == curr_seed.sname}>
-        <div class="seed-label">{sname}</div>
-        <div class="seed-stats"><strong>{chmax}</strong> chương</div>
-      </a>
-    {/each}
-
-    <a
-      href={book_path(nvinfo.bslug, '+seed')}
-      class="seed-name _sub _btn"
-      class:_disable={$_user.privi < 3}
-      data-tip="Thêm/sửa/xóa các nguồn ngoài"
-      data-tip-loc="bottom">
-      <SIcon name="tools" />
-      <span class="label">Quản lý</span>
-    </a>
-  </div>
-{/if}
 
 <style lang="scss">
   .seed-list {

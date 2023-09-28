@@ -24,26 +24,10 @@
   $: root_path = `/wn/${nvinfo.bslug}`
 
   const tabs = [
-    {
-      href: '',
-      icon: 'news',
-      text: 'Tổng quan',
-    },
-    {
-      href: '/uc',
-      icon: 'stars',
-      text: 'Đánh giá',
-    },
-    {
-      href: '/ul',
-      icon: 'bookmarks',
-      text: 'Thư đơn',
-    },
-    {
-      href: '/gd',
-      icon: 'message',
-      text: 'Thảo luận',
-    },
+    { href: '', icon: 'news', text: 'Tổng quan' },
+    { href: '/uc', icon: 'stars', text: 'Đánh giá' },
+    { href: '/ul', icon: 'bookmarks', text: 'Thư đơn' },
+    { href: '/gd', icon: 'message', text: 'Thảo luận' },
   ]
 </script>
 

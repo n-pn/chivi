@@ -4,11 +4,27 @@ class UP::UpstemCtrl < AC::Base
   base "/_up/stems"
 
   @[AC::Route::GET("/")]
-  def index(uname : String? = nil)
+  def index(
+    _s order : String = "time",
+    by uname : String? = nil,
+    lb label : String? = nil,
+    wn wn_id : Int32? = nil
+  )
     pg_no, limit, offset = _paginate(min: 25, max: 100)
 
-    items = Upstem.get_all(uname, limit, offset)
-    total = items.size == limit ? limit &+ 1 : limit
+    query, args = Upstem.build_select_sql(_privi, order, uname, label, wn_id)
+    args << limit << offset
+
+    items = Upstem.db.query_all(query, args: args, as: Upstem)
+
+    if items.size < limit
+      total = items.size &+ offset
+    else
+      query = query.sub("select *", "select id")
+      args[-2] = offset &+ limit &* 3
+      args[-1] = 0
+      total = Upstem.db.query_all(query, args: args, as: Int32).size
+    end
 
     json = {
       items: items,
@@ -24,6 +40,7 @@ class UP::UpstemCtrl < AC::Base
     guard_privi 1, "tạo dự án cá nhân"
 
     form.id = nil
+    form.sname = "@#{_uname}"
     form.viuser_id = _vu_id
     form.wninfo_id = nil if form.wninfo_id == 0
 

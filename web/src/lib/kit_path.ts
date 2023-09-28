@@ -26,7 +26,7 @@ export function seed_path(bslug: string, sname: string, pg_no = 0): string {
 const seed_prefixes = ['~', '@', '!', '+']
 // prettier-ignore
 export const fix_sname = (sname: string) => {
-  return seed_prefixes.includes(sname[0]) ? sname : '~draft'
+  return seed_prefixes.includes(sname[0]) ? sname : '~avail'
 }
 
 const default_rmode = {

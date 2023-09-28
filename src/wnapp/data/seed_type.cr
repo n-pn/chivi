@@ -1,6 +1,7 @@
 enum WN::SeedType
   Chivi
   Draft
+  Avail
   Users
   Globs
   Other
@@ -8,7 +9,8 @@ enum WN::SeedType
   def read_privi(is_owner = false, base_privi = 2)
     case self
     when Draft then 1
-    when Chivi then 2
+    when Avail then 2
+    when Chivi then 3
     when Users then is_owner ? 1 : base_privi
     else            3
     end
@@ -17,6 +19,7 @@ enum WN::SeedType
   def edit_privi(is_owner = false)
     case self
     when Draft then 1
+    when Avail then 2
     when Chivi then 3
     when Users then is_owner ? 2 : 4
     else            3
@@ -27,7 +30,7 @@ enum WN::SeedType
     case self
     when Globs then 3
     when Users then is_owner ? 2 : 4
-    else            5
+    else            4
     end
   end
 
@@ -35,6 +38,7 @@ enum WN::SeedType
     case self
     when Chivi then "chính thức"
     when Draft then "tạm thời"
+    when Avail then "tổng hợp"
     when Users then "cá nhân"
     when Globs then "bên ngoài"
     else            "đặc biệt"
@@ -48,6 +52,7 @@ enum WN::SeedType
     when fchar == '@'      then Users
     when sname == "~chivi" then Chivi
     when sname == "~draft" then Draft
+    when sname == "~avail" then Avail
     else                        Other
     end
   end

@@ -5,12 +5,12 @@ class WN::SeedCtrl < AC::Base
 
   @[AC::Route::GET("/")]
   def index(wn_id : Int32)
-    seeds = Wnstem.all_by_wn_id(wn_id).sort_by!(&.mtime.-)
+    seeds = Wnstem.all_by_wn_id(wn_id)
 
     render json: {
-      chivi: find_or_init(seeds, wn_id, "~chivi"),
+      avail: find_or_init(seeds, wn_id, "~avail"),
       draft: find_or_init(seeds, wn_id, "~draft"),
-      users: seeds.select(&.sname.[0].== '@'),
+      chivi: find_or_init(seeds, wn_id, "~chivi"),
       globs: seeds.select(&.sname.[0].== '!'),
     }
   end

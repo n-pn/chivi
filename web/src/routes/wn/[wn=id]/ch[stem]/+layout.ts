@@ -5,8 +5,7 @@ import type { LayoutLoad } from './$types'
 export interface StemList {
   chivi: CV.Chroot
   draft: CV.Chroot
-  users: CV.Chroot[]
-  globs: CV.Chroot[]
+  avail: CV.Chroot
 }
 
 export interface SeedData {

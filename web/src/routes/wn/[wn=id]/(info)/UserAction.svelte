@@ -14,7 +14,7 @@
     let { locked, chidx = 1, cpart = 1 } = ubmemo
     if (chidx < 1) chidx = 1
 
-    let sname = ubmemo.sname || '~draft'
+    let sname = ubmemo.sname || '~avail'
 
     return {
       href: chap_path(`/wn/${bslug}/ch${sname}`, chidx, { cpart, rtype: 'ai' }),
@@ -33,7 +33,7 @@
 
   <a class="m-btn" class:_primary={!toread.mute} href={toread.href}>
     <SIcon name={toread.icon} />
-    <span class="u-show-md">{toread.text}</span>
+    <span class="u-show-ts">{toread.text}</span>
   </a>
 
   <MarkBook {nvinfo} {ubmemo} />

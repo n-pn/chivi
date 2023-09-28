@@ -78,12 +78,12 @@
   import type { LayoutData } from './$types'
   export let data: LayoutData
 
-  $: ({ nvinfo, curr_seed, cinfo, rdata, xargs } = data)
+  $: ({ ustem, cinfo, rdata, xargs } = data)
 
   $: ch_no = cinfo.ch_no
-  $: total = curr_seed.chmax
+  // $: total = ustem.chmax || ustem.chap_count
 
-  $: stem_path = seed_path(nvinfo.bslug, curr_seed.sname)
+  $: stem_path = `/up/${ustem.sname}:${data.up_id}`
   $: prev_path = rdata._prev
     ? chap_path(stem_path, rdata._prev, xargs)
     : stem_path
@@ -102,37 +102,9 @@
   import { browser } from '$app/environment'
   import Notext from './Notext.svelte'
 
-  async function update_memo(locking: boolean) {
-    if ($_user.privi < 0) return
-
-    const { ch_no, title, uslug } = cinfo
-    const { sname } = curr_seed
-
-    const path = `/_db/_self/books/${nvinfo.id}/access`
-    const body = { sname, ch_no, cpart: data.cpart, title, uslug, locking }
-
-    try {
-      data.ubmemo = await api_call(path, body, 'PUT')
-    } catch (ex) {
-      console.log(ex)
-    }
-  }
-
-  $: [on_memory, memo_icon] = check_memo(data.ubmemo)
-
-  function check_memo(ubmemo: CV.Ubmemo): [boolean, string] {
-    let on_memory = false
-    if (ubmemo.sname == curr_seed.sname) {
-      on_memory = ubmemo.chidx == cinfo.ch_no && ubmemo.cpart == data.cpart
-    }
-
-    if (!ubmemo.locked) return [on_memory, 'menu-2']
-    return on_memory ? [true, 'bookmark'] : [false, 'bookmark-off']
-  }
-
   $: crumb = [
-    { text: nvinfo.vtitle, href: `/wn/${nvinfo.bslug}` },
-    { text: `[${curr_seed.sname}]`, href: stem_path },
+    { text: 'Dự án cá nhân', href: `/up` },
+    { text: ustem.vname, href: stem_path },
     { text: cinfo.chdiv || 'Chính văn' },
     { text: cinfo.title },
   ]
@@ -160,7 +132,6 @@
   afterNavigate(() => {
     l_idx = -1
     if (on_focus) on_focus.classList.remove('focus')
-    update_memo(false)
   })
 
   $: if (browser && l_idx >= 0) {
@@ -196,9 +167,9 @@
       m_alg = xargs.rmode
     }
 
-    const pdict = `book/${xargs.wn_id}`
+    const pdict = `up/${ustem.id}`
     const fpath = xargs.spath
-    const data = { pdict, fpath, ftype: 'nc', ztext, [rmode]: zdata, m_alg }
+    const data = { pdict, fpath, ftype: 'up', ztext, [rmode]: zdata, m_alg }
     lookup_data.put(data)
   }
 </script>
@@ -285,10 +256,10 @@
 
   {#if data.error}
     <Notext {data} />
-  {:else if $page.data.vtran.error}
+  {:else if vtran.error}
     <section class="error">
       <h1>Lỗi hệ thống:</h1>
-      <p class="error-message">{$page.data.vtran.error}</p>
+      <p class="error-message">{vtran.error}</p>
     </section>
   {:else}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -318,26 +289,6 @@
       <SIcon name="list" />
       <span class="u-show-tm">Mục lục</span>
     </a>
-
-    {#if on_memory && data.ubmemo.locked}
-      <button
-        class="m-btn"
-        disabled={$_user.privi < 0}
-        on:click={() => update_memo(false)}
-        data-kbd="p">
-        <SIcon name="bookmark-off" />
-        <span class="u-show-tm">Bỏ đánh dấu</span>
-      </button>
-    {:else}
-      <button
-        class="m-btn"
-        disabled={$_user.privi < 0}
-        on:click={() => update_memo(true)}
-        data-kbd="p">
-        <SIcon name="bookmark" />
-        <span class="u-show-tm">Đánh dấu</span>
-      </button>
-    {/if}
 
     <a
       href={next_path}

@@ -1,0 +1,74 @@
+---
+title: Giới thiệu tổng quan về các loại danh sách chương tiết cho bộ truyện
+mtime: 28-09-2023
+---
+
+Kể từ ngày 28-09-2023 thì phần danh sách chương tiết được thiết kế lại như sau:
+
+**Lưu ý: Đang hoàn thiện dần các tính năng, cần đợi một chút thời gian để hoàn thiện!**
+
+## 1. Các danh sách chương chính thức do hệ thống hỗ trợ
+
+### Tổng hợp:
+
+Đây là danh sách chương mặc định. Hệ thống sẽ cố gắng tổng hợp dữ liệu chương tiết từ nhiều nguồn để làm sao cho chương luôn có nội dung, dù cho nó có thể không chính xác tuyệt đối.
+
+_Một số đặc điểm chính:_
+
+- Danh sách chương có liên kết với nhiều nguồn ngoài, và sẽ chọn text có sẵn của nguồn ngoài đó
+- Bạn cần quyền hạn 2 để thêm sửa text gốc cho nguồn này.
+- Bạn cần thiết quyền hạn 2 để mở khóa nửa sau các chương trong danh sách.
+  Hoặc bạn cần thiết 0.04 vcoin mỗi 1000 chữ để mở khóa chương (Chức năng đang hoàn thiện.)
+
+Lưu ý: Các chương thuộc về nửa đầu của danh sách là miễn phí không cần mở khóa, bạn chỉ cần thiết đăng nhập.
+
+### Tạm thời:
+
+Đây là nguồn tạo ra để cho người dùng Chivi có thể thử các tính năng liên quan tới thêm sửa text gốc, thêm bản dịch. Chương tiết của danh sách này có thể bị xóa hoặc thay đổi sau một khoảng thời gian (thường thì sẽ bị cắt còn 100 chương).
+
+_Một số đặc điểm chính:_
+
+- Danh sách chương sẽ không được liên kết tới nguồn ngoài, bạn cần thiết tự tìm text gốc.
+  Sẽ có công cụ cho các bạn tự tải text gốc (Chưa làm, đợi!)
+- Bạn cần quyền hạn 1 để mở khóa nửa sau trong danh sách chương
+  Hoặc bạn cần thiết 0.02 vcoin mỗi 1000 chữ để mở khóa (Đợi hoàn thành)
+  Như trên: Nửa đầu sẽ miễn phí.
+
+### Chính thức:
+
+Đây là nguồn bản đẹp cho ban quản trị của Chivi sưu tầm, lấy từ các bản text tổng hợp đã được tinh hiệu, không bị lỗi vặt về thiếu chữ, sai chính tả (thường gặp khi đọc truyện mạng)
+
+Vì đây là nguồn sưu tầm bằng tay cho nên nó sẽ có nhiều giới hạn hơn các nguồn khác. Bù lại các bạn sẽ được thưởng vcoin nếu thêm text gốc cho nguồn này (Tính năng đợi hoàn thiện)
+
+_Một số đặc điểm chính:_
+
+- Danh sách chương không liên kết nguồn ngoài, mọi thứ cần làm thủ công.
+
+- Bạn cần quyền hạn 3 để mở khóa nửa sau trong danh sách chương.
+  Hoặc bạn cần thiết 0.08 vcoin mỗi 1000 chữ để mở khóa (Đợi hoàn thành)
+  Nửa đầu miễn phí.
+
+### Các nguồn liên kết ngoài:
+
+Lúc trước thì ngoài các danh sách kể trên Chivi còn cho phép các bạn thêm text vào các danh sách chương cá nhân, đồng thời thêm các nguồn phụ liên kết trực tiếp với bộ truyện.
+
+Qua quá trình phát triển thì hai tính năng này đều xuất hiện những hạn chế nhất định, cần thiết thay đổi:
+
+#### Hạn chế nguồn cá nhân:
+
+- Nguồn cá nhân người dùng có cơ chế quản lý riêng, người dùng tự quản toàn bộ => Không tương thích với thiết kế chung.
+- Một người dùng có thể có nhiều phiên bản text cho cùng bộ truyện (đồng nhân, tu cải...), như thiết kế hiện nay thì chỉ được chọn một.
+- Text các bạn sưu tầm được chưa chắc đã có thông tin bộ truyện trên Chivi, mà hiện nay phần tạo thông tin truyện mới khá lằng nhằng.
+
+Cho nên hiện nay nguồn cá nhân đã được đổi sang thành [Dự án cá nhân], chi tiết sẽ được giới thiệu sau.
+
+#### Hạn chế nguồn ngoài:
+
+- Các nguồn ngoài phần lớn là các trang truyện lậu, hay bị đánh bản quyền cho nên chết liên tục.
+- Một số nguồn không chết nhưng đổi domain, dẫn tới thông tin cũ đều trở nên vô hiệu lực
+- Một số nguồn còn sống nhưng đã đặt tường lửa phía trước, hệ thống không tải nội dung xuống được.
+- Như trên: Có rất nhiều truyện có trên nguồn ngoài nhưng chưa được liên kết với thông tin bộ truyện (do chưa có thời gian chạy công cụ)
+
+Vì vậy cho nên phần này về sau cũng được tách riêng ra thành [Liên kết nguồn ngoài], các bạn về sau chỉ cần tên trang web + ID bộ truyện của trang đó là có thể đọc, không cần phải phụ thuộc bộ truyện
+
+[Tính năng này đang hoàn thiện, làm ơn kiên nhẫn đợi!]

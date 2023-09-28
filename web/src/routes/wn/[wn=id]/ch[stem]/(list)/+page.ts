@@ -12,5 +12,5 @@ export const load = (async ({ fetch, url, params: { wn, stem } }) => {
   const _title = 'Danh sách chương'
   const _board = `ns:${wn_id}:${stem}`
 
-  return { chaps, pg_no, _title, _board }
+  return { chaps, pg_no, _title, _board, ontab: 'ch' }
 }) satisfies PageLoad

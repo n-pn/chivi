@@ -37,7 +37,7 @@
 <Gmenu class="navi-item" loc="bottom" r>
   <button class="m-btn _{color}" slot="trigger">
     <SIcon name={icon} />
-    <span class="u-show-md">{name}</span>
+    <span class="u-show-ts">{name}</span>
   </button>
 
   <svelte:fragment slot="content">

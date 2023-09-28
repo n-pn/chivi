@@ -91,26 +91,40 @@ class UP::Upstem
     self.db.query_one?(query, id, uname, as: self)
   end
 
-  def self.get_all(uname : String, limit = 50, offset = 0)
-    query = @@schema.select_stmt do |sql|
-      sql << <<-SQL
-        where viuser_id = (select id from viusers where uname = $1)
-        order by mtime desc
-        limit $2 offset $3
-        SQL
+  def self.build_select_sql(guard : Int32 = 4,
+                            order = "mtime",
+                            uname : String? = nil,
+                            label : String? = nil,
+                            wn_id : Int32? = nil)
+    args = [guard] of String | Int32
+
+    query = String.build do |sql|
+      sql << "select * from #{@@schema.table} where guard <= $1"
+
+      if uname
+        args << uname
+        sql << " and viuser_id = (select id from viusers where uname = $2)"
+      end
+
+      if label
+        args << label
+        sql << " and $#{args.size} = any(labels)"
+      end
+
+      if wn_id
+        args << wn_id
+        sql << " and wninfo_id = $#{args.size}"
+      end
+
+      case order
+      when "ctime" then sql << " order by id desc"
+      when "mtime" then sql << " order by mtime desc"
+      when "wsize" then sql << " order by word_count desc"
+      end
+
+      sql << " limit $#{args.size &+ 1} offset $#{args.size &+ 2}"
     end
 
-    self.db.query_all(query, uname, limit, offset, as: self)
-  end
-
-  def self.get_all(limit = 50, offset = 0)
-    query = @@schema.select_stmt do |sql|
-      sql << <<-SQL
-        order by mtime desc
-        limit $1 offset $2
-        SQL
-    end
-
-    self.db.query_all(query, limit, offset, as: self)
+    {query, args}
   end
 end

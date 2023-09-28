@@ -37,9 +37,8 @@ outputs = inputs.map do |input|
   zname = "［#{vbook.author_zh}］#{vbook.btitle_zh} [wn:#{input.wn_id}]"
   vname = "[#{vbook.author_vi}] #{vbook.btitle_hv} [wn:#{input.wn_id}]"
   labels = [vbook.author_vi, "wn:#{input.wn_id}"]
-  entry = UP::Upstem.new(zname, vname, labels)
+  entry = UP::Upstem.new(viusers[input.sname[1..]], sname: input.sname, zname: zname, vname: vname, labels: labels)
 
-  entry.viuser_id = viusers[input.sname[1..]]
   entry.wninfo_id = input.wn_id
   entry.vintro = vbook.bintro
 

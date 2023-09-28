@@ -9,17 +9,19 @@
 
 {#if !route_id.includes('_auth')}
   <div class="app-vessel">
+    <a class="pledge" href="/hd/chuong-tiet/gioi-thieu">
+      <strong
+        >Phần danh sách chương tiết đã được thay đổi về thiết kế. Bấm vào đây để
+        xem chi tiết.</strong>
+    </a>
+
     <p class="pledge">
-      <strong>
+      <em>
         Trang web làm lại, nếu gặp lỗi làm ơn liên hệ trực tiếp qua Facebook của
         trang hoặc Discord (kéo xuống dưới cùng để xem liên kết).
-      </strong>
-      <br />
-      <em>
-        Cập nhật ngày 23/09/2023: Tính năng dịch bằng Bing + Dịch máy kiểu cũ đã
-        mở trở lại. Các bạn bấm vào chỗ [Dịch thô] để xem.
       </em>
     </p>
+
     {#if $_user.privi < 0}
       <a class="pledge" href="/_auth/signup">
         Đăng ký tài khoản <strong>Chivi</strong> ngay hôm nay để mở khoá các tính

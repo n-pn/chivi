@@ -10,16 +10,19 @@ abstract class AC::Base
   private def get_wnseed(wn_id : Int32, sname : String)
     CACHE["#{wn_id}/#{sname}"] ||= begin
       wninfo = WN::Wnstem.load(wn_id, sname) do
-        unless read_privi = WN::Wnstem.auto_create_privi(sname, _uname)
-          raise NotFound.new("Nguồn truyện không tồn tại")
-        end
-
-        read_privi -= 1 if wn_id == 0
-
+        raise "invalid" unless read_privi = map_read_privi(sname)
         WN::Wnstem.new(wn_id, sname, wn_id.to_s, read_privi.to_i16).upsert!
       end
 
       wninfo.tap(&.init!(force: false))
+    end
+  end
+
+  private def map_read_privi(sname : String)
+    case sname
+    when "~draft" then 1
+    when "~avail" then 2
+    when "~chivi" then 3
     end
   end
 
