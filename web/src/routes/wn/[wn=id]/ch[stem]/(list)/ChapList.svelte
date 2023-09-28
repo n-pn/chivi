@@ -21,16 +21,18 @@
   const _user = get_user()
 
   function map_privi(ch_no: number): string[] {
-    let min = seed_data.read_privi
-    if (ch_no <= seed_data.gift_chaps) min -= 1
+    let plock = seed_data.read_privi
+    if (ch_no <= Math.floor(curr_seed.chmax / 2)) plock = 0
 
-    if ($_user.privi >= min) {
+    if ($_user.privi >= plock) {
       return ['Bạn đủ quyền xem chương', 'lock-open', 'tabler']
-    } else if (min < 1) {
-      return ['Bạn cần đăng nhập để xem chương', 'lock', 'tabler']
-    } else {
-      return [`Cần quyền hạn ${min} để xem chương`, `privi-${min}`, 'sprite']
     }
+
+    if (plock < 1) {
+      return ['Bạn cần đăng nhập để xem chương', 'lock', 'tabler']
+    }
+
+    return [`Cần quyền hạn ${plock} để xem chương`, `privi-${plock}`, 'sprite']
   }
 </script>
 

@@ -5,7 +5,7 @@
     icon: string
     text: string
     desc?: string
-    disabled?: boolean
+    mute?: boolean
   }
 </script>
 
@@ -19,11 +19,11 @@
 
 <article class="section island">
   <header class="head">
-    {#each tabs as { type, href, icon, text, desc, disabled }}
+    {#each tabs as { type, href, icon, text, desc, mute }}
       <a
         href="{root}{href}"
         class="htab"
-        class:disabled
+        class:mute
         class:_active={type == _now}
         data-tip={desc}>
         <SIcon name={icon} />
@@ -104,7 +104,7 @@
       }
     }
 
-    &.disabled {
+    &.mute {
       --color: var(--fg-mute);
     }
   }

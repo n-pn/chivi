@@ -43,26 +43,26 @@
     }
   }
 
-  $: [can_upsert, can_reload] = check_edit_privi(
-    curr_seed.sname,
-    seed_data.edit_privi,
-    $_user
-  )
+  // $: [can_upsert, can_reload] = check_edit_privi(
+  //   curr_seed.sname,
+  //   seed_data.edit_privi,
+  //   $_user
+  // )
 
-  const check_edit_privi = (
-    sname: string,
-    edit_privi: number,
-    user: App.CurrentUser
-  ): [boolean, boolean] => {
-    if (user.privi > 3) return [true, true]
+  // const check_edit_privi = (
+  //   sname: string,
+  //   edit_privi: number,
+  //   user: App.CurrentUser
+  // ): [boolean, boolean] => {
+  //   if (user.privi > 3) return [true, true]
 
-    if (sname[0] == '@') {
-      const owner = sname == '@' + user.uname
-      return [owner && user.privi > 1, owner && user.privi > 0]
-    } else {
-      return [user.privi >= edit_privi, user.privi >= edit_privi - 1]
-    }
-  }
+  //   if (sname[0] == '@') {
+  //     const owner = sname == '@' + user.uname
+  //     return [owner && user.privi > 1, owner && user.privi > 0]
+  //   } else {
+  //     return [user.privi >= edit_privi, user.privi >= edit_privi - 1]
+  //   }
+  // }
 
   // prettier-ignore
   const privi_str = (privi: number) => privi < 1 ? 'đăng nhập' : `quyền hạn ${privi}`
@@ -111,30 +111,22 @@
   </div>
 {/if}
 
-{#if seed_data.read_privi > -1}
+{#if curr_seed.chmax > 0}
   <div class="chap-hint">
     <SIcon name="alert-circle" />
-    {#if seed_data.read_privi > 0}
-      <span>
-        Chương từ <span class="em">1</span> tới
-        <span class="em">{seed_data.gift_chaps}</span> cần
-        <strong class="em">{privi_str(seed_data.read_privi - 1)}</strong> để xem
-        nội dung.
-      </span>
-    {/if}
+    <span>
+      Chương từ <span class="em">1</span> tới
+      <span class="em">{seed_data.gift_chaps}</span> cần
+      <strong class="em">đăng nhập</strong> để xem nội dung.
+    </span>
 
-    {#if curr_seed.chmax > seed_data.gift_chaps}
-      <span>
-        Chương từ <span class="em">{seed_data.gift_chaps + 1}</span> tới
-        <span class="em">{curr_seed.chmax}</span> cần
-        <strong class="em">{privi_str(seed_data.read_privi)}</strong> để xem nội
-        dung.
-      </span>
-    {/if}
+    <span>
+      Chương từ <span class="em">{seed_data.gift_chaps + 1}</span> tới
+      <span class="em">{curr_seed.chmax}</span> cần
+      <strong class="em">{privi_str(seed_data.read_privi)}</strong> để xem nội dung.
+    </span>
   </div>
-{/if}
 
-{#if curr_seed.chmax > 0}
   <chap-list>
     <ChapList
       {nvinfo}
@@ -155,7 +147,19 @@
     </Footer>
   </chap-list>
 {:else}
-  <p class="empty">Không có nội dung :(</p>
+  <div class="empty">
+    <h2>Chưa có text gốc.</h2>
+    <p>
+      Hãy liên hệ với ban quản trị để khắc phục. Thông tin liên hệ xem cuối
+      trang.
+    </p>
+
+    <p>
+      Nếu bạn có đủ quyền hạn, có thể bấm vào <a
+        href="{$page.url.pathname}/up"
+        class="m-link">Đăng tải</a> để tự thêm text gốc.
+    </p>
+  </div>
 {/if}
 
 <style lang="scss">
@@ -266,14 +270,16 @@
   }
 
   .empty {
+    @include flex-ca;
+    flex-direction: column;
     min-height: 30vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     text-align: center;
     font-style: italic;
-    @include ftsize(lg);
+    // @include ftsize(lg);
     @include fgcolor(neutral, 5);
+    h2 {
+      margin-bottom: 2rem;
+    }
   }
 
   .foot {

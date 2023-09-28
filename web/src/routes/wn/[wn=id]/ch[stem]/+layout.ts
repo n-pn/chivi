@@ -6,6 +6,7 @@ export interface StemList {
   chivi: CV.Chroot
   draft: CV.Chroot
   avail: CV.Chroot
+  globs: CV.Chroot[]
 }
 
 export interface SeedData {
@@ -28,5 +29,8 @@ export const load = (async ({ url, fetch, params: { wn, stem = '' } }) => {
   const info_path = `/_wn/seeds/${wn_id}/${stem}`
   const seed_data = await api_get<SeedData>(info_path, fetch)
 
-  return { seed_list, ...seed_data }
+  const up_api = `/_up/stems?wn=${wn_id}`
+  const { items: ustems } = await api_get<{ items: CV.Upstem[] }>(up_api, fetch)
+
+  return { seed_list, ustems, ...seed_data }
 }) satisfies LayoutLoad

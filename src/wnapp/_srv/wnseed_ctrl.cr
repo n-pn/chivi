@@ -52,9 +52,9 @@ class WN::SeedCtrl < AC::Base
         _flag: wnseed._flag,
         fresh: fresh,
         # extra
-        read_privi: wnseed.read_privi(_uname),
+        read_privi: wnseed.read_privi,
         edit_privi: wnseed.edit_privi(_uname),
-        gift_chaps: wnseed.lower_read_privi_count,
+        gift_chaps: wnseed.chap_total // 2,
       },
     }
   end

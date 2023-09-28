@@ -84,13 +84,13 @@ class WN::Wnstem
     self.seed_type.edit_privi(is_owner: owner?(uname))
   end
 
-  def read_privi(uname = "")
-    self.seed_type.read_privi(is_owner: owner?(uname), base_privi: privi.to_i)
-  end
-
-  def lower_read_privi_count
-    chap_count = @chap_total // 2
-    chap_count > 40 ? chap_count : 40
+  def read_privi
+    case @sname
+    when "~draft" then 1
+    when "~avail" then 2
+    when "~chivi" then 3
+    else               2
+    end
   end
 
   def unpack_old_text!(force : Bool = false)
@@ -106,7 +106,7 @@ class WN::Wnstem
     #   db.query_each(sql) do |rs|
     #     ch_no, s_cid = rs.read(Int32, Int32)
     #     txt_path = TextStore.gen_txt_path(sname, s_bid, s_cid)
-
+    seed
     #     if File.file?(txt_path)
     #       c_len = File.read(txt_path, encoding: "GB18030").size
     #       avail += 1 if c_len > 0

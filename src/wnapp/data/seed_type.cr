@@ -6,12 +6,12 @@ enum WN::SeedType
   Globs
   Other
 
-  def read_privi(is_owner = false, base_privi = 2)
+  def read_privi(is_owner = false)
     case self
     when Draft then 1
     when Avail then 2
     when Chivi then 3
-    when Users then is_owner ? 1 : base_privi
+    when Users then is_owner ? 0 : 2
     else            3
     end
   end
@@ -21,7 +21,7 @@ enum WN::SeedType
     when Draft then 1
     when Avail then 2
     when Chivi then 3
-    when Users then is_owner ? 2 : 4
+    when Users then is_owner ? 1 : 4
     else            3
     end
   end

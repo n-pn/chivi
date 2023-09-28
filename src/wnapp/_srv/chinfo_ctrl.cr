@@ -16,8 +16,8 @@ class WN::ChinfoCtrl < AC::Base
     wnseed = get_wnseed(wn_id, sname)
     chinfo = get_chinfo(wnseed, ch_no)
 
-    read_privi = wnseed.read_privi(_uname)
-    read_privi &-= 1 if ch_no <= wnseed.lower_read_privi_count
+    read_privi = wnseed.read_privi
+    read_privi = 0 if ch_no <= wnseed.chap_total // 2
 
     load_mode = -1 if _privi < read_privi
 
@@ -44,8 +44,8 @@ class WN::ChinfoCtrl < AC::Base
     wnseed = get_wnseed(wn_id, sname)
     chinfo = get_chinfo(wnseed, ch_no)
 
-    plock = wnseed.read_privi(_uname)
-    plock &-= 1 if ch_no <= wnseed.lower_read_privi_count
+    plock = wnseed.read_privi
+    plock = 0 if ch_no <= wnseed.chap_total // 2
 
     ztext = [chinfo.ztitle]
 
