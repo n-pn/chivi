@@ -20,7 +20,7 @@
         <th>#</th>
         <th>Người gửi</th>
         <th>Người nhận</th>
-        <th>Số vcoin</th>
+        <th>Vcoin</th>
         <th>Lý do</th>
         <th>Thời gian</th>
       </tr>
@@ -32,7 +32,7 @@
         {@const target = data.users[xlog.target_id]}
         <tr>
           <td>{xlog.id}</td>
-          <td>
+          <td class="user">
             <a
               class="cv-user"
               href={pager.gen_url({ vu_id: xlog.sender_id, pg: 1 })}
@@ -41,7 +41,7 @@
               {sender.uname}
             </a>
           </td>
-          <td>
+          <td class="user">
             <a
               class="cv-user"
               href={pager.gen_url({ vu_id: xlog.target_id, pg: 1 })}
@@ -51,7 +51,9 @@
             </a>
           </td>
           <td>{xlog.amount}</td>
-          <td class="reason">{xlog.reason}</td>
+          <td data-tip={xlog.reason}>
+            <div class="reason">{xlog.reason}</div>
+          </td>
           <td class="ctime">{rel_time(xlog.ctime)}</td>
         </tr>
       {/each}
@@ -83,12 +85,15 @@
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
+    @include clamp($width: null);
+    max-width: 7rem;
   }
 
   .reason {
     @include ftsize(sm);
     @include clamp($width: null);
     @include fgcolor(secd);
+    max-width: 100%;
   }
 
   .ctime {

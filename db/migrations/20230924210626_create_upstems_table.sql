@@ -2,21 +2,23 @@
 -- SQL in section 'Up' is executed when this migration is applied
 CREATE TABLE upstems(
   id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  -- ordering and filtering
+  sname varchar NOT NULL DEFAULT '',
+  mtime bigint NOT NULL DEFAULT 0,
   -- linking
   viuser_id integer NOT NULL REFERENCES viusers(id) ON UPDATE CASCADE ON DELETE CASCADE,
   wninfo_id integer REFERENCES wninfos(id) ON UPDATE CASCADE ON DELETE SET NULL,
   -- heading
   zname citext NOT NULL DEFAULT '',
   vname citext NOT NULL DEFAULT '',
-  uslug varchar NOT NULL DEFAULT '',
   -- introduction
   vintro text NOT NULL DEFAULT '',
   labels text[] NOT NULL DEFAULT '{}',
-  -- ordering and filtering
-  sname varchar NOT NULL DEFAULT '',
-  mtime bigint NOT NULL DEFAULT 0,
+  -- control
+  gifts smallint NOT NULL DEFAULT 2,
+  muplt smallint NOT NULL DEFAULT 0,
   guard smallint NOT NULL DEFAULT 0,
-  -- stats
+  --
   chap_count integer NOT NULL DEFAULT 0,
   word_count integer NOT NULL DEFAULT 0,
   -- timestamps

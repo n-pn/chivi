@@ -17,7 +17,9 @@ export const load = (async ({ url, parent, params, fetch }) => {
   const up_id = +params.id
   const [ch_no, p_idx] = split_chap(params.chap)
 
-  const cinfo_path = `/_up/chaps/${up_id}/${ch_no}/${p_idx}`
+  const force = url.searchParams.get('force') || 'false'
+  const cinfo_path = `/_up/chaps/${up_id}/${ch_no}/${p_idx}?force=${force}`
+
   const { cinfo, rdata, error } = await api_get<Chdata>(cinfo_path, fetch)
 
   const _title = `${cinfo.title} - ${ustem.vname}`

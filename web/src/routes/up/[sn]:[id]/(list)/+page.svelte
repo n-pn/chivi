@@ -27,8 +27,7 @@
 
   $: base_href = `/up/${data.sname}:${data.up_id}`
 
-  // prettier-ignore
-  const privi_str = (privi: number) => privi < 1 ? 'đăng nhập' : `quyền hạn ${privi}`
+  $: free_chap = Math.floor((ustem.chap_count * ustem.gifts) / 4)
 </script>
 
 <page-info>
@@ -47,14 +46,14 @@
   <SIcon name="alert-circle" />
   <span>
     Chương từ <span class="em">1</span> tới
-    <span class="em">{Math.floor(chmax / 2)}</span> cần
+    <span class="em">{free_chap}</span> cần
     <strong class="em">đăng nhập</strong> để xem nội dung.
   </span>
 
   <span>
-    Chương từ <span class="em">{Math.floor(chmax / 2) + 1}</span> tới
+    Chương từ <span class="em">{free_chap + 1}</span> tới
     <span class="em">{chmax}</span> cần
-    <strong class="em">{privi_str(2)}</strong> để xem nội dung.
+    <strong class="em">thanh toán vcoin</strong> để mở khoá.
   </span>
 </div>
 

@@ -62,12 +62,8 @@
   import { page } from '$app/stores'
   import { Pager } from '$lib/pager'
 
-  import { config, get_user } from '$lib/stores'
-  const _user = get_user()
-
-  import { api_call } from '$lib/api_call'
   import { afterNavigate } from '$app/navigation'
-  import { seed_path, chap_path, _pgidx } from '$lib/kit_path'
+  import { chap_path, _pgidx } from '$lib/kit_path'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Footer from '$gui/sects/Footer.svelte'
@@ -88,8 +84,8 @@
     ? chap_path(stem_path, rdata._prev, xargs)
     : stem_path
 
-  $: next_path = rdata._succ
-    ? chap_path(stem_path, rdata._succ, xargs)
+  $: next_path = rdata._next
+    ? chap_path(stem_path, rdata._next, xargs)
     : stem_path
 
   $: pager = new Pager($page.url, { type: 'ai', mode: 'auto' })
@@ -101,6 +97,7 @@
   import { rel_time_vp } from '$utils/time_utils'
   import { browser } from '$app/environment'
   import Notext from './Notext.svelte'
+  import { config } from '$lib/stores'
 
   $: crumb = [
     { text: 'Dự án cá nhân', href: `/up` },
@@ -255,7 +252,7 @@
   {/if}
 
   {#if data.error}
-    <Notext {data} />
+    <Notext {data} {pager} />
   {:else if vtran.error}
     <section class="error">
       <h1>Lỗi hệ thống:</h1>
@@ -293,7 +290,7 @@
     <a
       href={next_path}
       class="m-btn _fill navi-item"
-      class:_primary={rdata._succ}
+      class:_primary={rdata._next}
       data-key="75"
       data-kbd="→">
       <span>Kế tiếp</span>

@@ -23,13 +23,12 @@ struct CV::UgpriviForm
   end
 
   private def record_action!(user : Viuser, vcoin_req : Int32, pdays : Int32)
-    xlog = VcoinXlog.new({
-      kind: VcoinXlog::Kind::PriviUg.value,
-      sender_id: user.id, target_id: -1, target_name: "Chivi",
+    xlog = Xvcoin.new({
+      kind: :privi_ug, sender_id: user.id, target_id: -1,
       amount: vcoin_req, reason: "Nâng cấp quyền hạn Chivi lên #{@privi} trong #{pdays} ngày.",
     })
 
-    xlog.save!
+    xlog.insert!
 
     content = String.build do |io|
       io << <<-HTML

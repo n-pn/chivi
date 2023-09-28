@@ -1,7 +1,9 @@
 declare namespace CV {
   interface Upstem {
     id: number
+
     sname: string
+    mtime: number
 
     zname: string
     vname: string
@@ -10,8 +12,9 @@ declare namespace CV {
     vintro: string
     labels: string[]
 
-    mtime: number
     guard: number
+    gifts: number
+    multp: number
 
     chap_count: number
     word_count: number

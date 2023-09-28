@@ -1,6 +1,7 @@
 import { redirect } from '@sveltejs/kit'
 import { api_get } from '$lib/api_call'
 import type { LayoutLoad } from './$types'
+import { book_nav, seed_nav, quick_read_v2 } from '$utils/header_util'
 
 export interface StemList {
   chivi: CV.Chroot
@@ -15,8 +16,9 @@ export interface SeedData {
   seed_data: CV.Wnstem
 }
 
-export const load = (async ({ url, fetch, params: { wn, stem = '' } }) => {
-  const wn_id = parseInt(wn, 10)
+export const load = (async ({ url, fetch, params: { stem = '' }, parent }) => {
+  const { nvinfo, ubmemo } = await parent()
+  const wn_id = nvinfo.id
 
   if (!stem.match(/^[~@!+$]/)) {
     const path = url.pathname.replace(`/ch${stem}`, `/ch~chivi`) + url.search
@@ -31,6 +33,13 @@ export const load = (async ({ url, fetch, params: { wn, stem = '' } }) => {
 
   const up_api = `/_up/stems?wn=${wn_id}`
   const { items: ustems } = await api_get<{ items: CV.Upstem[] }>(up_api, fetch)
+  const _meta = {
+    left_nav: [
+      book_nav(nvinfo.bslug, nvinfo.vtitle, 'tl'),
+      seed_nav(nvinfo.bslug, stem, 1, ''),
+    ],
+    right_nav: [quick_read_v2(nvinfo, ubmemo)],
+  }
 
-  return { seed_list, ustems, ...seed_data }
+  return { seed_list, ustems, ...seed_data, _meta }
 }) satisfies LayoutLoad

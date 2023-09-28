@@ -13,7 +13,6 @@ class UP::Upstem
   field id : Int32, pkey: true, auto: true
 
   field sname : String = "--"
-  field guard : Int16 = 0
   field mtime : Int64 = Time.utc.to_unix
 
   field viuser_id : Int32 = 0
@@ -21,10 +20,13 @@ class UP::Upstem
 
   field zname : String = ""
   field vname : String = ""
-  field uslug : String = ""
 
   field vintro : String = ""
   field labels : Array(String) = [] of String
+
+  field gifts : Int16 = 2
+  field multp : Int16 = 4
+  field guard : Int16 = 0
 
   field chap_count : Int32 = 0
   field word_count : Int32 = 0
@@ -40,11 +42,10 @@ class UP::Upstem
   end
 
   def after_initialize
+    @vname = MT::QtCore.tl_hvname(@zname) if @vname.empty?
+
     @labels.map! { |label| MT::QtCore.tl_hvword(label.strip, cap: true) }
     @labels.reject!(&.blank?).uniq!
-
-    @vname = MT::QtCore.tl_hvname(@zname) if @vname.empty?
-    @uslug = TextUtil.tokenize(@vname).join(&.[0])
   end
 
   def get_chaps(chmin : Int32, limit : Int32 = 32)
@@ -70,7 +71,8 @@ class UP::Upstem
   end
 
   def chap_plock(ch_no : Int32, vu_id : Int32 = 0)
-    @viuser_id == vu_id ? 0 : (ch_no < @chap_count // 2 ? 0 : 2)
+    return 0 if @viuser_id == vu_id
+    ch_no <= @chap_count * @gifts // 4 ? 0 : 5
   end
 
   #####

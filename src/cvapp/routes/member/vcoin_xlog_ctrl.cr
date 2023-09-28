@@ -8,7 +8,7 @@ class CV::VcoinXlogCtrl < CV::BaseCtrl
     vu_id = _vu_id if _privi < 3
     pg_no, limit, offset = _paginate(min: 50)
 
-    entries = VcoinXlog.query.order_by(id: :desc)
+    entries = Xvcoin.query.order_by(id: :desc)
     # entries.where("kind >= 0")
     entries.where("(sender_id = ? or target_id = ?)", vu_id, vu_id) if vu_id
 

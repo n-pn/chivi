@@ -46,7 +46,7 @@ class UP::Chrepo
     return "" unless (ch_no > 1) && (pinfo = self.find_prev(ch_no))
 
     psize = pinfo.psize
-    psize > 1 ? "#{pinfo.ch_no}-#{psize}" : pinfo.ch_no.to_s
+    psize > 1 ? "#{pinfo.ch_no}_#{psize}" : pinfo.ch_no.to_s
   end
 
   def next_part(ch_no : Int32, p_idx : Int32, psize : Int32)

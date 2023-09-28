@@ -41,11 +41,15 @@ export const default_meta: App.PageMeta = {
 
 export function quick_read_v2({ bslug }, { sname, chidx, cpart, locked }) {
   sname = fix_sname(sname)
+  const chap = cpart > 1 ? `${chidx}_${cpart}` : chidx
 
   return {
     'text': chidx > 0 ? 'Đọc tiếp' : 'Đọc thử',
     'icon': locked ? 'player-skip-forward' : 'player-play',
-    'href': chap_path(bslug, sname, chidx, cpart),
+    'href': chap_path(`/wn/${bslug}/ch${sname}`, chap, {
+      rtype: 'ai',
+      rmode: 'avail',
+    }),
     'data-show': 'tm',
   } as App.HeadItem
 }
