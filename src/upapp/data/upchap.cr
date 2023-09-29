@@ -80,7 +80,10 @@ class UP::Chinfo
 
     parts.each_with_index do |ptext, p_idx|
       save_path = self.file_path(p_idx, "raw.txt", spath: spath, txt_dir: txt_dir)
-      File.write(save_path, ptext)
+      File.open(save_path, "w") do |file|
+        file << title << '\n' if p_idx > 0
+        file << ptext
+      end
     end
 
     @cksum

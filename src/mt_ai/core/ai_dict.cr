@@ -28,7 +28,7 @@ class MT::AiDict
   end
 
   def get(zstr : String, epos : MtEpos) : MtTerm
-    get?(zstr, epos) || get_alt?(zstr) || init(zstr, epos)
+    get?(zstr, epos) || init(zstr, epos)
   end
 
   def get?(zstr : String, epos : MtEpos)
@@ -43,30 +43,33 @@ class MT::AiDict
     end
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def init(zstr : String, epos : MtEpos) : MtTerm
     case epos
     when .pu?
       vstr = CharUtil.normalize(zstr)
-      attr = MtAttr.parse_punct(zstr)
-      @auto_dict.add(zstr, epos, vstr, attr)
+      add_temp(zstr, epos, vstr, MtAttr.parse_punct(zstr))
     when .em?
-      @auto_dict.add(zstr, epos, zstr, MtAttr[Asis, Capx])
+      add_temp(zstr, epos, zstr, MtAttr[Asis, Capx])
     when .url?
-      vstr = CharUtil.normalize(zstr)
-      @auto_dict.add(zstr, epos, vstr, MtAttr[Asis])
+      add_temp(zstr, epos, CharUtil.normalize(zstr), MtAttr[Asis])
     when .od?
-      @auto_dict.add(zstr, epos, init_od(zstr), :none)
+      add_temp(zstr, epos, init_od(zstr), :none)
     when .cd?
-      @auto_dict.add(zstr, epos, init_cd(zstr), :none)
+      add_temp(zstr, epos, init_cd(zstr), :none)
     when .vv?
-      @auto_dict.add(zstr, epos, init_vv(zstr), :none)
+      get_alt?(zstr) || add_temp(zstr, epos, init_vv(zstr), :none)
     when .nr?
-      vstr = init_nr(zstr)
-      @auto_dict.add(zstr, epos, vstr, :none)
+      get_alt?(zstr) || add_temp(zstr, epos, init_nr(zstr), :none)
     else
-      vstr = QtCore.tl_hvword(zstr)
-      @auto_dict.add(zstr, epos, vstr, :none)
+      get_alt?(zstr) || add_temp(zstr, epos, QtCore.tl_hvword(zstr), :none)
     end
+  end
+
+  @[AlwaysInline]
+  def add_temp(zstr : String, epos : MtEpos, vstr : String, attr : MtAttr = :none)
+    # TODO: Add to main_dict directly?
+    @auto_dict.add(zstr, epos, vstr, attr)
   end
 
   def init_nr(zstr : String)

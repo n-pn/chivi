@@ -67,6 +67,17 @@ class WN::Wnstem
     }
   end
 
+  @[AlwaysInline]
+  def gift_chaps
+    gift_chaps = @chap_total // 2
+    gift_chaps < 40 ? 40 : gift_chaps
+  end
+
+  @[AlwaysInline]
+  def chap_plock(ch_no : Int32)
+    ch_no <= gift_chaps ? 0 : self.read_privi
+  end
+
   def remote?
     self.seed_type.globs?
   end

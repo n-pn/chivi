@@ -27,7 +27,11 @@
 
   $: base_href = `/up/${data.sname}:${data.up_id}`
 
-  $: free_chap = Math.floor((ustem.chap_count * ustem.gifts) / 4)
+  let free_chap = 40
+  $: {
+    free_chap = Math.floor((ustem.chap_count * ustem.gifts) / 4)
+    if (free_chap < 40) free_chap = 40
+  }
 </script>
 
 <page-info>
@@ -44,17 +48,24 @@
 
 <div class="chap-hint">
   <SIcon name="alert-circle" />
-  <span>
-    Chương từ <span class="em">1</span> tới
-    <span class="em">{free_chap}</span> cần
-    <strong class="em">đăng nhập</strong> để xem nội dung.
-  </span>
+  {#if free_chap < chmax}
+    <span>
+      Chương từ <span class="em">1</span> tới
+      <span class="em">{free_chap}</span> cần
+      <strong class="em">đăng nhập</strong> để xem nội dung.
+    </span>
 
-  <span>
-    Chương từ <span class="em">{free_chap + 1}</span> tới
-    <span class="em">{chmax}</span> cần
-    <strong class="em">thanh toán vcoin</strong> để mở khoá.
-  </span>
+    <span>
+      Chương từ <span class="em">{free_chap + 1}</span> tới
+      <span class="em">{chmax}</span> cần
+      <strong class="em">thanh toán vcoin</strong> để mở khoá.
+    </span>
+  {:else}
+    <span>
+      Bạn cần thiết
+      <strong class="em">đăng nhập</strong> để xem nội dung.
+    </span>
+  {/if}
 </div>
 
 {#if chmax > 0}

@@ -23,12 +23,13 @@ struct CV::UgpriviForm
   end
 
   private def record_action!(user : Viuser, vcoin_req : Int32, pdays : Int32)
-    xlog = Xvcoin.new({
+    reason = "Nâng cấp quyền hạn Chivi lên #{@privi} trong #{pdays} ngày."
+    xlog = Xvcoin.new(
       kind: :privi_ug, sender_id: user.id, target_id: -1,
-      amount: vcoin_req, reason: "Nâng cấp quyền hạn Chivi lên #{@privi} trong #{pdays} ngày.",
-    })
+      amount: vcoin_req.to_f64, reason: reason, target_name: "Chivi",
+    )
 
-    xlog.insert!
+    xlog = xlog.insert!
 
     content = String.build do |io|
       io << <<-HTML
@@ -48,7 +49,7 @@ struct CV::UgpriviForm
 
     Unotif.new(
       viuser_id: user.id, content: content,
-      action: :privi_upgrade, object_id: xlog.id, byuser_id: -1,
+      action: :privi_upgrade, object_id: xlog.id.not_nil!, byuser_id: -1,
     ).insert!
 
     MailUtil.send(to: user.email, name: user.uname) do |mail|

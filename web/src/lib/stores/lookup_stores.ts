@@ -43,7 +43,7 @@ export const data = {
   async put(new_data: Partial<Data> = {}) {
     const old_data = get(data)
     if (old_data.fpath == new_data.fpath) {
-      data.set({ ...old_data, ...old_data })
+      data.set({ ...old_data, ...new_data })
     } else {
       data.set({ ...init_data, ...new_data })
     }

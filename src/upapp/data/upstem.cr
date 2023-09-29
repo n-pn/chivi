@@ -41,6 +41,11 @@ class UP::Upstem
     after_initialize
   end
 
+  def mkdirs!
+    Dir.mkdir_p("var/up_db/stems/#{@sname}")
+    Dir.mkdir_p("var/up_db/texts/#{@sname}/#{@id}")
+  end
+
   def after_initialize
     @vname = MT::QtCore.tl_hvname(@zname) if @vname.empty?
 
@@ -70,9 +75,16 @@ class UP::Upstem
     @@db.exec(query, @chap_count, @mtime, @id)
   end
 
+  @[AlwaysInline]
+  def gift_chaps
+    gift_chaps = @chap_count * @gifts // 4
+    gift_chaps < 40 ? 40 : gift_chaps
+  end
+
+  @[AlwaysInline]
   def chap_plock(ch_no : Int32, vu_id : Int32 = 0)
     return 0 if @viuser_id == vu_id
-    ch_no <= @chap_count * @gifts // 4 ? 0 : 5
+    ch_no <= gift_chaps ? 0 : 5
   end
 
   #####

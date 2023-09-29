@@ -11,42 +11,40 @@ class WN::ChinfoCtrl < AC::Base
     render json: wnseed.get_chaps(pg_no)
   end
 
-  @[AC::Route::GET("/:sname/:ch_no")]
-  def show(wn_id : Int32, sname : String, ch_no : Int32, load_mode : Int32 = 1)
-    wnseed = get_wnseed(wn_id, sname)
-    chinfo = get_chinfo(wnseed, ch_no)
+  # @[AC::Route::GET("/:sname/:ch_no")]
+  # def show(wn_id : Int32, sname : String, ch_no : Int32, load_mode : Int32 = 1)
+  #   wnseed = get_wnseed(wn_id, sname)
+  #   chinfo = get_chinfo(wnseed, ch_no)
 
-    read_privi = wnseed.read_privi
-    read_privi = 0 if ch_no <= wnseed.chap_total // 2
+  #   read_privi = wnseed.read_privi
+  #   read_privi = 0 if ch_no <= wnseed.chap_total // 2
 
-    load_mode = -1 if _privi < read_privi
+  #   load_mode = -1 if _privi < read_privi
 
-    ztext = Chtext.new(wnseed, chinfo)
-    cksum = ztext.get_cksum!(_uname, _mode: load_mode)
-    cbase = "#{wnseed.wn_id}/#{chinfo.ch_no}-#{cksum}" unless cksum.empty?
+  #   ztext = Chtext.new(wnseed, chinfo)
+  #   cksum = ztext.get_cksum!(_uname, _mode: load_mode)
+  #   cbase = "#{wnseed.wn_id}/#{chinfo.ch_no}-#{cksum}" unless cksum.empty?
 
-    render json: {
-      cinfo: chinfo,
-      rdata: {
-        privi: read_privi,
-        rlink: chinfo.rlink,
+  #   render json: {
+  #     cinfo: chinfo,
+  #     rdata: {
+  #       privi: read_privi,
+  #       rlink: chinfo.rlink,
 
-        sizes: chinfo.sizes,
-        cbase: cbase,
-      },
-      _prev: wnseed.find_prev(ch_no),
-      _succ: wnseed.find_succ(ch_no),
-    }
-  end
+  #       sizes: chinfo.sizes,
+  #       cbase: cbase,
+  #     },
+  #     _prev: wnseed.find_prev(ch_no),
+  #     _succ: wnseed.find_succ(ch_no),
+  #   }
+  # end
 
   @[AC::Route::GET("/:sname/:ch_no/:p_idx")]
   def show_part(wn_id : Int32, sname : String, ch_no : Int32, p_idx : Int32, rmode : Int32 = 1)
     wnseed = get_wnseed(wn_id, sname)
     chinfo = get_chinfo(wnseed, ch_no)
 
-    plock = wnseed.read_privi
-    plock = 0 if ch_no <= wnseed.chap_total // 2
-
+    plock = wnseed.chap_plock(ch_no)
     ztext = [chinfo.ztitle]
 
     if _privi < plock

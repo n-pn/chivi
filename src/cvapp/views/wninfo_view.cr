@@ -7,8 +7,8 @@ struct CV::WninfoView
   end
 
   def cover_url
-    return "/covers/#{@data.bcover}" unless @data.bcover.empty?
-    @data.scover.blank? ? "/covers/_blank.webp" : @data.scover
+    return "https://cdn.chivi.app/covers/#{@data.bcover}" unless @data.bcover.empty?
+    @data.scover.blank? ? "https://cdn.chivi.app/covers/_blank.webp" : @data.scover
   end
 
   def to_json(jb : JSON::Builder)

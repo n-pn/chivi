@@ -72,6 +72,7 @@
   }
 
   function check_capped(vstr: string) {
+    if (!vstr) return [false, 0]
     const words = vstr.split(' ')
 
     let capped: number

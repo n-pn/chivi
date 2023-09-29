@@ -54,7 +54,7 @@ class WN::SeedCtrl < AC::Base
         # extra
         read_privi: wnseed.read_privi,
         edit_privi: wnseed.edit_privi(_uname),
-        gift_chaps: wnseed.chap_total // 2,
+        gift_chaps: wnseed.gift_chaps,
       },
     }
   end

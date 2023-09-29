@@ -45,6 +45,8 @@ class UP::UpstemCtrl < AC::Base
     form.wninfo_id = nil if form.wninfo_id == 0
 
     saved = form.insert!
+    saved.mkdirs!
+
     render json: saved
   end
 
@@ -68,6 +70,8 @@ class UP::UpstemCtrl < AC::Base
     end
 
     form.viuser_id = term.viuser_id
+
+    form.sname = term.sname
     form.mtime = term.mtime
 
     form.created_at = term.created_at

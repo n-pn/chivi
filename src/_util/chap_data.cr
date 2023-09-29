@@ -88,17 +88,13 @@ struct ChapData
       con_path = mtl_2_path
     when m_alg == "mtl_3"
       con_path = mtl_3_path
-    when File.file?(mtl_1_path) # mode == avail
-      m_alg = "mtl_1"
-      con_path = mtl_1_path
+    when File.file?(mtl_3_path) # mode == avail
+      m_alg = "mtl_3"
+      con_path = mtl_3_path
       is_existed = true
     when File.file?(mtl_2_path) # mode == avail
       m_alg = "mtl_2"
       con_path = mtl_2_path
-      is_existed = true
-    when File.file?(mtl_3_path) # mode == avail
-      m_alg = "mtl_3"
-      con_path = mtl_3_path
       is_existed = true
     else
       m_alg = "mtl_1"
@@ -106,7 +102,7 @@ struct ChapData
     end
 
     if is_existed || File.file?(con_path)
-      return read_con_file(con_path, m_alg)
+      read_con_file(con_path, m_alg)
     elsif force
       call_hanlp_file_api(self.raw_file_path, con_path, m_alg)
     else

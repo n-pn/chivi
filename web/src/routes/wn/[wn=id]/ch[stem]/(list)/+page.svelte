@@ -111,7 +111,7 @@
   </div>
 {/if}
 
-{#if curr_seed.chmax > 0}
+{#if seed_data.gift_chaps < curr_seed.chmax}
   <div class="chap-hint">
     <SIcon name="alert-circle" />
     <span>
@@ -126,7 +126,18 @@
       <strong class="em">{privi_str(seed_data.read_privi)}</strong> để xem nội dung.
     </span>
   </div>
+{:else if curr_seed.chmax > 0}
+  <div class="chap-hint">
+    <SIcon name="alert-circle" />
+    <span>
+      Chương từ <span class="em">1</span> tới
+      <span class="em">{curr_seed.chmax}</span> cần
+      <strong class="em">đăng nhập</strong> để xem nội dung.
+    </span>
+  </div>
+{/if}
 
+{#if curr_seed.chmax > 0}
   <chap-list>
     <ChapList
       {nvinfo}

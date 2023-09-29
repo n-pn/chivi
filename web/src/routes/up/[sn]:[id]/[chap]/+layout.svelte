@@ -148,7 +148,7 @@
   $: update_lookup_data(vtran)
 
   function update_lookup_data({ lines: zdata }) {
-    let rmode = xargs.rmode
+    let { rmode, rtype } = xargs
     let m_alg = ''
 
     let ztext = rdata.ztext
@@ -159,13 +159,17 @@
       rmode = 'btran'
     } else if (rmode == 'hviet') {
       zdata = []
-    } else {
+    } else if (rtype == 'ai') {
       rmode = 'ctree'
       m_alg = xargs.rmode
+    } else {
+      rmode = 'ctree'
+      zdata = []
     }
 
     const pdict = `up/${ustem.id}`
     const fpath = xargs.spath
+
     const data = { pdict, fpath, ftype: 'up', ztext, [rmode]: zdata, m_alg }
     lookup_data.put(data)
   }
