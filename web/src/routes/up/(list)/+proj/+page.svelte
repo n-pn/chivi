@@ -12,9 +12,12 @@
   export let data: PageData
 
   let form = { ...data.form }
-  let labels = data.form.labels.join(', ')
+  let labels = (form.labels || []).join(', ')
 
   let errors: string
+
+  $: owner =
+    form.viuser_id == 0 || form.viuser_id == $_user.vu_id || $_user.vu_id > 3
 
   const action = '/_up/stems'
 
@@ -41,10 +44,17 @@
     const res = await fetch(url, { method: 'POST', body: form.vintro, headers })
     form.vintro = await res.text()
   }
+
+  const delete_project = async () => {
+    const res = await fetch(`/_up/stems/${form.id}`, { method: 'DELETE' })
+
+    if (res.ok) goto('/up')
+    else errors = await res.text()
+  }
 </script>
 
 <header>
-  <h1>Thêm/sửa dự án cá nhân</h1>
+  <div class="m-chip _primary">Thêm/sửa tay</div>
 </header>
 
 <form {action} method="POST" on:submit|preventDefault={submit}>
@@ -111,7 +121,7 @@
     <div class="form-msg _err">{errors}</div>
   {/if}
 
-  <form-group class="action">
+  <footer class="action">
     <button
       class="m-btn _primary _fill _lg"
       type="submit"
@@ -120,7 +130,20 @@
       <span class="-txt">Lưu thông tin</span>
       <SIcon name="privi-1" iset="icons" />
     </button>
-  </form-group>
+  </footer>
+
+  {#if form.id}
+    <footer class="action _delete">
+      <button
+        type="button"
+        class="m-btn _harmful _fill _lg"
+        disabled={!owner}
+        on:click={delete_project}>
+        <SIcon name="eraser" />
+        <span class="-txt">Xóa dự án</span>
+      </button>
+    </footer>
+  {/if}
 </form>
 
 <style lang="scss">
@@ -128,9 +151,6 @@
     @include border($loc: bottom);
     padding-bottom: var(--gutter-small);
     margin: var(--gutter) 0;
-    h1 {
-      @include ftsize(x3);
-    }
   }
 
   .label {
@@ -139,29 +159,9 @@
     margin-bottom: 0.5rem;
   }
 
-  form-radio {
-    display: block;
-  }
-
-  .radio {
-    display: inline-block;
-    margin-right: 0.5rem;
-  }
-
   .m-input {
     display: block;
     width: 100%;
-  }
-
-  .suggest {
-    margin-top: 0.75rem;
-    margin-right: -0.25rem;
-    margin-bottom: -0.25rem;
-
-    > * {
-      margin-right: 0.25rem;
-      margin-bottom: 0.25rem;
-    }
   }
 
   .form-group {
@@ -189,5 +189,15 @@
     @include fgcolor(tert);
     line-height: 1rem;
     margin-top: 0.5rem;
+  }
+
+  .action {
+    @include flex-ca();
+    margin: 0.75rem 0;
+
+    &._delete {
+      padding-top: 0.75rem;
+      @include border(--bd-soft, $loc: top);
+    }
   }
 </style>

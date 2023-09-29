@@ -60,6 +60,15 @@ class UP::UpstemCtrl < AC::Base
     end
   end
 
+  @[AC::Route::GET("/:up_id/edit")]
+  def edit(up_id : Int32)
+    if ustem = Upstem.find(up_id)
+      render json: ustem
+    else
+      render 404, text: "Dự án không tồn tại"
+    end
+  end
+
   @[AC::Route::POST("/:up_id", body: form)]
   def update(up_id : Int32, form : Upstem)
     guard_privi 1, "sửa dự án cá nhân"
@@ -80,5 +89,18 @@ class UP::UpstemCtrl < AC::Base
 
     saved = form.update!
     render json: saved
+  end
+
+  @[AC::Route::DELETE("/:up_id")]
+  def delete(up_id : Int32)
+    guard_privi 1, "xóa dự án cá nhân"
+    uname = _privi < 4 ? _uname : nil
+
+    unless term = Upstem.find(up_id, uname)
+      raise BadRequest.new("Dự án không tồn tại hoặc bạn không đủ quyền hạn")
+    end
+
+    Upstem.db.exec("delete from upstems where id = $1", up_id)
+    render text: "ok"
   end
 end

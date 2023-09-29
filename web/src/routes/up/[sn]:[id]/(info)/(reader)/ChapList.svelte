@@ -1,14 +1,8 @@
 <script lang="ts">
-  import { get_user } from '$lib/stores'
-  const _user = get_user()
-
   import { get_rtime } from '$gui/atoms/RTime.svelte'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let ustem: CV.Upstem
-
   export let chaps: CV.Wnchap[]
-
   export let bhref: string
 </script>
 

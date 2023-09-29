@@ -32,7 +32,7 @@ class MT::ViDict
     end
   end
 
-  class_getter db_path = "var/mtapp/vi_dicts.db3"
+  class_getter db_path = "var/mt_db/vi_dicts.db3"
 
   class_getter init_sql : String = <<-SQL
     CREATE TABLE IF NOT EXISTS dicts (

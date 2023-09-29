@@ -33,7 +33,7 @@ export default {
   kit: {
     adapter: adapter(),
     version: { pollInterval: 60000 },
-    inlineStyleThreshold: 1024,
+    inlineStyleThreshold: 2048,
   },
   onwarn: (warning, handler) => {
     if (warning.code.startsWith('a11y')) return

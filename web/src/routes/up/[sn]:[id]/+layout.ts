@@ -12,5 +12,13 @@ export const load = (async ({ fetch, params }) => {
   const sroot = `/up/${sname}:${up_id}`
 
   const { ustem, chaps } = await api_get<StemData>(`/_up/stems/${up_id}`, fetch)
-  return { ustem, lasts: chaps, sname, up_id, sroot }
+
+  let binfo: CV.Wninfo
+
+  if (ustem.wninfo_id) {
+    const bpath = `/_db/books/${ustem.wninfo_id}/show`
+    binfo = await api_get<CV.Wninfo>(bpath, fetch)
+  }
+
+  return { ustem, binfo, lasts: chaps, sname, up_id, sroot }
 }) satisfies LayoutLoad

@@ -17,7 +17,6 @@ export const load = (async ({ fetch, url, params, parent }) => {
       nav_link('/up', 'Dự án cá nhân', 'file', { show: 'ts' }),
       nav_link(sroot, ustem.vname, 'list', { show: 'pl', kind: 'title' }),
     ],
-    show_config: true,
   }
 
   return { chaps, pg_no, sroot, _title, _meta, ontab: 'ch' }

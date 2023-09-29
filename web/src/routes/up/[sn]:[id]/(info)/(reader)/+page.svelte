@@ -70,9 +70,9 @@
 
 {#if chmax > 0}
   <chap-list>
-    <ChapList {ustem} chaps={lasts} bhref={base_href} />
+    <ChapList chaps={lasts} bhref={base_href} />
     <div class="chlist-sep" />
-    <ChapList {ustem} {chaps} bhref={base_href} />
+    <ChapList {chaps} bhref={base_href} />
 
     <Footer>
       <div class="foot">
