@@ -8,9 +8,7 @@ import {
 } from '$utils/tran_util'
 
 export interface Data {
-  pdict: string
-  fpath: string
-  ftype: string
+  zpage: CV.Mtpage
 
   ztext: Array<string>
   hviet: Array<Array<[string, string]>>
@@ -24,9 +22,7 @@ export interface Data {
 }
 
 const init_data = {
-  pdict: 'combine',
-  fpath: '',
-  ftype: 'nc',
+  zpage: { fpath: '', pdict: 'combine', wn_id: 0 },
 
   hviet: [],
   ztext: [],
@@ -34,15 +30,17 @@ const init_data = {
   qtran: [],
   ctree: [],
   c_gpt: [],
-
   m_alg: 'avail',
 }
 
 export const data = {
   ...writable<Data>(init_data),
-  async put(new_data: Partial<Data> = {}) {
+  async put(new_data: Partial<Data>) {
     const old_data = get(data)
-    if (old_data.fpath == new_data.fpath) {
+    let old_page = old_data.zpage || { fpath: '' }
+    let new_page = new_data.zpage || { fpath: '' }
+
+    if (old_page.fpath == new_page.fpath) {
       data.set({ ...old_data, ...new_data })
     } else {
       data.set({ ...init_data, ...new_data })
@@ -52,8 +50,8 @@ export const data = {
   async load_data(rinit: RequestInit = { cache: 'default' }) {
     const zdata = get(data)
 
-    const { fpath, ftype, pdict, m_alg } = zdata
-    const finit = { fpath, ftype, pdict, m_alg, force: false }
+    const { zpage, m_alg } = zdata
+    const finit = { ...zpage, m_alg, force: false }
 
     if (zdata.hviet.length == 0) {
       const hviet = await call_hviet_file(finit, rinit)
@@ -89,8 +87,8 @@ export const ctrl = {
     let { enabled, actived, fpath } = get(ctrl)
 
     if (actived || forced) {
-      if (fpath != zpage.fpath) data.load_data()
-      ctrl.set({ enabled, fpath: zpage.fpath, actived: true })
+      if (fpath != zpage.zpage.fpath) data.load_data()
+      ctrl.set({ enabled, fpath: zpage.zpage.fpath, actived: true })
     }
   },
 }

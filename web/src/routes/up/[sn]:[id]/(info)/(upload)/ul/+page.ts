@@ -11,9 +11,8 @@ export const load = (async ({ url, parent }) => {
       nav_link(sroot, ustem.vname, 'file', { show: 'pl', kind: 'title' }),
       nav_link('ul', 'Đăng tải', 'upload', { show: 'pm' }),
     ],
-    show_config: true,
   }
 
-  const _title = 'Đăng tải truyện ' + ustem.vname
+  const _title = 'Đăng tải nội dung - ' + ustem.vname
   return { start, chdiv, _meta, _title, ontab: 'zh' }
 }) satisfies PageLoad

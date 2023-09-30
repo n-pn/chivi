@@ -27,9 +27,8 @@ class UP::UpchapCtrl < AC::Base
     output = {
       cinfo: cinfo,
       rdata: {
-        spath: cinfo.part_spath(p_idx),
+        fpath: cinfo.part_fpath(p_idx),
         plock: plock,
-        rlink: cinfo.rlink,
 
         zsize: zsize,
         ztext: ztext,

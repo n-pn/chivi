@@ -21,6 +21,7 @@ export const load = (async ({ url, parent, params, fetch }) => {
   const cinfo_path = `/_up/chaps/${up_id}/${ch_no}/${p_idx}?force=${force}`
 
   const { cinfo, rdata, error } = await api_get<Chdata>(cinfo_path, fetch)
+  const xargs = get_xargs(ustem, p_idx, rdata, url)
 
   const _title = `${cinfo.title} - ${ustem.vname}`
   // const _board = `ch:${book}:${chap}:${sname}`
@@ -33,10 +34,31 @@ export const load = (async ({ url, parent, params, fetch }) => {
     show_config: true,
   }
 
-  const xargs = get_xargs(p_idx, ustem.wninfo_id || 0, rdata, url)
-
   return { cinfo, rdata, error, xargs, _meta, _title }
 }) satisfies PageLoad
+
+function get_xargs(ustem: CV.Upstem, p_idx: number, { fpath }, url: URL) {
+  const wn_id = ustem.wninfo_id || 0
+  const pdict = ustem.wndic ? `book/${wn_id}` : `up/${ustem.id}`
+  const zpage = { fpath, pdict, wn_id }
+
+  const rtype = get_rtype_from_path(url.pathname)
+  const rmode = url.searchParams.get('mode')
+
+  switch (rtype) {
+    case 'qt':
+      return { zpage, p_idx, rtype, rmode: rmode || 'qt_v1' }
+
+    case 'tl':
+      return { zpage, p_idx, rtype, rmode: rmode || 'basic' }
+
+    case 'cf':
+      return { zpage, p_idx, rtype, rmode: rmode || 'add_term' }
+
+    default:
+      return { zpage, p_idx, rtype: 'ai', rmode: rmode || 'avail' }
+  }
+}
 
 function get_rtype_from_path(path: string) {
   if (path.includes('/qt')) return 'qt'
@@ -44,22 +66,4 @@ function get_rtype_from_path(path: string) {
   if (path.includes('/cf')) return 'cf'
 
   return 'ai'
-}
-function get_xargs(p_idx: number, wn_id: number, { spath }, url: URL) {
-  const rtype = get_rtype_from_path(url.pathname)
-  const rmode = url.searchParams.get('mode')
-
-  switch (rtype) {
-    case 'qt':
-      return { spath, p_idx, wn_id, rtype, rmode: rmode || 'qt_v1' }
-
-    case 'tl':
-      return { spath, p_idx, wn_id, rtype, rmode: rmode || 'basic' }
-
-    case 'cf':
-      return { spath, p_idx, wn_id, rtype, rmode: rmode || 'add_term' }
-
-    default:
-      return { spath, p_idx, wn_id, rtype: 'ai', rmode: rmode || 'avail' }
-  }
 }

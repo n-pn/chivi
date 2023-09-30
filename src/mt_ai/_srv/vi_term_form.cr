@@ -22,9 +22,12 @@ class MT::ViTermForm
 
   struct Context
     getter fpath : String = ""
-    getter ftype : String = ""
+    getter wn_id : Int32 = 0
+    getter pdict : String = ""
+
     getter vtree : String = ""
     getter zfrom : Int32 = 0
+
     include JSON::Serializable
   end
 

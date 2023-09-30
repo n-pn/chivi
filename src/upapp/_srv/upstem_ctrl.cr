@@ -78,16 +78,36 @@ class UP::UpstemCtrl < AC::Base
       return
     end
 
-    form.viuser_id = term.viuser_id
+    term.zname = form.zname unless form.zname.empty?
+    term.vname = form.vname unless form.vname.empty?
 
-    form.sname = term.sname
-    form.mtime = term.mtime
+    term.wninfo_id = form.wninfo_id
 
-    form.created_at = term.created_at
-    form.chap_count = term.chap_count
-    form.word_count = term.word_count
+    term.vintro = form.vintro
+    term.labels = form.labels
 
-    saved = form.update!
+    term.updated_at = Time.utc
+
+    saved = term.update!
+    render json: saved
+  end
+
+  @[AC::Route::PATCH("/:up_id", body: form)]
+  def config(up_id : Int32, form : Upstem)
+    guard_privi 1, "sửa dự án cá nhân"
+
+    unless term = Upstem.find(up_id, _privi < 4 ? _uname : nil)
+      render 404, "Dự án không tồn tại hoặc bạn không đủ quyền hạn"
+      return
+    end
+
+    term.guard = form.guard
+    term.wndic = form.wndic
+    term.gifts = form.gifts
+    term.multp = form.multp
+    term.updated_at = Time.utc
+
+    saved = term.update!
     render json: saved
   end
 

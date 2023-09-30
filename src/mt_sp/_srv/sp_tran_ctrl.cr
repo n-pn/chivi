@@ -19,11 +19,11 @@ class SP::TranCtrl < AC::Base
   TRAN_DIR = "var/wnapp/chtran"
 
   @[AC::Route::GET("/hviet")]
-  def hviet_file(fpath : String, ftype = "nc")
+  def hviet_file(fpath : String)
     start = Time.monotonic
     mcore = MT::QtCore.hv_word
 
-    ztext = ChapData.new(fpath, ftype).read_raw
+    ztext = ChapData.new(fpath).read_raw
     hviet = ztext.map { |line| mcore.tokenize(line).to_txt }
 
     mtime = Time.utc.to_unix
@@ -58,9 +58,9 @@ class SP::TranCtrl < AC::Base
   end
 
   @[AC::Route::GET("/btran")]
-  def btran_file(fpath : String, ftype : String = "nc", force : Bool = true)
+  def btran_file(fpath : String, force : Bool = true)
     start = Time.monotonic
-    cdata = ChapData.new(fpath, ftype)
+    cdata = ChapData.new(fpath)
 
     tl_path = cdata.vtl_file_path("bzv.txt")
 

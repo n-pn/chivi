@@ -120,28 +120,18 @@ export class Vtform {
   //   return req_privi(this.dic, this.tab)
   // }
 
-  to_form_body(
-    pdict: string,
-    vtree: CV.Cvtree,
-    zfrom: number,
-    fpath: string = '',
-    ftype: string = ''
-  ) {
+  to_form_body(zpage: CV.Mtpage, vtree: CV.Cvtree, zfrom: number) {
     return {
       zstr: this.zstr,
       vstr: this.vstr,
+
       cpos: this.cpos,
       attr: this.attr,
 
       plock: this.plock,
-      dname: this.local ? pdict : 'regular',
+      dname: this.local ? zpage.pdict : 'regular',
 
-      _ctx: {
-        fpath,
-        ftype,
-        vtree: gen_ctree_text(vtree),
-        zfrom,
-      },
+      _ctx: { ...zpage, vtree: gen_ctree_text(vtree), zfrom },
     }
   }
 }

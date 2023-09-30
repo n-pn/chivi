@@ -1,6 +1,5 @@
 export type FileReqInit = {
   fpath: string
-  ftype: string
   force: boolean
   pdict?: string
   wn_id?: number
@@ -8,11 +7,11 @@ export type FileReqInit = {
 }
 
 export async function call_btran_file(
-  { fpath, ftype = 'nc', force = false }: FileReqInit,
+  { fpath, force = false }: FileReqInit,
   rinit: RequestInit = { cache: 'force-cache' },
   fetch = globalThis.fetch
 ): Promise<CV.Qtdata> {
-  const url = `/_sp/btran?fpath=${fpath}&ftype=${ftype}&force=${force}`
+  const url = `/_sp/btran?fpath=${fpath}&force=${force}`
   const res = await fetch(url, rinit)
 
   if (res.ok) return await res.json()
@@ -20,12 +19,11 @@ export async function call_btran_file(
 }
 
 export async function call_qtran_file(
-  { fpath, ftype = 'nc', wn_id = 0 }: FileReqInit,
+  { fpath, wn_id = 0 }: FileReqInit,
   rinit: RequestInit = { cache: 'force-cache' },
   fetch = globalThis.fetch
 ): Promise<CV.Qtdata> {
-  wn_id ||= +fpath.split('/')[0]
-  const url = `/_m1/qtran?fpath=${fpath}&ftype=${ftype}&wn_id=${wn_id}`
+  const url = `/_m1/qtran?fpath=${fpath}&wn_id=${wn_id}`
   const res = await fetch(url, rinit)
 
   if (res.ok) return await res.json()
@@ -33,11 +31,11 @@ export async function call_qtran_file(
 }
 
 export async function call_hviet_file(
-  { fpath, ftype = 'nc' }: FileReqInit,
+  { fpath }: FileReqInit,
   rinit: RequestInit = { cache: 'force-cache' },
   fetch = globalThis.fetch
 ): Promise<CV.Hvdata> {
-  const url = `/_ai/hviet?fpath=${fpath}&ftype=${ftype}`
+  const url = `/_ai/hviet?fpath=${fpath}`
   const res = await fetch(url, rinit)
 
   if (res.ok) return await res.json()
@@ -45,14 +43,11 @@ export async function call_hviet_file(
 }
 
 export async function call_mtran_file(
-  { fpath, ftype = 'nc', force = false, m_alg, pdict }: FileReqInit,
+  { fpath, pdict, force = false, m_alg = 'avail' }: FileReqInit,
   rinit: RequestInit = { cache: 'force-cache' },
   fetch = globalThis.fetch
 ): Promise<CV.Mtdata> {
-  m_alg ||= 'avail'
-  pdict ||= 'book/' + fpath.split('/')[0]
-
-  const url = `/_ai/qtran?fpath=${fpath}&ftype=${ftype}&pdict=${pdict}&_algo=${m_alg}&force=${force}`
+  const url = `/_ai/qtran?fpath=${fpath}&pdict=${pdict}&_algo=${m_alg}&force=${force}`
   const res = await fetch(url, rinit)
 
   if (!res.ok) return { lines: [], tspan: 0, error: await res.text() }

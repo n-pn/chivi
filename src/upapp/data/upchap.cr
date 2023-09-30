@@ -136,8 +136,8 @@ class UP::Chinfo
     @sizes.count(' ')
   end
 
-  def part_spath(p_idx : Int32 = 1)
-    @cksum.empty? ? "" : "#{@spath}-#{@cksum}-#{p_idx}"
+  def part_fpath(p_idx : Int32 = 1)
+    @cksum.empty? ? "" : "up:#{@spath}-#{@cksum}-#{p_idx}"
   end
 
   def add_flag!(flag : Chflag)

@@ -58,22 +58,18 @@ class WN::ChinfoCtrl < AC::Base
       else
         fpath = chtext.wn_path(p_idx, cksum)
         ztext = File.read_lines(fpath, chomp: true)
-        mtime = File.info(fpath).modification_time.to_unix
       end
     end
 
     output = {
       cinfo: chinfo,
       rdata: {
-        spath: cksum ? "#{wn_id}/#{ch_no}-#{cksum}-#{p_idx}" : "",
+        fpath: cksum ? "nc:#{wn_id}/#{ch_no}-#{cksum}-#{p_idx}" : "",
         plock: plock,
-        rlink: chinfo.rlink,
 
-        mtime: mtime,
         zsize: chinfo.sizes[p_idx]? || 0,
         ztext: ztext,
 
-        _curr: p_idx > 1 ? "#{ch_no}_#{p_idx}" : ch_no.to_s,
         _prev: prev_href(wnseed, chinfo, p_idx),
         _succ: succ_href(wnseed, chinfo, p_idx),
       },

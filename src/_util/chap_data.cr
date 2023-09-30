@@ -10,15 +10,16 @@ struct ChapData
   UP_DIR = "var/up_db/texts"
   RM_DIR = "var/rm_db/texts"
 
-  def self.new(fpath : String, ftype : String)
-    new(fpath, Ftype.parse(ftype))
+  def self.new(fpath : String)
+    ftype, spath = fpath.split(':', 2)
+    new(spath, Ftype.parse(ftype))
   end
 
-  def initialize(fpath : String, @ftype : Ftype = :nc)
+  def initialize(spath : String, @ftype : Ftype)
     case ftype
-    in .nc? then @spath = "#{WN_DIR}/#{fpath}"
-    in .up? then @spath = "#{UP_DIR}/#{fpath}"
-    in .rm? then @spath = "#{RM_DIR}/#{fpath}"
+    in .nc? then @spath = "#{WN_DIR}/#{spath}"
+    in .up? then @spath = "#{UP_DIR}/#{spath}"
+    in .rm? then @spath = "#{RM_DIR}/#{spath}"
     end
   end
 

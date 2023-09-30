@@ -7,14 +7,14 @@ class M1::TranCtrl < AC::Base
   base "/_m1/qtran"
 
   @[AC::Route::GET("/")]
-  def file(fpath : String, ftype : String = "nc", wn_id : Int32 = 0)
+  def file(fpath : String, wn_id : Int32 = 0)
     start = Time.monotonic
     mcore = MtCore.init(wn_id, user: _uname)
 
     plain = false
     lines = [] of String
 
-    ChapData.new(fpath, ftype).read_raw do |line|
+    ChapData.new(fpath).read_raw do |line|
       data = plain ? mcore.cv_plain(line) : mcore.cv_title(line)
       lines << data.to_txt
       plain = true

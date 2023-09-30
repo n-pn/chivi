@@ -34,6 +34,27 @@ export const load = (async ({ url, parent, params, fetch }) => {
   return { cinfo, rdata, error, xargs, _meta, _title }
 }) satisfies PageLoad
 
+function get_xargs(wn_id: number, p_idx: number, { fpath }, url: URL) {
+  const zpage = { pdict: 'book/' + wn_id, fpath, wn_id }
+
+  const rtype = get_rtype_from_path(url.pathname)
+  const rmode = url.searchParams.get('mode')
+
+  switch (rtype) {
+    case 'qt':
+      return { zpage, p_idx, rtype, rmode: rmode || 'qt_v1' }
+
+    case 'tl':
+      return { zpage, p_idx, rtype, rmode: rmode || 'basic' }
+
+    case 'cf':
+      return { zpage, p_idx, rtype, rmode: rmode || 'add_term' }
+
+    default:
+      return { zpage, p_idx, rtype: 'ai', rmode: rmode || 'avail' }
+  }
+}
+
 function get_rtype_from_path(path: string) {
   if (path.includes('/mt')) return 'ai'
   if (path.includes('/qt')) return 'qt'
@@ -41,22 +62,4 @@ function get_rtype_from_path(path: string) {
   if (path.includes('/cf')) return 'cf'
 
   return 'ai'
-}
-function get_xargs(wn_id: number, p_idx: number, { spath }, url: URL) {
-  const rtype = get_rtype_from_path(url.pathname)
-  const rmode = url.searchParams.get('mode')
-
-  switch (rtype) {
-    case 'qt':
-      return { wn_id, spath, p_idx, rtype, rmode: rmode || 'qt_v1' }
-
-    case 'tl':
-      return { wn_id, spath, p_idx, rtype, rmode: rmode || 'basic' }
-
-    case 'cf':
-      return { wn_id, spath, p_idx, rtype, rmode: rmode || 'add_term' }
-
-    default:
-      return { wn_id, spath, p_idx, rtype: 'ai', rmode: rmode || 'avail' }
-  }
 }

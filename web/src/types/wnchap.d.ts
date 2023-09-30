@@ -13,15 +13,12 @@ declare namespace CV {
   }
 
   interface Chpart {
-    spath: string
+    fpath: string
     plock: number
-    rlink: string
 
     ztext: Array<String>
     zsize: number
-    mtime: number
 
-    _curr: string
     _prev: string
     _succ: string
   }
@@ -31,9 +28,7 @@ declare namespace CV {
   }
 
   interface Chopts {
-    wn_id: number
-    p_idx: number
-    spath: string
+    zpage: Mtpage
     rtype: string
     rmode: string
   }

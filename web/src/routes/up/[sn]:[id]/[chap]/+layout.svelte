@@ -167,10 +167,7 @@
       zdata = []
     }
 
-    const pdict = `up/${ustem.id}`
-    const fpath = xargs.spath
-
-    const data = { pdict, fpath, ftype: 'up', ztext, [rmode]: zdata, m_alg }
+    const data = { zpage: xargs.zpage, ztext, [rmode]: zdata, m_alg }
     lookup_data.put(data)
   }
 </script>

@@ -15,6 +15,7 @@ declare namespace CV {
     guard: number
     gifts: number
     multp: number
+    wndic: boolean
 
     chap_count: number
     word_count: number

@@ -19,10 +19,10 @@ export const load = (async ({ fetch, parent, depends }) => {
 
 const rinit = { cache: 'force-cache' } as RequestInit
 
-async function load_data({ spath, rmode }: CV.Chopts, fetch: CV.Fetch) {
-  if (!spath) return { lines: [], mtime: 0, tspan: 0 }
+async function load_data({ zpage, rmode }: CV.Chopts, fetch: CV.Fetch) {
+  if (!zpage.fpath) return { lines: [], mtime: 0, tspan: 0 }
 
-  const finit = { fpath: spath, ftype: 'nc', force: true }
+  const finit = { ...zpage, force: true }
 
   switch (rmode) {
     case 'be_zv':

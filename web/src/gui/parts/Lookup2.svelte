@@ -51,13 +51,7 @@
     vtform_ctrl.show(0)
   }
 
-  $: finit = {
-    fpath: $data.fpath,
-    ftype: $data.ftype,
-    pdict: $data.pdict,
-    m_alg: $data.m_alg,
-    force: true,
-  }
+  $: finit = { ...$data.zpage, m_alg: $data.m_alg, force: true }
 
   const rinit = { no: 'force-cache' } as RequestInit
 
@@ -297,11 +291,7 @@
 </Slider>
 
 {#if $vtform_ctrl.actived}
-  <VitermForm
-    pdict={$data.pdict}
-    fpath={$data.fpath}
-    ftype={$data.ftype}
-    on_close={on_term_change} />
+  <VitermForm zpage={$data.zpage} on_close={on_term_change} />
 {/if}
 
 <style lang="scss">

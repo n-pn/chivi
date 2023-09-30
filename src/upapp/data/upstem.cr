@@ -27,6 +27,7 @@ class UP::Upstem
   field gifts : Int16 = 2
   field multp : Int16 = 4
   field guard : Int16 = 0
+  field wndic : Bool = false
 
   field chap_count : Int32 = 0
   field word_count : Int32 = 0
@@ -77,6 +78,8 @@ class UP::Upstem
 
   @[AlwaysInline]
   def gift_chaps
+    return @chap_count if @gifts == 0
+
     gift_chaps = @chap_count * @gifts // 4
     gift_chaps < 40 ? 40 : gift_chaps
   end

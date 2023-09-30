@@ -7,10 +7,10 @@ class MT::QtTranCtrl < AC::Base
   TEXT_DIR = "var/wnapp/chtext"
 
   @[AC::Route::GET("/hviet")]
-  def hviet_file(fpath : String, ftype : String = "nc")
+  def hviet_file(fpath : String)
     start = Time.monotonic
 
-    ztext = ChapData.new(fpath, ftype).read_raw
+    ztext = ChapData.new(fpath).read_raw
 
     mcore = QtCore.hv_word
     hviet = ztext.map { |line| HvietToVarr.new(mcore.tokenize(line)) }

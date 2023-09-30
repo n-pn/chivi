@@ -1,13 +1,10 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import { api_call } from '$lib/api_call'
 
-  export let edit_url: string
   export let can_conf = false
+  export let conf_url: string
 
-  export let _privi = -1
-
-  export let curr_seed: CV.Chroot
-  export let seed_data: CV.Wnstem
+  export let ustem: CV.Upstem
 
   const read_privis = [
     [0, 'Cần đăng nhập'],
@@ -30,7 +27,7 @@
   const update_read_privi = async () => {
     try {
       const body = { read_privi: seed_data.read_privi }
-      curr_seed = await api_call(edit_url, body, 'PATCH')
+      ustem = await api_call(conf_url, body, 'PATCH')
     } catch (ex) {
       error = ex.body.message
     }
@@ -88,4 +85,4 @@
     @include fgcolor(tert);
     margin-bottom: 1rem;
   }
-</style>
+</style> -->

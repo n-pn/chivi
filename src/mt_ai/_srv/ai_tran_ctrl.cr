@@ -4,13 +4,11 @@ class MT::AiTranCtrl < AC::Base
   base "/_ai"
 
   @[AC::Route::GET("/qtran")]
-  def qtran_file(fpath : String, ftype : String = "nc",
-                 pdict : String = "combine", _algo : String = "avail",
-                 force : Bool = false)
+  def qtran_file(fpath : String, pdict : String = "combine", _algo : String = "avail", force : Bool = false)
     start = Time.monotonic
     force = force && _privi >= 0
 
-    cdata = ChapData.new(fpath, ftype)
+    cdata = ChapData.new(fpath)
     mdata, _algo = cdata.read_con(_algo, force: force)
 
     ai_mt = AiCore.new(pdict)
