@@ -100,7 +100,7 @@ class UP::UpstemCtrl < AC::Base
       raise BadRequest.new("Dự án không tồn tại hoặc bạn không đủ quyền hạn")
     end
 
-    Upstem.db.exec("delete from upstems where id = $1", up_id)
+    Upstem.db.exec("delete from upstems where id = $1", term.id)
     render text: "ok"
   end
 end

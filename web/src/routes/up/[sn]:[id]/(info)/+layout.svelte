@@ -19,13 +19,13 @@
   <nav class="admin">
     <a href="{sroot}/ul" class="m-btn _fill _primary">
       <SIcon name="upload" />
-      <span class="-txt">Thêm text gốc</span>
+      <span class="-txt">Thêm nội dung</span>
     </a>
-    <a href="{sroot}/su" class="m-btn _primary">
+    <a href="{sroot}/su" class="m-btn">
       <SIcon name="tools" />
-      <span class="-txt">Sửa thiết đặt</span>
+      <span class="-txt">Trang quản lý</span>
     </a>
-    <a href="/up/+proj?id={ustem.id}" class="m-btn _warning">
+    <a href="/up/+proj?id={ustem.id}" class="m-btn _fill _warning">
       <SIcon name="pencil" />
       <span class="-txt">Sửa thông tin</span>
     </a>

@@ -51,6 +51,8 @@
     if (res.ok) goto('/up')
     else errors = await res.text()
   }
+
+  let confirm: number
 </script>
 
 <header>
@@ -133,15 +135,25 @@
   </footer>
 
   {#if form.id}
-    <footer class="action _delete">
-      <button
-        type="button"
-        class="m-btn _harmful _fill _lg"
-        disabled={!owner}
-        on:click={delete_project}>
-        <SIcon name="eraser" />
-        <span class="-txt">Xóa dự án</span>
-      </button>
+    <footer class="delete">
+      <h3>Xóa dự án</h3>
+      <p class="hints">Nhập vào ID của dự án để khẳng định việc xóa dự án:</p>
+
+      <div class="delete-input">
+        <input
+          type="number"
+          class="m-input"
+          placeholder="ID dự án"
+          bind:value={confirm} />
+        <button
+          type="button"
+          class="m-btn _harmful _fill"
+          disabled={!owner || confirm != form.id}
+          on:click={delete_project}>
+          <SIcon name="eraser" />
+          <span class="-txt">Xóa dự án</span>
+        </button>
+      </div>
     </footer>
   {/if}
 </form>
@@ -192,12 +204,26 @@
   }
 
   .action {
-    @include flex-ca();
+    @include flex();
+    justify-content: right;
     margin: 0.75rem 0;
+  }
 
-    &._delete {
-      padding-top: 0.75rem;
-      @include border(--bd-soft, $loc: top);
+  .delete {
+    padding: 0.75rem 0;
+    @include border(--bd-soft, $loc: top);
+
+    .hints {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .delete-input {
+    display: flex;
+    gap: 0.5rem;
+
+    input {
+      width: 10rem;
     }
   }
 </style>

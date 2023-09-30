@@ -8,12 +8,12 @@ export const load = (async ({ url, parent }) => {
 
   const _meta: App.PageMeta = {
     left_nav: [
-      nav_link(sroot, ustem.vname, 'list', { show: 'pl', kind: 'title' }),
-      nav_link('up', 'Thêm/sửa chương', 'file-plus', { show: 'pm' }),
+      nav_link(sroot, ustem.vname, 'file', { show: 'pl', kind: 'title' }),
+      nav_link('ul', 'Đăng tải', 'upload', { show: 'pm' }),
     ],
     show_config: true,
   }
 
-  const _title = 'Thêm/sửa chương truyện ' + ustem.vname
-  return { start, chdiv, _meta, _title, ontab: 'up' }
+  const _title = 'Đăng tải truyện ' + ustem.vname
+  return { start, chdiv, _meta, _title, ontab: 'zh' }
 }) satisfies PageLoad
