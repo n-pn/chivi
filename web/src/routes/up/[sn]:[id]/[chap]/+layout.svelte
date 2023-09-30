@@ -110,7 +110,7 @@
   let reader: HTMLDivElement
   let change_mode = false
 
-  const handle_click = (event: MouseEvent) => {
+  const handle_mouse = (event: MouseEvent, panel: string = 'overview') => {
     let target = event.target as HTMLElement
 
     while (target != reader) {
@@ -119,8 +119,11 @@
     }
 
     if (target == reader) return
+
+    event.preventDefault()
+
     l_idx = +target.dataset.line
-    lookup_ctrl.show(true)
+    lookup_ctrl.show(panel)
   }
 
   let l_idx = -1
@@ -141,7 +144,7 @@
       on_focus.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
     }
 
-    lookup_ctrl.show(true)
+    lookup_ctrl.show()
   }
 
   $: vtran = $page.data.vtran || {}
@@ -262,7 +265,11 @@
   {:else}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div bind:this={reader} class="reader" on:click|capture={handle_click}>
+    <div
+      class="reader"
+      bind:this={reader}
+      on:click|capture={(e) => handle_mouse(e, 'overview')}
+      on:contextmenu|capture={(e) => handle_mouse(e, 'glossary')}>
       <slot />
     </div>
   {/if}

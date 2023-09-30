@@ -1,4 +1,3 @@
-import { goto } from '$app/navigation'
 import { get_client_rect } from '../utils/dom_utils'
 
 export function get_offset(target: HTMLElement, parent: Element) {

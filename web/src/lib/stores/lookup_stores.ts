@@ -75,20 +75,32 @@ export const data = {
 
     data.set(zdata)
   },
+
+  async reload_mdata() {
+    const zdata = get(data)
+
+    const rinit = { cache: 'force-cache' } as RequestInit
+    const finit = { ...zdata.zpage, m_alg: zdata.m_alg, force: true }
+
+    const ctree = await call_mtran_file(finit, rinit)
+    zdata.ctree = ctree.lines || []
+
+    data.put(zdata)
+  },
 }
 
 export const ctrl = {
-  ...writable({ actived: false, enabled: true, fpath: '' }),
-  hide: (enabled = true) => {
-    ctrl.update(({ fpath }) => ({ actived: false, enabled, fpath }))
+  ...writable({ actived: false, panel: 'overview', fpath: '' }),
+  hide: () => {
+    ctrl.update((x) => ({ ...x, actived: false }))
   },
-  async show(forced = true) {
+  async show(panel: string = '') {
     const zpage = get(data)
-    let { enabled, actived, fpath } = get(ctrl)
 
-    if (actived || forced) {
-      if (fpath != zpage.zpage.fpath) data.load_data()
-      ctrl.set({ enabled, fpath: zpage.zpage.fpath, actived: true })
-    }
+    let { fpath, panel: old_panel } = get(ctrl)
+    if (fpath != zpage.zpage.fpath) data.load_data()
+
+    panel ||= old_panel
+    ctrl.set({ panel, fpath: zpage.zpage.fpath, actived: true })
   },
 }

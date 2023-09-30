@@ -1,14 +1,16 @@
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  import { ctrl, data } from '$lib/stores/vtform_stores'
+  export let orig: CV.Vtform
 
   export let zfrom: number
   export let zupto: number
   export let icpos: string
   export let hviet: string
 
-  $: chars = Array.from($data.zline)
+  export let actived = true
+
+  $: chars = Array.from(orig.zline)
   $: zsize = chars.length
 
   $: [pre_chars, out_chars, suf_chars] = split_ztext(chars, zfrom, zupto)
@@ -46,9 +48,9 @@
   }
 
   function restore_state() {
-    zfrom = $data.zfrom
-    zupto = $data.zupto
-    icpos = $data.icpos
+    zfrom = orig.zfrom
+    zupto = orig.zupto
+    icpos = orig.icpos
   }
 </script>
 
@@ -134,7 +136,11 @@
     <SIcon name="chevron-right" />
   </button>
 
-  <button type="button" class="m-btn _text" data-kbd="esc" on:click={ctrl.hide}>
+  <button
+    type="button"
+    class="m-btn _text"
+    data-kbd="esc"
+    on:click={() => (actived = false)}>
     <SIcon name="x" />
   </button>
 </header>

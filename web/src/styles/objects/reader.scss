@@ -277,7 +277,8 @@ x-z {
   @include cv-node(gray);
   @include cv-node(primary);
 
-  &:hover {
+  &:hover,
+  &.focus {
     color: var(--active);
   }
 }

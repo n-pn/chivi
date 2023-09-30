@@ -19,13 +19,15 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<slider-wrap
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div
+  class="slider-wrap"
   class:_active={actived}
   class:_sticky={sticked}
   on:click={() => (actived = false)} />
 
-<slider-main
-  class={klass}
+<div
+  class="slider-main {klass}"
   class:_left={_slider == 'left'}
   class:_right={_slider == 'right'}
   class:_active={actived}>
@@ -55,10 +57,12 @@
   <section class="body">
     <slot />
   </section>
-</slider-main>
+
+  <slot name="foot" />
+</div>
 
 <style lang="scss">
-  slider-wrap {
+  .slider-wrap {
     position: fixed;
     display: block;
     top: 0;
@@ -83,7 +87,7 @@
     }
   }
 
-  slider-main {
+  .slider-main {
     position: fixed;
 
     top: 0;
@@ -152,15 +156,20 @@
     :global(.-btn) {
       padding: 0 0.5rem;
 
-      @include bdradi;
       color: inherit;
-      background: transparent;
+      background: inherit;
 
-      &:hover,
-      &._active {
+      @include bdradi;
+
+      &:hover {
         @include fgcolor(primary, 5);
         @include bgcolor(main);
       }
+    }
+
+    :global(.-btn._active) {
+      @include fgcolor(primary, 5);
+      @include bgcolor(main);
     }
   }
 

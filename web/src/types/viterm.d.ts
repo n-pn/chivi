@@ -40,6 +40,17 @@ declare namespace CV {
     number? // vdic
   ]
 
+  export interface Vtform {
+    zline: string
+
+    zfrom: number
+    zupto: number
+    icpos: string
+
+    vtree: CV.Cvtree
+    hvarr: Array<[string, string]>
+  }
+
   export interface Vtdata {
     zstr: string
     vstr: string

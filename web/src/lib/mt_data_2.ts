@@ -34,16 +34,11 @@ export function gen_ztext_text(input: CV.Cvtree) {
   return text
 }
 
-export function gen_ztext_html(
-  ztext: string,
-  hviet: Array<[string, string]> = []
-) {
+export function gen_ztext_html(ztext: string) {
   let html = ''
 
   for (let i = 0; i < ztext.length; i++) {
-    const [hstr] = hviet[i] || []
-
-    html += `<x-z data-b=${i} data-e=${i + 1} data-tip="${hstr}">`
+    html += `<x-z data-b=${i} data-e=${i + 1}>`
     html += escape_htm(ztext.charAt(i))
     html += `</x-z>`
   }
@@ -70,6 +65,29 @@ export function gen_hviet_text(hvarr: Array<[string, string]>, cap = false) {
   }
 
   return text
+}
+
+export function gen_hviet_html(hvarr: Array<[string, string]>, cap = true) {
+  let html = ''
+  let p_ws = false
+  let from = 0
+
+  for (const [hstr, attr] of hvarr) {
+    if (attr.includes('Hide')) continue
+
+    if (p_ws && !attr.includes('Undb')) html += ' '
+    p_ws = !attr.includes('Undn')
+
+    const asis = /Capx|Asis/.test(attr)
+
+    let text = !cap || asis ? hstr : capitalize(hstr)
+    html += `<x-n data-d=0 data-b=${from} data-e=${from + 1} >${text}</x-n>`
+
+    from += 1
+    cap = (cap && asis) || attr.includes('Capn')
+  }
+
+  return html
 }
 
 export function gen_ctree_text([cpos, _idx, _len, _att, body]: CV.Cvtree) {
