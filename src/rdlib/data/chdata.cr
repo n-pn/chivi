@@ -1,26 +1,16 @@
 require "http/client"
+require "./rdtype"
 
-struct ChapData
-  enum Ftype : Int8
-    NC; UP; RM
-  end
-
-  WN_DIR = "var/wnapp/chtext"
-
-  UP_DIR = "var/up_db/texts"
-  RM_DIR = "var/rm_db/texts"
-
+struct RD::Chdata
   def self.new(fpath : String)
     ftype, spath = fpath.split(':', 2)
-    new(spath, Ftype.parse(ftype))
+    new(spath, Rdtype.parse(ftype))
   end
 
-  def initialize(spath : String, @ftype : Ftype)
-    case ftype
-    in .nc? then @spath = "#{WN_DIR}/#{spath}"
-    in .up? then @spath = "#{UP_DIR}/#{spath}"
-    in .rm? then @spath = "#{RM_DIR}/#{spath}"
-    end
+  @base_path : String
+
+  def initialize(spath : String, @ftype : Rdtype)
+    @base_path = ftype.txt_path(spath)
   end
 
   private def read_file(fpath : String, &)
@@ -34,7 +24,7 @@ struct ChapData
 
   @[AlwaysInline]
   def file_path(fkind : String)
-    "#{@spath}.#{fkind}"
+    "#{@base_path}.#{fkind}"
   end
 
   @[AlwaysInline]
@@ -126,5 +116,21 @@ struct ChapData
       spawn File.write(con_path, con_data)
       {con_data.lines, m_alg}
     end
+  end
+
+  def save_raw!(ptext : String, title : String? = nil)
+    # TODO: save to db3 file?
+    File.open(self.raw_file_path, "w") do |file|
+      file << title << '\n' if title
+      file << ptext
+    end
+  end
+
+  def self.read_raw(spath : String, ftype : Rdtype)
+    new(spath, ftype).read_raw
+  end
+
+  def self.read_raw(spath : String)
+    new(spath).read_raw
   end
 end

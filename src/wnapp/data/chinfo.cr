@@ -104,17 +104,6 @@ class WN::Chinfo
     }
   end
 
-  def full_details(can_view : Bool = true)
-    {
-      rlink: @rlink,
-      spath: @spath,
-      chsum: can_view ? @chsum : "",
-
-      ztitle: @ztitle,
-      zchdiv: @zchdiv,
-    }
-  end
-
   def sizes
     @sizes.empty? ? [0] : @sizes.split(' ').map(&.to_i)
   end
@@ -123,15 +112,15 @@ class WN::Chinfo
     @sizes.count(' ')
   end
 
-  def uslug
-    str = @vtitle.unicode_normalize(:nfd).gsub(/[\x{0300}-\x{036f}]/, "")
-    str.downcase.tr("đ", "d").split(/\W+/, remove_empty: true).first(7).join('-')
+  def part_name(wn_id : Int32, p_idx : Int32 = 1)
+    @cksum.empty? ? "" : "nc:#{wn_id}/#{@ch_no}-#{@cksum}-#{p_idx}"
   end
 
-  def _href(cpart : Int32 = 1)
+  def part_href(p_idx : Int32 = 1)
     String.build do |io|
-      io << @ch_no << '/' << self.uslug << '-'
-      io << (cpart < 1 ? self.sizes.size &- 1 : cpart) if cpart != 1
+      io << @ch_no
+      p_idx = self.psize &+ p_idx if p_idx < 0
+      io << '_' << p_idx if p_idx > 1
     end
   end
 

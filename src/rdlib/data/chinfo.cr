@@ -1,7 +1,8 @@
 require "crorm"
 require "../../_util/chap_util"
+require "./chdata"
 
-class UP::Chinfo
+class RD::Chinfo
   class_getter init_sql = <<-SQL
     CREATE TABLE IF NOT EXISTS chinfos(
       ch_no int not null PRIMARY KEY,
@@ -25,10 +26,9 @@ class UP::Chinfo
     );
     SQL
 
-  DB_ROOT = "var/up_db/stems"
-
-  def self.db_path(sname : String, sn_id : String | Int32, db_root = DB_ROOT)
-    "#{db_root}/#{sname}/#{sn_id}-cinfo.db3"
+  @[AlwaysInline]
+  def self.db_path(sname : String, sn_id : String | Int32, type : Rdtype)
+    type.db3_path("#{sname}/#{sn_id}")
   end
 
   ###
@@ -66,11 +66,9 @@ class UP::Chinfo
     @ztitle = ztitle
   end
 
-  TXT_DIR = "var/up_db/texts"
-
   def save_raw_text!(lines : Array(String), @spath = self.spath,
                      @uname = "", @mtime = Time.utc.to_unix,
-                     txt_dir = TXT_DIR)
+                     ftype : Rdtype = :nc)
     title = lines.shift
     self.ztitle = title # TODO: update zchdiv
 
@@ -79,38 +77,31 @@ class UP::Chinfo
     @sizes = sizes.join(' ')
 
     parts.each_with_index do |ptext, p_idx|
-      save_path = self.file_path(p_idx, "raw.txt", spath: spath, txt_dir: txt_dir)
-      File.open(save_path, "w") do |file|
-        file << title << '\n' if p_idx > 0
-        file << ptext
-      end
+      cdata = Chdata.new("#{@spath}-#{@cksum}-#{p_idx}", ftype)
+      cdata.save_raw!(ptext, p_idx > 0 ? title : nil)
     end
 
     @cksum
   end
 
-  def load_full!(ftype = "raw.txt", spath = @spath, txt_dir = TXT_DIR)
+  def load_all_raw!(spath : String = @spath, ftype : Rdtype = :nc)
     return "" if @cksum.empty?
 
     String.build do |io|
-      title = load_part!(p_idx: 0, ftype: ftype, spath: spath, txt_dir: txt_dir)
-      title = title.first
-      io << title
-
       1.upto(self.psize) do |p_idx|
-        lines = load_part!(p_idx, ftype: ftype, spath: spath, txt_dir: txt_dir)
-        lines.shift if lines.first == title
-        lines.each { |line| io << '\n' << line }
+        lines = Chdata.read_raw(self.part_path(p_idx), ftype)
+        lines.shift
+        lines.each { |line| io << line << '\n' }
       end
     end
   end
 
-  def load_part!(p_idx : Int32 = 1, ftype = "raw.txt", spath = @spath, txt_dir = TXT_DIR)
-    File.read_lines(self.file_path(p_idx, ftype: ftype, spath: spath, txt_dir: txt_dir))
+  def part_name(ftype : Rdtype, p_idx : Int32 = 1)
+    @cksum.empty? ? "" : "#{ftype.to_s.lowercase}:#{part_path(p_idx)}"
   end
 
-  def file_path(p_idx : Int32, ftype = "raw.txt", spath = @spath, txt_dir = TXT_DIR)
-    "#{txt_dir}/#{spath}-#{@cksum}-#{p_idx}.#{ftype}"
+  def part_path(p_idx : Int32 = 1)
+    "#{@spath}-#{@cksum}-#{p_idx}"
   end
 
   ####
@@ -134,10 +125,6 @@ class UP::Chinfo
 
   def psize
     @sizes.count(' ')
-  end
-
-  def part_name(p_idx : Int32 = 1)
-    @cksum.empty? ? "" : "up:#{@spath}-#{@cksum}-#{p_idx}"
   end
 
   def add_flag!(flag : Chflag)

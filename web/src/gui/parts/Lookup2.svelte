@@ -16,6 +16,7 @@
 
   import Overview from './Sideline/Overview.svelte'
   import Glossary from './Sideline/Glossary.svelte'
+  import Analysis from './Sideline/Analysis.svelte'
 
   export let l_idx = 0
   export let l_max = 0
@@ -31,7 +32,7 @@
     zfrom = +target.dataset.b
     zupto = +target.dataset.e
 
-    if ($ctrl.panel == 'overview') {
+    if ($ctrl.panel != 'glossary') {
       const icpos = target.dataset.c || 'X'
 
       const ztext = $data.ztext[l_idx]
@@ -81,7 +82,8 @@
   bind:actived={$ctrl.actived}
   --slider-width="30rem">
   <svelte:fragment slot="header-left">
-    <div class="-text">Phân tích</div>
+    <div class="-icon"><SIcon name="compass" /></div>
+    <div class="-text">Chi tiết</div>
   </svelte:fragment>
 
   <svelte:fragment slot="header-right">
@@ -89,21 +91,39 @@
       type="button"
       class="-btn"
       class:_active={$ctrl.panel == 'overview'}
-      data-kbd="f"
+      data-kbd="d"
       data-tip="Xem các kết quả dịch"
       data-tip-loc="bottom"
       on:click={() => ($ctrl.panel = 'overview')}>
-      <SIcon name="info-circle" />
+      <SIcon name="world" />
     </button>
     <button
       type="button"
       class="-btn"
       class:_active={$ctrl.panel == 'glossary'}
-      data-kbd="g"
+      data-kbd="f"
       data-tip="Xem giải nghĩa từ"
       data-tip-loc="bottom"
       on:click={() => ($ctrl.panel = 'glossary')}>
-      <SIcon name="compass" />
+      <SIcon name="search" />
+    </button>
+    <button
+      type="button"
+      class="-btn"
+      class:_active={$ctrl.panel == 'analyis'}
+      data-kbd="g"
+      data-tip="Xem cây ngữ pháp"
+      data-tip-loc="bottom"
+      on:click={() => ($ctrl.panel = 'analyis')}>
+      <svg class="m-icon _analyze" viewBox="0 0 24 24">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+        <path
+          d="M20 11a8.1 8.1 0 0 0 -6.986 -6.918a8.095 8.095 0 0 0 -8.019 3.918" />
+        <path d="M4 13a8.1 8.1 0 0 0 15 3" />
+        <path d="M19 16m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+        <path d="M5 8m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+        <path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
+      </svg>
     </button>
   </svelte:fragment>
   <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -115,8 +135,10 @@
     on:contextmenu={handle_ctxmenu}>
     {#if $ctrl.panel == 'overview'}
       <Overview {l_idx} {reload_ctree} />
-    {:else}
+    {:else if $ctrl.panel == 'glossary'}
       <Glossary {l_idx} {viewer} bind:zfrom bind:zupto />
+    {:else}
+      <Analysis {l_idx} {reload_ctree} />
     {/if}
   </section>
 
@@ -132,9 +154,20 @@
         <SIcon name="arrow-up" />
         <span class="-txt">Trên</span>
       </button>
+
       <button
         type="button"
-        class="m-btn _sm _primary"
+        class="m-btn _sm _primary _fill"
+        data-kbd="e"
+        data-tip="Thêm sửa bản dịch thủ công cho dòng"
+        disabled={true}>
+        <SIcon name="edit" />
+        <span class="-txt">Dịch dòng!</span>
+      </button>
+
+      <button
+        type="button"
+        class="m-btn _sm"
         data-kbd="↓"
         data-tip="Chuyển xuống dòng dưới"
         on:click={() => (l_idx += 1)}

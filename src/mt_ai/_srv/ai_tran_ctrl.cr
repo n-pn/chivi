@@ -8,7 +8,7 @@ class MT::AiTranCtrl < AC::Base
     start = Time.monotonic
     force = force && _privi >= 0
 
-    cdata = ChapData.new(fpath)
+    cdata = RD::Chdata.new(fpath)
     mdata, _algo = cdata.read_con(_algo, force: force)
 
     ai_mt = AiCore.new(pdict)

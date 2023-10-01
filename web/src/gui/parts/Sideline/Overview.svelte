@@ -1,3 +1,14 @@
+<script context="module" lang="ts">
+  let stats = {
+    ztext: 1,
+    mtran: 2,
+    vtran: 2,
+    btran: 1,
+    c_gpt: 1,
+    qtran: 1,
+  }
+</script>
+
 <script lang="ts">
   import { data } from '$lib/stores/lookup_stores'
   import { copy_to_clipboard } from '$utils/btn_utils'
@@ -5,8 +16,6 @@
   import {
     gen_vtran_html,
     gen_ztext_html,
-    gen_ctree_html,
-    gen_ctree_text,
     gen_vtran_text,
   } from '$lib/mt_data_2'
 
@@ -19,11 +28,12 @@
   export let reload_ctree = false
 
   $: ztext = $data.ztext[l_idx]
-  $: hviet = $data.hviet[l_idx]
   $: ctree = $data.ctree[l_idx]
   $: btran = $data.btran[l_idx]
   $: qtran = $data.qtran[l_idx]
   $: c_gpt = $data.c_gpt[l_idx]
+
+  let vtran = ''
 
   $: finit = { ...$data.zpage, m_alg: $data.m_alg, force: true }
 
@@ -39,11 +49,9 @@
     const vtext_res = await from_custom_gpt(ztext)
     $data.c_gpt[l_idx] = vtext_res
   }
-
-  let ctree_show_zh = false
 </script>
 
-<Viewbox title="Tiếng Trung" class="_zh _lg" --lc="2">
+<Viewbox title="Tiếng Trung" bind:state={stats.ztext} class="_zh _lg" --lc="2">
   <svelte:fragment slot="tools">
     <button
       type="button"
@@ -58,44 +66,13 @@
   </svelte:fragment>
 
   {#if ztext}
-    {@html gen_ztext_html(ztext, hviet || [])}
+    {@html gen_ztext_html(ztext)}
   {:else}
     <p class="empty">Chưa có tiếng trung!</p>
   {/if}
 </Viewbox>
 
-<Viewbox title="Ngữ pháp:" class="cdata _ct" --lc="3">
-  <svelte:fragment slot="tools">
-    <button
-      type="button"
-      class="-btn"
-      data-tip="Hiển thị nghĩa tiếng Việt/tiếng Trung gốc"
-      data-tip-loc="bottom"
-      data-tip-pos="right"
-      disabled={!ctree}
-      on:click={() => (ctree_show_zh = !ctree_show_zh)}>
-      <SIcon name="letter-{ctree_show_zh ? 'z' : 'v'}" />
-    </button>
-
-    <button
-      type="button"
-      class="-btn"
-      data-tip="Sao chép cây ngữ pháp vào clipboard"
-      data-tip-loc="bottom"
-      data-tip-pos="right"
-      disabled={!ctree}
-      on:click={() => copy_to_clipboard(gen_ctree_text(ctree))}>
-      <SIcon name="copy" />
-    </button>
-  </svelte:fragment>
-  {#if ctree}
-    {@html gen_ctree_html(ctree, ctree_show_zh)}
-  {:else}
-    <p class="empty">Chưa có cây ngữ pháp</p>
-  {/if}
-</Viewbox>
-
-<Viewbox title="Dịch máy:" class="cdata" --lc="4">
+<Viewbox title="Dịch máy mới:" bind:state={stats.mtran} class="cdata" --lc="5">
   <svelte:fragment slot="tools">
     <button
       type="button"
@@ -126,7 +103,31 @@
   {/if}
 </Viewbox>
 
-<Viewbox title="Bing Translation:" class="_bv _sm" --lc="3">
+<Viewbox title="Dịch thủ công:" bind:state={stats.vtran} class="_vi" --lc="4">
+  <svelte:fragment slot="tools">
+    <button
+      type="button"
+      class="-btn"
+      data-tip="Sao chép bản dịch vào clipboard"
+      data-tip-loc="bottom"
+      data-tip-pos="right"
+      disabled={!vtran}
+      on:click={() => copy_to_clipboard(vtran)}>
+      <SIcon name="copy" />
+    </button>
+  </svelte:fragment>
+
+  {#if vtran}
+    {vtran}
+  {:else}
+    <div class="blank">
+      <em>Chưa có kết quả dịch sẵn.</em>
+      <button class="m-btn _xs _primary">Đóng góp!</button>
+    </div>
+  {/if}
+</Viewbox>
+
+<Viewbox title="Dịch bằng Bing:" bind:state={stats.btran} class="_sm" --lc="3">
   <svelte:fragment slot="tools">
     <button
       type="button"
@@ -153,7 +154,7 @@
   {/if}
 </Viewbox>
 
-<Viewbox title="Dịch GPT Tiên hiệp:" class="_vi _sm" --lc="3">
+<Viewbox title="GPT Tiên hiệp:" bind:state={stats.c_gpt} class="_sm" --lc="3">
   <svelte:fragment slot="tools">
     <button
       type="button"
@@ -180,7 +181,7 @@
   {/if}
 </Viewbox>
 
-<Viewbox title="Dịch máy cũ:" class="_qt _sm" --lc="3">
+<Viewbox title="Dịch máy cũ:" bind:state={stats.qtran} class="_sm" --lc="3">
   <svelte:fragment slot="tools">
     <button
       type="button"

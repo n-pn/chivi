@@ -51,9 +51,7 @@
             </a>
           </td>
           <td>{xlog.amount}</td>
-          <td data-tip={xlog.reason}>
-            <div class="reason">{xlog.reason}</div>
-          </td>
+          <td class="reason">{xlog.reason}</td>
           <td class="ctime">{rel_time(xlog.ctime)}</td>
         </tr>
       {/each}
@@ -86,14 +84,13 @@
     align-items: center;
     gap: 0.25rem;
     @include clamp($width: null);
-    max-width: 7rem;
+    max-width: 8rem;
   }
 
   .reason {
     @include ftsize(sm);
     @include clamp($width: null);
     @include fgcolor(secd);
-    max-width: 100%;
   }
 
   .ctime {

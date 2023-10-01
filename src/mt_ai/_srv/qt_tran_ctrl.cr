@@ -10,7 +10,7 @@ class MT::QtTranCtrl < AC::Base
   def hviet_file(fpath : String)
     start = Time.monotonic
 
-    ztext = ChapData.new(fpath).read_raw
+    ztext = RD::Chdata.read_raw(fpath)
 
     mcore = QtCore.hv_word
     hviet = ztext.map { |line| HvietToVarr.new(mcore.tokenize(line)) }

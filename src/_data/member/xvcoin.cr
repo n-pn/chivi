@@ -62,4 +62,30 @@ class CV::Xvcoin
 
   def self.build_select_sql
   end
+
+  ###
+
+  # GET_VCOIN_SQL = "select vcoin from viusers where id = $1"
+
+  SUB_VCOIN_SQL = <<-SQL
+    update viusers set vcoin = vcoin - $1
+    where id = $2 and vcoin >= $1
+    returning vcoin
+    SQL
+
+  ADD_VCOIN_SQL = "update viusers set vcoin = vcoin + $1 where id = $2"
+
+  def self.micro_transact(sender : Int32, target : Int32, amount : Float64)
+    # TODO: convert vcoin to vietnam dong
+
+    # avail = @@db.query_one?(GET_VCOIN_SQL, from_vu, as: Float64)
+    # return if !avail || avail < vcoin
+
+    remain = @@db.query_one?(SUB_VCOIN_SQL, amount, sender, as: Float64)
+    return unless remain && remain >= 0
+
+    @@db.exec ADD_VCOIN_SQL, amount, target
+
+    remain
+  end
 end

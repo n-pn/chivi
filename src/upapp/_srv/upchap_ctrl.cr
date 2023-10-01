@@ -1,5 +1,6 @@
 require "./_up_ctrl_base"
 require "../../_util/hash_util"
+require "../../rdlib/data/chdata"
 require "../../_data/member/unlock"
 require "../../_data/member/xvcoin"
 
@@ -27,7 +28,7 @@ class UP::UpchapCtrl < AC::Base
     output = {
       cinfo: cinfo,
       rdata: {
-        fpath: cinfo.part_fpath(p_idx),
+        fpath: cinfo.part_name(p_idx),
         plock: plock,
 
         zsize: zsize,
@@ -42,77 +43,25 @@ class UP::UpchapCtrl < AC::Base
     render 200, json: output
   end
 
-  def gen_ulkey(ustem : Upstem, cinfo : Chinfo, p_idx : Int32)
-    "up:#{ustem.sname}/#{ustem.id}/#{cinfo.ch_no}-#{cinfo.cksum}-#{p_idx}"
-  end
-
   def read_chap(ustem, cinfo, p_idx : Int32, plock : Int32, force : Bool = false)
-    vu_id = self._vu_id
     zsize = cinfo.sizes[p_idx]? || 0
 
     # TODO: recover raw text if missing?
     # TODO: download raw text if is remote
     return {[] of String, zsize, 414} if zsize == 0 || cinfo.cksum.empty?
 
-    ulkey = gen_ulkey(ustem, cinfo, p_idx)
-
-    if _privi < plock && !CV::Unlock.find(vu_id, ulkey)
-      return {[] of String, zsize, 413} unless force
-      to_user = ustem.viuser_id
-
-      unlock = CV::Unlock.new(vu_id, ulkey, zsize, ustem.multp)
-      reason = build_xlog_reason(ustem, cinfo, p_idx)
-
-      unless vcoin_remain = exchange_vcoin(vu_id, to_user, unlock.vcoin, reason)
-        return {[] of String, zsize, 415}
-      end
-
-      unlock.save!
+    if _privi >= plock
+      unlocked = true
+    elsif _privi < 0
+      unlocked = false
+    else
+      unlocked = CV::Unlock.unlock(ustem, cinfo, self._vu_id, p_idx, zsize: zsize, force: force)
     end
 
-    fpath = cinfo.file_path(p_idx: p_idx, ftype: "raw.txt")
+    return {[] of String, zsize, force ? 415 : 413} unless unlocked
 
-    ztext = File.read_lines(fpath, chomp: true)
-    ztext.unshift(cinfo.ztitle) unless ztext.first == cinfo.ztitle
-
+    ztext = RD::Chdata.read_raw(cinfo.part_name(p_idx))
     {ztext, zsize, 0}
-  end
-
-  private def build_xlog_reason(ustem, cinfo, p_idx)
-    String.build do |io|
-      io << "Mở khóa chương " << cinfo.ch_no
-      io << "_#{p_idx}" if p_idx > 1 || cinfo.psize > 1
-      io << " nguồn #{ustem.sname}:#{ustem.id}"
-    end
-  end
-
-  GET_VCOIN_SQL = "select vcoin from viusers where id = $1"
-
-  SUB_VCOIN_SQL = <<-SQL
-    update viusers set vcoin = vcoin - $1
-    where id = $2 and vcoin >= $1
-    returning vcoin
-    SQL
-
-  ADD_VCOIN_SQL = "update viusers set vcoin = vcoin + $1 where id = $2"
-
-  private def exchange_vcoin(from_vu : Int32, to_user : Int32, vcoin : Int32, reason : String)
-    vcoin = vcoin / 1000 # TODO: convert vcoin to dong
-
-    avail = PGDB.query_one?(GET_VCOIN_SQL, from_vu, as: Float64)
-    return if !avail || avail < vcoin
-
-    return unless remain = PGDB.query_one?(SUB_VCOIN_SQL, vcoin, from_vu, as: Float64)
-    PGDB.exec ADD_VCOIN_SQL, vcoin, to_user
-
-    CV::Xvcoin.new(
-      kind: :privi_ug, sender_id: from_vu, target_id: to_user,
-      amount: vcoin, reason: reason,
-    ).insert!
-
-    # TODO: send notification
-
-    remain
   end
 
   # TODO:
