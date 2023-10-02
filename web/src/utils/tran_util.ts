@@ -58,3 +58,22 @@ export async function from_custom_gpt(input: string, fetch = globalThis.fetch) {
   const res = await fetch('/_sp/c_gpt', { method: 'POST', body: input })
   return await res.text()
 }
+
+export async function qtran_file(
+  xargs: CV.Chopts,
+  force: boolean = false,
+  rinit: RequestInit = {},
+  fetch = globalThis.fetch
+) {
+  const finit = { ...xargs.zpage, force }
+  if (!finit.fpath) return { lines: [], mtime: 0, tspan: 0 }
+
+  switch (xargs.rmode) {
+    case 'bt_zv':
+      return await call_btran_file(finit, rinit, fetch)
+    case 'qt_v1':
+      return await call_qtran_file(finit, rinit, fetch)
+    default:
+      return { lines: [], mtime: 0, tspan: 0 }
+  }
+}

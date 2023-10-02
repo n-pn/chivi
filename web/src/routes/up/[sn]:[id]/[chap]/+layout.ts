@@ -4,26 +4,19 @@ import { nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 
-type Chdata = { cinfo: CV.Wnchap; rdata: CV.Chpart; error?: number }
-
-const split_chap = (chap: string) => {
-  const [ch, pi = '1'] = chap.split('_')
-  const p_idx = +pi
-  return [+ch, p_idx < 1 ? 1 : p_idx]
-}
 export const load = (async ({ url, parent, params, fetch }) => {
   const { ustem } = await parent()
 
   const up_id = +params.id
-  const [ch_no, p_idx] = split_chap(params.chap)
+  const [ch_no, p_idx = 1] = params.chap.split('_').map((x) => parseInt(x))
 
   const force = url.searchParams.get('force') || 'false'
   const cinfo_path = `/_up/chaps/${up_id}/${ch_no}/${p_idx}?force=${force}`
 
-  const { cinfo, rdata, error } = await api_get<Chdata>(cinfo_path, fetch)
+  const rdata = await api_get<CV.Chpart>(cinfo_path, fetch)
   const xargs = get_xargs(ustem, p_idx, rdata, url)
 
-  const _title = `${cinfo.title} - ${ustem.vname}`
+  const _title = `${rdata.title} - ${ustem.vname}`
   // const _board = `ch:${book}:${chap}:${sname}`
 
   const _meta: App.PageMeta = {
@@ -34,7 +27,7 @@ export const load = (async ({ url, parent, params, fetch }) => {
     show_config: true,
   }
 
-  return { cinfo, rdata, error, xargs, _meta, _title }
+  return { rdata, xargs, _meta, _title }
 }) satisfies PageLoad
 
 function get_xargs(ustem: CV.Upstem, p_idx: number, { fpath }, url: URL) {

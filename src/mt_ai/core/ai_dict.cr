@@ -20,11 +20,8 @@ class MT::AiDict
     @dict_list = {@main_dict, MtDict.regular, @auto_dict}
   end
 
-  def to_json(jb : JSON::Builder)
-    jb.object {
-      jb.field "pdict", @pdict.sub('/', ':')
-      jb.field "sizes", {@main_dict.size, MtDict.regular.size, @auto_dict.size}
-    }
+  def dsize
+    {@main_dict.size, @auto_dict.size, MtDict.regular.size}
   end
 
   def get(zstr : String, epos : MtEpos) : MtTerm

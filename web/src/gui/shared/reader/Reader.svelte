@@ -1,114 +1,50 @@
 <script context="module" lang="ts">
-  const main_tabs = [
-    { type: 'ai', mode: 'auto', icon: 'language', text: 'Dịch máy' },
-    { type: 'qt', icon: 'bolt', text: 'Dịch thô' },
+  const read_tabs = [
     { type: 'tl', icon: 'ballpen', text: 'Dịch tay' },
+    { type: 'mt', icon: 'language', text: 'Dịch máy' },
     { type: 'cf', icon: 'tool', text: 'Công cụ' },
   ]
-
-  type ReadMode = Record<string, { text: string; desc: string }>
-  const read_modes: Record<string, ReadMode> = {
-    ai: {
-      avail: {
-        text: 'Đã có sẵn',
-        desc: 'Chọn kết quả phân tích ngữ pháp có sẵn, ưu tiên Ernie Gram',
-      },
-      mtl_1: {
-        text: 'Electra Small',
-        desc: 'HanLP_Closed_MTL_ELECTRA_SMALL_ZH',
-      },
-      mtl_2: {
-        text: 'Electra Base',
-        desc: 'HanLP_Closed_MTL_ELECTRA_BASE_ZH',
-      },
-      mtl_3: {
-        text: 'Ernie Gram',
-        desc: 'HanLP Closed-source MTL ERNIE_GRAM_ZH',
-      },
-    },
-
-    qt: {
-      qt_v1: {
-        text: 'Máy dịch cũ',
-        desc: 'Kết quả dịch từ máy dịch phiên bản cũ',
-      },
-      be_zv: {
-        text: 'Bing Edge',
-        desc: 'Dịch bằng Bing Translator thông qua Edge API',
-      },
-      hviet: {
-        text: 'Hán Việt',
-        desc: 'Dịch ra kết quả phiên âm Hán Việt',
-      },
-    },
-    tl: {
-      basic: {
-        text: 'Cơ bản',
-        desc: 'Kết quả dịch tay do người dùng khởi tạo/sửa chữa',
-      },
-      mixed: {
-        text: 'Trộn lẫn',
-        desc: 'Trộn kết quả dịch tay đã kiểm chứng với kết quả dịch máy',
-      },
-      other: {
-        text: 'Sưu tầm',
-        desc: '',
-      },
-    },
-  }
 </script>
 
 <script lang="ts">
   import { page } from '$app/stores'
   import { Pager } from '$lib/pager'
 
+  import {
+    call_mtran_file,
+    call_btran_file,
+    call_qtran_file,
+  } from '$utils/tran_util'
+
   import { afterNavigate } from '$app/navigation'
-  import { chap_path, _pgidx } from '$lib/kit_path'
-
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import Footer from '$gui/sects/Footer.svelte'
 
-  import Crumb from '$gui/molds/Crumb.svelte'
   import Lookup2 from '$gui/parts/Lookup2.svelte'
-
-  import type { LayoutData } from './$types'
-  export let data: LayoutData
-
-  $: ({ ustem, rdata, xargs } = data)
-
-  $: ch_no = rdata.ch_no
-  // $: total = ustem.chmax || ustem.chap_count
-
-  $: stem_path = `/up/${ustem.sname}:${data.up_id}`
-  $: prev_path = rdata._prev
-    ? chap_path(stem_path, rdata._prev, xargs)
-    : stem_path
-
-  $: next_path = rdata._next
-    ? chap_path(stem_path, rdata._next, xargs)
-    : stem_path
-
-  $: pager = new Pager($page.url, { type: 'ai', mode: 'avail' })
 
   import {
     data as lookup_data,
     ctrl as lookup_ctrl,
   } from '$lib/stores/lookup_stores'
-  import { rel_time_vp } from '$utils/time_utils'
+
   import { browser } from '$app/environment'
-  import Notext from './Notext.svelte'
   import { config } from '$lib/stores'
+  import { rel_time_vp } from '$utils/time_utils'
 
-  $: crumb = [
-    { text: 'Dự án cá nhân', href: `/up` },
-    { text: ustem.vname, href: stem_path },
-    { text: rdata.chdiv || 'Chính văn' },
-    { text: rdata.title },
-  ]
+  import Nodata from './Nodata.svelte'
+  import Switch from './Switch.svelte'
+  import Status from './Status.svelte'
 
-  let on_focus: HTMLElement
+  export let rstem: CV.Rdstem
+  export let xargs: CV.Chopts
+  export let rdata: CV.Chpart
+
+  export let ftype = rdata.fpath.split(/[:\/\-]/)
+
+  $: pager = new Pager($page.url, { type: 'tl', mode: 'avail' })
+
   let reader: HTMLDivElement
-  let change_mode = false
+
+  let focused_node: HTMLElement
 
   const handle_mouse = (event: MouseEvent, panel: string = 'overview') => {
     let target = event.target as HTMLElement
@@ -131,44 +67,85 @@
 
   afterNavigate(() => {
     l_idx = -1
-    if (on_focus) on_focus.classList.remove('focus')
+    if (focused_node) focused_node.classList.remove('focus')
   })
 
   $: if (browser && l_idx >= 0) {
     const new_focus = document.getElementById('L' + l_idx)
 
-    if (new_focus != on_focus) {
-      if (on_focus) on_focus.classList.remove('focus')
-      on_focus = new_focus
-      on_focus.classList.add('focus')
-      on_focus.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+    if (new_focus != focused_node) {
+      if (focused_node) focused_node.classList.remove('focus')
+      focused_node = new_focus
+      focused_node.classList.add('focus')
+      focused_node.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
     }
 
     lookup_ctrl.show()
   }
+
+  let vtran: CV.Mtdata | CV.Qtdata
+
+  let error = ''
+
+  $: load_data(xargs)
+
+  $: init_data = { zpage: xargs.zpage, ztext: rdata.ztext }
+
+  async function load_data(xargs: CV.Chopts, rinit: RequestInit = {}) {
+    const { zpage, rtype, rmode, m_alg = rmode || 'avail' } = xargs
+    const finit = { ...zpage, m_alg, force: true }
+
+    let xtype = ''
+
+    if (rtype == 'mt') {
+      vtran = await call_mtran_file(finit, rinit, fetch)
+      xtype = 'ctree'
+    } else if (rmode == 'qt_v1') {
+      vtran = await call_qtran_file(finit, rinit, fetch)
+      xtype = 'qtran'
+    } else if (rmode == 'be_zv') {
+      vtran = await call_btran_file(finit, rinit, fetch)
+      xtype = 'btran'
+    }
+
+    error = vtran.error
+    if (!error) lookup_data.put({ ...init_data, [xtype]: vtran.lines })
+  }
+
+  $: update_lookup_data(vtran)
+
+  function update_lookup_data({ lines: zdata }) {
+    let { rmode, rtype } = xargs
+    let m_alg = ''
+
+    let ztext = rdata.ztext
+
+    if (rmode == 'qt_v1') {
+      rmode = 'qtran'
+    } else if (rmode == 'be_zv') {
+      rmode = 'btran'
+    } else if (rmode == 'hviet') {
+      zdata = []
+    } else if (rtype == 'ai') {
+      rmode = 'ctree'
+      m_alg = xargs.rmode
+    } else {
+      rmode = 'ctree'
+      zdata = []
+    }
+
+    const data = { zpage: xargs.zpage, ztext, [rmode]: zdata, m_alg }
+    lookup_data.put(data)
+  }
 </script>
-
-<Crumb items={crumb} />
-
-<!-- <nav class="nav-list">
-  {#each links as [mode, text, dtip]}
-    <a
-      href="{paths.curr}{mode}"
-      class="nav-link"
-      class:_active={mode == $page.data.rmode}
-      data-tip={dtip}>
-      <span>{text}</span>
-    </a>
-  {/each}
-</nav> -->
 
 <article
   class="article island app-fs-{$config.ftsize} app-ff-{$config.ftface}"
   style:--textlh="{$config.textlh}%">
   <header class="head">
-    {#each main_tabs as { type, icon, text }}
+    {#each read_tabs as { type, icon, text }}
       <a
-        href={chap_path(stem_path, ch_no, { rtype: type, rmode: '' })}
+        href={pager.gen_url({ type, mode: '' })}
         class="htab"
         class:_active={xargs.rtype == type}>
         <SIcon name={icon} />
@@ -177,8 +154,40 @@
     {/each}
   </header>
 
+  <Switch {pager} {xargs} />
+
+  <section class="mode-nav">
+    <div class="chap-stat">
+      <div class="stat-group">
+        <span class="stat-entry" data-tip="Số ký tự tiếng Trung">
+          <SIcon name="file-analytics" />
+          <span class="stat-value">{rdata.zsize}</span>
+          <span class="stat-label"> chữ</span>
+        </span>
+        {#if vtran?.tspan}
+          <div class="stat-entry" data-tip="Thời gian chạy máy dịch">
+            <SIcon name="clock" />
+            <span class="stat-value">{vtran.tspan}ms</span>
+          </div>
+        {/if}
+
+        {#if vtran?.mtime}
+          <div class="stat-entry" data-tip="Thay đổi lần cuối">
+            <SIcon name="calendar" />
+            <span class="stat-value">{rel_time_vp(vtran.mtime)}</span>
+          </div>
+        {/if}
+      </div>
+    </div>
+  </section>
+
   {#if rdata.error}
-    <Notext {data} {pager} />
+    <Nodata {rstem} {rdata} {xargs} />
+  {:else if vtran.error}
+    <section class="error">
+      <h1>Lỗi hệ thống:</h1>
+      <p class="error-message">{vtran.error}</p>
+    </section>
   {:else}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -191,38 +200,6 @@
     </div>
   {/if}
 </article>
-
-<Footer>
-  <div class="navi">
-    <a
-      href={prev_path}
-      class="m-btn navi-item"
-      class:_disable={!rdata._prev}
-      data-key="74"
-      data-kbd="←">
-      <SIcon name="chevron-left" />
-      <span>Trước</span>
-    </a>
-
-    <a
-      href="{stem_path}{ch_no > 32 ? `?pg=${_pgidx(ch_no)}` : ''}"
-      class="m-btn _success"
-      data-kbd="h">
-      <SIcon name="list" />
-      <span class="u-show-tm">Mục lục</span>
-    </a>
-
-    <a
-      href={next_path}
-      class="m-btn _fill navi-item"
-      class:_primary={rdata._next}
-      data-key="75"
-      data-kbd="→">
-      <span>Kế tiếp</span>
-      <SIcon name="chevron-right" />
-    </a>
-  </div>
-</Footer>
 
 <div hidden>
   <button

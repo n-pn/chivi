@@ -11,12 +11,12 @@
   export let data: LayoutData
   export let pager: Pager
 
-  $: ({ ustem, cinfo, rdata, error, xargs } = data)
+  $: ({ ustem, cinfo, rdata, xargs } = data)
   $: vcoin_cost = Math.round(ustem.multp * rdata.zsize * 0.01) / 1000
 </script>
 
 <section class="notext">
-  {#if error == 413}
+  {#if rdata.error == 413}
     <h1>
       Lỗi: Chương {cinfo.ch_no} phần {xargs.p_idx} cần thiết mở khóa bằng vcoin.
     </h1>
@@ -58,16 +58,12 @@
         </div>
       {/if}
     </footer>
-  {:else if error == 414}
+  {:else if rdata.error == 414}
     <h1>Lỗi: Chương tiết không có nội dung.</h1>
     <p class="em">Liên hệ với chủ sở hữu của dự án để khắc phục.</p>
-  {:else if error == 415}
-    <h1>Lỗi: Chương {cinfo.ch_no} cần thiết mở khóa.</h1>
-    <p>Bạn đã thử mở khóa cho chương, nhưng số lượng vcoin của bạn không đủ.</p>
-    <p>
-      Hãy nạp vcoin bằng cách ủng hộ trang web theo <a href="/hd/donation"
-        >hướng dẫn ở đây</a>
-    </p>
+  {:else}
+    <h1>Không rõ lỗi</h1>
+    <p>Liên hệ với ban quản trị để khắc phục.</p>
   {/if}
 </section>
 

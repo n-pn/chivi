@@ -59,7 +59,13 @@
   font-weight: 500;
   border-radius: 1em;
   background: inherit;
-  @include ftsize(sm);
+
+  @include ftsize(xs);
+
+  @include bp-min(tm) {
+    @include ftsize(sm);
+  }
+
   &._active,
   &:hover {
     @include fgcolor(primary, 6);

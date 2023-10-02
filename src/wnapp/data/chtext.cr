@@ -151,6 +151,10 @@ class WN::Chtext
     File.read(self.wn_path(p_idx))
   end
 
+  def load_raw!(p_idx : Int32 = 1)
+    File.read_lines(self.wn_path(p_idx), chomp: true)
+  end
+
   # def load_part_from_copus(p_idx : Int32 = 1)
   #   zorig = "#{@chap.ch_no}-#{@chap.cksum}-#{p_idx}"
 

@@ -5,7 +5,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ cinfo, xargs, vtran } = data)
+  $: ({ rdata, xargs, vtran } = data)
 
   $: rmode = $config.r_mode == 2 ? 2 : 1
 </script>
@@ -18,6 +18,6 @@
     class="cdata"
     data-line={_idx}>
     {@html gen_vtran_html(line, opts)}
-    {#if _idx == 0 && cinfo.psize > 1}[{xargs.p_idx}/{cinfo.psize}]{/if}
+    {#if _idx == 0 && rdata.psize > 1}[{xargs.p_idx}/{rdata.psize}]{/if}
   </svelte:element>
 {/each}

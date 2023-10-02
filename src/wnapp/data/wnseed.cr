@@ -27,8 +27,9 @@ class WN::Wnstem
   field rtime : Int64 = 0   # remote sync time
 
   field privi : Int16 = 0
-  field _flag : Int16 = 0
+  field multp : Int16 = 4
 
+  field _flag : Int16 = 0
   field mtime : Int64 = 0
 
   field created_at : Time = Time.utc
@@ -62,6 +63,8 @@ class WN::Wnstem
 
       jb.field "chmax", @chap_total
       jb.field "utime", @mtime
+
+      jb.field "multp", @multp
 
       jb.field "privi", @privi
     }
@@ -249,8 +252,18 @@ class WN::Wnstem
     find_chap(ch_no) || Chinfo.new(ch_no)
   end
 
+  def prev_href(cinfo : Chinfo, p_idx : Int32 = 1)
+    return cinfo.part_href(p_idx &- 1) if p_idx > 1
+    self.find_prev(cinfo.ch_no).try(&.part_href(-1))
+  end
+
   def find_prev(ch_no : Int32)
     Chinfo.find_prev(self.chap_list, ch_no)
+  end
+
+  def next_href(cinfo : Chinfo, p_idx : Int32 = 1)
+    return cinfo.part_href(p_idx &+ 1) if p_idx < cinfo.psize
+    self.find_succ(cinfo.ch_no).try(&.part_href(1))
   end
 
   def find_succ(ch_no : Int32)

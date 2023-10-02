@@ -42,8 +42,15 @@ class CV::Unlock
   FIND_BY_UKEY_SQL = "select * from unlocks where vu_id = $1 and ulkey = $2 limit 1"
 
   def self.find(vu_id : Int32, ulkey : String)
-    return if vu_id < 1
+    return if vu_id < 0
     @@db.query_one?(FIND_BY_UKEY_SQL, vu_id, ulkey, as: self)
+  end
+
+  CHECK_BY_UKEY_SQL = "select 1 from unlocks where vu_id = $1 and ulkey = $2 limit 1"
+
+  def self.unlocked?(vu_id : Int32, ulkey : String)
+    return false if vu_id < 0
+    @@db.query_one?(CHECK_BY_UKEY_SQL, vu_id, ulkey, as: Int32).nil?.!
   end
 
   def self.init(vu_id : Int32, ulkey : String)
@@ -51,26 +58,30 @@ class CV::Unlock
     data.tap(&.mtime = Time.utc.to_unix)
   end
 
-  def self.unlock(
-    ustem : UP::Upstem, cinfo : UP::Chinfo,
-    vu_id : Int32, p_idx : Int32,
-    zsize = cinfo.sizes[p_idx], force : Bool = false
-  ) : self | Nil
+  def self.unlock(ustem : UP::Upstem, cinfo : UP::Chinfo, vu_id : Int32, p_idx : Int32)
+    owner = ustem.viuser_id
     ulkey = cinfo.part_name(p_idx)
+    zsize = cinfo.sizes[p_idx]
 
-    if existed = find(vu_id, ulkey)
-      return existed
-    elsif !force
-      return nil
-    end
-
-    unlock = new(vu_id: vu_id, ulkey: ulkey, owner: ustem.viuser_id, zsize: zsize, multp: ustem.multp)
+    unlock = new(vu_id: vu_id, ulkey: ulkey, owner: owner, zsize: zsize, multp: ustem.multp)
 
     # TODO: convert vcoin to vnd
     amount = unlock.vcoin / 1000
 
-    if Xvcoin.micro_transact(sender: vu_id, target: ustem.viuser_id, amount: amount)
-      unlock.save!
-    end
+    remain = Xvcoin.micro_transact(sender: vu_id, target: owner, amount: amount)
+    remain ? {unlock.save!, remain} : {nil, 0}
+  end
+
+  def self.unlock(wstem : WN::Wnstem, cinfo : WN::Chinfo, vu_id : Int32, p_idx : Int32)
+    ulkey = cinfo.part_name(p_idx)
+    zsize = cinfo.sizes[p_idx]
+
+    unlock = new(vu_id: vu_id, ulkey: ulkey, owner: -1, zsize: zsize, multp: wstem.multp)
+
+    # TODO: convert vcoin to vnd
+    amount = unlock.vcoin / 1000
+
+    remain = Xvcoin.micro_transact(sender: vu_id, target: -1, amount: amount)
+    remain ? {unlock.save!, remain} : {nil, 0}
   end
 end

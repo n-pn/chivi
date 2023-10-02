@@ -19,7 +19,13 @@ class MT::AiTranCtrl < AC::Base
     cache_control 3.seconds
     mtime = Time.utc.to_unix
 
-    json = {lines: lines, mtime: mtime, tspan: tspan, _algo: _algo}
+    json = {
+      lines: lines,
+      tspan: tspan,
+      dsize: ai_mt.dict.dsize,
+      mtime: mtime,
+      m_alg: _algo,
+    }
 
     render json: json
   rescue ex

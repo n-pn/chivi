@@ -13,14 +13,26 @@ declare namespace CV {
   }
 
   interface Chpart {
-    fpath: string
-    plock: number
+    ch_no: number
+    p_idx: number
+    p_max: number
 
-    ztext: Array<String>
+    title: string
+    chdiv: string
+
+    rlink: string
+    fpath: string
+
+    ztext: string[]
+    error: number
     zsize: number
 
+    plock: number
+    mtime: number
+    uname: string
+
     _prev: string
-    _succ: string
+    _next: string
   }
 
   interface Chlist extends Paginate {
@@ -31,14 +43,16 @@ declare namespace CV {
     zpage: Mtpage
     rtype: string
     rmode: string
+    m_alg: string
   }
 
   interface Mtdata {
     lines: Array<CV.Cvtree>
     tspan: number
+    dsize?: [number, number, number]
     mtime?: number
     error?: string
-    _algo?: string
+    m_alg?: string
   }
 
   interface Qtdata {
@@ -54,5 +68,12 @@ declare namespace CV {
     mtime?: number
     ztext?: Array<string>
     error?: string
+  }
+
+  interface Rdstem {
+    plock: number
+    multp: number
+    chmax: number
+    gifts: number
   }
 }

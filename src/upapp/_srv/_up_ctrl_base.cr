@@ -4,7 +4,7 @@ require "../data/*"
 abstract class AC::Base
   STEMS = {} of Int32 => UP::Upstem
 
-  private def get_ustem(up_id : Int32)
+  private def get_ustem(up_id : Int32, sname : String? = nil)
     STEMS[up_id] ||= UP::Upstem.find(up_id) || raise NotFound.new("Dự án không tồn tại")
   end
 

@@ -1,78 +1,62 @@
 require "./_wn_ctrl_base"
+
 require "../../_util/hash_util"
+require "../../_data/member/unlock"
 
 class WN::ChinfoCtrl < AC::Base
   base "/_wn/chaps/:wn_id"
 
   @[AC::Route::GET("/:sname")]
   def index(wn_id : Int32, sname : String, pg pg_no : Int32 = 1)
-    wseed = get_wnseed(wn_id, sname)
+    wstem = get_wnseed(wn_id, sname)
     # TODO: restrict user access
-    render json: wseed.get_chaps(pg_no)
+    render json: wstem.get_chaps(pg_no)
   end
 
   @[AC::Route::GET("/:sname/:ch_no/:p_idx")]
-  def show_part(wn_id : Int32, sname : String, ch_no : Int32, p_idx : Int32, rmode : Int32 = 1)
-    wseed = get_wnseed(wn_id, sname)
-    cinfo = get_chinfo(wseed, ch_no)
+  def show(wn_id : Int32, sname : String, ch_no : Int32, p_idx : Int32, rmode : Int32 = 0)
+    wstem = get_wnseed(wn_id, sname)
+    cinfo = get_chinfo(wstem, ch_no)
 
-    plock = wseed.chap_plock(ch_no)
-    ztext, zsize, error = read_chap(ustem, cinfo, p_idx, plock, force: force)
+    # plock = wstem.chap_plock(ch_no)
+    plock = 5
 
-    if _privi < plock
-      error = 413
-    else
-      chtext = Chtext.new(wseed, cinfo)
-      cksum = chtext.get_cksum!(_uname, _mode: rmode) rescue ""
+    ztext, error = read_chap(wstem, cinfo, p_idx, plock, rmode: rmode)
 
-      if cksum.empty?
-        error = 414
-      else
-        fpath = chtext.wn_path(p_idx, cksum)
-        ztext = File.read_lines(fpath, chomp: true)
-      end
-    end
+    rdata = {
+      ch_no: ch_no,
+      p_idx: p_idx,
+      p_max: cinfo.psize,
 
-    output = {
-      cinfo: cinfo,
-      rdata: {
-        fpath: cinfo.part_name,
-        plock: plock,
+      title: cinfo.vtitle.empty? ? cinfo.ztitle : cinfo.vtitle,
+      chdiv: cinfo.vchdiv.empty? ? cinfo.zchdiv : cinfo.vchdiv,
+      rlink: cinfo.rlink,
+      fpath: cinfo.part_name(wn_id, p_idx),
 
-        zsize: cinfo.sizes[p_idx]? || 0,
-        ztext: ztext,
+      plock: plock,
+      mtime: cinfo.mtime,
+      uname: cinfo.uname,
 
-        _prev: p_idx > 1 ? chap.part_href(p_idx &- 1) : wstem.find_prev(ch_no).try(&.part_href(-1)),
-        _succ: p_idx < chap.psize ? chap.part_href(p_idx &+ 1) : wstem.find_succ(ch_no).try(&.part_href(1)),
-      },
+      ztext: ztext,
       error: error,
+      zsize: cinfo.sizes[p_idx]? || 0,
+
+      _prev: wstem.prev_href(cinfo, p_idx),
+      _next: wstem.next_href(cinfo, p_idx),
     }
 
-    render 200, json: output
+    render 200, json: rdata
   end
 
-  def read_chap(wstem, cinfo, p_idx : Int32, plock : Int32, force : Bool = false)
-    zsize = cinfo.sizes[p_idx]? || 0
+  def read_chap(wstem, cinfo, p_idx : Int32, plock : Int32, rmode : Int32 = 1)
+    ctext = Chtext.new(wstem, cinfo)
 
-    # TODO: recover raw text if missing?
-    # TODO: download raw text if is remote
-    return {[] of String, zsize, 414} if zsize == 0 || cinfo.cksum.empty?
+    cksum = ctext.get_cksum!(_uname, _mode: rmode)
+    return {[] of String, 414} if cksum.empty?
 
-    if _privi >= plock
-      unlocked = true
-    elsif _privi < 0
-      unlocked = false
-    else
-      unlocked = CV::Unlock.unlock(self._vu_id, zsize, wstem, cinfo, p_idx, force: force)
-    end
+    ulkey = cinfo.part_name(wstem.wn_id, p_idx)
 
-    return {[] of String, zsize, 415} unless unlocked
-
-    fpath = cinfo.file_path(p_idx: p_idx, ftype: "raw.txt")
-
-    ztext = File.read_lines(fpath, chomp: true)
-    ztext.unshift(cinfo.ztitle) unless ztext.first == cinfo.ztitle
-
-    {ztext, zsize, 0}
+    can_read = _privi >= plock || CV::Unlock.unlocked?(self._vu_id, ulkey)
+    can_read ? {ctext.load_raw!(p_idx), 0} : {[] of String, 413}
   end
 end
