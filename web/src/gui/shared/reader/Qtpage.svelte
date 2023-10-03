@@ -17,7 +17,7 @@
   export let ztext: string[] = []
   export let xargs: CV.Chopts
   export let label = ''
-  export let dirty = true
+  export let state = 0
 
   $: mode = $config.r_mode == 2 ? 2 : 1
 
@@ -29,8 +29,8 @@
   let vtran: CV.Qtdata | CV.Mtdata = { lines: [], mtime: 0, tspan: 0 }
   $: [title, ...paras] = vtran?.lines || []
 
-  $: if (browser && dirty && xargs) {
-    vtran = { lines: [], mtime: 0, tspan: 0 }
+  $: if (browser && state && xargs) {
+    if (state < 2) vtran = { lines: [], mtime: 0, tspan: 0 }
     load_data(xargs)
   }
 
@@ -51,7 +51,7 @@
       rmode = 'mt_ai'
     }
 
-    dirty = false
+    state = false
     if (vtran.error) return
 
     lookup_data.update((x) => {
@@ -74,7 +74,7 @@
 {:else}
   <div class="empty">
     <SIcon name="rotate" spin={true} />
-    <p>Đang tải nội dung!</p>
+    <p>Đang tải nội dung..</p>
   </div>
 {/if}
 

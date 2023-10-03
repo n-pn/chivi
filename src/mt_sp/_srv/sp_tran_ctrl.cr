@@ -15,15 +15,12 @@ class SP::TranCtrl < AC::Base
     render text: ex.message
   end
 
-  TEXT_DIR = "var/wnapp/chtext"
-  TRAN_DIR = "var/wnapp/chtran"
-
   @[AC::Route::GET("/hviet")]
   def hviet_file(fpath : String)
     start = Time.monotonic
     mcore = MT::QtCore.hv_word
 
-    ztext = ChapData.new(fpath).read_raw
+    ztext = RD::Chdata.new(fpath).read_raw
     hviet = ztext.map { |line| mcore.tokenize(line).to_txt }
 
     mtime = Time.utc.to_unix
@@ -60,7 +57,7 @@ class SP::TranCtrl < AC::Base
   @[AC::Route::GET("/btran")]
   def btran_file(fpath : String, force : Bool = true)
     start = Time.monotonic
-    cdata = ChapData.new(fpath)
+    cdata = RD::Chdata.new(fpath)
 
     tl_path = cdata.vtl_file_path("bzv.txt")
 

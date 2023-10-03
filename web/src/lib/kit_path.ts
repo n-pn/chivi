@@ -29,11 +29,6 @@ export const fix_sname = (sname: string) => {
   return seed_prefixes.includes(sname[0]) ? sname : '~avail'
 }
 
-const default_rmode = {
-  qt: 'mt_v1',
-  mt: 'mtl_1',
-}
-
 export function chap_path(
   root: string,
   chap: number | string,
@@ -43,8 +38,12 @@ export function chap_path(
 
   const params = new URLSearchParams()
 
-  if (rtype != 'qt') params.append('rm', rtype)
-  if (rmode && rmode != default_rmode[rtype]) params.append('mode', rmode)
+  if (rtype == 'qt') {
+    if (rmode != 'qt_v1') params.append('qt', rmode)
+  } else if (rtype == 'mt') {
+    params.append('rm', 'mt')
+    if (rmode != 'mtl_1') params.append('mt', rmode)
+  }
 
   const search = params.toString()
   return search ? `${href}?${search}` : href

@@ -20,7 +20,7 @@
   import Viewbox from './Viewbox.svelte'
 
   export let l_idx = 0
-  export let reload_mt_ai = false
+  export let stale = false
 
   $: mt_ai = $data.mt_ai[l_idx]
   let show_zh = false
@@ -66,7 +66,7 @@
     <button
       type="button"
       class="-btn"
-      on:click={() => (reload_mt_ai = true)}
+      on:click={() => (stale = true)}
       data-tip="Dịch lại sau khi đã thay đổi nghĩa của từ"
       data-tip-loc="bottom"
       data-tip-pos="right">

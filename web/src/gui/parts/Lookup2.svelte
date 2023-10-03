@@ -3,7 +3,7 @@
   import { call_mt_ai_file } from '$utils/tran_util'
 
   import { page } from '$app/stores'
-  import { invalidate } from '$app/navigation'
+  import { invalidateAll } from '$app/navigation'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Slider from '$gui/molds/Slider.svelte'
@@ -18,6 +18,8 @@
   import Glossary from './Sideline/Glossary.svelte'
   import Analysis from './Sideline/Analysis.svelte'
 
+  export let xargs = { rtype: 'qt', rmode: 'qt_v1' }
+  export let state = 0
   export let l_idx = 0
   export let l_max = 0
 
@@ -55,25 +57,24 @@
     $ctrl.panel = 'glossary'
   }
 
-  $: finit = { ...$data.zpage, m_alg: $data.m_alg, force: true }
-  const rinit = { cache: 'no-cache' } as RequestInit
+  let viewer: HTMLElement
 
-  let reload_mt_ai = false
-  $: if (reload_mt_ai) load_mt_ai_data()
+  let stale = false
+  $: if (stale) load_mt_ai_data()
+
+  const rinit = { cache: 'no-cache' } as RequestInit
+  $: finit = { ...$data.zpage, m_alg: $data.m_alg, force: true }
 
   const load_mt_ai_data = async () => {
-    reload_mt_ai = false
+    stale = false
 
-    if ($page.data.xargs?.rtype != 'ai') {
+    if (xargs.rtype != 'mt' && xargs.rmode != 'mt_ai') {
       const mt_ai = await call_mt_ai_file(finit, rinit)
       $data.mt_ai = mt_ai.lines || []
     } else {
-      await invalidate('wn:cdata')
-      $data.mt_ai = $page.data.vtran.lines
+      state = 2
     }
   }
-
-  let viewer: HTMLElement
 </script>
 
 <Slider
@@ -134,11 +135,11 @@
     on:click={handle_click}
     on:contextmenu={handle_ctxmenu}>
     {#if $ctrl.panel == 'overview'}
-      <Overview {l_idx} {reload_mt_ai} />
+      <Overview {l_idx} bind:stale />
     {:else if $ctrl.panel == 'glossary'}
       <Glossary {l_idx} {viewer} bind:zfrom bind:zupto />
     {:else}
-      <Analysis {l_idx} {reload_mt_ai} />
+      <Analysis {l_idx} bind:stale />
     {/if}
   </section>
 
@@ -180,7 +181,7 @@
 </Slider>
 
 {#if $vtform_ctrl.actived}
-  <Vtform zpage={$data.zpage} on_close={(term) => (reload_mt_ai = !!term)} />
+  <Vtform zpage={$data.zpage} on_close={(term) => (stale = !!term)} />
 {/if}
 
 <style lang="scss">

@@ -14,7 +14,7 @@ class M1::TranCtrl < AC::Base
     plain = false
     lines = [] of String
 
-    ChapData.new(fpath).read_raw do |line|
+    RD::Chdata.new(fpath).read_raw do |line|
       data = plain ? mcore.cv_plain(line) : mcore.cv_title(line)
       lines << data.to_txt
       plain = true

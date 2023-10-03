@@ -7,16 +7,14 @@
   let zupto = 1
   let icpos = 'DT'
 
-  import { gen_ctree_html, gen_vtran_html } from '$lib/mt_data_2'
-
-  import VitermForm from '$gui/parts/VitermForm.svelte'
+  import { gen_ctree_html, gen_mt_ai_html } from '$lib/mt_data_2'
 </script>
 
 <article class="article island">
   <h3 class="label">Tiếng Việt:</h3>
 
   <div class="cdata debug _hv">
-    {@html gen_vtran_html(vtree, { mode: 2, cap: true, und: true })}
+    {@html gen_mt_ai_html(vtree, { mode: 2, cap: true, und: true, _qc: 0 })}
   </div>
 
   <h3 class="label">Cây ngữ pháp:</h3>

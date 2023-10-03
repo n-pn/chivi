@@ -12,23 +12,18 @@
   $: search = rstem.zname ? `${rstem.zname} ${rdata.ztext[0]}` : ''
 
   let _loading = false
-  let msg_text = ''
-  let msg_type = ''
 
   const reload_chap = async () => {
     _loading = true
 
-    const url = `/_wn/${rstem.sname}/${rstem.sn_id}/${rdata.ch_no}`
+    const url = `/_wn/reload/${rstem.sname}/${rstem.sn_id}/${rdata.ch_no}`
     const res = await fetch(url, { method: 'PUT' })
     _loading = false
 
     if (res.ok) {
-      msg_text = 'Tải lại thành công, trang đang tải lại..'
-      msg_type = 'ok'
       invalidateAll()
     } else {
-      msg_text = await res.text()
-      msg_type = 'err'
+      alert(await res.text())
     }
   }
 </script>
@@ -158,10 +153,6 @@
       <span>Tải lại nguồn</span>
     </button>
   </div>
-
-  {#if msg_text}
-    <div class="form-msg _{msg_type}">{msg_text}</div>
-  {/if}
 
   <div class="actions">
     {#if rstem.stype == 'up'}

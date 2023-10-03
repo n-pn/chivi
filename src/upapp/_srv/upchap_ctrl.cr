@@ -30,7 +30,7 @@ class UP::UpchapCtrl < AC::Base
       p_idx: p_idx,
       p_max: cinfo.psize,
 
-      zname: "#{ustem.zname} #{chinfo.ztitle}",
+      zname: "#{ustem.zname} #{cinfo.ztitle}",
       title: cinfo.vtitle.empty? ? cinfo.ztitle : cinfo.vtitle,
       chdiv: cinfo.vchdiv.empty? ? cinfo.zchdiv : cinfo.vchdiv,
 

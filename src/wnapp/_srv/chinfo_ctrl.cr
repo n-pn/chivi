@@ -69,7 +69,7 @@ class WN::ChinfoCtrl < AC::Base
     plock = wstem.chap_plock(ch_no)
 
     if _privi < plock
-      render 403, text: "cần quyền hạn #{plock} để tải lại nguồn"
+      render 403, text: "Lỗi: Cần quyền hạn #{plock} để tải lại nguồn"
       return
     end
 
@@ -80,7 +80,7 @@ class WN::ChinfoCtrl < AC::Base
     if cksum && !cksum.empty?
       render 201, text: cksum
     else
-      render 500, text: "không tải lại được text gốc của chương"
+      render 500, text: "Lỗi: Không tải lại được text gốc của chương"
     end
   end
 end

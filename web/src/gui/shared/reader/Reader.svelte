@@ -25,11 +25,10 @@
   export let xargs: CV.Chopts
   export let rdata: CV.Chpart
 
-  $: pager = new Pager($page.url, { rm: 'qt', qt: 'qt_v1', mt: 'mtl_v1' })
+  $: pager = new Pager($page.url, { rm: 'qt', qt: 'qt_v1', mt: 'mtl_1' })
   $: label = rdata.p_max > 1 ? `[${rdata.p_idx}/${rdata.p_max}]` : ''
 
   let reader: HTMLDivElement
-
   let focused_node: HTMLElement
 
   const handle_mouse = (event: MouseEvent, panel: string = 'overview') => {
@@ -49,12 +48,13 @@
   }
 
   let l_idx = -1
-  let dirty = true
+  let state = 0 // states: 0: fresh, 1: blank, 2: stale
+
   $: l_max = rdata.ztext.length
 
   afterNavigate(() => {
     l_idx = -1
-    dirty = true
+    state = 1
     if (focused_node) focused_node.classList.remove('focus')
   })
 
@@ -94,7 +94,7 @@
     {:else if rdata.error == 413}
       <Unlock {rstem} {rdata} />
     {:else if xargs.rtype == 'qt' || xargs.rtype == 'mt'}
-      <Qtpage ztext={rdata.ztext} {xargs} {label} bind:dirty />
+      <Qtpage ztext={rdata.ztext} {xargs} {label} bind:state />
     {:else}
       Chưa hoàn thiện!
     {/if}
@@ -114,7 +114,7 @@
     disabled={l_idx == l_max} />
 </div>
 
-<Lookup2 bind:l_idx {l_max} />
+<Lookup2 bind:state {xargs} bind:l_idx {l_max} />
 
 <style lang="scss">
   .reader {
