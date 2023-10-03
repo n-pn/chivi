@@ -156,10 +156,10 @@
     display: flex;
   }
 
-  .btn-edit {
-    margin-left: auto;
-    background: transparent;
-  }
+  // .btn-edit {
+  //   margin-left: auto;
+  //   background: transparent;
+  // }
 
   h4 {
     font-weight: 500;

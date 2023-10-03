@@ -18,8 +18,8 @@ class WN::ChinfoCtrl < AC::Base
     wstem = get_wnseed(wn_id, sname)
     cinfo = get_chinfo(wstem, ch_no)
 
-    # plock = wstem.chap_plock(ch_no)
-    plock = 5
+    plock = wstem.chap_plock(ch_no)
+    # plock = 5
 
     ztext, error = read_chap(wstem, cinfo, p_idx, plock, rmode: rmode)
 
