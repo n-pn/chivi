@@ -121,11 +121,6 @@
   .reader {
     @include border(--bd-soft, $loc: top);
 
-    padding: 0.75rem 0;
-    display: block;
-    min-height: 50vh;
-    @include fgcolor(secd);
-
     // @include border(--bd-soft, $loc: top);
   }
 </style>

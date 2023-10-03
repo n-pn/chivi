@@ -44,9 +44,9 @@
   v-n {
     background-position: bottom bottom;
 
-    .cv-line:hover &,
-    .cv-line.focus &,
-    .cv-line.debug &,
+    .cdata:hover &,
+    .cdata.focus &,
+    .cdata.debug &,
     &:hover {
       // border-bottom: 1.5px ridge var(--border);
       background: linear-gradient(to top, var(--border) 0.75px, transparent 0);
@@ -124,7 +124,7 @@
   v-g {
     --vgcolor: var(--fgmain);
 
-    .cv-line.debug & {
+    .cdata.debug & {
       background: none !important;
 
       // prettier-ignore

@@ -9,6 +9,7 @@
   export let multp: number = 2
 
   $: vcoin_cost = Math.round(multp * rdata.zsize * 0.01) / 1000
+
   $: [ftype, sname, sn_id, ch_no, _cksum, p_idx] = rdata.fpath.split(/[:\/\-]/)
 
   let msg_text = ''
@@ -24,7 +25,7 @@
     const [ok, remain] = await res.json()
 
     if (ok) {
-      msg_text = 'Mở khoá thành công, trang đang tải lại'
+      msg_text = 'Mở khoá thành công, trang đang tải lại..'
       msg_type = 'ok'
 
       $_user.vcoin = remain
@@ -36,7 +37,7 @@
   }
 </script>
 
-<section class="unlock">
+<section>
   <h1>
     Lỗi: Chương {rdata.ch_no} phần {rdata.p_idx} cần thiết mở khóa bằng vcoin.
   </h1>
@@ -47,7 +48,7 @@
       <SIcon name="vcoin" iset="icons" /></span>
     để mở khóa cho chương. Số vcoin bạn đang có:
     <span class="vcoin"
-      >{$_user.vcoin}
+      >{Math.round($_user.vcoin * 1000) / 1000}
       <SIcon name="vcoin" iset="icons" /></span>
   </p>
 
@@ -62,7 +63,7 @@
       >{/if}
   </p>
   <footer class="actions">
-    <div>Thanh toán vcoin để mở khóa chương:</div>
+    <div>Thanh toán vcoin và mở khóa chương:</div>
 
     <button
       type="button"
@@ -73,13 +74,14 @@
       <span>Mở khóa</span>
     </button>
 
-    {#if msg_text}<div class="form-msg _{msg_type}">{msg_text}</div>{/if}
-
-    {#if $_user.vcoin < vcoin_cost}
+    {#if msg_text}
+      <div class="form-msg _{msg_type}">{msg_text}</div>
+    {:else if $_user.vcoin < vcoin_cost}
       <div class="em">
         <em>
           Bạn chưa đủ vcoin để mở khóa cho chương. Nạp vcoin theo <a
-            href="/hd/donation">hướng dẫn ở đây</a>
+            href="/hd/donation">hướng dẫn ở đây</a
+          >.
         </em>
       </div>
     {/if}
@@ -87,37 +89,15 @@
 </section>
 
 <style lang="scss">
-  .unlock {
-    // padding: var(--gutter) ;
-    margin-top: 1rem;
-    padding: var(--gutter-large) var(--gutter);
-
-    font-size: rem(18px);
-    line-height: rem(28px);
-
-    @include fgcolor(secd);
-
-    h1 {
-      margin-bottom: 2rem;
-    }
-
-    p {
-      margin: 1em 0;
-      // line-height: var(--textlh);
-      text-align: justify;
-    }
-  }
-
   a:not(.m-btn) {
     @include fgcolor(primary, 5);
     &:hover {
-      text-decoration: underline;
+      border-bottom: 1px solid currentColor;
     }
   }
 
-  .em {
-    @include fgcolor(warning, 5);
-    margin-bottom: 1.5rem;
+  div {
+    font-size: var(--para-fs);
   }
 
   .actions {
@@ -125,13 +105,5 @@
     flex-direction: column;
     padding: 0.75rem 0;
     @include border(--bd-soft, $loc: top);
-  }
-
-  .vcoin {
-    display: inline-flex;
-    align-items: center;
-    font-weight: 500;
-    @include fgcolor(warning);
-    gap: 0.1em;
   }
 </style>

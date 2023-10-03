@@ -135,7 +135,7 @@
       <svelte:element
         this={elem}
         id="L{index}"
-        class="cv-line"
+        class="cdata"
         class:focus={index == l_focus}
         on:mouseenter={() => (l_hover = index)}
         role="tooltip">
@@ -199,7 +199,7 @@
     }
 
     & > header,
-    & .cv-line {
+    & .cdata {
       @include padding-x(var(--gutter));
 
       @include bp-min(tl) {

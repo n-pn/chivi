@@ -84,5 +84,9 @@
     height: 50vh;
     @include fgcolor(mute);
     font-style: italic;
+
+    :global(svg) {
+      font-size: 1.5em;
+    }
   }
 </style>

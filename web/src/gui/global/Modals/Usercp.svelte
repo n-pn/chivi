@@ -95,7 +95,7 @@
       <div class="info">
         <div>
           <span class="lbl">Số lượng vcoin hiện có:</span>
-          <strong>{Math.round($_user.vcoin * 100) / 100}</strong>
+          <strong>{Math.round($_user.vcoin * 1000) / 1000}</strong>
           <SIcon iset="icons" name="vcoin" />
         </div>
 
@@ -173,9 +173,5 @@
 
   .body {
     padding: 0.75rem;
-  }
-
-  .exceed {
-    @include fgcolor(harmful, 5);
   }
 </style>

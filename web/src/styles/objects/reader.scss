@@ -99,21 +99,6 @@
   );
 }
 
-.reader {
-  cite {
-    font-style: normal;
-    font-variant: small-caps;
-  }
-
-  .cdata {
-    cursor: pointer;
-    @include bp-min(tl) {
-      @include padding-x(var(--gutter));
-    }
-  }
-}
-
-.cv-line,
 .cdata {
   display: block;
 
@@ -158,20 +143,47 @@
   }
 }
 
-h1.cv-line,
-h1.cdata {
-  line-height: 1.4em;
-  margin: 1em 0;
-  font-size: var(--head-fs);
-}
+.reader {
+  display: block;
+  min-height: 40vh;
 
-p.cv-line,
-p.cdata {
-  margin: 1em 0;
-  text-align: justify;
-  text-justify: auto;
-  line-height: var(--textlh, 160%);
-  font-size: var(--para-fs);
+  @include fgcolor(secd);
+
+  @include bp-min(tm) {
+    margin: 0 var(--gutter);
+  }
+
+  h1 {
+    line-height: 1.4em;
+    margin: 1em 0;
+    font-size: var(--head-fs);
+  }
+
+  p {
+    margin: 1em 0;
+    text-align: justify;
+    text-justify: auto;
+    line-height: var(--textlh, 160%);
+    font-size: var(--para-fs);
+  }
+
+  .em {
+    @include fgcolor(warning, 5);
+    margin-bottom: 1.5rem;
+  }
+
+  cite {
+    font-style: normal;
+    font-variant: small-caps;
+  }
+
+  .vcoin {
+    display: inline-flex;
+    gap: 0.1em;
+    align-items: center;
+    font-weight: 500;
+    @include fgcolor(warning);
+  }
 }
 
 @mixin cv-node($color: blue) {
