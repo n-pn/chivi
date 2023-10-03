@@ -1,5 +1,5 @@
 import type { PageLoad } from './$types'
-import { call_mtran_file } from '$utils/tran_util'
+import { call_mt_ai_file } from '$utils/tran_util'
 
 export const load = (async ({ url, fetch, parent, depends }) => {
   depends('wn:cdata')
@@ -10,6 +10,6 @@ export const load = (async ({ url, fetch, parent, depends }) => {
   const m_alg = url.searchParams.get('mode') || xargs.m_alg || 'avail'
   const finit = { ...xargs.zpage, m_alg, force: true }
 
-  const vtran = await call_mtran_file(finit, { cache: 'default' }, fetch)
+  const vtran = await call_mt_ai_file(finit, { cache: 'default' }, fetch)
   return { vtran }
 }) satisfies PageLoad

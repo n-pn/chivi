@@ -30,10 +30,8 @@ export const fix_sname = (sname: string) => {
 }
 
 const default_rmode = {
-  ai: 'avail',
   qt: 'mt_v1',
-  ht: 'plain',
-  cf: 'add_term',
+  mt: 'mtl_1',
 }
 
 export function chap_path(
@@ -41,11 +39,11 @@ export function chap_path(
   chap: number | string,
   { rtype, rmode }
 ) {
-  let href = `${root}/${chap}`
-  if (rtype != 'ai') href += '/' + rtype
+  const href = `${root}/${chap}`
 
   const params = new URLSearchParams()
 
+  if (rtype != 'qt') params.append('rm', rtype)
   if (rmode && rmode != default_rmode[rtype]) params.append('mode', rmode)
 
   const search = params.toString()

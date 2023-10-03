@@ -1,10 +1,10 @@
 import { writable, get } from 'svelte/store'
 
 import {
-  call_btran_file,
+  call_bt_zv_file,
   call_hviet_file,
-  call_qtran_file,
-  call_mtran_file,
+  call_qt_v1_file,
+  call_mt_ai_file,
 } from '$utils/tran_util'
 
 export interface Data {
@@ -13,24 +13,27 @@ export interface Data {
   ztext: Array<string>
   hviet: Array<Array<[string, string]>>
 
-  btran: Array<string>
-  qtran: Array<string>
+  bt_zv: Array<string>
+  qt_v1: Array<string>
   c_gpt: Array<string>
 
-  ctree: Array<CV.Cvtree>
+  mt_ai: Array<CV.Cvtree>
   m_alg: string
 }
 
 const init_data = {
   zpage: { fpath: '', pdict: 'combine', wn_id: 0 },
 
-  hviet: [],
   ztext: [],
-  btran: [],
-  qtran: [],
-  ctree: [],
-  c_gpt: [],
+  hviet: [],
+
+  bt_zv: [],
+  qt_v1: [],
+
+  mt_ai: [],
   m_alg: 'avail',
+
+  c_gpt: [],
 }
 
 export const data = {
@@ -58,19 +61,19 @@ export const data = {
       zdata.hviet = hviet.hviet || []
     }
 
-    if (zdata.btran.length == 0) {
-      const btran = await call_btran_file(finit, rinit)
-      zdata.btran = btran.lines || []
+    if (zdata.bt_zv.length == 0) {
+      const bt_zv = await call_bt_zv_file(finit, rinit)
+      zdata.bt_zv = bt_zv.lines || []
     }
 
-    if (zdata.qtran.length == 0) {
-      const qtran = await call_qtran_file(finit, rinit)
-      zdata.qtran = qtran.lines || []
+    if (zdata.qt_v1.length == 0) {
+      const qt_v1 = await call_qt_v1_file(finit, rinit)
+      zdata.qt_v1 = qt_v1.lines || []
     }
 
-    if (zdata.ctree.length == 0) {
-      const mtran = await call_mtran_file(finit, rinit)
-      zdata.ctree = mtran.lines || []
+    if (zdata.mt_ai.length == 0) {
+      const mt_ai = await call_mt_ai_file(finit, rinit)
+      zdata.mt_ai = mt_ai.lines || []
     }
 
     data.set(zdata)
@@ -82,8 +85,8 @@ export const data = {
     const rinit = { cache: 'force-cache' } as RequestInit
     const finit = { ...zdata.zpage, m_alg: zdata.m_alg, force: true }
 
-    const ctree = await call_mtran_file(finit, rinit)
-    zdata.ctree = ctree.lines || []
+    const mt_ai = await call_mt_ai_file(finit, rinit)
+    zdata.mt_ai = mt_ai.lines || []
 
     data.put(zdata)
   },

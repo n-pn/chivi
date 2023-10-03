@@ -116,7 +116,8 @@
   {#each current as [size, terms]}
     <div class="entry">
       <h3 class="word" lang="zh">
-        <span class="entry-key">{ztext.substring(zfrom, zfrom + size)}</span>
+        <span class="ztext">{ztext.substring(zfrom, zfrom + size)}</span>
+        <span class="hviet" />
       </h3>
 
       {#each Object.entries(terms) as [dict, defn]}
@@ -131,6 +132,15 @@
           </div>
         {/if}
       {/each}
+    </div>
+  {:else}
+    <div class="empty">
+      <h5>Chưa có giải nghĩa cho cụ từ hiện tại.</h5>
+      <p>
+        Gợi ý: <em
+          >Bấm vào chữ tiếng Trung hoặc Hán Việt phía trên để xem giải nghĩa cho
+          từ ở vị trí đó.</em>
+      </p>
     </div>
   {/each}
 </section>
@@ -181,5 +191,14 @@
     @include flex($gap: 0.25rem);
     flex-wrap: wrap;
     line-height: 1.5rem;
+  }
+
+  .empty {
+    padding: 0.75rem 0;
+    @include fgcolor(tert);
+    // text-align: center;
+    @include ftsize(sm);
+    // font-style: italic;
+    line-height: 1.25rem;
   }
 </style>

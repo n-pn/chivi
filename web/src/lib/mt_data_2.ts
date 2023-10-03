@@ -161,7 +161,7 @@ function should_add_cap(list: Array<CV.Cvtree>) {
   return !is_quote_final(tail[5]) || list[list.length - 2][0] == 'PU'
 }
 
-export function gen_vtran_html(
+export function gen_mt_ai_html(
   node: CV.Cvtree,
   opts = { mode: 1, cap: true, und: true, _qc: 0 },
   _lvl = 0
@@ -179,7 +179,7 @@ export function gen_vtran_html(
     opts.cap ||= should_add_cap(body)
 
     for (let i = 0; i < body.length; i++) {
-      html += gen_vtran_html(body[i], opts, _lvl + 1)
+      html += gen_mt_ai_html(body[i], opts, _lvl + 1)
     }
   } else {
     if (vstr.charAt(0) == '⟨') {
@@ -234,7 +234,7 @@ export function gen_vtran_html(
   return html
 }
 
-export function gen_vtran_text(
+export function gen_mt_ai_text(
   node: CV.Cvtree,
   opts = { cap: true, und: true },
   _raw = false
@@ -248,7 +248,7 @@ export function gen_vtran_text(
     opts.cap ||= should_add_cap(body)
 
     for (let i = 0; i < body.length; i++) {
-      text += gen_vtran_text(body[i], opts)
+      text += gen_mt_ai_text(body[i], opts)
     }
   } else {
     if (!opts.und && !attr.includes('Undb')) text += ' '

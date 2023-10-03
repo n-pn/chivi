@@ -1,6 +1,6 @@
 <script lang="ts">
   import { ctrl, data } from '$lib/stores/lookup_stores'
-  import { call_mtran_file } from '$utils/tran_util'
+  import { call_mt_ai_file } from '$utils/tran_util'
 
   import { page } from '$app/stores'
   import { invalidate } from '$app/navigation'
@@ -37,9 +37,9 @@
 
       const ztext = $data.ztext[l_idx]
       const hviet = $data.hviet[l_idx]
-      const ctree = $data.ctree[l_idx]
+      const mt_ai = $data.mt_ai[l_idx]
 
-      vtform_data.put(ztext, hviet, ctree, zfrom, zupto, icpos)
+      vtform_data.put(ztext, hviet, mt_ai, zfrom, zupto, icpos)
       vtform_ctrl.show(0)
     }
   }
@@ -58,18 +58,18 @@
   $: finit = { ...$data.zpage, m_alg: $data.m_alg, force: true }
   const rinit = { cache: 'no-cache' } as RequestInit
 
-  let reload_ctree = false
-  $: if (reload_ctree) load_ctree_data()
+  let reload_mt_ai = false
+  $: if (reload_mt_ai) load_mt_ai_data()
 
-  const load_ctree_data = async () => {
-    reload_ctree = false
+  const load_mt_ai_data = async () => {
+    reload_mt_ai = false
 
     if ($page.data.xargs?.rtype != 'ai') {
-      const ctree = await call_mtran_file(finit, rinit)
-      $data.ctree = ctree.lines || []
+      const mt_ai = await call_mt_ai_file(finit, rinit)
+      $data.mt_ai = mt_ai.lines || []
     } else {
       await invalidate('wn:cdata')
-      $data.ctree = $page.data.vtran.lines
+      $data.mt_ai = $page.data.vtran.lines
     }
   }
 
@@ -134,11 +134,11 @@
     on:click={handle_click}
     on:contextmenu={handle_ctxmenu}>
     {#if $ctrl.panel == 'overview'}
-      <Overview {l_idx} {reload_ctree} />
+      <Overview {l_idx} {reload_mt_ai} />
     {:else if $ctrl.panel == 'glossary'}
       <Glossary {l_idx} {viewer} bind:zfrom bind:zupto />
     {:else}
-      <Analysis {l_idx} {reload_ctree} />
+      <Analysis {l_idx} {reload_mt_ai} />
     {/if}
   </section>
 
@@ -180,7 +180,7 @@
 </Slider>
 
 {#if $vtform_ctrl.actived}
-  <Vtform zpage={$data.zpage} on_close={(term) => (reload_ctree = !!term)} />
+  <Vtform zpage={$data.zpage} on_close={(term) => (reload_mt_ai = !!term)} />
 {/if}
 
 <style lang="scss">

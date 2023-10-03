@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
   import { get, writable } from 'svelte/store'
 
-  import { gen_vtran_text, gen_hviet_text } from '$lib/mt_data_2'
+  import { gen_mt_ai_text, gen_hviet_text } from '$lib/mt_data_2'
 
   const init_data = {
     zline: '',
@@ -49,7 +49,7 @@
 
       return {
         zstr: zstr,
-        vstr: gen_vtran_text(vnode, { cap: false, und: true }, true),
+        vstr: gen_mt_ai_text(vnode, { cap: false, und: true }, true),
         cpos,
         attr,
         plock: Math.floor(dnum / 10),

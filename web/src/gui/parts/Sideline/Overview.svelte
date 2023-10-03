@@ -3,9 +3,9 @@
     ztext: 1,
     mtran: 2,
     vtran: 2,
-    btran: 1,
+    bt_zv: 1,
     c_gpt: 1,
-    qtran: 1,
+    qt_v1: 1,
   }
 </script>
 
@@ -14,23 +14,23 @@
   import { copy_to_clipboard } from '$utils/btn_utils'
 
   import {
-    gen_vtran_html,
+    gen_mt_ai_html,
     gen_ztext_html,
-    gen_vtran_text,
+    gen_mt_ai_text,
   } from '$lib/mt_data_2'
 
-  import { call_btran_file, from_custom_gpt } from '$utils/tran_util'
+  import { call_bt_zv_file, from_custom_gpt } from '$utils/tran_util'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Viewbox from './Viewbox.svelte'
 
   export let l_idx = 0
-  export let reload_ctree = false
+  export let reload_mt_ai = false
 
   $: ztext = $data.ztext[l_idx]
-  $: ctree = $data.ctree[l_idx]
-  $: btran = $data.btran[l_idx]
-  $: qtran = $data.qtran[l_idx]
+  $: mt_ai = $data.mt_ai[l_idx]
+  $: bt_zv = $data.bt_zv[l_idx]
+  $: qt_v1 = $data.qt_v1[l_idx]
   $: c_gpt = $data.c_gpt[l_idx]
 
   let vtran = ''
@@ -39,10 +39,10 @@
 
   const rinit = { cache: 'no-cache' } as RequestInit
 
-  const load_btran_data = async () => {
-    const btran_res = await call_btran_file(finit, rinit)
-    if (btran_res.error) alert(btran_res.error)
-    $data.btran = btran_res.lines || []
+  const load_bt_zv_data = async () => {
+    const bt_zv_res = await call_bt_zv_file(finit, rinit)
+    if (bt_zv_res.error) alert(bt_zv_res.error)
+    $data.bt_zv = bt_zv_res.lines || []
   }
 
   const load_c_gpt_data = async () => {
@@ -77,7 +77,7 @@
     <button
       type="button"
       class="-btn"
-      on:click={() => (reload_ctree = true)}
+      on:click={() => (reload_mt_ai = true)}
       data-tip="Dịch lại sau khi đã thay đổi nghĩa của từ"
       data-tip-loc="bottom"
       data-tip-pos="right">
@@ -90,14 +90,14 @@
       data-tip="Sao chép dịch máy vào clipboard"
       data-tip-loc="bottom"
       data-tip-pos="right"
-      disabled={!ctree}
-      on:click={() => copy_to_clipboard(gen_vtran_text(ctree))}>
+      disabled={!mt_ai}
+      on:click={() => copy_to_clipboard(gen_mt_ai_text(mt_ai))}>
       <SIcon name="copy" />
     </button>
   </svelte:fragment>
-  {#if ctree}
+  {#if mt_ai}
     {@const opts = { mode: 2, cap: true, und: true, _qc: 0 }}
-    {@html gen_vtran_html(ctree, opts)}
+    {@html gen_mt_ai_html(mt_ai, opts)}
   {:else}
     <p class="empty">Chưa có kết quả dịch máy</p>
   {/if}
@@ -127,7 +127,7 @@
   {/if}
 </Viewbox>
 
-<Viewbox title="Dịch bằng Bing:" bind:state={stats.btran} class="_sm" --lc="3">
+<Viewbox title="Dịch bằng Bing:" bind:state={stats.bt_zv} class="_sm" --lc="3">
   <svelte:fragment slot="tools">
     <button
       type="button"
@@ -135,20 +135,20 @@
       data-tip="Sao chép bản dịch vào clipboard"
       data-tip-loc="bottom"
       data-tip-pos="right"
-      disabled={!btran}
-      on:click={() => copy_to_clipboard(btran)}>
+      disabled={!bt_zv}
+      on:click={() => copy_to_clipboard(bt_zv)}>
       <SIcon name="copy" />
     </button>
   </svelte:fragment>
 
-  {#if btran}
-    {btran}
+  {#if bt_zv}
+    {bt_zv}
   {:else}
     <div class="blank">
       <div>
         <em>Chưa có kết quả dịch sẵn.</em>
       </div>
-      <button class="m-btn _xs _primary" on:click={load_btran_data}
+      <button class="m-btn _xs _primary" on:click={load_bt_zv_data}
         >Dịch bằng Bing!</button>
     </div>
   {/if}
@@ -181,7 +181,7 @@
   {/if}
 </Viewbox>
 
-<Viewbox title="Dịch máy cũ:" bind:state={stats.qtran} class="_sm" --lc="3">
+<Viewbox title="Dịch máy cũ:" bind:state={stats.qt_v1} class="_sm" --lc="3">
   <svelte:fragment slot="tools">
     <button
       type="button"
@@ -189,14 +189,14 @@
       data-tip="Sao chép bản dịch vào clipboard"
       data-tip-loc="bottom"
       data-tip-pos="right"
-      disabled={!qtran}
-      on:click={() => copy_to_clipboard(qtran)}>
+      disabled={!qt_v1}
+      on:click={() => copy_to_clipboard(qt_v1)}>
       <SIcon name="copy" />
     </button>
   </svelte:fragment>
 
-  {#if qtran}
-    {qtran}
+  {#if qt_v1}
+    {qt_v1}
   {:else}
     <div class="blank">
       <em>Chưa có kết quả dịch sẵn.</em>

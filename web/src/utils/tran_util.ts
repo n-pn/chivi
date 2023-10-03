@@ -6,7 +6,7 @@ export type FileReqInit = {
   m_alg?: string
 }
 
-export async function call_btran_file(
+export async function call_bt_zv_file(
   { fpath, force = false }: FileReqInit,
   rinit: RequestInit = { cache: 'force-cache' },
   fetch = globalThis.fetch
@@ -18,7 +18,7 @@ export async function call_btran_file(
   return { lines: [], tspan: 0, error: await res.text() }
 }
 
-export async function call_qtran_file(
+export async function call_qt_v1_file(
   { fpath, wn_id = 0 }: FileReqInit,
   rinit: RequestInit = { cache: 'force-cache' },
   fetch = globalThis.fetch
@@ -42,8 +42,8 @@ export async function call_hviet_file(
   return { hviet: [], tspan: 0, error: await res.text() }
 }
 
-export async function call_mtran_file(
-  { fpath, pdict, force = false, m_alg = 'avail' }: FileReqInit,
+export async function call_mt_ai_file(
+  { fpath, pdict, force = false, m_alg = 'mtl_v1' }: FileReqInit,
   rinit: RequestInit = { cache: 'force-cache' },
   fetch = globalThis.fetch
 ): Promise<CV.Mtdata> {
@@ -57,23 +57,4 @@ export async function call_mtran_file(
 export async function from_custom_gpt(input: string, fetch = globalThis.fetch) {
   const res = await fetch('/_sp/c_gpt', { method: 'POST', body: input })
   return await res.text()
-}
-
-export async function qtran_file(
-  xargs: CV.Chopts,
-  force: boolean = false,
-  rinit: RequestInit = {},
-  fetch = globalThis.fetch
-) {
-  const finit = { ...xargs.zpage, force }
-  if (!finit.fpath) return { lines: [], mtime: 0, tspan: 0 }
-
-  switch (xargs.rmode) {
-    case 'bt_zv':
-      return await call_btran_file(finit, rinit, fetch)
-    case 'qt_v1':
-      return await call_qtran_file(finit, rinit, fetch)
-    default:
-      return { lines: [], mtime: 0, tspan: 0 }
-  }
 }
