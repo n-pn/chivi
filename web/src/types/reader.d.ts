@@ -17,6 +17,7 @@ declare namespace CV {
     p_idx: number
     p_max: number
 
+    zname: string
     title: string
     chdiv: string
 
@@ -71,8 +72,15 @@ declare namespace CV {
   }
 
   interface Rdstem {
+    zname: string
+    sname: string
+
+    stype: string
+    sn_id: string
+
     plock: number
     multp: number
+
     chmax: number
     gifts: number
   }

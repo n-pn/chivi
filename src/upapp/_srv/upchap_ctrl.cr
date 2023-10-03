@@ -30,6 +30,7 @@ class UP::UpchapCtrl < AC::Base
       p_idx: p_idx,
       p_max: cinfo.psize,
 
+      zname: "#{ustem.zname} #{chinfo.ztitle}",
       title: cinfo.vtitle.empty? ? cinfo.ztitle : cinfo.vtitle,
       chdiv: cinfo.vchdiv.empty? ? cinfo.zchdiv : cinfo.vchdiv,
 
@@ -53,7 +54,6 @@ class UP::UpchapCtrl < AC::Base
 
   def read_chap(ustem, cinfo, p_idx : Int32, plock : Int32)
     return {[] of String, 414} if cinfo.cksum.empty?
-    zsize = cinfo.sizes[p_idx]? || 0
 
     ulkey = cinfo.part_name(p_idx)
     can_read = _privi >= plock || CV::Unlock.unlocked?(self._vu_id, ulkey)

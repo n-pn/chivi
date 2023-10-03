@@ -59,14 +59,14 @@ class WN::Wnstem
   def to_json(jb : JSON::Builder)
     jb.object {
       jb.field "sname", @sname
-      jb.field "snvid", @s_bid
+      jb.field "sn_id", @s_bid
 
       jb.field "chmax", @chap_total
       jb.field "utime", @mtime
 
       jb.field "multp", @multp
-
       jb.field "privi", @privi
+      jb.field "gifts", 2
     }
   end
 

@@ -32,8 +32,13 @@
   ]
 
   $: rstem = {
+    zname: nvinfo.ztitle,
+    sname: curr_seed.sname,
+    stype: 'wn',
+    sn_id: curr_seed.sn_id,
+
     multp: curr_seed.multp,
-    plock: curr_seed.plock,
+    plock: curr_seed.privi,
     chmax: curr_seed.chmax,
     gifts: curr_seed.gifts,
   }

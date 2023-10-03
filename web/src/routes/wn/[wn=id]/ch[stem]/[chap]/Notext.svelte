@@ -109,6 +109,7 @@
     {/if}
 
     <h2>Các biện pháp khắc phục:</h2>
+
     <p>
       Cách tốt nhất khi chương tiết không có nội dung là liên hệ ban quản trị
       chờ xử lý. Tuy vậy, bạn cũng có thể tự mình sửa text chương mà không cần

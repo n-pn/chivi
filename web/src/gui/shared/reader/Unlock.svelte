@@ -1,16 +1,15 @@
 <script lang="ts">
+  import { invalidateAll } from '$app/navigation'
+
   import { get_user } from '$lib/stores'
   const _user = get_user()
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import { invalidateAll } from '$app/navigation'
 
+  export let rstem: CV.Rdstem
   export let rdata: CV.Chpart
-  export let multp: number = 2
 
-  $: vcoin_cost = Math.round(multp * rdata.zsize * 0.01) / 1000
-
-  $: [ftype, sname, sn_id, ch_no, _cksum, p_idx] = rdata.fpath.split(/[:\/\-]/)
+  $: vcoin_cost = Math.round(rstem.multp * rdata.zsize * 0.01) / 1000
 
   let msg_text = ''
   let msg_type = ''
@@ -18,7 +17,7 @@
   const unlock_chap = async () => {
     msg_text = 'Đang mở khoá chương...'
 
-    const url = `/_${ftype}/unlock/${sname}/${sn_id}/${ch_no}/${p_idx}`
+    const url = `/_${rstem.stype}/unlock/${rstem.sname}/${rstem.sn_id}/${rdata.ch_no}/${rdata.p_idx}`
     const res = await fetch(url, { method: 'PUT' })
 
     if (!res.ok) return alert(await res.text())
@@ -38,18 +37,18 @@
 </script>
 
 <section>
-  <h1>
+  <h1 class="em">
     Lỗi: Chương {rdata.ch_no} phần {rdata.p_idx} cần thiết mở khóa bằng vcoin.
   </h1>
 
   <p>
-    Theo hệ số, bạn cần thiết <span class="vcoin"
+    Theo hệ số, bạn cần thiết <v-vcoin
       >{vcoin_cost}
-      <SIcon name="vcoin" iset="icons" /></span>
+      <SIcon name="vcoin" iset="icons" /></v-vcoin>
     để mở khóa cho chương. Số vcoin bạn đang có:
-    <span class="vcoin"
+    <v-vcoin
       >{Math.round($_user.vcoin * 1000) / 1000}
-      <SIcon name="vcoin" iset="icons" /></span>
+      <SIcon name="vcoin" iset="icons" /></v-vcoin>
   </p>
 
   <p>
@@ -57,8 +56,8 @@
     <code>số lượng chữ / 100_000 * hệ số nhân = số vcoin cần thiết</code>
     <br />
     Hệ số nhân hiện tại của danh sách chương:
-    <strong class="em">{multp}</strong>.
-    {#if ftype == 'up'}<em
+    <strong class="em">{rstem.multp}</strong>.
+    {#if rstem.stype == 'up'}<em
         >(Thử liên hệ với chủ sở hữu dự án nếu thấy chưa phù hợp!)</em
       >{/if}
   </p>

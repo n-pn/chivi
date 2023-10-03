@@ -32,6 +32,11 @@
   ]
 
   $: rstem = {
+    zname: ustem.zname,
+    sname: ustem.sname,
+    stype: 'up',
+    sn_id: ustem.s_bid,
+
     multp: ustem.multp,
     plock: 5,
     chmax: ustem.chap_count,

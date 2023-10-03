@@ -1,9 +1,9 @@
 declare namespace CV {
   interface Chroot {
-    sname: string
-    snvid: string
-
     stype: number
+
+    sname: string
+    sn_id: string
 
     chmax: number // chap_count
     utime: number // updated_at

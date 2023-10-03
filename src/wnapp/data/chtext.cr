@@ -58,6 +58,8 @@ class WN::Chtext
     @chap.mtime = Time.utc.to_unix
 
     self.save_text!(paras: paras, title: title)
+  rescue
+    nil
   end
 
   def import_existing! : String?

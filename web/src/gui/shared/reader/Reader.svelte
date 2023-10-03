@@ -90,9 +90,9 @@
     on:click|capture={(e) => handle_mouse(e, 'overview')}
     on:contextmenu|capture={(e) => handle_mouse(e, 'glossary')}>
     {#if rdata.error == 414}
-      <Notext {rdata} />
+      <Notext {rstem} {rdata} />
     {:else if rdata.error == 413}
-      <Unlock {rdata} multp={rstem.multp} />
+      <Unlock {rstem} {rdata} />
     {:else if xargs.rtype == 'qt' || xargs.rtype == 'mt'}
       <Qtpage ztext={rdata.ztext} {xargs} {label} bind:dirty />
     {:else}
@@ -102,7 +102,6 @@
 </Section>
 
 <div hidden>
-  S
   <button
     type="button"
     data-kbd="↑"

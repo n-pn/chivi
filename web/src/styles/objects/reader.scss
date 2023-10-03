@@ -1,102 +1,40 @@
 @use '../essence' as *;
 
 .app-fs-1 {
-  @include bps(
-    --head-fs,
-    rem(21px),
-    rem(22px),
-    rem(23px),
-    rem(25px),
-    rem(27px)
-  );
-  @include bps(
-    --para-fs,
-    rem(15px),
-    rem(16px),
-    rem(17px),
-    rem(18px),
-    rem(19px)
-  );
+  // prettier-ignore
+  @include bps( --head-fs, rem(21px), rem(22px), rem(23px), rem(25px), rem(27px) );
+  // prettier-ignore
+  @include bps( --para-fs, rem(15px), rem(16px), rem(17px), rem(18px), rem(19px) );
 }
 
 .app-fs-2 {
-  @include bps(
-    --head-fs,
-    rem(22px),
-    rem(23px),
-    rem(24px),
-    rem(26px),
-    rem(28px)
-  );
-
-  @include bps(
-    --para-fs,
-    rem(16px),
-    rem(17px),
-    rem(18px),
-    rem(19px),
-    rem(20px)
-  );
+  // prettier-ignore
+  @include bps( --head-fs, rem(22px), rem(23px), rem(24px), rem(26px), rem(28px) );
+  // prettier-ignore
+  @include bps( --para-fs, rem(16px), rem(17px), rem(18px), rem(19px), rem(20px) );
 }
 
 .app-fs-3 {
-  @include bps(
-    --head-fs,
-    rem(22px),
-    rem(23px),
-    rem(24px),
-    rem(26px),
-    rem(28px)
-  );
-
-  @include bps(
-    --para-fs,
-    rem(17px),
-    rem(18px),
-    rem(19px),
-    rem(20px),
-    rem(21px)
-  );
+  // prettier-ignore
+  @include bps( --head-fs, rem(23px), rem(24px), rem(25px), rem(27px), rem(29px) );
+  // prettier-ignore
+  @include bps( --para-fs, rem(17px), rem(18px), rem(19px), rem(20px), rem(21px) );
 }
 
 .app-fs-4 {
-  @include bps(
-    --head-fs,
-    rem(22px),
-    rem(23px),
-    rem(24px),
-    rem(26px),
-    rem(28px)
-  );
+  // prettier-ignore
+  @include bps( --head-fs, rem(23px), rem(24px), rem(26px), rem(28px), rem(30px) );
 
-  @include bps(
-    --para-fs,
-    rem(19px),
-    rem(20px),
-    rem(21px),
-    rem(22px),
-    rem(23px)
-  );
+  // prettier-ignore
+  @include bps( --para-fs, rem(19px), rem(20px), rem(21px), rem(22px), rem(23px) );
 }
 
 .app-fs-5 {
-  @include bps(
-    --para-fs,
-    rem(21px),
-    rem(22px),
-    rem(23px),
-    rem(24px),
-    rem(25px)
-  );
+  // prettier-ignore
+  @include bps( --head-fs, rem(24px), rem(26px), rem(28px), rem(30px), rem(32px) );
 
-  @include bps(
-    --head-fs,
-    rem(23px),
-    rem(24px),
-    rem(25px),
-    rem(26px),
-    rem(29px)
-  );
+  // prettier-ignore
+  @include bps( --para-fs, rem(21px), rem(22px), rem(23px), rem(24px), rem(25px) );
 }
 
 .cdata {
@@ -153,14 +91,25 @@
     margin: 0 var(--gutter);
   }
 
+  h1,
+  h2,
+  p,
+  ul {
+    margin: 1em 0;
+  }
+
+  li {
+    margin: 0.75em 0;
+    font-size: var(--para-fs);
+  }
+
   h1 {
     line-height: 1.4em;
-    margin: 1em 0;
+
     font-size: var(--head-fs);
   }
 
   p {
-    margin: 1em 0;
     text-align: justify;
     text-justify: auto;
     line-height: var(--textlh, 160%);
@@ -177,12 +126,22 @@
     font-variant: small-caps;
   }
 
-  .vcoin {
+  x-vcoin {
     display: inline-flex;
     gap: 0.1em;
     align-items: center;
     font-weight: 500;
     @include fgcolor(warning);
+  }
+
+  x-sname {
+    display: inline;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 0.125em 0.25em;
+    font-size: em(13, 16);
+
+    @include fgcolor(primary, 5);
   }
 }
 
