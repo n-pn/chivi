@@ -10,6 +10,8 @@
 
 <script lang="ts">
   import { browser } from '$app/environment'
+  import { config } from '$lib/stores'
+
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let ztext: string[] = []
@@ -17,42 +19,44 @@
   export let label = ''
   export let dirty = true
 
+  $: mode = $config.r_mode == 2 ? 2 : 1
+
+  const render = (cdata: CV.Cvtree | string) => {
+    if (typeof cdata == 'string') return cdata
+    else return gen_mt_ai_html(cdata, { mode, cap: true, und: true, _qc: 0 })
+  }
+
   let vtran: CV.Qtdata | CV.Mtdata = { lines: [], mtime: 0, tspan: 0 }
+  $: [title, ...paras] = vtran?.lines || []
 
   $: if (browser && dirty && xargs) {
     vtran = { lines: [], mtime: 0, tspan: 0 }
     load_data(xargs)
   }
 
-  async function load_data(xargs: CV.Chopts, rinit: RequestInit = {}) {
-    const finit = { ...xargs.zpage, m_alg: 'mtl_v1', force: true }
+  const rinit = { cache: 'default' } as RequestInit
+
+  async function load_data({ zpage, rmode, rtype }: CV.Chopts) {
+    const m_alg = rtype == 'mt' ? rmode : 'mtl_v1'
+
+    const finit = { ...zpage, m_alg, force: true }
     if (!finit.fpath) return { lines: [], mtime: 0, tspan: 0 }
 
-    switch (xargs.rmode) {
-      case 'bt_zv':
-        vtran = await call_bt_zv_file(finit, rinit, fetch)
-        break
-      case 'qt_v1':
-        vtran = await call_qt_v1_file(finit, rinit, fetch)
-        break
-      case 'mt_ai':
-        vtran = await call_mt_ai_file(finit, rinit, fetch)
-        break
+    if (rmode == 'bt_zv') {
+      vtran = await call_bt_zv_file(finit, rinit, fetch)
+    } else if (rmode == 'qt_v1') {
+      vtran = await call_qt_v1_file(finit, rinit, fetch)
+    } else if (rmode == 'mt_ai' || rtype == 'mt') {
+      vtran = await call_mt_ai_file(finit, rinit, fetch)
+      rmode = 'mt_ai'
     }
 
     dirty = false
     if (vtran.error) return
 
     lookup_data.update((x) => {
-      return { ...x, zpage: xargs.zpage, ztext, [xargs.rmode]: vtran.lines }
+      return { ...x, zpage: xargs.zpage, ztext, [rmode]: vtran.lines }
     })
-  }
-
-  $: [title, ...paras] = vtran?.lines || []
-
-  const render = (cdata: CV.Cvtree | string) => {
-    if (typeof cdata == 'string') return cdata
-    else return gen_mt_ai_html(cdata, { mode: 0, cap: true, und: true, _qc: 0 })
   }
 </script>
 

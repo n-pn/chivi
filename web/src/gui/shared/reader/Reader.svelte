@@ -6,25 +6,20 @@
   import { Pager } from '$lib/pager'
 
   import { afterNavigate } from '$app/navigation'
-  import SIcon from '$gui/atoms/SIcon.svelte'
 
   import Lookup2 from '$gui/parts/Lookup2.svelte'
 
-  import {
-    ctrl as lookup_ctrl,
-    data as lookup_data,
-  } from '$lib/stores/lookup_stores'
+  import { ctrl as lookup_ctrl } from '$lib/stores/lookup_stores'
 
   import { browser } from '$app/environment'
   import { config } from '$lib/stores'
 
+  import Section from '$gui/sects/Section.svelte'
+
   import Switch from './Switch.svelte'
   import Notext from './Notext.svelte'
   import Unlock from './Unlock.svelte'
-
   import Qtpage from './Qtpage.svelte'
-  import Mtpage from './Mtpage.svelte'
-  import Section from '$gui/sects/Section.svelte'
 
   export let rstem: CV.Rdstem
   export let xargs: CV.Chopts
@@ -98,10 +93,8 @@
       <Notext {rdata} />
     {:else if rdata.error == 413}
       <Unlock {rdata} multp={rstem.multp} />
-    {:else if xargs.rtype == 'qt'}
+    {:else if xargs.rtype == 'qt' || xargs.rtype == 'mt'}
       <Qtpage ztext={rdata.ztext} {xargs} {label} bind:dirty />
-    {:else if xargs.rtype == 'mt'}
-      <Mtpage ztext={rdata.ztext} {xargs} {label} bind:dirty />
     {:else}
       Chưa hoàn thiện!
     {/if}
@@ -109,6 +102,7 @@
 </Section>
 
 <div hidden>
+  S
   <button
     type="button"
     data-kbd="↑"
