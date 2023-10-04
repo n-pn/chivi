@@ -1,6 +1,6 @@
 require "./_wn_ctrl_base"
 
-class WN::SeedCtrl < AC::Base
+class WN::WnstemCtrl < AC::Base
   base "/_wn/seeds"
 
   @[AC::Route::GET("/")]
@@ -52,8 +52,8 @@ class WN::SeedCtrl < AC::Base
         _flag: wnseed._flag,
         fresh: fresh,
         # extra
-        read_privi: wnseed.read_privi,
-        edit_privi: wnseed.edit_privi(_uname),
+        read_privi: wnseed.plock,
+        edit_privi: wnseed.plock,
         gift_chaps: wnseed.gift_chaps,
       },
     }
@@ -97,8 +97,8 @@ class WN::SeedCtrl < AC::Base
 
   @[AC::Route::GET("/:wn_id/:sname/reload")]
   def refresh(wn_id : Int32, sname : String, mode : Int32 = 1)
-    privi = SeedType.edit_privi(sname, _uname) - 1
-    guard_privi privi, "cập nhật nguồn"
+    # privi = SeedType.edit_privi(sname, _uname) - 1
+    guard_privi 0, "cập nhật nguồn"
 
     wnseed = get_wnseed(wn_id, sname)
     wnseed.reload_chlist!(mode: mode)
@@ -125,7 +125,7 @@ class WN::SeedCtrl < AC::Base
 
   @[AC::Route::PATCH("/:wn_id/:sname", body: :form)]
   def update_seed(form : UpdateForm, wn_id : Int32, sname : String)
-    guard_privi SeedType.edit_privi(sname, _uname), "cập nhật nguồn"
+    guard_privi 1, "cập nhật nguồn"
     wnseed = get_wnseed(wn_id, sname)
 
     if rlink = form.rm_link
@@ -148,7 +148,7 @@ class WN::SeedCtrl < AC::Base
 
   @[AC::Route::DELETE("/:wn_id/:sname")]
   def delete(wn_id : Int32, sname : String, mode : Int32 = 1)
-    guard_privi SeedType.delete_privi(sname, _uname), "xóa danh sách chương"
+    guard_privi 4, "xóa danh sách chương"
     wnseed = get_wnseed(wn_id, sname)
 
     Wnstem.soft_delete!(wn_id, sname)

@@ -43,7 +43,7 @@ class WN::Wnstem
 
   #########
 
-  def initialize(@wn_id, @sname, @s_bid = "~#{wn_id}", @privi = 2_i16)
+  def initialize(@wn_id, @sname, @s_bid = wn_id.to_s, @privi = 2_i16)
   end
 
   def init!(force : Bool = false) : Nil
@@ -78,27 +78,18 @@ class WN::Wnstem
 
   @[AlwaysInline]
   def chap_plock(ch_no : Int32)
-    ch_no <= gift_chaps ? 0 : self.read_privi
+    ch_no <= gift_chaps ? 0 : self.plock
   end
 
   def remote?
-    self.seed_type.globs?
+    @sname[0] == '!' && Rmhost.is_remote?(@sname)
   end
 
-  def active_remote?
-    return unless @sname[0] == '!' && Rmstem.is_remote?(@sname)
-    Rmstem.from_sname!(@sname).active? # not dead or hidden behind cloudflare
+  def active?
+    remote? && Rmhost.from_sname!(@sname).active?
   end
 
-  def owner?(uname : String = "")
-    @sname == "@#{uname}"
-  end
-
-  def edit_privi(uname = "")
-    self.seed_type.edit_privi(is_owner: owner?(uname))
-  end
-
-  def read_privi
+  def plock
     case @sname
     when "~draft" then 1
     when "~avail" then 2
@@ -120,7 +111,6 @@ class WN::Wnstem
     #   db.query_each(sql) do |rs|
     #     ch_no, s_cid = rs.read(Int32, Int32)
     #     txt_path = TextStore.gen_txt_path(sname, s_bid, s_cid)
-    seed
     #     if File.file?(txt_path)
     #       c_len = File.read(txt_path, encoding: "GB18030").size
     #       avail += 1 if c_len > 0

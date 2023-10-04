@@ -12,11 +12,8 @@ class UP::Chrepo
   getter sname : String
   getter sn_id : String
 
-  TXT_DIR = "var/up_db/texts"
-  DB3_DIR = "var/up_db/stems"
-
   def initialize(@sname, @sn_id)
-    @info_db = Chinfo.db(sname, sn_id, DB3_DIR)
+    @info_db = Chinfo.db(sname, sn_id)
   end
 
   @@fetch_all_sql : String = Chinfo.schema.select_stmt(&.<< " where ch_no > $1 and ch_no <= $2 order by ch_no asc")
@@ -139,7 +136,7 @@ class UP::Chrepo
     lines = ChapUtil.split_ztext(ztext)
     spath = "#{@sname}/#{@sn_id}/#{ch_no}"
 
-    cinfo.save_raw_text!(lines, spath: spath, uname: uname, txt_dir: TXT_DIR)
+    cinfo.save_raw_text!(lines, spath: spath, uname: uname)
 
     cinfo.ztitle = title unless title.empty?
     cinfo.zchdiv = chdiv unless chdiv.empty?

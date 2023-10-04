@@ -32,7 +32,7 @@ class WN::ChinfoCtrl < AC::Base
       chdiv: cinfo.vchdiv.empty? ? cinfo.zchdiv : cinfo.vchdiv,
 
       rlink: cinfo.rlink,
-      fpath: cinfo.part_name(wn_id, p_idx),
+      fpath: cinfo.part_name(sname, wstem.s_bid, p_idx),
 
       plock: plock,
       mtime: cinfo.mtime,
@@ -55,32 +55,9 @@ class WN::ChinfoCtrl < AC::Base
     cksum = ctext.get_cksum!(_uname, _mode: 1)
     return {[cinfo.ztitle], 414} if cksum.empty?
 
-    ulkey = cinfo.part_name(wstem.wn_id, p_idx)
+    ulkey = cinfo.part_name(wstem.sname, wstem.s_bid, p_idx)
 
     can_read = _privi >= plock || CV::Unlock.unlocked?(self._vu_id, ulkey)
     can_read ? {ctext.load_raw!(p_idx), 0} : {[cinfo.ztitle] of String, 413}
-  end
-
-  @[AC::Route::GET("/:sname/:ch_no")]
-  def reload(wn_id : Int32, sname : String, ch_no : Int32)
-    wstem = get_wnseed(wn_id, sname)
-    cinfo = get_chinfo(wstem, ch_no)
-
-    plock = wstem.chap_plock(ch_no)
-
-    if _privi < plock
-      render 403, text: "Lỗi: Cần quyền hạn #{plock} để tải lại nguồn"
-      return
-    end
-
-    # if cinfo.rlink.empty?
-    ctext = Chtext.new(wstem, cinfo)
-    cksum = ctext.load_from_remote!(_uname, force: true) rescue ""
-
-    if cksum && !cksum.empty?
-      render 201, text: cksum
-    else
-      render 500, text: "Lỗi: Không tải lại được text gốc của chương"
-    end
   end
 end

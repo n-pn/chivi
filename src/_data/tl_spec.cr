@@ -83,9 +83,6 @@ class CV::Tlspec
 
   ######################
 
-  DIR = "var/cvmtl/users"
-  Dir.mkdir_p(DIR)
-
   CACHE = {} of String => self
 
   def self.load!(ukey : String) : self

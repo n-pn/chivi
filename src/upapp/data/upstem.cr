@@ -43,8 +43,8 @@ class UP::Upstem
   end
 
   def mkdirs!
-    Dir.mkdir_p("var/up_db/stems/#{@sname}")
-    Dir.mkdir_p("var/up_db/texts/#{@sname}/#{@id}")
+    Dir.mkdir_p("var/stems/up#{@sname}")
+    Dir.mkdir_p("var/texts/up#{@sname}/#{@id}")
   end
 
   def after_initialize

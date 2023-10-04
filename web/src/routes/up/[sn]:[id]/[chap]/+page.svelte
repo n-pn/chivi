@@ -35,7 +35,7 @@
     zname: ustem.zname,
     sname: ustem.sname,
     stype: 'up',
-    sn_id: ustem.s_bid,
+    sn_id: ustem.id,
 
     multp: ustem.multp,
     plock: 5,

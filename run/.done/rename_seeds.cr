@@ -1,8 +1,8 @@
-require "../src/_data/_data"
+require "../../src/_data/_data"
 
 NFO_DIR = "/2tb/app.chivi/var/zchap/infos"
-TXT_DIR = "/2tb/app.chivi/var/texts/rgbks"
-ZIP_DIR = "/2tb/app.chivi/var/texts/rzips"
+TXT_DIR = "/2tb/var.chivi/_prev/ztext"
+ZIP_DIR = "/2tb/app.chivi/_prev/rzips"
 
 def rename_seed(old_sname : String, new_sname : String)
   PGDB.exec "begin transaction"

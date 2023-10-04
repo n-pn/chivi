@@ -9,7 +9,7 @@ class Chtext
   WN_DIR = "var/wnapp/chtext"
   ZH_DIR = "var/zroot/wntext"
 
-  V0_DIR = "var/texts/rgbks"
+  V0_DIR = "/2tb/var.chivi/_prev/ztext"
 
   def initialize(@stem : WN::Wnstem, @chap : WN::Chinfo)
     @wc_base = "#{WN_DIR}/#{stem.wn_id}/#{chap.ch_no}"

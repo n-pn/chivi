@@ -226,5 +226,8 @@ class CV::Wninfo
     Dir.mkdir_p("var/wnapp/chinfo/#{wn_id}")
     Dir.mkdir_p("var/wnapp/chtext/#{wn_id}")
     Dir.mkdir_p("var/wnapp/chtran/#{wn_id}")
+    Dir.mkdir_p("var/texts/wn~draft/#{wn_id}")
+    Dir.mkdir_p("var/texts/wn~avail/#{wn_id}")
+    Dir.mkdir_p("var/texts/wn~chivi/#{wn_id}")
   end
 end

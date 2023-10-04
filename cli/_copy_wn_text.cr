@@ -1,7 +1,7 @@
 require "sqlite3"
 require "colorize"
 
-TXT_DIR = "var/texts/rgbks"
+TXT_DIR = "/2tb/var.chivi/_prev/ztext"
 
 def copy_book(sname : String, s_bid : String)
   queue = [] of {String, String}

@@ -7,26 +7,37 @@ require "../../zroot/raw_html/raw_rmchap"
 class WN::Chtext
   getter wc_base : String
 
-  WN_DIR = "var/wnapp/chtext"
-  ZH_DIR = "var/zroot/wntext"
-
-  V0_DIR = "var/texts/rgbks"
+  TXT_DIR = "var/texts"
+  BAK_DIR = "var/zroot/wntext"
+  OLD_DIR = "/2tb/var.chivi/_prev/ztext"
 
   def initialize(@stem : Wnstem, @chap : Chinfo)
-    @wc_base = "#{WN_DIR}/#{stem.wn_id}/#{chap.ch_no}"
+    @wc_base = gen_wc_base(stem, chap.ch_no)
     chap.spath = "#{stem.sname}/#{stem.s_bid}/#{chap.ch_no}" if chap.spath.empty?
   end
 
-  def wn_path(p_idx : Int32, cksum : String = @chap.cksum)
-    "#{@wc_base}-#{cksum}-#{p_idx}.txt"
+  def gen_wc_base(stem : Wnstem, ch_no : Int32) : String
+    case stem.sname[0]
+    when '~' then "#{TXT_DIR}/wn#{stem.sname}/#{stem.wn_id}/#{ch_no}"
+    when '!' then "#{TXT_DIR}/rm#{stem.sname}/#{stem.s_bid}/#{ch_no}"
+    else          raise "unsupported kind!"
+    end
   end
 
-  def zh_path(cksum : String = @chap.cksum)
-    "#{ZH_DIR}/#{@chap.spath}-#{cksum}-#{@chap.ch_no}.txt"
+  def raw_path(p_idx : Int32, cksum : String = @chap.cksum)
+    "#{@wc_base}-#{cksum}-#{p_idx}.raw.txt"
+  end
+
+  def ext_path(p_idx : Int32, ext : String)
+    "#{@wc_base}-#{@chap.cksum}-#{p_idx}.#{ext}"
+  end
+
+  def bak_path(cksum : String = @chap.cksum)
+    "#{BAK_DIR}/#{@chap.spath}-#{cksum}-#{@chap.ch_no}.txt"
   end
 
   def file_exists?
-    !@chap.cksum.empty? && File.file?(wn_path(p_idx: @chap.psize))
+    !@chap.cksum.empty? && File.file?(raw_path(p_idx: @chap.psize))
   end
 
   def get_cksum!(uname : String = "", _mode = 0)
@@ -65,16 +76,16 @@ class WN::Chtext
   def import_existing! : String?
     # Log.info { "find from existing data".colorize.yellow }
 
-    files = [self.zh_path]
+    files = [self.bak_path]
 
     if @stem.sname[0] != '!'
       spath = "#{@stem.sname}/#{@stem.wn_id}/#{@chap.ch_no}"
-      files << "#{V0_DIR}/#{spath}.gbk"
-      files << "#{V0_DIR}/#{spath}.txt"
+      files << "#{OLD_DIR}/#{spath}.gbk"
+      files << "#{OLD_DIR}/#{spath}.txt"
     end
 
-    files << "#{V0_DIR}/#{@chap.spath}.gbk"
-    files << "#{V0_DIR}/#{@chap.spath}.txt"
+    files << "#{OLD_DIR}/#{@chap.spath}.gbk"
+    files << "#{OLD_DIR}/#{@chap.spath}.txt"
 
     return unless file = files.find { |x| File.file?(x) }
     # Log.info { "found: #{file}".colorize.green }
@@ -107,7 +118,7 @@ class WN::Chtext
     # Dir.mkdir_p(File.dirname(@wc_base))
 
     parts.each_with_index do |cpart, index|
-      save_path = self.wn_path(p_idx: index)
+      save_path = self.raw_path(p_idx: index)
 
       File.open(save_path, "w") do |file|
         file << parts[0]
@@ -124,15 +135,15 @@ class WN::Chtext
   private def save_backup!(parts : Array(String), cksum : String = @chap.cksum)
     # Log.info { "save backup!".colorize.yellow }
 
-    zh_path = self.zh_path(cksum)
-    return if File.file?(zh_path)
+    bak_path = self.bak_path(cksum)
+    return if File.file?(bak_path)
 
-    dirname = File.dirname(zh_path)
+    dirname = File.dirname(bak_path)
     Dir.mkdir_p(dirname)
 
     # TODO: track activity?
 
-    File.open(zh_path, "w") { |file| parts.join(file, "\n\n") }
+    File.open(bak_path, "w") { |file| parts.join(file, "\n\n") }
   end
 
   def load_all!
@@ -150,37 +161,21 @@ class WN::Chtext
   end
 
   def load_part!(p_idx : Int32 = 1)
-    File.read(self.wn_path(p_idx))
+    File.read(self.raw_path(p_idx))
   end
 
   def load_raw!(p_idx : Int32 = 1)
-    File.read_lines(self.wn_path(p_idx), chomp: true)
+    File.read_lines(self.raw_path(p_idx), chomp: true)
   end
 
   # def load_part_from_copus(p_idx : Int32 = 1)
   #   zorig = "#{@chap.ch_no}-#{@chap.cksum}-#{p_idx}"
 
   #   @corpus.get_texts_by_zorig(zorig) || begin
-  #     lines = File.read(self.wn_path(p_idx))
+  #     lines = File.read(self.raw_path(p_idx))
   #     u8_ids, _ = @corpus.add_part!(zorig)
   #     {u8_ids, lines}
   #   end
   # end
 
-  def nlp_path(p_idx : Int32, alg = "hmeg", ext = "con")
-    self.class.nlp_path(
-      wn_id: @stem.wn_id, ch_no: @chap.ch_no,
-      cksum: @chap.cksum, p_idx: p_idx,
-      alg: alg, ext: ext)
-  end
-
-  ###
-
-  NLP_DIR = "var/wnapp/nlp_wn"
-
-  def self.nlp_path(wn_id : Int32, ch_no : Int32,
-                    cksum : String, p_idx : Int32,
-                    alg = "hmeg", ext = "con")
-    "#{NLP_DIR}/#{wn_id}/#{ch_no}-#{cksum}-#{p_idx}.#{alg}.#{ext}"
-  end
 end

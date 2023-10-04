@@ -51,7 +51,7 @@
       rmode = 'mt_ai'
     }
 
-    state = false
+    state = 0
     if (vtran.error) return
 
     lookup_data.update((x) => {

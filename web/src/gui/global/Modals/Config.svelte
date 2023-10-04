@@ -18,18 +18,6 @@
     ['Zen', 1],
     ['Dev', 2],
   ]
-
-  const c_algos = [
-    ['HM_ES', 'mtl_1', 'Chọn mô-đun Electra Small'],
-    ['HM_EB', 'mtl_2', 'Chọn mô-đun Electra Base'],
-    ['HM_EG', 'mtl_3', 'Chọn mô-dun Ernie Gram'],
-    ['AVAIL', 'avail', 'Tự động chọn dữ liệu đang có sẵn'],
-  ]
-
-  const dual_kinds = [
-    ['MS Bing', 'bzv', 'Dịch máy từ Bing'],
-    ['Máy dịch V1', 'old', 'Dịch máy từ thuật toán cũ'],
-  ]
 </script>
 
 <script lang="ts">
@@ -54,16 +42,10 @@
   }
 
   $: if (browser && $data) {
-    write_cookie('w_udic', $data.w_udic ? 't' : 'f')
-
     write_cookie('show_z', $data.show_z ? 't' : 'f')
-    write_cookie('show_c', $data.show_c ? 't' : 'f')
 
     write_cookie('c_algo', $data.c_algo)
     write_cookie('c_auto', $data.c_auto ? 't' : 'f')
-
-    write_cookie('view_dual', $data.view_dual ? 't' : 'f')
-    write_cookie('dual_kind', $data.dual_kind)
 
     write_cookie('theme', $data.wtheme)
   }

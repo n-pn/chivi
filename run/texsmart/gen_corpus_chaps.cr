@@ -47,7 +47,7 @@ File.each_line("var/cvmtl/corpus-books.tsv") do |line|
     snames.each do |sname|
       s_bid = mapped[sname]? || id.to_i
 
-      txt_file = "var/texts/rgbks/#{sname}/#{s_bid}/#{ch_no}.gbk"
+      txt_file = "/2tb/var.chivi/_prev/ztext/#{sname}/#{s_bid}/#{ch_no}.gbk"
       next unless File.file?(txt_file)
 
       entries << "#{ch_no}\t#{sname}/#{s_bid}/#{ch_no}"

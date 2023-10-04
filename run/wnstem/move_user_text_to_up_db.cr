@@ -3,13 +3,13 @@ ENV["CV_ENV"] = "production"
 require "../../src/_data/_data"
 require "../../src/wnapp/data/chinfo"
 
-INP = "var/wn_db/stems"
-OUT = "var/up_db/stems"
+INP_STEM = "var/wn_db/stems"
+OUT_STEM = "var/stems/up"
 
-TXT = "var/wnapp/chtext"
-NLP = "var/wnapp/nlp_wn"
+INP_TEXT = "var/wnapp/chtext"
+INP_NLPD = "var/wnapp/nlp_wn"
 
-RAW = "var/up_db/texts"
+OUT_TEXT = "var/texts/up"
 
 input = PGDB.query_all "select wn_id, sname, s_bid from wnseeds where wn_id >= 0 and sname like '@%' and chap_total > 0", as: {Int32, String, String}
 
@@ -35,11 +35,11 @@ input = PGDB.query_all "select wn_id, sname, s_bid from wnseeds where wn_id >= 0
 query = "select ch_no, cksum, sizes from chinfos where cksum <> ''"
 
 input.group_by(&.[1]).each do |sname, group|
-  out_dir = "#{RAW}/#{sname}"
+  out_dir = "#{OUT_TEXT}/#{sname}"
   Dir.mkdir_p(out_dir)
 
   group.each do |wn_id, sname, sn_id|
-    old_path = "#{INP}/#{sname}/#{sn_id}.db3"
+    old_path = "#{INP_STEM}/#{sname}/#{sn_id}.db3"
     # new_path = "#{OUT}/#{sname}/#{sn_id}.db3"
 
     # next unless File.file?(old_path)
@@ -47,7 +47,7 @@ input.group_by(&.[1]).each do |sname, group|
     # File.delete?(new_path)
     # File.copy(old_path, new_path)
 
-    raw_dir = "#{RAW}/#{sname}/#{sn_id}"
+    raw_dir = "#{OUT_TEXT}/#{sname}/#{sn_id}"
     Dir.mkdir_p(raw_dir)
 
     existed = DB.open("sqlite3:#{old_path}?immutable=1") do |db|

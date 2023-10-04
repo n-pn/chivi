@@ -53,10 +53,14 @@ class WN::Chinfo
     );
     SQL
 
-  DIR = "var/wn_db/stems"
+  DIR = "var/stems"
 
   def self.db_path(sname : String, sn_id : String)
-    "#{DIR}/#{sname}/#{sn_id}.db3"
+    case sname[0]
+    when '~' then "var/stems/wn#{sname}/#{sn_id}-cinfo.db3"
+    when '!' then "var/stems/rm#{sname}/#{sn_id}-cinfo.db3"
+    else          raise "unsupported kind!"
+    end
   end
 
   ###
@@ -110,8 +114,13 @@ class WN::Chinfo
     @sizes.count(' ')
   end
 
-  def part_name(wn_id : Int32, p_idx : Int32 = 1)
-    @cksum.empty? ? "" : "nc:#{wn_id}/#{@ch_no}-#{@cksum}-#{p_idx}"
+  def part_name(sname : String, sn_id : String, p_idx : Int32 = 1)
+    case
+    when @cksum.empty?   then ""
+    when sname[0] == '~' then "wn#{sname}/#{sn_id}/#{@ch_no}-#{@cksum}-#{p_idx}"
+    when sname[0] == '!' then "rm#{sname}/#{sn_id}/#{@ch_no}-#{@cksum}-#{p_idx}"
+    else                      ""
+    end
   end
 
   def part_href(p_idx : Int32 = 1)

@@ -96,8 +96,14 @@ class RD::Chinfo
     end
   end
 
-  def part_name(ftype : Rdtype, p_idx : Int32 = 1)
-    @cksum.empty? ? "" : "#{ftype.to_s.lowercase}:#{part_path(p_idx)}"
+  def part_name(sname : String, sn_id : String, p_idx : Int32 = 1)
+    case
+    when @cksum.empty?   then ""
+    when sname[0] == '~' then "wn#{sname}/#{sn_id}/#{@ch_no}-#{@cksum}-#{p_idx}"
+    when sname[0] == '!' then "rm#{sname}/#{sn_id}/#{@ch_no}-#{@cksum}-#{p_idx}"
+    when sname[0] == '@' then "up#{sname}/#{sn_id}/#{@ch_no}-#{@cksum}-#{p_idx}"
+    else                      ""
+    end
   end
 
   def part_path(p_idx : Int32 = 1)

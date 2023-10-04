@@ -25,10 +25,8 @@ class UP::Chinfo
     );
     SQL
 
-  DB_ROOT = "var/up_db/stems"
-
-  def self.db_path(sname : String, sn_id : String | Int32, db_root = DB_ROOT)
-    "#{db_root}/#{sname}/#{sn_id}-cinfo.db3"
+  def self.db_path(sname : String, sn_id : String | Int32)
+    "var/stems/up#{sname}/#{sn_id}-cinfo.db3"
   end
 
   ###
@@ -66,11 +64,8 @@ class UP::Chinfo
     @ztitle = ztitle
   end
 
-  TXT_DIR = "var/up_db/texts"
-
   def save_raw_text!(lines : Array(String), @spath = self.spath,
-                     @uname = "", @mtime = Time.utc.to_unix,
-                     txt_dir = TXT_DIR)
+                     @uname = "", @mtime = Time.utc.to_unix)
     title = lines.shift
     self.ztitle = title # TODO: update zchdiv
 
@@ -79,7 +74,7 @@ class UP::Chinfo
     @sizes = sizes.join(' ')
 
     parts.each_with_index do |ptext, p_idx|
-      save_path = self.file_path(p_idx, "raw.txt", spath: spath, txt_dir: txt_dir)
+      save_path = self.file_path(p_idx, "raw.txt", spath: spath)
       File.open(save_path, "w") do |file|
         file << title << '\n' if p_idx > 0
         file << ptext
@@ -89,28 +84,29 @@ class UP::Chinfo
     @cksum
   end
 
-  def load_full!(ftype = "raw.txt", spath = @spath, txt_dir = TXT_DIR)
+  def load_full!(ftype = "raw.txt", spath = @spath)
     return "" if @cksum.empty?
 
     String.build do |io|
-      title = load_part!(p_idx: 0, ftype: ftype, spath: spath, txt_dir: txt_dir)
+      title = load_part!(p_idx: 0, ftype: ftype, spath: spath)
       title = title.first
       io << title
 
       1.upto(self.psize) do |p_idx|
-        lines = load_part!(p_idx, ftype: ftype, spath: spath, txt_dir: txt_dir)
+        lines = load_part!(p_idx, ftype: ftype, spath: spath)
         lines.shift if lines.first == title
         lines.each { |line| io << '\n' << line }
       end
     end
   end
 
-  def load_part!(p_idx : Int32 = 1, ftype = "raw.txt", spath = @spath, txt_dir = TXT_DIR)
-    File.read_lines(self.file_path(p_idx, ftype: ftype, spath: spath, txt_dir: txt_dir))
+  def load_part!(p_idx : Int32 = 1, ftype = "raw.txt", spath = @spath)
+    File.read_lines(self.file_path(p_idx, ftype: ftype, spath: spath))
   end
 
-  def file_path(p_idx : Int32, ftype = "raw.txt", spath = @spath, txt_dir = TXT_DIR)
-    "#{txt_dir}/#{spath}-#{@cksum}-#{p_idx}.#{ftype}"
+  def file_path(p_idx : Int32, ftype = "raw.txt", spath = @spath)
+    spath = "up" + spath unless spath.starts_with?("up")
+    "var/texts/#{spath}-#{@cksum}-#{p_idx}.#{ftype}"
   end
 
   ####
@@ -137,7 +133,7 @@ class UP::Chinfo
   end
 
   def part_name(p_idx : Int32 = 1)
-    @cksum.empty? ? "" : "up:#{@spath}-#{@cksum}-#{p_idx}"
+    @cksum.empty? ? "" : "up#{@spath}-#{@cksum}-#{p_idx}"
   end
 
   def add_flag!(flag : Chflag)

@@ -1,33 +1,33 @@
-ENV["CV_ENV"] = "production"
+# ENV["CV_ENV"] = "production"
 
-require "../../src/_data/_data"
-require "../../src/wnapp/data/chinfo"
+# require "../../src/_data/_data"
+# require "../../src/wnapp/data/chinfo"
 
-INP = "var/wnapp/chinfo"
-OUT = "var/wn_db/stems"
+# INP = "var/wnapp/chinfo"
+# OUT = "var/wn_db/stems"
 
-input = PGDB.query_all "select wn_id, sname, s_bid from wnseeds where wn_id >= 0 and sname like '@%'", as: {Int32, String, String}
+# input = PGDB.query_all "select wn_id, sname, s_bid from wnseeds where wn_id >= 0 and sname like '@%'", as: {Int32, String, String}
 
-input.group_by(&.[1]).each do |sname, group|
-  allowed = group.map(&.[2]).to_s
+# input.group_by(&.[1]).each do |sname, group|
+#   allowed = group.map(&.[2]).to_s
 
-  mapping = group.map { |x| {x[0], x[2]} }.to_h
+#   mapping = group.map { |x| {x[0], x[2]} }.to_h
 
-  dirname = "#{OUT}/#{sname}"
+#   dirname = "#{OUT}/#{sname}"
 
-  Dir.each_child(dirname) do |dname|
-    puts "#{dirname}/#{dname}"
+#   Dir.each_child(dirname) do |dname|
+#     puts "#{dirname}/#{dname}"
 
-    sn_id = File.basename(dname, ".db3")
-    next if allowed.includes?(sn_id)
+#     sn_id = File.basename(dname, ".db3")
+#     next if allowed.includes?(sn_id)
 
-    if new_name = mapping[sn_id]?
-      File.rename("#{dirname}/#{dname}", "#{dirname}/#{dname.sub(sn_id, new_name)}")
-    else
-      File.delete("#{dirname}/#{dname}")
-    end
-  end
-end
+#     if new_name = mapping[sn_id]?
+#       File.rename("#{dirname}/#{dname}", "#{dirname}/#{dname.sub(sn_id, new_name)}")
+#     else
+#       File.delete("#{dirname}/#{dname}")
+#     end
+#   end
+# end
 
 # snames = input.map(&.[1]).uniq!
 # snames.each { |sname| Dir.mkdir_p("#{OUT}/#{sname}") }

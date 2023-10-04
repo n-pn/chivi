@@ -1,15 +1,25 @@
+require "pg"
+require "sqlite3"
 ENV["CV_ENV"] = "production"
+require "../../src/cv_env"
 
-require "../../src/_data/_data"
+PGDB = DB.connect(CV_ENV.database_url)
+at_exit { PGDB.close }
 
-WN_SQL = "select wn_id, chap_total from wnseeds where wn_id >= 0 and chap_total > 0 and sname = $1"
+MTIME = Time.utc(2023, 9, 29).to_unix
+
+WN_SQL = <<-SQL
+  select wn_id, chap_total from wnseeds
+  where wn_id >= 0 and chap_total > 0 and sname = $1 and mtime >= $2
+SQL
+
 CH_SQL = "select cksum from chinfos where cksum <> '' and ch_no <= $1"
 
 def move_dir(sname : String)
-  inputs = PGDB.query_all WN_SQL, sname, as: {Int32, Int32}
+  inputs = PGDB.query_all WN_SQL, sname, MTIME, as: {Int32, Int32}
 
   inputs.each do |wn_id, chmax|
-    db_path = "var/wn_db/stems/#{sname}/#{wn_id}.db3"
+    db_path = "var/stems/wn#{sname}/#{wn_id}.db3"
 
     to_copy = DB.open("sqlite3:#{db_path}?immutable=1") do |db|
       db.query_all(CH_SQL, chmax, as: String).to_set
@@ -24,7 +34,7 @@ def move_dir(sname : String)
     nlp_dir = "var/wnapp/nlp_wn/#{wn_id}"
     vtl_dir = "var/wnapp/chtran/#{wn_id}"
 
-    out_dir = "var/wn_db/texts/#{sname}/#{wn_id}"
+    out_dir = "var/texts/wn#{sname}/#{wn_id}"
     Dir.mkdir_p(out_dir)
 
     Dir.each_child(raw_dir) do |fpath|
@@ -53,6 +63,6 @@ def move_dir(sname : String)
   end
 end
 
-# move_dir("~chivi")
+move_dir("~chivi")
 move_dir("~draft")
-# move_dir("~avail")
+move_dir("~avail")

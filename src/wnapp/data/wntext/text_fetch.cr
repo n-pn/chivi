@@ -1,4 +1,4 @@
-require "../../../zroot/html_parser/raw_rmchap"
+require "../../../zroot/raw_html/raw_rmchap"
 
 module WN::TextFetch
   extend self

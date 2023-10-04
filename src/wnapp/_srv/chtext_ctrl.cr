@@ -10,10 +10,11 @@ require "./forms/chtext_full_form"
 class WN::ChtextCtrl < AC::Base
   base "/_wn/texts/:wn_id/:sname"
 
-  private def mkdirs!(wn_id : Int32)
-    Dir.mkdir_p("var/wnapp/chinfo/#{wn_id}")
-    Dir.mkdir_p("var/wnapp/chtext/#{wn_id}")
-    Dir.mkdir_p("var/wnapp/chtran/#{wn_id}")
+  private def mkdirs!(wstem : Wnstem)
+    case wstem.sname[0]
+    when '!' then Dir.mkdir_p("var/texts/rm#{wstem.sname}/#{wstem.s_bid}")
+    when '~' then Dir.mkdir_p("var/texts/wn#{wstem.sname}/#{wstem.s_bid}")
+    end
   end
 
   @[AC::Route::POST("/", body: :list)]
@@ -22,7 +23,7 @@ class WN::ChtextCtrl < AC::Base
     guard_edit_privi wn_id: wn_id, sname: sname
 
     wnseed = get_wnseed(wn_id, sname)
-    self.mkdirs!(wn_id)
+    self.mkdirs!(wnseed)
 
     list.each(&.save!(seed: wnseed, user: _uname))
 
@@ -40,7 +41,7 @@ class WN::ChtextCtrl < AC::Base
     guard_edit_privi wn_id: wn_id, sname: sname
 
     wnseed = get_wnseed(wn_id, sname)
-    self.mkdirs!(wn_id)
+    self.mkdirs!(wnseed)
 
     chinfo = form.save!(seed: wnseed, user: _uname)
 
@@ -81,22 +82,19 @@ class WN::ChtextCtrl < AC::Base
 
     0.upto(chinfo.psize) do |p_idx|
       parts << chtext.load_part!(p_idx)
-      _hmeg << File.file?(chtext.nlp_path(p_idx, alg: "hmeg"))
-      _hmeb << File.file?(chtext.nlp_path(p_idx, alg: "hmeb"))
+      _hmeg << File.file?(chtext.ext_path(p_idx, ext: "hmeg.con"))
+      _hmeb << File.file?(chtext.ext_path(p_idx, ext: "hmeb.con"))
     end
 
     render json: {cksum: cksum, parts: parts, _hmeg: _hmeg, _hmeb: _hmeb}
   end
 
-  WN_DIR = "var/wnapp/chtext"
-
   def guard_edit_privi(wn_id : Int32, sname : String)
-    type = SeedType.parse(sname)
+    stype = SeedType.parse(sname)
+    plock = stype.plock
+    plock -= 1 if wn_id == 0
 
-    edit_privi = type.edit_privi(sname == "@#{_uname}")
-    edit_privi -= 1 if wn_id == 0
-
-    guard_privi edit_privi, action: "thêm chương tiết cho nguồn #{type.type_name}"
+    guard_privi plock, action: "thêm chương tiết cho nguồn [#{stype.type_name}]"
   end
 
   @[AC::Route::PATCH("/:ch_no", body: :form)]

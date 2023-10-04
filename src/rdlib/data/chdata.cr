@@ -1,16 +1,13 @@
 require "http/client"
-require "./rdtype"
 
 struct RD::Chdata
-  def self.new(fpath : String)
-    ftype, spath = fpath.split(':', 2)
-    new(spath, Rdtype.parse(ftype))
-  end
+  TXT_DIR = "var/texts"
+  DB3_DIR = "var/stems"
 
   @base_path : String
 
-  def initialize(spath : String, @ftype : Rdtype)
-    @base_path = ftype.txt_path(spath)
+  def initialize(spath : String)
+    @base_path = "#{TXT_DIR}/#{spath}"
   end
 
   private def read_file(fpath : String, &)
@@ -27,22 +24,6 @@ struct RD::Chdata
     "#{@base_path}.#{fkind}"
   end
 
-  @[AlwaysInline]
-  def raw_file_path
-    self.file_path(@ftype.nc? ? "txt" : "raw.txt")
-  end
-
-  @[AlwaysInline]
-  def mtl_file_path(fkind : String)
-    self.file_path(fkind).sub("chtext", "nlp_wn")
-  end
-
-  @[AlwaysInline]
-  def vtl_file_path(fkind : String)
-    fpath = self.file_path(fkind)
-    @ftype.nc? ? fpath.sub("chtext", "chtran") : fpath
-  end
-
   def read(fkind : String = "raw.txt")
     self.read_file(self.file_path(fkind))
   end
@@ -52,25 +33,23 @@ struct RD::Chdata
   end
 
   def read_raw
-    self.read_file(self.raw_file_path)
+    self.read_file(self.file_path("raw.txt"))
   end
 
   def read_raw(&)
-    self.read_file(self.raw_file_path) { |line| yield line }
+    self.read_file(self.file_path("raw.txt")) { |line| yield line }
   end
 
   def read_mtl(m_alg : String, mtype : String)
-    fpath = self.file_path("#{m_alg}.#{mtype}")
-    fpath = fpath.sub("chinfo", "nlp_wn") if @ftype.nc?
-    self.read_file(fpath)
+    self.read_file(self.file_path("#{m_alg}.#{mtype}"))
   end
 
   def read_con(m_alg : String = "avail", force = false)
     is_existed = false
 
-    mtl_1_path = self.mtl_file_path("hmes.con")
-    mtl_2_path = self.mtl_file_path("hmeb.con")
-    mtl_3_path = self.mtl_file_path("hmeg.con")
+    mtl_1_path = self.file_path("hmes.con")
+    mtl_2_path = self.file_path("hmeb.con")
+    mtl_3_path = self.file_path("hmeg.con")
 
     case
     when m_alg == "mtl_1"
@@ -95,7 +74,7 @@ struct RD::Chdata
     if is_existed || File.file?(con_path)
       read_con_file(con_path, m_alg)
     elsif force
-      call_hanlp_file_api(self.raw_file_path, con_path, m_alg)
+      call_hanlp_file_api(self.file_path("raw.txt"), con_path, m_alg)
     else
       raise "data not parsed!"
     end
@@ -108,7 +87,6 @@ struct RD::Chdata
 
   def call_hanlp_file_api(txt_path : String, con_path : String, m_alg : String)
     link = "#{CV_ENV.lp_host}/mtl_file/#{m_alg}?file=#{txt_path}"
-    Dir.mkdir_p(File.dirname(con_path)) if @ftype.nc?
 
     HTTP::Client.get(link) do |res|
       raise "error: #{res.body}" unless res.status.success?
@@ -120,7 +98,7 @@ struct RD::Chdata
 
   def save_raw!(ptext : String, title : String? = nil)
     # TODO: save to db3 file?
-    File.open(self.raw_file_path, "w") do |file|
+    File.open(self.file_path("raw.txt"), "w") do |file|
       file << title << '\n' if title
       file << ptext
     end

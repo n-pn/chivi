@@ -1,4 +1,4 @@
-DIR = "var/texts/rgbks"
+DIR = "/2tb/var.chivi/_prev/ztext"
 OUT = "/www/chivi/txt/saved"
 
 def export_book(txt_path : String)

@@ -12,16 +12,12 @@ class ConfigData {
 
   r_mode = 0
   show_z = false
-  show_c = false
 
   w_udic = false
   w_init = false
 
   c_algo = 'auto'
   c_auto = false
-
-  view_dual = false
-  dual_kind = 'bzv'
 }
 
 function load_config(): ConfigData {

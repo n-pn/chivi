@@ -9,7 +9,7 @@ def delete_unreached(sname : String)
   inputs = PGDB.query_all WN_SQL, sname, as: {Int32, Int32}
 
   inputs.each do |wn_id, chmax|
-    db_path = "var/wn_db/stems/#{sname}/#{wn_id}.db3"
+    db_path = "var/stems/wn#{sname}/#{wn_id}.db3"
     DB.open("sqlite3:#{db_path}", &.exec(CH_SQL, chmax))
     puts db_path
   end

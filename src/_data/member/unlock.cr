@@ -61,7 +61,8 @@ class CV::Unlock
   def self.unlock(ustem : UP::Upstem, cinfo : UP::Chinfo, vu_id : Int32, p_idx : Int32)
     owner = ustem.viuser_id
     ulkey = cinfo.part_name(p_idx)
-    zsize = cinfo.sizes[p_idx]
+    zsize = cinfo.sizes[p_idx]? || 0
+    return {nil, 0} if ulkey.empty? || zsize == 0
 
     unlock = new(vu_id: vu_id, ulkey: ulkey, owner: owner, zsize: zsize, multp: ustem.multp)
 
@@ -73,8 +74,9 @@ class CV::Unlock
   end
 
   def self.unlock(wstem : WN::Wnstem, cinfo : WN::Chinfo, vu_id : Int32, p_idx : Int32)
-    ulkey = cinfo.part_name(p_idx)
-    zsize = cinfo.sizes[p_idx]
+    ulkey = cinfo.part_name(wstem.sname, wstem.s_bid, p_idx)
+    zsize = cinfo.sizes[p_idx]? || 0
+    return {nil, 0} if ulkey.empty? || zsize == 0
 
     unlock = new(vu_id: vu_id, ulkey: ulkey, owner: -1, zsize: zsize, multp: wstem.multp)
 

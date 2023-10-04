@@ -1,6 +1,6 @@
 require "colorize"
 
-INP = "/mnt/serve/chivi.all/var/texts/rgbks"
+INP = "/2tb/var.chivi/_prev/ztext"
 ZIP = "/www/chivi/xyz/wn/texts/zip"
 MNT = "/www/chivi/xyz/wn/texts/mnt"
 

@@ -40,14 +40,14 @@ end
 def run_task(task : CV::DlTran)
   engine = M1::MtCore.init(task.wn_id, user: task.uname)
 
-  Dir.mkdir_p("var/texts/dlcvs/#{task.uname}")
+  Dir.mkdir_p("var/users/dlcvs/#{task.uname}")
 
-  out_path = "var/texts/dlcvs/#{task.uname}/#{task.id}.txt"
+  out_path = "var/users/dlcvs/#{task.uname}/#{task.id}.txt"
   out_file = File.open(out_path, "w")
 
   word_count = 0
 
-  txt_dir = "var/texts/rgbks/#{task.sname}/#{task.s_bid}"
+  txt_dir = "/2tb/var.chivi/_prev/ztext/#{task.sname}/#{task.s_bid}"
 
   task.from_ch_no.upto(task.upto_ch_no) do |ch_no|
     txt_path = "#{txt_dir}/#{ch_no}.gbk"
