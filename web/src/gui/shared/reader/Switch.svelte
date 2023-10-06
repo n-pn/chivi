@@ -35,23 +35,25 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let pager: Pager
-  export let xargs: CV.Chopts
+  export let ropts: CV.Rdopts
 
-  $: modes = all_modes[xargs.rtype] || {}
-  $: descs = all_descs[xargs.rtype] || {}
+  $: modes = all_modes[ropts.rtype] || {}
+  $: descs = all_descs[ropts.rtype] || {}
+
+  $: rmode = ropts.rtype == 'qt' ? ropts.qt_rm : ropts.mt_rm
 </script>
 
-<section class="mdesc">Đang áp dụng: {descs[xargs.rmode]}.</section>
+<section class="mdesc">Đang áp dụng: {descs[rmode]}.</section>
 <section class="modes chip-list">
   <span class="chip-text u-show-pl">Đổi chế độ:</span>
-  {#each Object.entries(modes) as [mode, label]}
+  {#each Object.entries(modes) as [_mode, label]}
     <a
       class="chip-link _active"
-      href={pager.gen_url({ rm: xargs.rtype, [xargs.rtype]: mode })}
-      data-tip={descs[mode]}
+      href={pager.gen_url({ rm: ropts.rtype, [ropts.rtype]: _mode })}
+      data-tip={descs[_mode]}
       data-tip-loc="bottom">
       <span>{label}</span>
-      {#if xargs.rmode == mode}<SIcon name="check" />{/if}
+      {#if rmode == _mode}<SIcon name="check" />{/if}
     </a>
   {/each}
 </section>

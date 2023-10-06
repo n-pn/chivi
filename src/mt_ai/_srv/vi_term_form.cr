@@ -22,8 +22,10 @@ class MT::ViTermForm
 
   struct Context
     getter fpath : String = ""
-    getter wn_id : Int32 = 0
+    getter mt_rm : String = ""
+
     getter pdict : String = ""
+    getter wn_id : Int32 = 0
 
     getter vtree : String = ""
     getter zfrom : Int32 = 0

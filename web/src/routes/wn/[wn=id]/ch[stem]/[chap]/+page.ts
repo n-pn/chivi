@@ -13,7 +13,7 @@ export const load = (async ({ url, parent, params, fetch }) => {
   const rdata_api = `/_wn/chaps/${wn_id}/${sname}/${ch_no}/${p_idx}`
 
   const rdata = await api_get<CV.Chpart>(rdata_api, fetch)
-  const xargs = get_xargs(wn_id, rdata, url)
+  const ropts = get_ropts(wn_id, rdata, url.searchParams)
 
   const { nvinfo } = await parent()
   const _title = `${rdata.title} - ${nvinfo.btitle_vi}`
@@ -28,19 +28,16 @@ export const load = (async ({ url, parent, params, fetch }) => {
     show_config: true,
   }
 
-  return { rdata, xargs, _meta, _title }
+  return { rdata, ropts, _meta, _title }
 }) satisfies PageLoad
 
-function get_xargs(wn_id: number, { fpath }, { searchParams }) {
-  const pdict = `book/${wn_id}`
-  const zpage = { fpath, pdict, wn_id }
-  const rtype = searchParams.get('rm') || 'qt'
-
-  switch (rtype) {
-    case 'qt':
-      return { zpage, rtype, rmode: searchParams.get('qt') || 'qt_v1' }
-
-    default:
-      return { zpage, rtype: 'mt', rmode: searchParams.get('mt') || 'mtl_1' }
+function get_ropts(wn_id: number, { fpath }, params: URLSearchParams) {
+  return {
+    fpath,
+    pdict: `book/${wn_id}`,
+    wn_id: wn_id,
+    rtype: params.get('rm') || 'qt',
+    qt_rm: params.get('qt') || 'qt_v1',
+    mt_rm: params.get('mt') || 'mtl_1',
   }
 }

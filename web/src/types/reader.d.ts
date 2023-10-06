@@ -40,11 +40,14 @@ declare namespace CV {
     chaps: Wnchap[]
   }
 
-  interface Chopts {
-    zpage: Mtpage
+  interface Rdopts {
+    fpath: string
+    pdict: string
+    wn_id: number
+
     rtype: string
-    rmode: string
-    m_alg: string
+    qt_rm: string
+    mt_rm: string
   }
 
   interface Mtdata {

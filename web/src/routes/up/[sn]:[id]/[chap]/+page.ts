@@ -13,7 +13,7 @@ export const load = (async ({ url, parent, params, fetch }) => {
   const rdata_api = `/_up/chaps/${up_id}/${ch_no}/${p_idx}`
 
   const rdata = await api_get<CV.Chpart>(rdata_api, fetch)
-  const xargs = get_xargs(ustem, rdata, url)
+  const ropts = get_ropts(ustem, rdata, url.searchParams)
 
   const _title = `${rdata.title} - ${ustem.vname}`
   // const _board = `ch:${book}:${chap}:${sname}`
@@ -26,21 +26,18 @@ export const load = (async ({ url, parent, params, fetch }) => {
     show_config: true,
   }
 
-  return { rdata, xargs, _meta, _title }
+  return { rdata, ropts, _meta, _title }
 }) satisfies PageLoad
 
-function get_xargs(ustem: CV.Upstem, { fpath }, { searchParams }) {
-  const wn_id = ustem.wninfo_id || 0
-  const pdict = ustem.wndic ? `book/${wn_id}` : `up/${ustem.id}`
-  const zpage = { fpath, pdict, wn_id }
+function get_ropts(ustem: CV.Upstem, { fpath }, params: URLSearchParams) {
+  const wn_id = ustem.wninfo_id
 
-  const rtype = searchParams.get('rm') || 'qt'
-
-  switch (rtype) {
-    case 'qt':
-      return { zpage, rtype, rmode: searchParams.get('qt') || 'qt_v1' }
-
-    default:
-      return { zpage, rtype: 'mt', rmode: searchParams.get('mt') || 'mtl_1' }
+  return {
+    fpath,
+    pdict: ustem.wndic && wn_id ? `book/${wn_id}` : `up/${ustem.id}`,
+    wn_id: wn_id || 0,
+    rtype: params.get('rm') || 'qt',
+    qt_rm: params.get('qt') || 'qt_v1',
+    mt_rm: params.get('mt') || 'mtl_1',
   }
 }

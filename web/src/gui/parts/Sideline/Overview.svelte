@@ -35,7 +35,7 @@
 
   let vtran = ''
 
-  $: finit = { ...$data.zpage, m_alg: $data.m_alg, force: true }
+  $: finit = { ...$data.ropts, force: true }
 
   const rinit = { cache: 'no-cache' } as RequestInit
 

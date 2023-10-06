@@ -129,7 +129,7 @@
   import VstrUtil from './vtform/VstrUtil.svelte'
   import HelpLink from './vtform/HelpLink.svelte'
 
-  export let zpage: CV.Mtpage
+  export let ropts: CV.Rdopts
 
   export let on_close = (_term?: CV.Vtdata) => {}
   onDestroy(() => on_close(null))
@@ -175,7 +175,7 @@
 
   const send_form = async () => {
     const headers = { 'Content-type': 'application/json' }
-    const body = tform.to_form_body(zpage, $data.vtree, zfrom)
+    const body = tform.to_form_body(ropts, $data.vtree, zfrom)
 
     const init = { body: JSON.stringify(body), method, headers }
     const res = await fetch(action, init)

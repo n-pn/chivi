@@ -5,42 +5,42 @@
   import Crumb from '$gui/molds/Crumb.svelte'
   import Footer from '$gui/sects/Footer.svelte'
 
-  import type { LayoutData } from './$types'
-  export let data: LayoutData
+  import type { PageData } from './$types'
+  export let data: PageData
 
-  $: ({ ustem, rdata, xargs } = data)
+  $: ({ rstem, rdata, ropts } = data)
 
   $: ch_no = rdata.ch_no
-  // $: total = ustem.chmax || ustem.chap_count
+  // $: total = rstem.chmax || rstem.chap_count
 
-  $: stem_path = `/up/${ustem.sname}:${data.up_id}`
+  $: stem_path = `/rm/${rstem.sname}:${data.up_id}`
   $: prev_path = rdata._prev
-    ? chap_path(stem_path, rdata._prev, xargs)
+    ? chap_path(stem_path, rdata._prev, ropts)
     : stem_path
 
   $: next_path = rdata._next
-    ? chap_path(stem_path, rdata._next, xargs)
+    ? chap_path(stem_path, rdata._next, ropts)
     : stem_path
 
   import Reader from '$gui/shared/reader/Reader.svelte'
 
   $: crumb = [
-    { text: 'Dự án cá nhân', href: `/up` },
-    { text: ustem.vname, href: stem_path },
+    { text: 'Nguồn nhúng tự động', href: `/rm` },
+    { text: rstem.vname, href: stem_path },
     { text: rdata.chdiv || 'Chính văn' },
     { text: rdata.title },
   ]
 
   $: rstem = {
-    zname: ustem.zname,
-    sname: ustem.sname,
-    stype: 'up',
-    sn_id: ustem.id,
+    zname: rstem.zname,
+    sname: rstem.sname,
+    stype: 'rm',
+    sn_id: rstem.sn_id,
 
-    multp: ustem.multp,
-    plock: 5,
-    chmax: ustem.chap_count,
-    gifts: ustem.gifts,
+    multp: rstem.multp,
+    plock: rstem.plock,
+    chmax: rstem.chap_count,
+    gifts: rstem.gifts,
   }
 </script>
 
@@ -56,7 +56,7 @@
     </a>
   {/each}
 </nav> -->
-<Reader {rstem} {xargs} {rdata} />
+<Reader {rstem} {ropts} {rdata} />
 
 <Footer>
   <div class="navi">

@@ -94,10 +94,6 @@
     @include fgcolor(tert);
   }
 
-  .article {
-    @include padding-y(0);
-  }
-
   page-info {
     display: flex;
     padding: 0.75rem 0;
@@ -203,12 +199,5 @@
 
   .foot {
     margin-top: 1rem;
-  }
-
-  .link {
-    @include fgcolor(primary, 5);
-    &:hover {
-      @include fgcolor(primary, 6);
-    }
   }
 </style>

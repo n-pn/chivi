@@ -5,21 +5,21 @@
   import Crumb from '$gui/molds/Crumb.svelte'
   import Footer from '$gui/sects/Footer.svelte'
 
-  import type { LayoutData } from './$types'
-  export let data: LayoutData
+  import type { PageData } from './$types'
+  export let data: PageData
 
-  $: ({ ustem, rdata, xargs } = data)
+  $: ({ ustem, rdata, ropts } = data)
 
   $: ch_no = rdata.ch_no
   // $: total = ustem.chmax || ustem.chap_count
 
   $: stem_path = `/up/${ustem.sname}:${data.up_id}`
   $: prev_path = rdata._prev
-    ? chap_path(stem_path, rdata._prev, xargs)
+    ? chap_path(stem_path, rdata._prev, ropts)
     : stem_path
 
   $: next_path = rdata._next
-    ? chap_path(stem_path, rdata._next, xargs)
+    ? chap_path(stem_path, rdata._next, ropts)
     : stem_path
 
   import Reader from '$gui/shared/reader/Reader.svelte'
@@ -35,7 +35,7 @@
     zname: ustem.zname,
     sname: ustem.sname,
     stype: 'up',
-    sn_id: ustem.id,
+    sn_id: ustem.id.toString(),
 
     multp: ustem.multp,
     plock: 5,
@@ -56,7 +56,7 @@
     </a>
   {/each}
 </nav> -->
-<Reader {rstem} {xargs} {rdata} />
+<Reader {rstem} {ropts} {rdata} />
 
 <Footer>
   <div class="navi">

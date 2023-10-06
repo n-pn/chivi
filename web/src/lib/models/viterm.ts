@@ -120,7 +120,7 @@ export class Vtform {
   //   return req_privi(this.dic, this.tab)
   // }
 
-  to_form_body(zpage: CV.Mtpage, vtree: CV.Cvtree, zfrom: number) {
+  to_form_body(ropts: CV.Rdopts, vtree: CV.Cvtree, zfrom: number) {
     return {
       zstr: this.zstr,
       vstr: this.vstr,
@@ -129,9 +129,9 @@ export class Vtform {
       attr: this.attr,
 
       plock: this.plock,
-      dname: this.local ? zpage.pdict : 'regular',
+      dname: this.local ? ropts.pdict : 'regular',
 
-      _ctx: { ...zpage, vtree: gen_ctree_text(vtree), zfrom },
+      _ctx: { ...ropts, vtree: gen_ctree_text(vtree), zfrom },
     }
   }
 }

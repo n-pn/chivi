@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import { browser } from '$app/environment'
   import { goto, invalidateAll } from '$app/navigation'
 
@@ -281,4 +281,4 @@
       @include fgcolor(harmful, 5);
     }
   }
-</style>
+</style> -->

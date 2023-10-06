@@ -15,7 +15,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let ztext: string[] = []
-  export let xargs: CV.Chopts
+  export let ropts: CV.Rdopts
   export let label = ''
   export let state = 0
 
@@ -29,33 +29,34 @@
   let vtran: CV.Qtdata | CV.Mtdata = { lines: [], mtime: 0, tspan: 0 }
   $: [title, ...paras] = vtran?.lines || []
 
-  $: if (browser && state && xargs) {
+  $: if (browser && state && ropts) {
     if (state < 2) vtran = { lines: [], mtime: 0, tspan: 0 }
-    load_data(xargs)
+    load_data(ropts)
   }
 
   const rinit = { cache: 'default' } as RequestInit
 
-  async function load_data({ zpage, rmode, rtype }: CV.Chopts) {
-    const m_alg = rtype == 'mt' ? rmode : 'mtl_v1'
+  async function load_data(ropts: CV.Rdopts) {
+    if (!ropts.fpath) return { lines: [], mtime: 0, tspan: 0 }
 
-    const finit = { ...zpage, m_alg, force: true }
-    if (!finit.fpath) return { lines: [], mtime: 0, tspan: 0 }
+    const finit = { ...ropts, force: true }
 
-    if (rmode == 'bt_zv') {
+    let rmode = ropts.qt_rm
+
+    if (ropts.rtype == 'mt' || rmode == 'mt_ai') {
+      vtran = await call_mt_ai_file(finit, rinit, fetch)
+      rmode = 'mt_ai'
+    } else if (rmode == 'bt_zv') {
       vtran = await call_bt_zv_file(finit, rinit, fetch)
     } else if (rmode == 'qt_v1') {
       vtran = await call_qt_v1_file(finit, rinit, fetch)
-    } else if (rmode == 'mt_ai' || rtype == 'mt') {
-      vtran = await call_mt_ai_file(finit, rinit, fetch)
-      rmode = 'mt_ai'
     }
 
     state = 0
     if (vtran.error) return
 
     lookup_data.update((x) => {
-      return { ...x, zpage: xargs.zpage, ztext, [rmode]: vtran.lines }
+      return { ...x, ropts, ztext, [rmode]: vtran.lines }
     })
   }
 </script>

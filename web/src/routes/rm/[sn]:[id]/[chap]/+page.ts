@@ -13,7 +13,7 @@ export const load = (async ({ url, parent, params, fetch }) => {
   const rdata_api = `/_up/chaps/${up_id}/${ch_no}/${p_idx}`
 
   const rdata = await api_get<CV.Chpart>(rdata_api, fetch)
-  const xargs = get_xargs(rstem, rdata, url)
+  const ropts = get_ropts(rstem, rdata, url)
 
   const _title = `${rdata.title} - ${rstem.btitle_vi || rstem.btitle_zh}`
   // const _board = `ch:${book}:${chap}:${sname}`
@@ -26,20 +26,16 @@ export const load = (async ({ url, parent, params, fetch }) => {
     show_config: true,
   }
 
-  return { rdata, xargs, _meta, _title }
+  return { rdata, ropts, _meta, _title }
 }) satisfies PageLoad
 
-function get_xargs(rstem: CV.Rmstem, { fpath }, { searchParams }) {
-  const wn_id = rstem.wn_id || 0
-  const pdict = wn_id ? `book/${wn_id}` : 'combine'
-
-  const zpage = { fpath, pdict, wn_id }
-
-  const param = {
-    rm: searchParams.get('rm') || 'qt',
-    qt: searchParams.get('qt') || 'qt_v1',
-    mt: searchParams.get('mt') || 'mtl_1',
+function get_ropts(rstem: CV.Rmstem, { fpath }, { searchParams }) {
+  return {
+    fpath,
+    pdict: rstem.wn_id ? `book/${rstem.wn_id}` : 'combine',
+    wn_id: rstem.wn_id || 0,
+    rtype: searchParams.get('rm') || 'qt',
+    qt_rm: searchParams.get('qt') || 'qt_v1',
+    mt_rm: searchParams.get('mt') || 'mtl_1',
   }
-
-  return { zpage, param }
 }

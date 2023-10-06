@@ -8,18 +8,18 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ nvinfo, curr_seed, rdata, xargs } = data)
+  $: ({ nvinfo, curr_seed, rdata, ropts } = data)
 
   $: ch_no = rdata.ch_no
   // $: total = curr_seed.chap_max
 
   $: stem_path = seed_path(nvinfo.bslug, curr_seed.sname)
   $: prev_path = rdata._prev
-    ? chap_path(stem_path, rdata._prev, xargs)
+    ? chap_path(stem_path, rdata._prev, ropts)
     : stem_path
 
   $: next_path = rdata._next
-    ? chap_path(stem_path, rdata._next, xargs)
+    ? chap_path(stem_path, rdata._next, ropts)
     : stem_path
 
   import Reader from '$gui/shared/reader/Reader.svelte'
@@ -56,7 +56,7 @@
     </a>
   {/each}
 </nav> -->
-<Reader {rstem} {xargs} {rdata} />
+<Reader {rstem} {ropts} {rdata} />
 
 <Footer>
   <div class="navi">

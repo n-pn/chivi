@@ -1,9 +1,5 @@
-export type FileReqInit = {
-  fpath: string
+export interface FileReqInit extends CV.Rdopts {
   force: boolean
-  pdict?: string
-  wn_id?: number
-  m_alg?: string
 }
 
 export async function call_bt_zv_file(
@@ -43,18 +39,24 @@ export async function call_hviet_file(
 }
 
 export async function call_mt_ai_file(
-  { fpath, pdict, force = false, m_alg = 'mtl_v1' }: FileReqInit,
+  { fpath, pdict = 'combine', mt_rm = 'mtl_1', force = false }: FileReqInit,
   rinit: RequestInit = { cache: 'force-cache' },
   fetch = globalThis.fetch
 ): Promise<CV.Mtdata> {
-  const url = `/_ai/qtran?fpath=${fpath}&pdict=${pdict}&_algo=${m_alg}&force=${force}`
+  const url = `/_ai/qtran?fpath=${fpath}&pdict=${pdict}&_algo=${mt_rm}&force=${force}`
   const res = await fetch(url, rinit)
 
   if (!res.ok) return { lines: [], tspan: 0, error: await res.text() }
   return await res.json()
 }
 
-export async function from_custom_gpt(input: string, fetch = globalThis.fetch) {
-  const res = await fetch('/_sp/c_gpt', { method: 'POST', body: input })
+export async function from_custom_gpt(
+  input: string,
+  rinit: RequestInit = { cache: 'force-cache' },
+  fetch = globalThis.fetch
+) {
+  rinit.method = 'POST'
+  rinit.body = input
+  const res = await fetch('/_sp/c_gpt', rinit)
   return await res.text()
 }

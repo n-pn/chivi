@@ -22,7 +22,7 @@
   import Qtpage from './Qtpage.svelte'
 
   export let rstem: CV.Rdstem
-  export let xargs: CV.Chopts
+  export let ropts: CV.Rdopts
   export let rdata: CV.Chpart
 
   $: pager = new Pager($page.url, { rm: 'qt', qt: 'qt_v1', mt: 'mtl_1' })
@@ -79,8 +79,8 @@
   ]
 </script>
 
-<Section {tabs} _now={xargs.rtype}>
-  <Switch {pager} {xargs} />
+<Section {tabs} _now={ropts.rtype}>
+  <Switch {pager} {ropts} />
 
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -93,8 +93,8 @@
       <Notext {rstem} {rdata} />
     {:else if rdata.error == 413}
       <Unlock {rstem} {rdata} />
-    {:else if xargs.rtype == 'qt' || xargs.rtype == 'mt'}
-      <Qtpage ztext={rdata.ztext} {xargs} {label} bind:state />
+    {:else if ropts.rtype == 'qt' || ropts.rtype == 'mt'}
+      <Qtpage ztext={rdata.ztext} {ropts} {label} bind:state />
     {:else}
       Chưa hoàn thiện!
     {/if}
@@ -114,7 +114,7 @@
     disabled={l_idx == l_max} />
 </div>
 
-<Lookup2 bind:state {xargs} bind:l_idx {l_max} />
+<Lookup2 bind:state {ropts} bind:l_idx {l_max} />
 
 <style lang="scss">
   .reader {

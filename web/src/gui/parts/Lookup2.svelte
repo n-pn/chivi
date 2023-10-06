@@ -1,9 +1,6 @@
 <script lang="ts">
-  import { ctrl, data } from '$lib/stores/lookup_stores'
+  import { ctrl, data, init_opts } from '$lib/stores/lookup_stores'
   import { call_mt_ai_file } from '$utils/tran_util'
-
-  import { page } from '$app/stores'
-  import { invalidateAll } from '$app/navigation'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Slider from '$gui/molds/Slider.svelte'
@@ -18,7 +15,7 @@
   import Glossary from './Sideline/Glossary.svelte'
   import Analysis from './Sideline/Analysis.svelte'
 
-  export let xargs = { rtype: 'qt', rmode: 'qt_v1' }
+  export let ropts = init_opts
   export let state = 0
   export let l_idx = 0
   export let l_max = 0
@@ -63,16 +60,16 @@
   $: if (stale) load_mt_ai_data()
 
   const rinit = { cache: 'no-cache' } as RequestInit
-  $: finit = { ...$data.zpage, m_alg: $data.m_alg, force: true }
+  $: finit = { ...$data.ropts, force: true }
 
   const load_mt_ai_data = async () => {
     stale = false
 
-    if (xargs.rtype != 'mt' && xargs.rmode != 'mt_ai') {
+    if (ropts.rtype == 'mt' || ropts.qt_rm == 'mt_ai') {
+      state = 2
+    } else {
       const mt_ai = await call_mt_ai_file(finit, rinit)
       $data.mt_ai = mt_ai.lines || []
-    } else {
-      state = 2
     }
   }
 </script>
@@ -181,7 +178,7 @@
 </Slider>
 
 {#if $vtform_ctrl.actived}
-  <Vtform zpage={$data.zpage} on_close={(term) => (stale = !!term)} />
+  <Vtform ropts={$data.ropts} on_close={(term) => (stale = !!term)} />
 {/if}
 
 <style lang="scss">
