@@ -15,7 +15,7 @@
   export let show_book = true
   export let show_list = true
 
-  export let view_all = crit.ohtml.length < 600
+  export let view_all = false
   export let big_text = false
 
   const handle_like = (evt: Event) => {
@@ -67,18 +67,11 @@
   </div>
 
   <section class="body" class:big_text>
-    <Truncate html={crit.ohtml} {view_all} />
+    <Truncate html={crit.ohtml} bind:view_all />
   </section>
 
   <footer class="foot" class:_sticky={view_all}>
     <!-- <span class="m-meta">&middot;</span> -->
-
-    {#if crit.ohtml.length > 600}
-      <button class="m-meta" on:click={() => (view_all = !view_all)}>
-        <SIcon name="chevrons-{view_all ? 'up' : 'down'}" />
-        <span>{view_all ? 'Thu hẹp' : 'Mở rộng'}</span>
-      </button>
-    {/if}
 
     <a class="m-meta" href="{crit_path}#vcrit">
       <SIcon name="link" />
@@ -185,11 +178,11 @@
       margin-top: 0.75em;
     }
 
-    --line: 12;
+    --line: 10;
     // prettier-ignore
-    @include bp-min(ts) { --line: 10; }
+    @include bp-min(ts) { --line: 8; }
     // prettier-ignore
-    @include bp-min(ds) { --line: 8; }
+    @include bp-min(ds) { --line: 6; }
   }
 
   footer {

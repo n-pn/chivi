@@ -13,7 +13,7 @@
 
   export let show_list = true
 
-  export let view_all = ycrit.vhtml.length < 600
+  export let view_all = false
   export let big_text = false
 
   let body_type = 'vhtml'
@@ -92,7 +92,7 @@
         <em>(Nội dung đánh giá đã bị ẩn trên Ưu Thư Võng, đợi phục hồi)</em>
       </p>
     {:else}
-      <Truncate html={content} {view_all} />
+      <Truncate html={content} bind:view_all />
     {/if}
   </section>
 
@@ -101,13 +101,6 @@
       <SIcon name="link" />
       <span>Liên kết</span>
     </a>
-
-    {#if content.length > 600}
-      <button class="m-meta" on:click={() => (view_all = !view_all)}>
-        <SIcon name="chevrons-{view_all ? 'up' : 'down'}" />
-        <span>{view_all ? 'Thu hẹp' : 'Mở rộng'}</span>
-      </button>
-    {/if}
 
     <Gmenu dir="left" loc="bottom">
       <button class="m-meta" slot="trigger">
@@ -213,11 +206,11 @@
       margin-top: 0.5em;
     }
 
-    --line: 12;
+    --line: 10;
     // prettier-ignore
-    @include bp-min(ts) { --line: 10; }
+    @include bp-min(ts) { --line: 8; }
     // prettier-ignore
-    @include bp-min(ds) { --line: 8; }
+    @include bp-min(ds) { --line: 6; }
 
     // &._onload:after {
     //   display: block;

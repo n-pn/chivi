@@ -53,7 +53,7 @@
 
 <div class="intro">
   {#if ustem.vintro}
-    <Truncate --line={4} html={dhtml} show_btn={ustem.vintro.length > 200} />
+    <Truncate html={dhtml} view_all={true} />
   {:else}
     <p>Chưa có giới thiệu</p>
   {/if}
@@ -96,5 +96,7 @@
     @include ftsize(sm);
     line-height: 1.25rem;
     margin-bottom: 1rem;
+
+    --line: 4;
   }
 </style>

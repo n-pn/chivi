@@ -18,8 +18,7 @@ export const load = (async ({ url, fetch, params }) => {
 
   const _meta: App.PageMeta = {
     left_nav: [
-      nav_link(`/@${user}`, `@${user}`, ''),
-      nav_link(`/@${user}/ul`, 'Thư đơn', 'bookmarks', { show: 'tm' }),
+      nav_link(`/@${user}/lists`, 'Thư đơn', 'bookmarks', { show: 'tm' }),
       nav_link(list.tslug, list.title, 'article', {
         kind: 'title',
         show: 'pl',

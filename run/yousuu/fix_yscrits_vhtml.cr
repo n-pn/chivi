@@ -1,4 +1,10 @@
-require "../../src/_data/_data"
+require "pg"
+require "colorize"
+require "../../src/cv_env"
+
+PGDB = DB.connect(CV_ENV.database_url)
+at_exit { PGDB.close }
+
 require "../../src/mt_v1/core/m1_core"
 
 def convert(engine, ztext : String)
@@ -32,11 +38,12 @@ input.each_with_index(1) do |(yc_id, ztext, ztags, wn_id), index|
   vhtml = convert(cv_mt, ztext)
   vtags = ztags.map { |ztag| cv_mt.cv_plain(ztag).to_txt }
 
-  puts [yc_id, vhtml, vtags]
-
   PGDB.exec <<-SQL, vhtml, vtags, yc_id
     update yscrits
     set vhtml = $1, vtags = $2
     where id = $3
     SQL
+
+rescue ex
+  puts ex
 end

@@ -13,7 +13,7 @@
 
   $: ({ list } = data)
 
-  $: list_path = `/@${list.u_uname}/ul/${list.tslug}`
+  $: list_path = `/@${list.u_uname}/lists/${list.tslug}`
 
   const handle_like = (evt: Event) => {
     evt.preventDefault()

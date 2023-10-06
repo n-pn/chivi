@@ -5,12 +5,7 @@ export GC_INITIAL_HEAP_SIZE=4G
 export CV_ENV=development
 
 TARGET=${1:-"cvapp"}
-WATCH="--watch ./src/_util --watch ./src/$TARGET"
-
-if [[ $TARGET == "cvapp" ]]
-then
-  WATCH="$WATCH --watch ./src/_data"
-fi
+WATCH="-w ./src/$TARGET -w ./src/_data -w ./src/_util -w ./lib/crorm"
 
 sudo service $TARGET-dev stop
 echo killed service $TARGET-dev to start $TARGET-srv in dev mode!

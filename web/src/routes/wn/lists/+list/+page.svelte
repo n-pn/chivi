@@ -29,7 +29,7 @@
     if (!resp.ok) {
       error = text
     } else {
-      await goto(`/@${$_user.uname}/ul/${text}`)
+      await goto(`/@${$_user.uname}/lists/${text}`)
     }
   }
 

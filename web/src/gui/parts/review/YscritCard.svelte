@@ -18,7 +18,7 @@
   export let show_book = true
   export let show_list = true
 
-  export let view_all = crit.vhtml.length < 600
+  export let view_all = false
   export let big_text = false
 
   let body_type = 'vhtml'
@@ -99,20 +99,11 @@
         <em>(Nội dung đánh giá đã bị ẩn trên Ưu Thư Võng, đợi phục hồi)</em>
       </p>
     {:else}
-      <Truncate html={content} {view_all} />
+      <Truncate html={content} bind:view_all />
     {/if}
   </section>
 
   <footer class="foot" class:_sticky={view_all}>
-    <!-- <span class="m-meta">&middot;</span> -->
-
-    {#if content.length > 600}
-      <button class="m-meta" on:click={() => (view_all = !view_all)}>
-        <SIcon name="chevrons-{view_all ? 'up' : 'down'}" />
-        <span>{view_all ? 'Thu hẹp' : 'Mở rộng'}</span>
-      </button>
-    {/if}
-
     <a class="m-meta" href={crit_path}>
       <SIcon name="link" />
       <span>Liên kết</span>
@@ -219,11 +210,11 @@
       margin-top: 0.5em;
     }
 
-    --line: 12;
+    --line: 10;
     // prettier-ignore
-    @include bp-min(ts) { --line: 10; }
+    @include bp-min(ts) { --line: 8; }
     // prettier-ignore
-    @include bp-min(tl) { --line: 8; }
+    @include bp-min(tl) { --line: 6; }
   }
 
   .loading {

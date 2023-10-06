@@ -14,7 +14,7 @@
     return Math.round(num / 1000) + 'k'
   }
 
-  $: list_path = `/@${list.u_uname}/ul/${list.tslug}`
+  $: list_path = `/@${list.u_uname}/lists/${list.tslug}`
 
   const handle_like = (evt: Event) => {
     evt.preventDefault()

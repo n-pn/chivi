@@ -1,4 +1,10 @@
-require "../../src/_data/_data"
+require "pg"
+require "colorize"
+require "../../src/cv_env"
+
+PGDB = DB.connect(CV_ENV.database_url)
+at_exit { PGDB.close }
+
 require "../../src/mt_v1/core/m1_core"
 
 input = PGDB.query_all <<-SQL, as: {Int32, String, Int32}
