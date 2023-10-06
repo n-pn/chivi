@@ -10,7 +10,7 @@ require "./rmutil"
 class Rmhost
   include YAML::Serializable
 
-  property seedname : String
+  property seedname : String { "!#{@hostname.lchop("www.")}" }
   property seedtype : Int32 = 0
 
   property hostname : String
@@ -24,7 +24,7 @@ class Rmhost
   # @[YAML::Field(ignore: true)]
   getter base_url : String { @insecure ? "http://#{@hostname}" : "https://#{@hostname}" }
 
-  getter savepath : String { @hostname.sub("www.", "") }
+  getter savepath : String { @hostname.lchop("www.") }
   ####
 
   property book_id_re = "(\\d+)\\D*$"

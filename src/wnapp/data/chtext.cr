@@ -60,7 +60,7 @@ class WN::Chtext
     return if rlink.empty?
 
     stale = Time.utc - (force ? 1.minutes : 20.years)
-    title, paras = ZR::RawRmchap.from_link(rlink, stale: stale).parse_page!
+    title, paras = RawRmchap.from_link(rlink, stale: stale).parse_page!
 
     @chap.uname = uname
     @chap.mtime = Time.utc.to_unix

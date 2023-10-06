@@ -4,39 +4,38 @@
 
 require "json"
 
-class CV::Idiom
+struct CV::Idiom
   include JSON::Serializable
 
-  property word : String
-
-  property pinyin : String
+  getter word : String
+  getter pinyin : String
 
   @[JSON::Field(key: "explanation")]
-  property gloss : String
+  getter gloss : String
 end
 
-class CV::Word
+struct CV::Word
   include JSON::Serializable
 
   @[JSON::Field(key: "ci")]
-  property word : String
+  getter word : String
 
   @[JSON::Field(key: "explanation")]
-  property gloss : String
+  getter gloss : String
 end
 
-class CV::Char
+struct CV::Char
   include JSON::Serializable
 
-  property word : String
+  getter word : String
 
   @[JSON::Field(key: "oldword")]
-  property trad : String
+  getter trad : String
 
-  property pinyin : String
+  getter pinyin : String
 
   @[JSON::Field(key: "explanation")]
-  property gloss : String
+  getter gloss : String
 end
 
 INP = "_db/.miscs/Chinese NLP/chinese-xinhua-master/data"

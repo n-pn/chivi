@@ -170,10 +170,10 @@ class WN::Wnstem
   def reload_chlist!(mode : Int32 = 1)
     stale = Time.utc - remote_reload_tspan(mode)
 
-    if !@rlink.empty?
-      rmstem = RD::RawRmstem.from_link(@rlink, stale: stale) rescue nil
-    elsif self.remote?
-      rmstem = RD::RawRmstem.from_stem(@sname, @s_bid, stale: stale) rescue nil
+    if self.remote?
+      rmstem = RawRmstem.from_stem(@sname, @s_bid, stale: stale) rescue nil
+    elsif !@rlink.empty?
+      rmstem = RawRmstem.from_link(@rlink, stale: stale) rescue nil
     else
       # Do nothing
     end
@@ -186,7 +186,7 @@ class WN::Wnstem
     self.update_chap_vinfos!
   end
 
-  private def sync_with_remote!(rmstem : RD::RawRmstem, mode : Int32 = 0)
+  private def sync_with_remote!(rmstem : RawRmstem, mode : Int32 = 0)
     chlist = rmstem.extract_clist!
 
     return if chlist.empty?
