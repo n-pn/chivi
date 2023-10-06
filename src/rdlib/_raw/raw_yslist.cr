@@ -1,6 +1,6 @@
-require "./_raw_base"
+require "./_yousuu"
 
-class ZR::RawYslist
+class RawYslist
   include JSON::Serializable
 
   @[JSON::Field(key: "_id")]
@@ -50,7 +50,7 @@ class ZR::RawYslist
   end
 end
 
-struct ZR::RawYsbooklists
+struct RawYsbooklists
   include JSON::Serializable
 
   @[JSON::Field(key: "booklists")]

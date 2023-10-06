@@ -127,7 +127,6 @@ class Rmhost
   ####
 
   KEEP_DIR = "var/.keep"
-  BMID_DIR = "#{KEEP_DIR}/_index/%{name}.htm"
 
   def mbid_file
     "#{KEEP_DIR}/_index/#{@seedname}.htm"

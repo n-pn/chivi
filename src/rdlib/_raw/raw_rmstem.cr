@@ -1,11 +1,7 @@
-require "uri"
-require "colorize"
+require "./_remote"
+require "../data/chinfo"
 
-require "./rmhost"
-require "./rmpage"
-require "../chinfo"
-
-class RD::RawRmstem
+class RawRmstem
   ####
 
   def self.from_link(rlink : String, stale : Time = Time.utc - 1.years)
@@ -45,48 +41,14 @@ class RD::RawRmstem
     @page.get!(matcher).sub(/(book_info|状态：)\s*/, "")
   end
 
-  FINISHED = {
-    "已完结",
-    "全本",
-    "完结",
-    "已完本",
-    "暂停",
-    "完结申请",
-    "完本",
-    "已完成",
-    "新书上传",
-    "已经完结",
-    "完成",
-    "已经完本",
-    "finish",
-  }
-
-  HIATUS = {
-    "暂停",
-    "暂 停",
-    "暂　停",
-  }
-
-  getter status_int : Int16 do
-    case status_str
-    when .in?(HIATUS)   then 2_i16
-    when .in?(FINISHED) then 1_i16
-    else                     0_i16
-    end
-  end
+  getter status_int : Int16 { Rmutil.parse_status(status_str) }
 
   getter update_str : String do
     return "" unless matcher = @host.cata_update
     @page.get!(matcher).sub(/^\s*更新(时间)?\s*[: ：]\s*/, "")
   end
 
-  getter update_int : Int64 do
-    update_str = self.update_str
-    update_str.empty? ? 0_i64 : @host.parse_time(update_str).to_unix
-  rescue ex
-    puts [update_str, ex]
-    0_i64
-  end
+  getter update_int : Int64 { RmUtil.parse_rmtime(update_str, @host.time_fmt) }
 
   def content_changed?(prev_latest : String, prev_update : String)
     (prev_latest != latest_cid) || (update_str != prev_update)
@@ -101,7 +63,7 @@ class RD::RawRmstem
     end
   end
 
-  @clist = [] of Chinfo
+  @clist = [] of RD::Chinfo
 
   def extract_clist!
     return @clist unless @clist.empty?

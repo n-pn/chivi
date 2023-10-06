@@ -1,9 +1,7 @@
 require "../../_data/_data"
-require "../../_util/book_util"
-require "../../_util/text_util"
 
-require "./raw_html/raw_rmbook"
-require "./raw_html/raw_rmstem"
+require "../_raw/raw_rmbook"
+require "../_raw/raw_rmstem"
 
 require "./chrepo"
 

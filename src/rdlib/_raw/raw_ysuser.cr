@@ -1,7 +1,6 @@
-require "log"
-require "./_raw_base"
+require "./_yousuu"
 
-class ZR::RawYsuser
+class RawYsuser
   include JSON::Serializable
 
   @[JSON::Field(key: "userId")]

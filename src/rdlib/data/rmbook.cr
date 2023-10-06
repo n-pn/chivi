@@ -1,12 +1,12 @@
 require "crorm"
 
-require "../_util/book_util"
-require "../_util/time_util"
-require "../_util/text_util"
+require "../../_util/book_util"
+require "../../_util/time_util"
+require "../../_util/text_util"
 
-require "../rdlib/data/raw_html/raw_rmbook"
+require "../_raw/raw_rmbook"
 
-class ZR::Rmbook
+class RD::Rmbook
   class_getter init_sql = <<-SQL
     CREATE TABLE rmbooks(
       id text NOT NULL PRIMARY KEY,

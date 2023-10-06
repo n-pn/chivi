@@ -1,12 +1,6 @@
-require "uri"
-require "colorize"
+require "./_remote"
 
-require "../../../_util/chap_util"
-
-require "./rmhost"
-require "./rmpage"
-
-class ZR::RawRmchap
+class RawRmchap
   ####
 
   def self.from_link(full_link : String, stale : Time = Time.utc - 1.years)

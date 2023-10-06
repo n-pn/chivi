@@ -1,6 +1,6 @@
-require "./_raw_base"
+require "./_yousuu"
 
-class ZR::RawYsbook
+class RawYsbook
   annotation Temp; end
 
   include JSON::Serializable

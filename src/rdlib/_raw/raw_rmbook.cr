@@ -1,8 +1,4 @@
-require "uri"
-require "colorize"
-
-require "./rmhost"
-require "./rmpage"
+require "./_remote"
 
 class RawRmbook
   def self.init(sname : String, s_bid : String | Int32, stale : Time = Time.utc - 1.years)
@@ -25,18 +21,14 @@ class RawRmbook
   end
 
   getter btitle : String do
-    btitle =
-      @page.get!(@host.book_btitle)
-        .sub(/(作\s+者[：:].+$|最新章节\s*)/, "")
+    btitle = @page.get!(@host.book_btitle).sub(/(作\s+者[：:].+$|最新章节\s*)/, "")
 
     # TODO: normalize data
     Rmutil.clean_text(btitle)
   end
 
   getter author : String do
-    author =
-      @page.get!(@host.book_author)
-        .sub(/作\s*者：/, "")
+    author = @page.get!(@host.book_author).sub(/作\s*者：/, "")
 
     # TODO: normalize data
     Rmutil.clean_text(author)
@@ -51,35 +43,7 @@ class RawRmbook
       .sub(/^.+\s+\|\s+/, "")
   end
 
-  FINISHED = {
-    "已完结",
-    "全本",
-    "完结",
-    "已完本",
-    "暂停",
-    "完结申请",
-    "完本",
-    "已完成",
-    "新书上传",
-    "已经完结",
-    "完成",
-    "已经完本",
-    "finish",
-  }
-
-  HIATUS = {
-    "暂停",
-    "暂 停",
-    "暂　停",
-  }
-
-  getter status_int : Int16 do
-    case status_str
-    when .in?(HIATUS)   then 2_i16
-    when .in?(FINISHED) then 1_i16
-    else                     0_i16
-    end
-  end
+  getter status_int : Int16 { Rmutil.parse_status(status_str) }
 
   getter update_str : String do
     return "" unless matcher = @host.book_update
@@ -88,13 +52,7 @@ class RawRmbook
       .sub("最后更新：", "")
   end
 
-  getter update_int : Int64 do
-    update_str = self.update_str
-    update_str.empty? ? 0_i64 : @host.parse_time(update_str).to_unix
-  rescue ex
-    puts [update_str, ex]
-    0_i64
-  end
+  getter update_int : Int64 { RmUtil.parse_rmtime(update_str, @host.time_fmt) }
 
   getter cover : String do
     case cover = @page.get!(@host.book_cover)

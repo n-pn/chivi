@@ -1,6 +1,6 @@
-require "./_raw_base"
+require "./_yousuu"
 
-class ZR::RawYscrit
+class RawYscrit
   include JSON::Serializable
 
   @[JSON::Field(key: "_id")]

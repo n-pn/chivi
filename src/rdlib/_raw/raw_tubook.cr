@@ -1,6 +1,6 @@
-require "./_raw_base"
+require "./_tuishu"
 
-class ZR::RawTubook
+class RawTubook
   include JSON::Serializable
 
   @[JSON::Field(key: "book_id")]

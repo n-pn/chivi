@@ -4,7 +4,7 @@ require "xxhash"
 
 require "../../_util/text_util"
 
-struct ZR::EmbedYsuser
+struct EmbedYsuser
   include JSON::Serializable
 
   @[JSON::Field(key: "_id")]
@@ -17,7 +17,7 @@ struct ZR::EmbedYsuser
   getter avatar : String = ""
 end
 
-struct ZR::EmbedYsbook
+struct EmbedYsbook
   include JSON::Serializable
 
   @[JSON::Field(key: "_id")]

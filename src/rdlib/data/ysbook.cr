@@ -1,10 +1,10 @@
 require "crorm"
 
-require "../_util/book_util"
-require "./raw_json/raw_ysbook"
+require "../../_util/book_util"
+require "../_raw/raw_ysbook"
 
-require "./author"
-require "./btitle"
+# require "./author"
+# require "./btitle"
 
 class ZR::Ysbook
   class_getter db_path = "var/zroot/ysbooks.db3"
