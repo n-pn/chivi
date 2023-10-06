@@ -38,22 +38,22 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ ustem, sroot } = data)
+  $: ({ rstem, sroot } = data)
 
-  $: can_conf = $_user.privi > 3 || $_user.vu_id == ustem.viuser_id
+  $: can_conf = $_user.privi > 3
 
   let form = {
-    guard: data.ustem.guard,
-    wndic: data.ustem.wndic,
-    gifts: data.ustem.gifts,
-    multp: data.ustem.multp,
+    gifts: data.rstem.gifts,
+    multp: data.rstem.multp,
   }
 
   let errs = ''
 
+  const action = `/_rm/rmstems/${rstem.sname}/${rstem.sn_id}`
+
   const update_conf = async () => {
     try {
-      ustem = await api_call(`/_up/stems/${ustem.id}`, form, 'PATCH')
+      rstem = await api_call(action, form, 'PATCH')
       goto(sroot)
     } catch (ex) {
       errs = ex.body.message
@@ -64,7 +64,7 @@
 
   const calc_gifts_chap = (gifts_type: number) => {
     if (gifts_type == 0) return 0
-    const gifts_chap = Math.round((data.ustem.chap_count * gifts_type) / 4)
+    const gifts_chap = Math.round((data.rstem.chap_count * gifts_type) / 4)
     return gifts_chap < 40 ? 40 : gifts_chap
   }
 </script>
@@ -88,9 +88,9 @@
     {#if gifts_chap > 0}
       Các chương từ 1 tới {gifts_chap} sẽ được miễn phí. Các chương từ {gifts_chap +
         1}
-      tới {ustem.chap_count} sẽ cần thiết phải mở khóa.
+      tới {rstem.chap_count} sẽ cần thiết phải mở khóa.
     {:else}
-      Tất cả các chương từ 1 tới {ustem.chap_count} sẽ cần phải thanh toán vcoin
+      Tất cả các chương từ 1 tới {rstem.chap_count} sẽ cần phải thanh toán vcoin
       để mở khóa.
     {/if}
   </p>
@@ -119,48 +119,6 @@
   <p class="hints">
     Công thức tính: <code>1 vcoin / 100_000 chữ * hệ số nhân.</code>
   </p>
-</details>
-
-<details open>
-  <summary>Chọn từ điển chính khi sử dụng chế độ dịch máy</summary>
-  <p class="hints">
-    Bạn có thể dùng từ điển riêng độc lập, hoặc dùng chung với từ điển bộ truyện
-    được liên kết.
-  </p>
-
-  <div class="options">
-    <label class="radio">
-      <input type="radio" value={false} bind:group={form.wndic} />
-      <span>Dùng từ điển độc lập</span>
-    </label>
-
-    <label class="radio">
-      <input
-        type="radio"
-        value={true}
-        bind:group={form.wndic}
-        disabled={!ustem.wninfo_id} />
-      <span>Dùng từ điển bộ truyện</span>
-    </label>
-  </div>
-</details>
-
-<details open>
-  <summary
-    >Ẩn dự án khỏi danh sách chương tiết thông qua hạn chế quyền hạn</summary>
-  <p class="hints">
-    Một số dự án cá nhân có thể có nội dung nhạy cảm, hãy thêm hạn chế quyền hạn
-    để trang web trở nên an toàn hơn.
-  </p>
-
-  <div class="options">
-    {#each guard_locks as [value, label]}
-      <label class="radio" data-tip={guard_descs[value]}>
-        <input type="radio" {value} bind:group={form.guard} />
-        <span>{label}</span>
-      </label>
-    {/each}
-  </div>
 </details>
 
 {#if errs}<div class="form-msg _err">{errs}</div>{/if}

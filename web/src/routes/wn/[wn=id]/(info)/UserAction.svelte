@@ -16,8 +16,9 @@
 
     let sname = ubmemo.sname || '~avail'
 
+    const chap = cpart > 1 ? `${chidx}_${cpart}` : chidx.toString()
     return {
-      href: chap_path(`/wn/${bslug}/ch${sname}`, chidx, { cpart, rtype: 'ai' }),
+      href: chap_path(`/wn/${bslug}/ch${sname}`, chap),
       icon: locked ? 'player-skip-forward' : 'player-play',
       text: ubmemo.chidx > 0 ? 'Đọc tiếp' : 'Đọc thử',
       mute: ubmemo.chidx < 0,

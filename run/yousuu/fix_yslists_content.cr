@@ -2,7 +2,7 @@ require "pg"
 require "colorize"
 require "../../src/cv_env"
 
-PG_DB = DB.open(CV_ENV.database_url)
+PG_DB = DB.connect(CV_ENV.database_url)
 at_exit { PG_DB.close }
 
 PG_DB.exec <<-SQL

@@ -12,12 +12,12 @@
 
   import ChapList from './ChapList.svelte'
 
-  import type { PageData } from './$types'
+  import type { PageData } from '../(reader)/$types'
   export let data: PageData
 
-  $: ({ rstem, lasts, chaps, pg_no } = data)
+  $: ({ ustem, lasts, chaps, pg_no } = data)
 
-  $: chmax = rstem.chap_count
+  $: chmax = ustem.chap_count
   $: pager = new Pager($page.url, { pg: 1 })
 
   let _onload = false
@@ -29,16 +29,16 @@
 
   let free_chap = 40
   $: {
-    free_chap = Math.floor((rstem.chap_count * rstem.gifts) / 4)
+    free_chap = Math.floor((ustem.chap_count * ustem.gifts) / 4)
     if (free_chap < 40) free_chap = 40
   }
 </script>
 
 <page-info>
   <info-left>
-    <info-text>{rstem.sname}</info-text>
+    <info-text>{ustem.sname}</info-text>
     <info-span>{chmax} chương</info-span>
-    <info-span class="u-show-pl"><RTime mtime={rstem.rtime} /></info-span>
+    <info-span class="u-show-pl"><RTime mtime={ustem.mtime} /></info-span>
   </info-left>
 </page-info>
 
@@ -94,6 +94,10 @@
     @include fgcolor(tert);
   }
 
+  .article {
+    @include padding-y(0);
+  }
+
   page-info {
     display: flex;
     padding: 0.75rem 0;
@@ -112,6 +116,10 @@
     @include bps(font-size, 13px, 14px);
   }
 
+  info-right {
+    @include flex($gap: 0.5rem);
+  }
+
   .chap-hint {
     // text-align: center;
     // font-style: italic;
@@ -120,6 +128,10 @@
 
     @include ftsize(sm);
     @include fgcolor(tert);
+
+    &._bold {
+      font-weight: 500;
+    }
 
     .em {
       @include fgcolor(warning, 5);
@@ -191,5 +203,12 @@
 
   .foot {
     margin-top: 1rem;
+  }
+
+  .link {
+    @include fgcolor(primary, 5);
+    &:hover {
+      @include fgcolor(primary, 6);
+    }
   }
 </style>

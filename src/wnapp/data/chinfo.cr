@@ -2,8 +2,7 @@ require "crorm"
 
 require "./chflag"
 require "./seed_util"
-require "../../_util/chap_util"
-require "../../rdlib/data/raw_html/raw_rmchap"
+require "../../rdlib/_raw/raw_rmchap"
 
 class WN::OldChap
   include DB::Serializable
@@ -182,7 +181,7 @@ class WN::Chinfo
   def self.upsert_zinfos!(db : Crorm::SQ3, input : Array(RD::Chinfo))
     db.open_tx do |tx|
       query = @@schema.upsert_stmt(keep_fields: %w[rlink spath ztitle zchdiv])
-      input.map { |x| x.upsert!(query, db: tx) }
+      input.map(&.upsert!(query, db: tx))
     rescue ex
       Log.error(exception: ex) { ex.message.colorize.red }
     end

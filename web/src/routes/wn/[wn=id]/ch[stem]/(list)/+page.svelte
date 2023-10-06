@@ -180,10 +180,6 @@
     @include fgcolor(tert);
   }
 
-  .article {
-    @include padding-y(0);
-  }
-
   page-info {
     display: flex;
     padding: 0.75rem 0;
@@ -200,10 +196,6 @@
     line-height: 1.75rem;
     // transform: translateX(1px);
     @include bps(font-size, 13px, 14px);
-  }
-
-  .-hide {
-    @include bps(display, none, $tm: inline-block);
   }
 
   info-right {

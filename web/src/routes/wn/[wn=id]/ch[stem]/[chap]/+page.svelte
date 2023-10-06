@@ -5,8 +5,8 @@
   import Crumb from '$gui/molds/Crumb.svelte'
   import Footer from '$gui/sects/Footer.svelte'
 
-  import type { LayoutData } from './$types'
-  export let data: LayoutData
+  import type { PageData } from './$types'
+  export let data: PageData
 
   $: ({ nvinfo, curr_seed, rdata, xargs } = data)
 

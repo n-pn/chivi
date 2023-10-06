@@ -62,7 +62,7 @@ class CV::Vilist
 
   def canonical_path
     uname = Viuser.get_uname(self.viuser_id)
-    "/@#{uname}/ul/#{self.id}-#{self.tslug}"
+    "/@#{uname}/lists/#{self.id}-#{self.tslug}"
   end
 
   ###

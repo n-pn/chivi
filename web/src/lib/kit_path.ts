@@ -32,7 +32,7 @@ export const fix_sname = (sname: string) => {
 export function chap_path(
   root: string,
   chap: number | string,
-  { rtype, rmode }
+  { rtype = 'qt', rmode = 'qt_v1' } = {}
 ) {
   const href = `${root}/${chap}`
 

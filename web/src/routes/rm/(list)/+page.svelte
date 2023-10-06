@@ -5,7 +5,7 @@
 
   import UpstemCard from '$gui/parts/upstem/UpstemCard.svelte'
 
-  import type { PageData } from '../$types'
+  import type { PageData } from './$types'
   import SIcon from '$gui/atoms/SIcon.svelte'
   import { goto } from '$app/navigation'
   export let data: PageData

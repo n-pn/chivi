@@ -79,12 +79,6 @@
 </Footer>
 
 <style lang="scss">
-  .article {
-    margin-top: var(--gutter);
-    padding-left: var(--gutter);
-    padding-right: var(--gutter);
-  }
-
   .section {
     margin-top: 1rem;
     @include bp-min(tl) {
