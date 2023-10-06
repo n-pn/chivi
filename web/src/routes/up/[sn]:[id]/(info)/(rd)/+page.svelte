@@ -125,10 +125,6 @@
     @include ftsize(sm);
     @include fgcolor(tert);
 
-    &._bold {
-      font-weight: 500;
-    }
-
     .em {
       @include fgcolor(warning, 5);
       font-weight: 500;

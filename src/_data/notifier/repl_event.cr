@@ -2,7 +2,7 @@ require "./_notif_base"
 
 module CV::Notifier
   def on_repl_event(gdrepl : Gdrepl)
-    gdroot = Gdroot.find!(id: gdrepl.gdroot_id)
+    gdroot = Gdroot.find_by_id!(id: gdrepl.gdroot_id)
     byuser = Viuser.get_uname(id: gdrepl.viuser_id)
 
     reached = Set{gdrepl.viuser_id}
@@ -20,7 +20,7 @@ module CV::Notifier
 
   def on_reply_directly(
     gdrepl : Gdrepl,
-    gdroot = Gdroot.find!(id: gdrepl.gdroot_id),
+    gdroot = Gdroot.find_by_id!(id: gdrepl.gdroot_id),
     byuser = Viuser.get_uname(id: gdrepl.viuser_id),
     reached = Set{gdrepl.viuser_id, gdrepl.touser_id}
   ) : Set(Int32)
@@ -58,7 +58,7 @@ module CV::Notifier
 
   def on_tagged_in_reply(
     gdrepl : Gdrepl,
-    gdroot = Gdroot.find!(id: gdrepl.gdroot_id),
+    gdroot = Gdroot.find_by_id!(id: gdrepl.gdroot_id),
     byuser = Viuser.get_uname(id: gdrepl.viuser_id),
     reached = Set{gdrepl.viuser_id, gdrepl.touser_id}
   )

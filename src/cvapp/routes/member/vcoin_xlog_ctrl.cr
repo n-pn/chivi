@@ -1,6 +1,6 @@
 require "../_ctrl_base"
 
-class CV::VcoinXlogCtrl < CV::BaseCtrl
+class CV::XvcoinCtrl < CV::BaseCtrl
   base "/_db/vcoins"
 
   @[AC::Route::GET("/")]
@@ -8,23 +8,32 @@ class CV::VcoinXlogCtrl < CV::BaseCtrl
     vu_id = _vu_id if _privi < 3
     pg_no, limit, offset = _paginate(min: 50)
 
-    entries = Xvcoin.query.order_by(id: :desc)
-    # entries.where("kind >= 0")
-    entries.where("(sender_id = ? or target_id = ?)", vu_id, vu_id) if vu_id
+    xlogs_query = Xvcoin.build_select_sql(vu_id)
 
-    total = entries.dup.count
-    entries = entries.limit(limit).offset(offset).to_a
+    args = [limit, offset] of Int32
+    args << vu_id if vu_id
 
-    user_ids = Set(Int32).new
-    entries.each { |entry| user_ids << entry.sender_id << entry.target_id }
-    viusers = Viuser.preload(user_ids)
+    xlogs = Xvcoin.db.query_all(xlogs_query, args: args, as: Xvcoin)
 
-    render json: {
-      xlogs: entries,
-      users: ViuserView.as_hash(viusers),
+    if xlogs.size < limit
+      total = offset &+ xlogs.size
+    else
+      args[0] = limit &* 3
+      total = offset &+ Xvcoin.db.query_all(xlogs_query, args: args, as: Xvcoin).size
+    end
+
+    vu_ids = Set(Int32).new
+    xlogs.each { |x| vu_ids << x.sender_id << x.target_id }
+
+    output = {
+      xlogs: xlogs,
+      users: ViuserView.as_hash(Viuser.preload(vu_ids)),
+
       pgidx: pg_no,
       pgmax: _pgidx(total, limit),
     }
+
+    render json: output
   end
 
   struct VcoinForm
@@ -39,7 +48,7 @@ class CV::VcoinXlogCtrl < CV::BaseCtrl
     def after_initialize
       @target = @target.strip
       @amount = @amount.round(2)
-      @amount = 0.1 if @amount < 0.1
+      @amount = 0.01 if @amount < 0.01
     end
   end
 
@@ -66,16 +75,14 @@ class CV::VcoinXlogCtrl < CV::BaseCtrl
       sender.update(vcoin: sender.vcoin - form.amount)
       target.update(vcoin: target.vcoin + form.amount)
 
-      xlog = VcoinXlog.new({
-        kind:        form.as_admin? ? 100 : 0,
-        sender_id:   sender.id,
-        target_id:   target.id,
+      xlog = Xvcoin.new(
+        kind: form.as_admin? ? 60 : 0,
+        sender_id: sender.id,
+        target_id: target.id,
         target_name: form.target,
-        amount:      form.amount,
-        reason:      form.reason,
-      })
-
-      xlog.save!
+        amount: form.amount,
+        reason: form.reason,
+      ).insert!
 
       sender.cache!
       target.cache!
@@ -88,7 +95,7 @@ class CV::VcoinXlogCtrl < CV::BaseCtrl
     render json: {target: target.uname, remain: _viuser.vcoin}
   end
 
-  private def send_vcoin_notification(sender : Viuser, target : Viuser, xlog : VcoinXlog)
+  private def send_vcoin_notification(sender : Viuser, target : Viuser, xlog : Xvcoin)
     content = <<-HTML
       <p>Bạn nhận được: <strong>#{xlog.amount}</strong> vcoin từ <strong>#{sender.uname}</strong>.</p>
       <p>Chú thích của người tặng: #{xlog.reason}</p>
@@ -96,7 +103,8 @@ class CV::VcoinXlogCtrl < CV::BaseCtrl
 
     Unotif.new(
       viuser_id: target.id, content: content,
-      action: :vcoin_xchange, object_id: xlog.id, byuser_id: sender.id,
+      action: Unotif::Action::VcoinXchange,
+      object_id: xlog.id!, byuser_id: sender.id,
     ).insert!
 
     MailUtil.send(to: target.email, name: target.uname) do |mail|

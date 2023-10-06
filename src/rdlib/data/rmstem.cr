@@ -53,19 +53,21 @@ class RD::Rmstem
   def initialize(@sname, @sn_id, @rlink = "")
   end
 
-  def update!(mode : Int32 = 1) : self | Nil
-    # raw_stem = RawRmstem.from_link(@rlink, stale: Time.utc - reload_tspan(mode))
-    raw_stem = RawRmstem.from_stem(@sname, @sn_id, stale: Time.utc - reload_tspan(mode))
+  def update!(crawl : Int32 = 1, regen : Bool = false) : self | Nil
+    # raw_stem = RawRmstem.from_link(@rlink, stale: Time.utc - reload_tspan(crawl))
+    raw_stem = RawRmstem.from_stem(@sname, @sn_id, stale: Time.utc - reload_tspan(crawl))
 
     # verify content changed by checking the latest chapter
     # not super reliable since some site reuse the latest chapter id for new chapter.
     # but since it is a rare occasion we can just ignore it
 
     if raw_stem.latest_cid == @latest_cid
-      return unless mode > 1 # always redo in force mode
+      return unless regen # always redo in force crawl
     else
       @latest_cid = raw_stem.latest_cid
     end
+
+    @latest_cid = raw_stem.latest_cid
 
     chapters = raw_stem.extract_clist!
     self.clist.upsert_zinfos!(chapters)
@@ -74,7 +76,7 @@ class RD::Rmstem
 
     @chap_count = chapters.size
 
-    unless raw_stem.update_str
+    unless raw_stem.update_str.empty?
       @update_str = raw_stem.update_str
       @update_int = raw_stem.update_int
     end
@@ -90,10 +92,10 @@ class RD::Rmstem
     self.upsert!(db: @@db)
   end
 
-  private def reload_tspan(mode : Int32 = 1)
-    case mode
-    when 2 then @status_int > 1 ? 30.minutes : 3.minutes # force mode
-    when 1 then @status_int > 1 ? 15.days : 30.minutes   # normal mode
+  private def reload_tspan(crawl : Int32 = 1)
+    case crawl
+    when 2 then @status_int > 1 ? 30.minutes : 3.minutes # force crawl
+    when 1 then @status_int > 1 ? 15.days : 30.minutes   # normal crawl
     else        10.years                                 # keep forever
     end
   end

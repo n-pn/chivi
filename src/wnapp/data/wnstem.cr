@@ -1,7 +1,7 @@
 require "crorm"
 
 require "../../_data/_data"
-require "../../rdlib/data/raw_html/raw_rmstem"
+require "../../rdlib/_raw/raw_rmstem"
 
 require "./seed_type"
 
@@ -47,7 +47,7 @@ class WN::Wnstem
   end
 
   def init!(force : Bool = false) : Nil
-    return unless force || @_flag < 0 || !File.file?(Chinfo.db_path(@sname, @s_bid))
+    return if !force && @_flag >= 0 && File.file?(Chinfo.db_path(@sname, @s_bid))
     return unless Chinfo.init!(@sname, @s_bid)
 
     @_flag = -@_flag

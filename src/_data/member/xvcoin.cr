@@ -10,8 +10,6 @@ class CV::Xvcoin
 
     Reward = 50
     Donate = 60
-
-    Unlock = 100
   end
 
   class_getter db : DB::Database = PGDB
@@ -60,7 +58,17 @@ class CV::Xvcoin
     end
   end
 
-  def self.build_select_sql
+  def self.build_select_sql(vu_id : Int32)
+    @@schema.select_stmt do |sql|
+      sql << " where (sender_id = $3 or target_id = $3)"
+      sql << " order by id desc limit $1 offset $2"
+    end
+  end
+
+  def self.build_select_sql(vu_id : Nil)
+    @@schema.select_stmt do |sql|
+      sql << " order by id desc limit $1 offset $2"
+    end
   end
 
   ###

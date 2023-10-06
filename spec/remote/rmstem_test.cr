@@ -1,7 +1,7 @@
 require "json"
 require "colorize"
 
-require "../../src/rdlib/data/raw_html/raw_rmstem.cr"
+require "../../src/rdlib/_raw/raw_rmstem.cr"
 
 def do_test(sname : String, b_id : String | Int32, fresh : Bool = false)
   puts "\n[#{Rmhost.stem_url(sname, b_id)}]".colorize.green.bold
@@ -10,7 +10,7 @@ def do_test(sname : String, b_id : String | Int32, fresh : Bool = false)
   # Dir.mkdir_p(File.dirname(path))
 
   stale = fresh ? Time.utc - 3.hours : Time.utc - 10.years
-  parser = RD::RawRmstem.from_stem(sname, b_id, stale: stale)
+  parser = RawRmstem.from_stem(sname, b_id, stale: stale)
   chlist = parser.extract_clist!
 
   puts "update_str: [#{parser.update_str}], real_time: #{Time.unix(parser.update_int)}"
@@ -54,7 +54,7 @@ tests = [
   {"!hotupub", 771},
   {"!51shucheng", "guichuideng"},
   {"!tasim", 1582},
-
+  {"!tasim", 10134},
   # ymxwx => ymoxuan.net
   # ibiquxs => ibiquxs.info
 

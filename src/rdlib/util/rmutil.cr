@@ -69,9 +69,9 @@ module Rmutil
 
   def parse_status(status_str : String)
     case status_str
-    when .in?(HIATUS)   then 2_i16
-    when .in?(FINISHED) then 1_i16
-    else                     0_i16
+    when .in?(HIATUS) then 2_i16
+    when .in?(FINISH) then 1_i16
+    else                   0_i16
     end
   end
 
@@ -83,7 +83,9 @@ module Rmutil
     return 0_i64 if update_str.empty?
     time = Time.parse(update_str, time_fmt, TIMEZONE)
     time += 1.days unless precise
-    time > Time.utc ? Time.utc : time
+
+    tnow = Time.utc
+    time > tnow ? tnow.to_unix : time.to_unix
   rescue ex
     Log.error(exception: ex) { update_str }
     0_i64

@@ -21,7 +21,7 @@ module CV::Notifier
   end
 
   def liking_content(target : Gdrepl) : String
-    gdroot = Gdroot.find!(id: target.gdroot_id)
+    gdroot = Gdroot.find_by_id!(id: target.gdroot_id)
     <<-HTML
     <a href="#{gdroot.gdrepl_link(target.id)}">bài viết của bạn</a>
     trong #{gdroot.thread_type} <a href="#{gdroot.origin_link}">#{gdroot.oname}</a>.</p>

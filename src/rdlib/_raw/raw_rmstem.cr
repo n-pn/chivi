@@ -48,7 +48,7 @@ class RawRmstem
     @page.get!(matcher).sub(/^\s*更新(时间)?\s*[: ：]\s*/, "")
   end
 
-  getter update_int : Int64 { RmUtil.parse_rmtime(update_str, @host.time_fmt) }
+  getter update_int : Int64 { Rmutil.parse_rmtime(update_str, @host.time_fmt) }
 
   def content_changed?(prev_latest : String, prev_update : String)
     (prev_latest != latest_cid) || (update_str != prev_update)
@@ -96,7 +96,7 @@ class RawRmstem
 
     ctitle, subdiv = ChapUtil.split_ztitle(ctitle, subdiv)
 
-    @clist << Chinfo.new(ch_no: ch_no, rlink: rlink, spath: spath, ztitle: ctitle, zchdiv: subdiv)
+    @clist << RD::Chinfo.new(ch_no: ch_no, rlink: rlink, spath: spath, ztitle: ctitle, zchdiv: subdiv)
   rescue ex
     Log.error(exception: ex) { ex.message.colorize.red }
   end

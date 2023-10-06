@@ -41,4 +41,8 @@ class MT::QtCore
 
     stack
   end
+
+  def translate(str : String, cap : Bool = true)
+    tokenize(str).to_txt(cap: cap)
+  end
 end

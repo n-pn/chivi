@@ -318,7 +318,7 @@ class CV::Gdroot
 
   def self.load!(ruid : String)
     kind, ukey = ruid.split(':', 2)
-    return find!(ukey.to_i) if kind == "id"
+    return find_by_id!(ukey.to_i) if kind == "id"
 
     kind = Kind.parse_ruid(kind)
     find(kind, ukey) || init(kind, ukey).upsert!
