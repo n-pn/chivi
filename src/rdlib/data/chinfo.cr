@@ -1,5 +1,6 @@
 require "crorm"
 require "../../_util/chap_util"
+
 require "./chdata"
 
 class RD::Chinfo
@@ -27,8 +28,8 @@ class RD::Chinfo
     SQL
 
   @[AlwaysInline]
-  def self.db_path(sname : String, sn_id : String | Int32, type : Rdtype)
-    type.db3_path("#{sname}/#{sn_id}")
+  def self.db_path(dname : String)
+    "var/stems/#{dname}-cinfo.db3"
   end
 
   ###
@@ -66,9 +67,25 @@ class RD::Chinfo
     @ztitle = ztitle
   end
 
-  def save_raw_text!(lines : Array(String), @spath = self.spath,
-                     @uname = "", @mtime = Time.utc.to_unix,
-                     ftype : Rdtype = :nc)
+  def fix_spath!(spath : String = @spath)
+    case @spath[0]?
+    when '!' then @spath = "rm#{sname}"
+    when '@' then @spath = "up#{spath}"
+    when '~' then @spath = "wn#{spath}"
+    else          @spath = spath
+    end
+  end
+
+  def fix_spath!(sname : String, sn_id : String)
+    case sname[0]?
+    when '!' then @spath = "rm#{sname}/#{sn_id}/#{@ch_no}"
+    when '@' then @spath = "up#{sname}/#{sn_id}/#{@ch_no}"
+    when '~' then @spath = "wn#{sname}/#{sn_id}/#{@ch_no}"
+    else          raise "invalid sname: #{sname}"
+    end
+  end
+
+  def save_raw_text!(lines : Array(String), @uname = "", @mtime = Time.utc.to_unix)
     title = lines.shift
     self.ztitle = title # TODO: update zchdiv
 
@@ -77,7 +94,7 @@ class RD::Chinfo
     @sizes = sizes.join(' ')
 
     parts.each_with_index do |ptext, p_idx|
-      cdata = Chdata.new("#{@spath}-#{@cksum}-#{p_idx}", ftype)
+      cdata = Chdata.new("#{@spath}-#{@cksum}-#{p_idx}")
       cdata.save_raw!(ptext, p_idx > 0 ? title : nil)
     end
 
@@ -89,25 +106,15 @@ class RD::Chinfo
 
     String.build do |io|
       1.upto(self.psize) do |p_idx|
-        lines = Chdata.read_raw(self.part_path(p_idx), ftype)
+        lines = Chdata.read_raw(self.part_path(p_idx))
         lines.shift
         lines.each { |line| io << line << '\n' }
       end
     end
   end
 
-  def part_name(sname : String, sn_id : String, p_idx : Int32 = 1)
-    case
-    when @cksum.empty?   then ""
-    when sname[0] == '~' then "wn#{sname}/#{sn_id}/#{@ch_no}-#{@cksum}-#{p_idx}"
-    when sname[0] == '!' then "rm#{sname}/#{sn_id}/#{@ch_no}-#{@cksum}-#{p_idx}"
-    when sname[0] == '@' then "up#{sname}/#{sn_id}/#{@ch_no}-#{@cksum}-#{p_idx}"
-    else                      ""
-    end
-  end
-
-  def part_path(p_idx : Int32 = 1)
-    "#{@spath}-#{@cksum}-#{p_idx}"
+  def part_name(p_idx : Int32 = 1)
+    @cksum.empty? ? "" : "#{@spath}-#{@cksum}-#{p_idx}"
   end
 
   ####
@@ -139,5 +146,9 @@ class RD::Chinfo
 
   def off_flag!(flag : Chflag)
     @_flag = (Chflag.new(@_flag) - flag).to_i
+  end
+
+  def inspect(io : IO)
+    {@ch_no, @ztitle, @rlink, @zchdiv, @spath}.join(io, '\t')
   end
 end

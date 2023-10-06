@@ -5,7 +5,7 @@ WN_TXT_DIR = "var/wnapp/chtext"
 WN_VTL_DIR = "var/wnapp/chtran"
 
 def import(wn_id : String)
-  files = Dir.glob("#{WN_VTL_DIR}/#{wn_id}/*.bzv.txt")
+  files = Dir.glob("#{WN_VTL_DIR}/#{wn_id}/*.bt_zv.txt")
   puts "- #{wn_id}: #{files.size} files"
 
   return if files.empty?
@@ -19,7 +19,7 @@ def import(wn_id : String)
   files.each_slice(32) do |slice|
     corpus.open_tx do
       slice.each do |vfile|
-        zorig = File.basename(vfile, ".bzv.txt")
+        zorig = File.basename(vfile, ".bt_zv.txt")
         txt_path = "#{WN_TXT_DIR}/#{wn_id}/#{zorig}.txt"
 
         u8_ids, fresh = corpus.add_file!(zorig, fpath: txt_path, to_canon: true)

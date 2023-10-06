@@ -1,5 +1,5 @@
 ENV["CV_ENV"] = "production"
-require "../../src/wnapp/data/wnseed"
+require "../../src/wnapp/data/wnstem"
 require "../../src/zroot/rmstem"
 
 query = "select id, btitle_zh, author_zh from wninfos"

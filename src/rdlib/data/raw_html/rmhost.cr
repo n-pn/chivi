@@ -10,6 +10,9 @@ require "./rmutil"
 class Rmhost
   include YAML::Serializable
 
+  property seedname : String
+  property seedtype : Int32 = 0
+
   property hostname : String
   property encoding = "GBK"
   property? insecure = false
@@ -21,12 +24,7 @@ class Rmhost
   # @[YAML::Field(ignore: true)]
   getter base_url : String { @insecure ? "http://#{@hostname}" : "https://#{@hostname}" }
 
-  ####
-
-  property seedname : String
-  property seedtype : Int32 = 0
-  property seedrank : Int32 = 0
-
+  getter savepath : String { @hostname.sub("www.", "") }
   ####
 
   property book_id_re = "(\\d+)\\D*$"
@@ -132,7 +130,7 @@ class Rmhost
   BMID_DIR = "#{KEEP_DIR}/_index/%{name}.htm"
 
   def mbid_file
-    "#{KEEP_DIR}/_index/#{seedname}.htm"
+    "#{KEEP_DIR}/_index/#{@seedname}.htm"
   end
 
   def get_max_bid(tspan = 12.hours)
@@ -179,17 +177,17 @@ class Rmhost
   ###
 
   def book_dir
-    "#{KEEP_DIR}/rmbook/#{@hostname}"
+    "#{KEEP_DIR}/rmbook/#{self.savepath}"
   end
 
   def chap_dir(sn_id : Int32 | String)
-    "#{KEEP_DIR}/rmchap/#{@hostname}/#{sn_id}"
+    "#{KEEP_DIR}/rmchap/#{self.savepath}/#{sn_id}"
   end
 
   ###
 
   def book_file(sn_id : Int32 | String)
-    "#{KEEP_DIR}/rmbook/#{@hostname}/#{sn_id}.htm"
+    "#{KEEP_DIR}/rmbook/#{self.savepath}/#{sn_id}.htm"
   end
 
   def stem_file(sn_id : Int32 | String)
@@ -198,7 +196,7 @@ class Rmhost
   end
 
   def chap_file(sn_id : Int32 | String, sc_id : Int32 | String)
-    "#{KEEP_DIR}/rmchap/#{hostname}/#{sn_id}/#{sc_id}.htm"
+    "#{KEEP_DIR}/rmchap/#{@hostname}/#{sn_id}/#{sc_id}.htm"
   end
 
   ###
@@ -224,9 +222,7 @@ class Rmhost
 
   def save_page(href : String, save_path : String,
                 http_client : HTTP::Client = self.http_client) : String
-    if @seedtype.in?(2, 4)
-      raise "can not download page from this seed type"
-    end
+    # raise "source is dead" if @seedtype.in?(2, 4)
 
     http_client.get(href, headers: self.get_headers(href)) do |res|
       if res.status.success?
@@ -243,7 +239,7 @@ class Rmhost
   end
 
   def load_page(href : String, save_path : String,
-                stale : Time = Time.utc - 30.days) : String
+                stale : Time = Time.utc - 1.years) : String
     Rmutil.still_fresh?(save_path, stale) ? File.read(save_path) : save_page(href, save_path)
   end
 

@@ -1,8 +1,5 @@
 require "./chinfo"
-require "./wnseed"
-
-require "../../_util/chap_util"
-require "../../zroot/raw_html/raw_rmchap"
+require "./wnstem"
 
 class WN::Chtext
   getter wc_base : String
@@ -68,6 +65,7 @@ class WN::Chtext
     @chap.uname = uname
     @chap.mtime = Time.utc.to_unix
 
+    Dir.mkdir_p(File.dirname(@wc_base))
     self.save_text!(paras: paras, title: title)
   rescue
     nil
@@ -114,8 +112,6 @@ class WN::Chtext
                  sizes : Array(Int32) = parts.map(&.size)) : String
     @chap.cksum = ChapUtil.cksum_to_s(cksum)
     @chap.sizes = sizes.map(&.to_s).join(' ')
-
-    # Dir.mkdir_p(File.dirname(@wc_base))
 
     parts.each_with_index do |cpart, index|
       save_path = self.raw_path(p_idx: index)

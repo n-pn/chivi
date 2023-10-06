@@ -59,13 +59,10 @@ class SP::TranCtrl < AC::Base
     start = Time.monotonic
     cdata = RD::Chdata.new(fpath)
 
-    old_path = cdata.file_path("bzv.txt")
+    fpath = cdata.file_path("bt_zv.txt")
 
-    new_path = cdata.file_path("bt_zv.txt")
-    File.rename(old_path, new_path) if File.file?(old_path)
-
-    if stat = File.info?(new_path)
-      lines = File.read_lines(new_path)
+    if stat = File.info?(fpath)
+      lines = File.read_lines(fpath)
       mtime = stat.modification_time.to_unix
       status = 200
     elsif force && _privi >= 0
@@ -73,8 +70,8 @@ class SP::TranCtrl < AC::Base
       mtime = Time.utc.to_unix
       status = 201
       spawn do
-        Dir.mkdir_p(File.dirname(new_path))
-        File.write(new_path, lines.join('\n'))
+        Dir.mkdir_p(File.dirname(fpath))
+        File.write(fpath, lines.join('\n'))
       end
     else
       lines = [] of String

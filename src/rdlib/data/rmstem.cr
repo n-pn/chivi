@@ -1,12 +1,13 @@
-require "crorm"
-require "../_data/_data"
-require "../_util/book_util"
-require "../_util/text_util"
+require "../../_data/_data"
+require "../../_util/book_util"
+require "../../_util/text_util"
 
 require "./raw_html/raw_rmbook"
 require "./raw_html/raw_rmstem"
 
-class ZR::Rmstem
+require "./chrepo"
+
+class RD::Rmstem
   class_getter db : DB::Database = PGDB
 
   include Crorm::Model
@@ -49,13 +50,14 @@ class ZR::Rmstem
 
   @[DB::Field(ignore: true, auto: true)]
   @[JSON::Field(ignore: true)]
-  getter repo : Crorm::SQ3 { Chinfo.db(sname, sn_id) }
+  getter clist : Chrepo { Chrepo.load("rm#{@sname}/#{@sn_id}") }
 
   def initialize(@sname, @sn_id, @rlink = "")
   end
 
-  def update!(mode : Int32 = 1) : self
-    raw_stem = RawRmstem.from_link(@rlink, stale: Time.utc - reload_tspan(mode))
+  def update!(mode : Int32 = 1) : self | Nil
+    # raw_stem = RawRmstem.from_link(@rlink, stale: Time.utc - reload_tspan(mode))
+    raw_stem = RawRmstem.from_stem(@sname, @sn_id, stale: Time.utc - reload_tspan(mode))
 
     # verify content changed by checking the latest chapter
     # not super reliable since some site reuse the latest chapter id for new chapter.
@@ -67,17 +69,23 @@ class ZR::Rmstem
       @latest_cid = raw_stem.latest_cid
     end
 
-    chapters = raw_stem.chap_list
-    self.repo.open_tx { |db| chapters.each(&.create!(db)) }
+    chapters = raw_stem.extract_clist!
+    self.clist.upsert_zinfos!(chapters)
+
+    # TODO: translate to vietnamese
 
     @chap_count = chapters.size
 
-    @update_str = raw_stem.update_str
-    @update_int = raw_stem.update_int
+    unless raw_stem.update_str
+      @update_str = raw_stem.update_str
+      @update_int = raw_stem.update_int
+    end
 
     # TODO: check if status exist and is updated
-    # @status_str = raw_stem.status_str
-    # @status_int = raw_stem.status_int
+    unless raw_stem.status_str.empty?
+      @status_str = raw_stem.status_str
+      @status_int = raw_stem.status_int
+    end
 
     # TODO: gen from html file modification time instead
     @rtime = Time.utc.to_unix
@@ -86,15 +94,15 @@ class ZR::Rmstem
 
   private def reload_tspan(mode : Int32 = 1)
     case mode
-    when 2 then @immut ? 30.minutes : 3.minutes # force mode
-    when 1 then @immut ? 30.days : 30.minutes   # normal mode
-    else        10.years                        # keep forever
+    when 2 then @status_int > 1 ? 30.minutes : 3.minutes # force mode
+    when 1 then @status_int > 1 ? 15.days : 30.minutes   # normal mode
+    else        10.years                                 # keep forever
     end
   end
 
   # def prefetch_chap_htms!(w_size : Int32 = 6) : Int32
   #   query = "select rlink, spath from chinfos where cksum = ''"
-  #   input = self.repo.query_all(query, as: {String, String})
+  #   input = self.clist.query_all(query, as: {String, String})
   #   return 0 if input.empty?
 
   #   keep_dir = "var/.keep/rmchap/#{@sname}/#{@sn_id}"
@@ -112,11 +120,50 @@ class ZR::Rmstem
   #   host.get_all!(queue, w_size)
   # end
 
-  def update_avail_count!
-    select_query = "select count(*) form chinfos where cksum <> ''"
-    @chap_avail = self.repo.query_one(select_query, as: Int32)
+  # def update_avail_count!
+  #   select_query = "select count(*) form chinfos where cksum <> ''"
+  #   @chap_avail = self.clist.query_one(select_query, as: Int32)
 
-    update_query = @@schema.update_stmt(update_fields: ["chap_avail"])
-    @@db.exec(update_query, @chap_avail, @sname, @sn_id)
+  #   update_query = @@schema.update_stmt(update_fields: ["chap_avail"])
+  #   @@db.exec(update_query, @chap_avail, @sname, @sn_id)
+  # end
+
+  ###
+
+  def self.find(sname : String, sn_id : String)
+    get(sname, sn_id, &.<< "where sname = $1 and sn_id = $2")
+  end
+
+  def self.find!(sname : String, sn_id : String)
+    get!(sname, sn_id, &.<< "where sname = $1 and sn_id = $2")
+  end
+
+  def self.from_html(bhtml : String,
+                     sname : String, sn_id : String,
+                     rtime = Time.utc.to_unix, force = false)
+    entry = self.find(sname, sn_id) || new(sname, sn_id)
+    return if !force && entry.rtime >= rtime
+
+    input = RawRmbook.new(bhtml, sname: sname)
+    return if input.btitle.empty?
+
+    entry.btitle_zh = input.btitle
+    entry.author_zh = input.author
+
+    entry.cover_rm = input.cover
+    entry.intro_zh = input.intro
+
+    entry.genre_zh = "#{input.genre}\t#{input.xtags.gsub(" ", "\t")}".strip
+
+    entry.status_int = input.status_int
+    entry.status_str = input.status_str
+    entry.update_str = input.update_str
+    entry.update_int = input.update_int
+    entry.latest_cid = input.latest_cid
+
+    # entry.chap_count = raw_data.chap_count
+    entry.rtime = rtime
+
+    entry
   end
 end

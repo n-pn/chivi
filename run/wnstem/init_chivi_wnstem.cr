@@ -1,5 +1,5 @@
 ENV["CV_ENV"] = "production"
-require "../../src/wnapp/data/wnseed"
+require "../../src/wnapp/data/wnstem"
 require "../../src/wnapp/data/chinfo"
 
 QUERY = WN::Wnstem.schema.upsert_stmt(keep_fields: %w[chap_total chap_avail rlink rtime])

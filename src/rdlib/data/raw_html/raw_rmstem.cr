@@ -3,10 +3,9 @@ require "colorize"
 
 require "./rmhost"
 require "./rmpage"
-require "../shared/chinfo"
-require "../../_util/chap_util"
+require "../chinfo"
 
-class ZR::RawRmstem
+class RD::RawRmstem
   ####
 
   def self.from_link(rlink : String, stale : Time = Time.utc - 1.years)
@@ -46,6 +45,36 @@ class ZR::RawRmstem
     @page.get!(matcher).sub(/(book_info|状态：)\s*/, "")
   end
 
+  FINISHED = {
+    "已完结",
+    "全本",
+    "完结",
+    "已完本",
+    "暂停",
+    "完结申请",
+    "完本",
+    "已完成",
+    "新书上传",
+    "已经完结",
+    "完成",
+    "已经完本",
+    "finish",
+  }
+
+  HIATUS = {
+    "暂停",
+    "暂 停",
+    "暂　停",
+  }
+
+  getter status_int : Int16 do
+    case status_str
+    when .in?(HIATUS)   then 2_i16
+    when .in?(FINISHED) then 1_i16
+    else                     0_i16
+    end
+  end
+
   getter update_str : String do
     return "" unless matcher = @host.cata_update
     @page.get!(matcher).sub(/^\s*更新(时间)?\s*[: ：]\s*/, "")
@@ -72,15 +101,12 @@ class ZR::RawRmstem
     end
   end
 
-  @chlist = [] of Chinfo
+  @clist = [] of Chinfo
 
-  def chap_list
-    extract_chlist!(@host.cata_type) if @chlist.empty?
-    @chlist
-  end
+  def extract_clist!
+    return @clist unless @clist.empty?
 
-  def extract_chlist!(chap_type : String = "anchor")
-    case chap_type
+    case @host.cata_type
     when "anchor"     then extract_type_anchor(@host.cata_elem)
     when "subdiv"     then extract_type_subdiv(@host.cata_elem)
     when "wenku8"     then extract_type_wenku8(@host.cata_elem)
@@ -89,8 +115,10 @@ class ZR::RawRmstem
     when "00kxs"      then extract_type_00kxs(@host.cata_elem)
     when "paopaoxs"   then extract_type_paopaoxs(@host.cata_elem)
     when "51shucheng" then extract_type_51shucheng(@host.cata_elem)
-    else                   raise "unsupported parser type: #{chap_type}"
+    else                   raise "unsupported type: #{@host.cata_type}"
     end
+
+    @clist
   end
 
   private def add_chap(node : Lexbor::Node?, subdiv = "")
@@ -99,15 +127,14 @@ class ZR::RawRmstem
     ctitle = node.inner_text("  ")
     return if ctitle.empty?
 
-    ch_no = @chlist.size &+ 1
+    ch_no = @clist.size &+ 1
     rlink = self.full_url(href)
 
-    sc_id = @host.extract_cid(href)
-    spath = "#{@host.seedname}/#{@b_id}/#{sc_id}"
+    spath = "rm#{@host.seedname}/#{@b_id}/#{ch_no}"
 
     ctitle, subdiv = ChapUtil.split_ztitle(ctitle, subdiv)
 
-    @chlist << Chinfo.new(ch_no: ch_no, rlink: rlink, spath: spath, ztitle: ctitle, zchdiv: subdiv)
+    @clist << Chinfo.new(ch_no: ch_no, rlink: rlink, spath: spath, ztitle: ctitle, zchdiv: subdiv)
   rescue ex
     Log.error(exception: ex) { ex.message.colorize.red }
   end

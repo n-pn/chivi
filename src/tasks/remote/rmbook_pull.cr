@@ -1,14 +1,12 @@
 require "colorize"
 require "option_parser"
-require "../../zroot/rmbook"
+require "../../rdlib/data/rmstem"
 
 class RmbookSeed
   @host : Rmhost
-  @repo : DB::Database
 
   def initialize(@sname : String, @conns = 6, @stale = Time.utc - 10.days)
     @host = Rmhost.from_name!(sname)
-    @repo = ZR::Rmbook.db(sname)
   end
 
   def get_max_bid
@@ -23,8 +21,8 @@ class RmbookSeed
     rtime = File.info(book_file).modification_time.to_unix
 
     loop do
-      entry = ZR::Rmbook.from_html(bhtml, @sname, sn_id.to_s, force: force)
-      return entry ? entry.upsert!(@repo) && true : false
+      entry = RD::Rmstem.from_html(bhtml, @sname, sn_id.to_s, force: force)
+      return entry ? entry.upsert! && true : false
     rescue ex : SQLite3::Exception
       # puts ex.colorize.red
       sleep 0.5 # do again if database is locked
@@ -36,7 +34,7 @@ class RmbookSeed
   def sync_all(lower : Int32, upper : Int32, force = false)
     puts "Syncing [#{@sname}] from #{lower} to #{upper}!".colorize.yellow
 
-    Dir.mkdir_p "var/.keep/rmbook/#{@host.hostname}"
+    Dir.mkdir_p "var/.keep/rmbook/#{@host.savepath}"
 
     total = upper - lower + 1
 
@@ -61,11 +59,11 @@ class RmbookSeed
   end
 end
 
-sname = "!hetushu"
-conns = 6
+sname = "!69shuba.com"
+conns = 3
 
 lower = 1
-upper = 0
+upper = 10
 
 tspan = 30.days
 force = false

@@ -47,7 +47,7 @@ def import_db(db_file : String)
 
     output.cover_rm = input.cover
     output.intro_zh = input.intro
-    output.genre_zh = "#{input.genre}\t#{input.xtags.gsub("s", "\t")}".strip
+    output.genre_zh = "#{input.genre}\t#{input.xtags.gsub(" ", "\t")}".strip
 
     output.status_str = input.status_str
     output.update_str = input.update_str

@@ -51,6 +51,36 @@ class RawRmbook
       .sub(/^.+\s+\|\s+/, "")
   end
 
+  FINISHED = {
+    "已完结",
+    "全本",
+    "完结",
+    "已完本",
+    "暂停",
+    "完结申请",
+    "完本",
+    "已完成",
+    "新书上传",
+    "已经完结",
+    "完成",
+    "已经完本",
+    "finish",
+  }
+
+  HIATUS = {
+    "暂停",
+    "暂 停",
+    "暂　停",
+  }
+
+  getter status_int : Int16 do
+    case status_str
+    when .in?(HIATUS)   then 2_i16
+    when .in?(FINISHED) then 1_i16
+    else                     0_i16
+    end
+  end
+
   getter update_str : String do
     return "" unless matcher = @host.book_update
     @page.get!(matcher)
@@ -70,7 +100,7 @@ class RawRmbook
     case cover = @page.get!(@host.book_cover)
     when .starts_with?("http") then cover
     when .starts_with?("//")   then "https#{cover}"
-    else                            @host.full_path(cover)
+    else                            @host.full_url(cover)
     end
   end
 

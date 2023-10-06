@@ -4,7 +4,7 @@ require "../_util/book_util"
 require "../_util/time_util"
 require "../_util/text_util"
 
-require "./raw_html/raw_rmbook"
+require "../rdlib/data/raw_html/raw_rmbook"
 
 class ZR::Rmbook
   class_getter init_sql = <<-SQL
@@ -41,7 +41,7 @@ class ZR::Rmbook
   end
 
   def self.load(sname : String, id : String)
-    find(id, db: db(sname)) || new(id: id)
+    find_by_id(id, db: db(sname)) || new(id: id)
   end
 
   ####

@@ -1,7 +1,7 @@
 require "uri"
 require "colorize"
 
-require "../../_util/chap_util"
+require "../../../_util/chap_util"
 
 require "./rmhost"
 require "./rmpage"

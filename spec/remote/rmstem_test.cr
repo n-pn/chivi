@@ -1,7 +1,7 @@
 require "json"
 require "colorize"
 
-require "../../src/zroot/raw_html/raw_rmstem.cr"
+require "../../src/rdlib/data/raw_html/raw_rmstem.cr"
 
 def do_test(sname : String, b_id : String | Int32, fresh : Bool = false)
   puts "\n[#{Rmhost.stem_url(sname, b_id)}]".colorize.green.bold
@@ -9,8 +9,9 @@ def do_test(sname : String, b_id : String | Int32, fresh : Bool = false)
   # path = conf.cata_file_path(b_id)
   # Dir.mkdir_p(File.dirname(path))
 
-  parser = ZR::RawRmstem.from_stem(sname, b_id, stale: fresh ? Time.utc : Time.utc - 10.years)
-  chlist = parser.chap_list
+  stale = fresh ? Time.utc - 3.hours : Time.utc - 10.years
+  parser = RD::RawRmstem.from_stem(sname, b_id, stale: stale)
+  chlist = parser.extract_clist!
 
   puts "update_str: [#{parser.update_str}], real_time: #{Time.unix(parser.update_int)}"
   puts "status_str: [#{parser.status_str}]"

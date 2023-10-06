@@ -1,7 +1,7 @@
 ENV["CV_ENV"] = "production"
 
 require "../src/wnapp/data/chinfo"
-require "../src/wnapp/data/wnseed"
+require "../src/wnapp/data/wnstem"
 
 class Chtext
   getter wc_base : String

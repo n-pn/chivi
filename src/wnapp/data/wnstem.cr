@@ -1,7 +1,7 @@
 require "crorm"
 
 require "../../_data/_data"
-require "../../zroot/raw_html/raw_rmstem"
+require "../../rdlib/data/raw_html/raw_rmstem"
 
 require "./seed_type"
 
@@ -171,9 +171,9 @@ class WN::Wnstem
     stale = Time.utc - remote_reload_tspan(mode)
 
     if !@rlink.empty?
-      rmstem = ZR::RawRmstem.from_link(@rlink, stale: stale) rescue nil
+      rmstem = RD::RawRmstem.from_link(@rlink, stale: stale) rescue nil
     elsif self.remote?
-      rmstem = ZR::RawRmstem.from_stem(@sname, @s_bid, stale: stale) rescue nil
+      rmstem = RD::RawRmstem.from_stem(@sname, @s_bid, stale: stale) rescue nil
     else
       # Do nothing
     end
@@ -186,8 +186,8 @@ class WN::Wnstem
     self.update_chap_vinfos!
   end
 
-  private def sync_with_remote!(rmstem : ZR::RawRmstem, mode : Int32 = 0)
-    chlist = rmstem.chap_list
+  private def sync_with_remote!(rmstem : RD::RawRmstem, mode : Int32 = 0)
+    chlist = rmstem.extract_clist!
 
     return if chlist.empty?
     max_ch_no = chlist.size
@@ -203,7 +203,7 @@ class WN::Wnstem
     self.update_stats!(max_ch_no, rmstem.update_int)
   end
 
-  private def upsert_chap_zinfos!(chlist : Array(ZR::Chinfo))
+  private def upsert_chap_zinfos!(chlist)
     Chinfo.upsert_zinfos!(self.chap_list, chlist)
   end
 

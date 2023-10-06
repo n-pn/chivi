@@ -1,10 +1,10 @@
-STEM_INP = "/2tb/var.chivi/rm_db/stems"
+STEM_INP = "/2tb/var.chivi/wn_db/stems"
 
 STEM_OUT = "/2tb/var.chivi/stems"
 
 Dir.each_child(STEM_INP) do |child|
   inp_dir = "#{STEM_INP}/#{child}"
-  out_dir = "#{STEM_OUT}/rm#{child}"
+  out_dir = "#{STEM_OUT}/up#{child}"
   Dir.mkdir_p(out_dir)
 
   Dir.children(inp_dir).each do |db_file|

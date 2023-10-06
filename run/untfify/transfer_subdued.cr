@@ -3,7 +3,7 @@ require "colorize"
 require "../../src/_data/_data"
 require "../../src/_util/book_util"
 
-# require "../../src/_data/wnovel/wnseed"
+# require "../../src/_data/wnovel/wnstem"
 # require "../../src/_data/member/ubmemo"
 
 record Wnstem, id : Int32, sname : String, chap_total : Int32 do
