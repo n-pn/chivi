@@ -13,7 +13,7 @@
   let show_more = false
 
   $: ({ wstems = [], ustems = [], rstems = [] } = data.bstems)
-  const find_stem = (wstems: CV.Rdstem[], sname: string) => {
+  const find_stem = (wstems: CV.Chstem[], sname: string) => {
     return wstems.find((x) => x.sname == sname) || { sname, chmax: 0 }
   }
 

@@ -1,7 +1,7 @@
 require "json"
 require "../../_data/_data"
 
-struct RD::RdstemView
+struct RD::ChstemView
   include DB::Serializable
   include JSON::Serializable
 

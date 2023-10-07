@@ -18,6 +18,14 @@ struct RD::ZtextForm
   end
 
   def save!(crepo : Chrepo, uname : String = "")
-    crepo.save_raw!(@ch_no, @ztext, uname: uname, title: title, chdiv: chdiv)
+    cinfo = crepo.load(@ch_no)
+
+    cinfo.ztitle = @title
+    cinfo.zchdiv = @chdiv
+
+    cinfo.spath = "#{crepo.sroot}/#{@ch_no}"
+    cinfo.uname = uname
+
+    crepo.save_raw_from_text!(cinfo, @ztext)
   end
 end

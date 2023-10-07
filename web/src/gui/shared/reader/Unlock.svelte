@@ -6,13 +6,13 @@
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let rstem: CV.Rdstem
+  export let cstem: CV.Chstem
   export let rdata: CV.Chpart
 
-  $: ({ stype, sname, sn_id } = rstem)
+  $: ({ stype, sname, sn_id } = cstem)
   $: ({ ch_no, p_idx } = rdata)
 
-  $: vcoin_cost = Math.round(rstem.multp * rdata.zsize * 0.01) / 1000
+  $: vcoin_cost = Math.round(cstem.multp * rdata.zsize * 0.01) / 1000
 
   let msg_text = ''
   let msg_type = ''
@@ -59,8 +59,8 @@
     <code>số lượng chữ / 100_000 * hệ số nhân = số vcoin cần thiết</code>
     <br />
     Hệ số nhân hiện tại của danh sách chương:
-    <strong class="em">{rstem.multp}</strong>.
-    {#if rstem.stype == 'up'}<em
+    <strong class="em">{cstem.multp}</strong>.
+    {#if cstem.stype == 'up'}<em
         >(Thử liên hệ với chủ sở hữu dự án nếu thấy chưa phù hợp!)</em
       >{/if}
   </p>

@@ -1,5 +1,6 @@
 require "./chinfo"
 require "./unlock"
+require "../_raw/raw_rmchap"
 
 class RD::Chrepo
   CACHE = {} of String => self
@@ -135,29 +136,39 @@ class RD::Chrepo
 
   ####
 
-  def save_raw!(ch_no : Int32, ztext : String, uname : String = "",
-                title : String = "", chdiv : String = "")
-    cinfo = self.load(ch_no)
+  def save_raw_from_link!(cinfo : Chinfo, uname : String, force : Bool = false)
+    rlink = cinfo.rlink
+
+    stale = Time.utc - (force ? 1.minutes : 20.years)
+    title, paras = RawRmchap.from_link(rlink, stale: stale).parse_page!
+
     cinfo.uname = uname
-    cinfo.mtime = Time.utc.to_unix
+    self.do_save_raw!(cinfo, paras: paras, title: title)
+  rescue
+    nil
+  end
 
-    cinfo.spath = "#{@sroot}/#{ch_no}"
+  def save_raw_from_text!(cinfo : Chinfo, ztext : String, uname : String = "")
+    lines = ChapUtil.split_ztext(ztext)
+    cinfo.ztitle = lines.first if cinfo.ztitle.empty?
 
-    paras = ChapUtil.split_ztext(ztext)
-    title = paras.first if title.empty?
+    self.do_save_raw!(cinfo, lines)
+  end
 
-    cinfo.zchdiv = chdiv
-    cinfo.ztitle = title
+  private def do_save_raw!(cinfo : Chinfo, paras : Array(String), title : String = paras.shift)
+    Dir.mkdir_p(File.dirname("var/texts/#{@sroot}"))
 
-    parts, sizes, cksum = ChapUtil.split_parts(paras: paras)
-    cksum = ChapUtil.cksum_to_s(cksum)
+    parts, sizes, cksum = ChapUtil.split_parts(paras: paras, title: title)
+
+    cinfo.cksum = ChapUtil.cksum_to_s(cksum)
     cinfo.sizes = sizes.join(' ')
 
     parts.each_with_index do |ptext, p_idx|
-      cdata = Chpart.new("#{@sroot}/#{ch_no}-#{cksum}-#{p_idx}")
+      cdata = Chpart.new(part_name(cinfo, p_idx))
       cdata.save_raw!(ptext, p_idx > 0 ? title : nil)
     end
 
+    cinfo.mtime = Time.utc.to_unix
     cinfo.upsert!(db: @info_db)
   end
 

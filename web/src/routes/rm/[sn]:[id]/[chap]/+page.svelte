@@ -8,37 +8,31 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ rstem, rdata, ropts } = data)
+  $: ({ rstem, rdata, ropts, sroot } = data)
 
   $: ch_no = rdata.ch_no
   // $: total = rstem.chmax || rstem.chap_count
 
-  $: stem_path = `/rm/${rstem.sname}:${data.up_id}`
-  $: prev_path = rdata._prev
-    ? chap_path(stem_path, rdata._prev, ropts)
-    : stem_path
-
-  $: next_path = rdata._next
-    ? chap_path(stem_path, rdata._next, ropts)
-    : stem_path
+  $: prev_path = rdata._prev ? chap_path(sroot, rdata._prev, ropts) : sroot
+  $: next_path = rdata._next ? chap_path(sroot, rdata._next, ropts) : sroot
 
   import Reader from '$gui/shared/reader/Reader.svelte'
 
   $: crumb = [
     { text: 'Nguồn nhúng tự động', href: `/rm` },
-    { text: rstem.vname, href: stem_path },
+    { text: rstem.btitle_vi, href: sroot },
     { text: rdata.chdiv || 'Chính văn' },
     { text: rdata.title },
   ]
 
-  $: rstem = {
-    zname: rstem.zname,
+  $: cstem = {
+    zname: rstem.btitle_zh,
     sname: rstem.sname,
     stype: 'rm',
     sn_id: rstem.sn_id,
 
     multp: rstem.multp,
-    plock: rstem.plock,
+    plock: 3,
     chmax: rstem.chap_count,
     gifts: rstem.gifts,
   }
@@ -56,7 +50,7 @@
     </a>
   {/each}
 </nav> -->
-<Reader {rstem} {ropts} {rdata} />
+<Reader {cstem} {ropts} {rdata} />
 
 <Footer>
   <div class="navi">
@@ -71,7 +65,7 @@
     </a>
 
     <a
-      href="{stem_path}{ch_no > 32 ? `?pg=${_pgidx(ch_no)}` : ''}"
+      href="{sroot}{ch_no > 32 ? `?pg=${_pgidx(ch_no)}` : ''}"
       class="m-btn _success"
       data-kbd="h">
       <SIcon name="list" />

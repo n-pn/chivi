@@ -6,17 +6,17 @@
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let rstem: CV.Rdstem
+  export let cstem: CV.Chstem
   export let rdata: CV.Chpart
 
-  $: search = rstem.zname ? `${rstem.zname} ${rdata.ztext[0]}` : ''
+  $: search = cstem.zname ? `${cstem.zname} ${rdata.ztext[0]}` : ''
 
   let _loading = false
 
   const reload_chap = async () => {
     _loading = true
 
-    const url = `/_wn/reload/${rstem.sname}/${rstem.sn_id}/${rdata.ch_no}`
+    const url = `/_wn/reload/${cstem.sname}/${cstem.sn_id}/${rdata.ch_no}`
     const res = await fetch(url, { method: 'PUT' })
     _loading = false
 
@@ -31,12 +31,12 @@
 <section class="notext">
   <h1 class="em">Lỗi: Chương tiết không có nội dung.</h1>
 
-  {#if rstem.stype == 'up'}
+  {#if cstem.stype == 'up'}
     <p>
       Bạn đang đọc nội dung do người dùng Chivi tự quản lý. Thử liên hệ với chủ
       sở hữu của dự án để họ tìm cách khắc phục.
     </p>
-  {:else if rstem.stype == 'rm'}
+  {:else if cstem.stype == 'rm'}
     <p>
       Bạn đang xem chương tiết được liên kết với nguồn ngoài. Khả năng cao là do
       nguồn ngoài đã chết nên text gốc không tải xuống được.
@@ -69,7 +69,7 @@
   {/if}
 
   <h2 class="em">Tự thêm text gốc cho chương:</h2>
-  {#if $_user.privi >= rstem.plock}
+  {#if $_user.privi >= cstem.plock}
     <p>
       Bạn có đủ quyền hạn để thêm text gốc cho bộ truyện, bấm vào nút
       <a href="up?start={rdata.ch_no}">Thêm text gốc</a>
@@ -93,7 +93,7 @@
         </em>
       </p>
     {/if}
-  {:else if rstem.stype == 'wn'}
+  {:else if cstem.stype == 'wn'}
     <p>
       Các danh sách chương tiết <x-sname>Tổng hợp</x-sname>,
       <x-sname>Tạm thời</x-sname> và <x-sname>Chính thức</x-sname> của truyện chữ
@@ -120,9 +120,9 @@
         target="_blank">Hướng dẫn nâng cấp quyền hạn</a
       >.
     </p>
-  {:else if rstem.stype == 'up'}
+  {:else if cstem.stype == 'up'}
     <p>
-      Chương tiết do <x-sname>{rstem.sname}</x-sname> quản lý. Hãy liên hệ với {rstem.sname}
+      Chương tiết do <x-sname>{cstem.sname}</x-sname> quản lý. Hãy liên hệ với {cstem.sname}
       nếu muốn đóng góp text gốc.
     </p>
   {:else}
@@ -155,8 +155,8 @@
   </div>
 
   <div class="actions">
-    {#if rstem.stype == 'up'}
-      <a class="m-btn _success" href="/{rstem.sname}" target="_blank">
+    {#if cstem.stype == 'up'}
+      <a class="m-btn _success" href="/{cstem.sname}" target="_blank">
         <SIcon name="at" />
         <span>Liên hệ chủ dự án</span>
       </a>

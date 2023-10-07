@@ -15,7 +15,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ ustem, lasts, chaps, pg_no } = data)
+  $: ({ ustem, lasts, chaps, pg_no, sroot } = data)
 
   $: chmax = ustem.chap_count
   $: pager = new Pager($page.url, { pg: 1 })
@@ -24,8 +24,6 @@
   let err_msg: string
 
   // $: is_owner = data.sname == '@' + $_user.uname
-
-  $: base_href = `/up/${data.sname}:${data.up_id}`
 
   let free_chap = 40
   $: {
@@ -70,9 +68,9 @@
 
 {#if chmax > 0}
   <chap-list>
-    <ChapList chaps={lasts} bhref={base_href} />
+    <ChapList chaps={lasts} bhref={sroot} />
     <div class="chlist-sep" />
-    <ChapList {chaps} bhref={base_href} />
+    <ChapList {chaps} bhref={sroot} />
 
     <Footer>
       <div class="foot">

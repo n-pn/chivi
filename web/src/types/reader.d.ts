@@ -73,18 +73,4 @@ declare namespace CV {
     mtime?: number
     error?: string
   }
-
-  interface Rdstem {
-    zname: string
-    sname: string
-
-    stype: string
-    sn_id: string
-
-    plock: number
-    multp: number
-
-    chmax: number
-    gifts: number
-  }
 }

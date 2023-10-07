@@ -15,7 +15,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ rstem, lasts, chaps, pg_no } = data)
+  $: ({ rstem, lasts, chaps, pg_no, sroot } = data)
 
   $: chmax = rstem.chap_count
   $: pager = new Pager($page.url, { pg: 1 })
@@ -23,11 +23,8 @@
   let _onload = false
   let err_msg: string
 
-  // $: is_owner = data.sname == '@' + $_user.uname
-
-  $: base_href = `/up/${data.sname}:${data.up_id}`
-
   let free_chap = 40
+
   $: {
     free_chap = Math.floor((rstem.chap_count * rstem.gifts) / 4)
     if (free_chap < 40) free_chap = 40
@@ -38,7 +35,7 @@
   <info-left>
     <info-text>{rstem.sname}</info-text>
     <info-span>{chmax} chương</info-span>
-    <info-span class="u-show-pl"><RTime mtime={rstem.rtime} /></info-span>
+    <info-span class="u-show-pl"><RTime mtime={rstem.update_int} /></info-span>
   </info-left>
 </page-info>
 
@@ -70,9 +67,9 @@
 
 {#if chmax > 0}
   <chap-list>
-    <ChapList chaps={lasts} bhref={base_href} />
+    <ChapList chaps={lasts} bhref={sroot} />
     <div class="chlist-sep" />
-    <ChapList {chaps} bhref={base_href} />
+    <ChapList {chaps} bhref={sroot} />
 
     <Footer>
       <div class="foot">
@@ -110,6 +107,10 @@
     line-height: 1.75rem;
     // transform: translateX(1px);
     @include bps(font-size, 13px, 14px);
+  }
+
+  info-right {
+    @include flex($gap: 0.5rem);
   }
 
   .chap-hint {

@@ -20,7 +20,7 @@
   import ChapsView from './ChapsView.svelte'
 
   export let data: PageData
-  $: ({ rstem } = data)
+  $: ({ ustem } = data)
 
   let chdiv = data.chdiv || ''
   let start = data.start

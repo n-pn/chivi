@@ -4,9 +4,9 @@ import type { LayoutLoad } from './$types'
 import { book_nav, seed_nav, quick_read_v2 } from '$utils/header_util'
 
 export interface StemList {
-  wstems: CV.Rdstem[]
-  rstems: CV.Rdstem[]
-  ustems: CV.Rdstem[]
+  wstems: CV.Chstem[]
+  rstems: CV.Chstem[]
+  ustems: CV.Chstem[]
 }
 
 export interface SeedData {

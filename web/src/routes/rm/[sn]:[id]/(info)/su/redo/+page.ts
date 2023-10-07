@@ -8,10 +8,10 @@ export const load = (async ({ parent }) => {
   const _meta = {
     left_nav: [
       nav_link(sroot, ustem.vname, 'file', { show: 'pl', kind: 'title' }),
-      nav_link('ul', 'Quản lý', 'upload', { show: 'pm' }),
+      nav_link('redo', 'Tẩy xóa', 'eraser', { show: 'pm' }),
     ],
   }
 
   const _title = 'Quản lý nội dung - ' + ustem.vname
-  return { _meta, _title, ontab: 'cf' }
+  return { _meta, _title, intab: 'su', ontab: 'rm' }
 }) satisfies PageLoad

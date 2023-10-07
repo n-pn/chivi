@@ -31,7 +31,7 @@
     { text: rdata.title },
   ]
 
-  $: rstem = {
+  $: cstem = {
     zname: ustem.zname,
     sname: ustem.sname,
     stype: 'up',
@@ -56,7 +56,7 @@
     </a>
   {/each}
 </nav> -->
-<Reader {rstem} {ropts} {rdata} />
+<Reader {cstem} {ropts} {rdata} />
 
 <Footer>
   <div class="navi">

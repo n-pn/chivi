@@ -14,5 +14,5 @@ export const load = (async ({ url, parent }) => {
   }
 
   const _title = 'Đăng tải nội dung - ' + ustem.vname
-  return { start, chdiv, _meta, _title, ontab: 'zh' }
+  return { start, chdiv, _meta, _title, intab: 'ul', ontab: 'zh' }
 }) satisfies PageLoad

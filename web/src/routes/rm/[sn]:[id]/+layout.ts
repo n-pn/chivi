@@ -1,18 +1,13 @@
 import { api_get } from '$lib/api_call'
 import type { LayoutLoad } from './$types'
 
-export interface Data {
-  rstem: CV.Rmstem
-  lasts: CV.Wnchap[]
-}
-
 export const load = (async ({ fetch, params }) => {
   const sname = params.sn
-  const up_id = +params.id
-  const sroot = `/rm/${sname}:${up_id}`
+  const sn_id = params.id
+  const sroot = `/rm/${sname}:${sn_id}`
 
-  const url = `/_rd/rmstems/${up_id}`
-  const { rstem, lasts } = await api_get<Data>(url, fetch)
+  const rdurl = `/_rd/rmstems/${sname}/${sn_id}`
+  const rstem = await api_get<CV.Rmstem>(rdurl, fetch)
 
   let binfo: CV.Wninfo
 
@@ -21,5 +16,5 @@ export const load = (async ({ fetch, params }) => {
     binfo = await api_get<CV.Wninfo>(bpath, fetch)
   }
 
-  return { rstem, binfo, lasts, sname, up_id, sroot }
+  return { rstem, binfo, sname, sn_id, sroot }
 }) satisfies LayoutLoad

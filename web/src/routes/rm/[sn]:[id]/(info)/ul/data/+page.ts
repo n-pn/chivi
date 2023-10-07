@@ -7,9 +7,14 @@ export const load = (async ({ parent }) => {
   const _meta = {
     left_nav: [
       nav_link('.', ustem.vname, 'folder', { show: 'ts', kind: 'title' }),
-      nav_link('tran', 'Nghĩa từ', 'language'),
+      nav_link('data', 'Ngữ pháp', 'tree'),
     ],
   }
 
-  return { ontab: 'vd', _title: `Đăng nghĩa từ - ${ustem.vname}`, _meta }
+  return {
+    intab: 'ul',
+    ontab: 'md',
+    _title: `Đăng cấu trúc ngữ pháp - ${ustem.vname}`,
+    _meta,
+  }
 }) satisfies PageLoad

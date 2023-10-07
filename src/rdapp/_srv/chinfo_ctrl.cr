@@ -36,20 +36,28 @@ class RD::ChinfoCtrl < AC::Base
   ###########
 
   @[AC::Route::GET("/wn/:sname/:sn_id/:ch_no/:p_idx")]
-  def wn_cpart(sname : String, sn_id : Int32, ch_no : Int32, p_idx : Int32)
+  def wn_cpart(sname : String, sn_id : Int32, ch_no : Int32, p_idx : Int32, force : Bool = false)
     wstem = get_wstem(sname, sn_id)
     cinfo = get_cinfo(wstem, ch_no)
+
+    if cinfo.cksum.empty? && _privi >= 0 && !cinfo.rlink.empty?
+      wstem.crepo.save_raw_from_link!(cinfo, _uname, force: force)
+    end
 
     rdata = wstem.crepo.part_data(cinfo, p_idx, vu_id: _vu_id, privi: _privi)
     render 200, json: rdata
   end
 
   @[AC::Route::GET("/rm/:sname/:sn_id/:ch_no/:p_idx")]
-  def rm_cpart(sname : String, sn_id : String, ch_no : Int32, p_idx : Int32)
-    rstem = get_rstem(sname, sn_id)
-    cinfo = get_cinfo(rstem, ch_no)
+  def rm_cpart(sname : String, sn_id : String, ch_no : Int32, p_idx : Int32, force : Bool = false)
+    crepo = get_rstem(sname, sn_id).crepo
+    cinfo = get_cinfo(crepo, ch_no)
 
-    rdata = rstem.crepo.part_data(cinfo, p_idx, vu_id: _vu_id, privi: _privi)
+    if cinfo.cksum.empty? && _privi >= 0 && !cinfo.rlink.empty?
+      crepo.save_raw_from_link!(cinfo, _uname, force: force)
+    end
+
+    rdata = crepo.part_data(cinfo, p_idx, vu_id: _vu_id, privi: _privi)
     render 200, json: rdata
   end
 

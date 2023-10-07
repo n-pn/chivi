@@ -20,14 +20,19 @@ declare namespace CV {
     privi_map: [number, number, number] = [0, 1, 1]
   }
 
-  interface Rdstem {
+  interface Chstem {
+    zname: string
+    stype: string
+
     sname: string
     sn_id: string
 
-    chmax: number // chap_count
-    utime: number // updated_at
+    plock: number
+    multp: number
 
-    privi: number = 1
+    chmax: number // chap_count
+    utime?: number // updated_at
+
     gifts: number = 2
   }
 

@@ -22,7 +22,7 @@
   import Unlock from './Unlock.svelte'
   import Qtpage from './Qtpage.svelte'
 
-  export let rstem: CV.Rdstem
+  export let cstem: CV.Chstem
   export let ropts: CV.Rdopts
   export let rdata: CV.Chpart
 
@@ -103,9 +103,9 @@
     on:click|capture={(e) => handle_mouse(e, 'overview')}
     on:contextmenu|capture={(e) => handle_mouse(e, 'glossary')}>
     {#if rdata.error == 414}
-      <Notext {rstem} {rdata} />
+      <Notext {cstem} {rdata} />
     {:else if rdata.error == 413}
-      <Unlock {rstem} {rdata} />
+      <Unlock {cstem} {rdata} />
     {:else if ropts.rtype == 'qt' || ropts.rtype == 'mt'}
       <Qtpage {ztext} {hviet} {ropts} {label} bind:state />
     {:else}

@@ -25,7 +25,7 @@ class WN::WnstemCtrl < AC::Base
 
     tdiff = Time.utc - Time.unix(wnseed.rtime)
     # FIXME: change timespan according to `_flag`
-    fresh = tdiff < 24.hours
+    # fresh = tdiff < 24.hours
 
     render json: {
       chap_count: wnseed.chap_total,
@@ -149,7 +149,7 @@ class WN::WnstemCtrl < AC::Base
   @[AC::Route::DELETE("/:wn_id/:sname")]
   def delete(wn_id : Int32, sname : String, mode : Int32 = 1)
     guard_privi 4, "xóa danh sách chương"
-    wnseed = get_wnseed(wn_id, sname)
+    # wnseed = get_wnseed(wn_id, sname)
 
     Wnstem.soft_delete!(wn_id, sname)
     # WnRepo.soft_delete!(wnseed.sname, wnseed.s_bid)
