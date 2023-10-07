@@ -73,7 +73,7 @@ class RD::Chrepo
       p_max: cinfo.psize,
       p_idx: p_idx,
 
-      zname: "#{@zname} #{cinfo.ztitle}",
+      zname: cinfo.ztitle,
       title: cinfo.vtitle.empty? ? cinfo.ztitle : cinfo.vtitle,
       chdiv: cinfo.vchdiv.empty? ? cinfo.zchdiv : cinfo.vchdiv,
 

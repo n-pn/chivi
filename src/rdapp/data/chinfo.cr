@@ -1,7 +1,8 @@
 require "crorm"
 require "../../_util/chap_util"
 
-require "./chpart"
+require "./util/chflag"
+require "./util/chpart"
 
 class RD::Chinfo
   class_getter init_sql = <<-SQL
@@ -97,27 +98,10 @@ class RD::Chinfo
 
       jb.field "mtime", @mtime
       jb.field "uname", @uname
+
       # jb.field "flags", Chflag.new(@_flag).to_s
     }
   end
-
-  # def fix_spath!(spath : String = @spath)
-  #   case @spath[0]?
-  #   when '!' then @spath = "rm#{sname}"
-  #   when '@' then @spath = "up#{spath}"
-  #   when '~' then @spath = "wn#{spath}"
-  #   else          @spath = spath
-  #   end
-  # end
-
-  # def fix_spath!(sname : String, sn_id : String)
-  #   case sname[0]?
-  #   when '!' then @spath = "rm#{sname}/#{sn_id}/#{@ch_no}"
-  #   when '@' then @spath = "up#{sname}/#{sn_id}/#{@ch_no}"
-  #   when '~' then @spath = "wn#{sname}/#{sn_id}/#{@ch_no}"
-  #   else          raise "invalid sname: #{sname}"
-  #   end
-  # end
 
   #####
 

@@ -5,10 +5,10 @@ import type { PageLoad } from './$types'
 
 export const load = (async ({ fetch, url, params, parent }) => {
   const pg_no = +url.searchParams.get('pg') || 1
-  const rdurl = `/_rd/upchaps/${params.sn}/${params.id}`
+  const rdurl = `/_rd/chaps/up/${params.sn}/${params.id}`
 
   const chaps = await api_get<CV.Wnchap[]>(`${rdurl}?pg=${pg_no}`, fetch)
-  const lasts = await api_get<CV.Wnchap[]>(`${rdurl}?lm=4&reverse=true`, fetch)
+  const lasts = await api_get<CV.Wnchap[]>(`${rdurl}?lm=4&_last=true`, fetch)
 
   const { ustem, sroot } = await parent()
   const _title = `Dự án cá nhân của ${ustem.sname}: ${ustem.vname}`

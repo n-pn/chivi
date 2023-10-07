@@ -1,17 +1,18 @@
 import { api_get } from '$lib/api_call'
 import type { PageLoad } from './$types'
 
-export const load = (async ({ fetch, url, parent, params: { stem } }) => {
-  const { nvinfo } = await parent()
-
-  const wn_id = nvinfo.id
+export const load = (async ({ fetch, url, parent, params: { wn, stem } }) => {
+  const wn_id = parseInt(wn, 10)
   const pg_no = +url.searchParams.get('pg') || 1
 
-  const api_url = `/_wn/chaps/${wn_id}/${stem}?pg=${pg_no}`
-  const chaps = await api_get<CV.Wnchap[]>(api_url, fetch)
+  const rdurl = `/_rd/chaps/wn/${stem}/${wn_id}`
+  const chaps = await api_get<CV.Wnchap[]>(`${rdurl}?pg=${pg_no}`, fetch)
+  const lasts = await api_get<CV.Wnchap[]>(`${rdurl}?lm=4&_last=true`, fetch)
+
+  const { nvinfo } = await parent()
 
   const _title = `Danh sách chương - ${nvinfo.vtitle}`
   const _board = `ns:${wn_id}:${stem}`
 
-  return { chaps, pg_no, _title, _board, ontab: 'ch' }
+  return { chaps, lasts, pg_no, _title, _board, ontab: 'ch' }
 }) satisfies PageLoad

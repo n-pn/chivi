@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
   import { goto } from '$app/navigation'
   import { api_call } from '$lib/api_call'
@@ -110,4 +110,4 @@
     gap: 0.75rem;
     align-items: flex-end;
   }
-</style>
+</style> -->

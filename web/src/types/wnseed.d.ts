@@ -20,6 +20,17 @@ declare namespace CV {
     privi_map: [number, number, number] = [0, 1, 1]
   }
 
+  interface Rdstem {
+    sname: string
+    sn_id: string
+
+    chmax: number // chap_count
+    utime: number // updated_at
+
+    privi: number = 1
+    gifts: number = 2
+  }
+
   interface Nslist {
     _base: Chroot
     _user: Chroot

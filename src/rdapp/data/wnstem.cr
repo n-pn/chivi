@@ -1,19 +1,18 @@
 require "crorm"
 
 require "../../_data/_data"
-require "../../rdapp/_raw/raw_rmstem"
-require "./chinfo"
-require "./seed_type"
+require "../_raw/raw_rmstem"
 
-class WN::Wnstem
+require "./chrepo"
+require "./wnchap"
+
+class RD::Wnstem
   ############
 
   class_getter db : DB::Database = PGDB
 
   include Crorm::Model
   schema "wnseeds", :postgres, strict: false
-
-  field id : Int32, auto: true
 
   field wn_id : Int32 = 0, pkey: true
   field sname : String = "", pkey: true
@@ -36,10 +35,16 @@ class WN::Wnstem
   field updated_at : Time = Time.utc
 
   @[DB::Field(ignore: true, auto: true)]
-  getter chap_list : Crorm::SQ3 { Chinfo.load(@sname, @s_bid) }
-
-  @[DB::Field(ignore: true, auto: true)]
-  getter seed_type : SeedType { SeedType.parse(sname) }
+  @[JSON::Field(ignore: true)]
+  getter crepo : Chrepo do
+    Chrepo.load("wn#{@sname}/#{@wn_id}").tap do |repo|
+      repo.zname = ""
+      repo.chmax = @chap_total
+      repo.wn_id = @wn_id
+      repo.gifts = 2
+      repo.plock = @privi.to_i
+    end
+  end
 
   #########
 
@@ -104,7 +109,7 @@ class WN::Wnstem
 
     raise "to be implemented!"
 
-    # chaps = self.chap_list.all(&.<< "where ch_no > 0")
+    # chaps = self.crepo.all(&.<< "where ch_no > 0")
 
     # clist.open_ro do |db|
     #   sql = "select ch_no, s_cid from chaps"
@@ -146,7 +151,6 @@ class WN::Wnstem
 
   def upsert!(query = @@schema.upsert_stmt, args_ = self.db_values, db = @@db)
     entry = db.write_one(query, *args_, as: self.class)
-    @id = entry.id
     self
   end
 
@@ -156,6 +160,8 @@ class WN::Wnstem
 
     query = @@schema.update_stmt(%w{chap_total mtime})
     @@db.exec(query, @chap_total, @mtime, @wn_id, @sname)
+
+    self.crepo.chmax = @chap_total
   end
 
   ###
@@ -188,86 +194,16 @@ class WN::Wnstem
   end
 
   private def sync_with_remote!(rmstem : RawRmstem, mode : Int32 = 0)
-    chlist = rmstem.extract_clist!
+    clist = rmstem.extract_clist!
+    return if clist.empty?
 
-    return if chlist.empty?
-    max_ch_no = chlist.size
-
-    # FIXME: check for real last_chap and offset
-    # if max_ch_no > 0
-    #   chap_list = chap_list[max_ch_no..]
-    # end
-
-    # @_flag = parser.status_int.to_i
-
-    self.upsert_chap_zinfos!(chlist)
-    self.update_stats!(max_ch_no, rmstem.update_int)
-  end
-
-  private def upsert_chap_zinfos!(chlist)
-    Chinfo.upsert_zinfos!(self.chap_list, chlist)
-  end
-
-  def update_chap_vinfos!(chmin = 1, chmax = 99999)
-    ch_nos, zinfos = Chinfo.get_zinfos(self.chap_list, chmin, chmax)
-    output = Chinfo.gen_vinfos_from_mt(ch_nos, zinfos, @wn_id)
-    Chinfo.update_vinfos!(self.chap_list, output)
-  rescue ex
-    Log.error(exception: ex) { [chmin, chmax] }
-  end
-
-  ###
-
-  def word_count(chmin = 1, chmax = @chap_total) : Int32
-    Chinfo.word_count(self.chap_list, chmin, chmax)
-  end
-
-  def get_chaps(pg_no : Int32, limit = 32)
-    chmax = pg_no &* limit
-    chmin = chmax &- limit
-
-    chmax = @chap_total if chmax > @chap_total
-    Chinfo.get_all(self.chap_list, chmin: chmin, chmax: chmax)
-  end
-
-  def top_chaps(limit : Int32 = 4)
-    chmax = @chap_total
-    Chinfo.get_top(self.chap_list, chmax: chmax, limit: limit)
-  end
-
-  def find_chap(ch_no : Int32)
-    Chinfo.find(self.chap_list, ch_no)
-  end
-
-  def load_chap(ch_no : Int32)
-    find_chap(ch_no) || Chinfo.new(ch_no)
-  end
-
-  def prev_href(cinfo : Chinfo, p_idx : Int32 = 1)
-    return cinfo.part_href(p_idx &- 1) if p_idx > 1
-    self.find_prev(cinfo.ch_no).try(&.part_href(-1))
-  end
-
-  def find_prev(ch_no : Int32)
-    Chinfo.find_prev(self.chap_list, ch_no)
-  end
-
-  def next_href(cinfo : Chinfo, p_idx : Int32 = 1)
-    return cinfo.part_href(p_idx &+ 1) if p_idx < cinfo.psize
-    self.find_succ(cinfo.ch_no).try(&.part_href(1))
-  end
-
-  def find_succ(ch_no : Int32)
-    Chinfo.find_succ(self.chap_list, ch_no)
-  end
-
-  def save_chap!(chinfo : Chinfo) : Nil
-    chinfo.upsert!(db: self.chap_list)
+    self.crepo.upsert_zinfos!(clist)
+    self.update_stats!(clist.size, rmstem.update_int)
   end
 
   def delete_chaps!(from : Int32 = 1, upto : Int32 = self.chap_total)
     query = "delete from chinfos where ch_no >= $1 and ch_no <= $2"
-    self.chap_list.exec query, from, upto
+    self.crepo.exec query, from, upto
     @chap_total = from &- 1
   end
 
@@ -279,7 +215,7 @@ class WN::Wnstem
   end
 
   def self.all_by_wn_id(wn_id : Int32) : Array(self)
-    stmt = self.schema.select_stmt(&.<< " where wn_id = $1 order by mtime desc")
+    stmt = self.schema.select_stmt(&.<< " where wn_id = $1 and sname like '~%'")
     self.db.query_all(stmt, wn_id, as: self)
   end
 
@@ -313,12 +249,6 @@ class WN::Wnstem
     self.db.exec <<-SQL, wn_id, sname, s_bid
       insert into wnseeds(wn_id, sname, s_bid) values ($1, $2, $3)
       on conflict do update set s_bid = excluded.s_bid
-    SQL
-  end
-
-  def self.soft_delete!(wn_id : Int32, sname : String)
-    self.db.exec <<-SQL, wn_id, sname
-      update wnseeds set wn_id = -wn_id where wn_id = $1 and sname = $2
     SQL
   end
 

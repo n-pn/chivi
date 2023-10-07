@@ -8,9 +8,18 @@
 
   export let data: LayoutData
 
-  $: ({ nvinfo, seed_list, curr_seed, ustems } = data)
+  $: ({ nvinfo, curr_seed } = data)
   $: pg_no = +$page.url.searchParams.get('pg') || 1
   let show_more = false
+
+  $: ({ wstems = [], ustems = [], rstems = [] } = data.bstems)
+  const find_stem = (wstems: CV.Rdstem[], sname: string) => {
+    return wstems.find((x) => x.sname == sname) || { sname, chmax: 0 }
+  }
+
+  $: avail_stem = find_stem(wstems, '~avail')
+  $: draft_stem = find_stem(wstems, '~draft')
+  $: chivi_stem = find_stem(wstems, '~chivi')
 </script>
 
 <div class="seed-list">
@@ -21,31 +30,31 @@
     data-tip-loc="bottom">
     <div class="seed-label">Tổng hợp</div>
     <div class="seed-stats">
-      <strong>{seed_list.avail.chmax}</strong> chương
+      <strong>{avail_stem.chmax}</strong> chương
     </div>
   </a>
 
   <a
-    href={seed_path(nvinfo.bslug, seed_list.draft.sname, pg_no)}
+    href={seed_path(nvinfo.bslug, '~draft', pg_no)}
     class="seed-name"
-    class:_active={seed_list.draft.sname == curr_seed.sname}
+    class:_active={curr_seed.sname == '~draft'}
     data-tip="Danh sách chương tạm thời"
     data-tip-loc="bottom">
     <div class="seed-label">Tạm thời</div>
     <div class="seed-stats">
-      <strong>{seed_list.draft.chmax}</strong> chương
+      <strong>{draft_stem.chmax}</strong> chương
     </div>
   </a>
 
   <a
     href={seed_path(nvinfo.bslug, '~chivi', pg_no)}
     class="seed-name"
-    class:_active={seed_list.chivi.sname == curr_seed.sname}
+    class:_active={curr_seed.sname == '~chivi'}
     data-tip="Danh sách chương chính thức"
     data-tip-loc="bottom">
     <div class="seed-label">Chính thức</div>
     <div class="seed-stats">
-      <strong>{seed_list.chivi.chmax}</strong> chương
+      <strong>{chivi_stem.chmax}</strong> chương
     </div>
   </a>
 
@@ -58,7 +67,7 @@
     <div class="seed-label">Nguồn khác</div>
 
     <div class="seed-stats">
-      <strong>{seed_list.globs.length + ustems.length}+</strong> nguồn
+      <strong>{rstems.length + ustems.length}+</strong> nguồn
     </div>
   </button>
 </div>
@@ -66,13 +75,13 @@
 {#if show_more}
   <h4 class="title">Sưu tầm cá nhân:</h4>
   <div class="seed-list _extra">
-    {#each ustems as { sname, id: up_id, chap_count: chmax }}
+    {#each ustems as { sname, sn_id, chmax }}
       <a
-        href="/up/{sname}:{up_id}"
+        href="/up/{sname}:{sn_id}"
         class="seed-name _sub"
         data-tip="Danh sách chương cá nhân của {sname}"
         data-tip-loc="bottom">
-        <div class="seed-label">{sname}:{up_id}</div>
+        <div class="seed-label">{sname}:{sn_id}</div>
         <div class="seed-stats"><strong>{chmax}</strong> chương</div>
       </a>
     {/each}
@@ -89,9 +98,9 @@
 
   <h4 class="title">Nguồn liên kết ngoài:</h4>
   <div class="seed-list _extra">
-    {#each seed_list.globs as { sname, chmax }}
+    {#each rstems as { sname, sn_id, chmax }}
       <a
-        href={seed_path(nvinfo.bslug, sname, pg_no)}
+        href="/rm/{sname}:{sn_id}"
         class="seed-name _sub"
         class:_active={sname == curr_seed.sname}>
         <div class="seed-label">{sname}</div>

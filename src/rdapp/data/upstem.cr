@@ -39,7 +39,7 @@ class RD::Upstem
   @[JSON::Field(ignore: true)]
   getter crepo : Chrepo do
     Chrepo.load("up#{@sname}/#{@id}").tap do |repo|
-      repo.zname = "#{@zname}"
+      repo.zname = @zname
       repo.chmax = @chap_count
       repo.wn_id = @wninfo_id || 0
       repo.gifts = @gifts
