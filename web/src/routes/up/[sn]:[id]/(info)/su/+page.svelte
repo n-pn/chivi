@@ -53,7 +53,7 @@
 
   const update_conf = async () => {
     try {
-      ustem = await api_call(`/_up/stems/${ustem.id}`, form, 'PATCH')
+      ustem = await api_call(`/_rd/upstems/${ustem.id}`, form, 'PATCH')
       goto(sroot)
     } catch (ex) {
       errs = ex.body.message

@@ -1,7 +1,7 @@
 require "../../cv_srv"
 require "../core/*"
 
-require "../../rdlib/data/chdata"
+require "../../rdapp/data/chpart"
 
 abstract class AC::Base
 end

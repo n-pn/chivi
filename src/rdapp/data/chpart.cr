@@ -1,13 +1,12 @@
 require "http/client"
 
-struct RD::Chdata
+struct RD::Chpart
   TXT_DIR = "var/texts"
-  DB3_DIR = "var/stems"
 
-  @base_path : String
+  @cpath : String
 
-  def initialize(spath : String)
-    @base_path = "#{TXT_DIR}/#{spath}"
+  def initialize(cpath : String)
+    @cpath = "#{TXT_DIR}/#{cpath}"
   end
 
   private def read_file(fpath : String, &)
@@ -21,7 +20,7 @@ struct RD::Chdata
 
   @[AlwaysInline]
   def file_path(fkind : String)
-    "#{@base_path}.#{fkind}"
+    "#{@cpath}.#{fkind}"
   end
 
   def read(fkind : String = "raw.txt")
@@ -44,39 +43,25 @@ struct RD::Chdata
     self.read_file(self.file_path("#{m_alg}.#{mtype}"))
   end
 
-  def read_con(m_alg : String = "avail", force = false)
+  def read_con(m_alg : String = "mtl_1", force = false)
     is_existed = false
 
-    mtl_1_path = self.file_path("hmes.con")
-    mtl_2_path = self.file_path("hmeb.con")
-    mtl_3_path = self.file_path("hmeg.con")
-
     case
-    when m_alg == "mtl_1"
-      con_path = mtl_1_path
-    when m_alg == "mtl_2"
-      con_path = mtl_2_path
     when m_alg == "mtl_3"
-      con_path = mtl_3_path
-    when File.file?(mtl_3_path) # mode == avail
-      m_alg = "mtl_3"
-      con_path = mtl_3_path
-      is_existed = true
-    when File.file?(mtl_2_path) # mode == avail
-      m_alg = "mtl_2"
-      con_path = mtl_2_path
-      is_existed = true
+      con_path = self.file_path("hmeg.con")
+    when m_alg == "mtl_2"
+      con_path = self.file_path("hmeb.con")
     else
+      con_path = self.file_path("hmes.con")
       m_alg = "mtl_1"
-      con_path = mtl_1_path
     end
 
-    if is_existed || File.file?(con_path)
+    if File.file?(con_path)
       read_con_file(con_path, m_alg)
     elsif force
       call_hanlp_file_api(self.file_path("raw.txt"), con_path, m_alg)
     else
-      raise "data not parsed!"
+      raise "404"
     end
   end
 

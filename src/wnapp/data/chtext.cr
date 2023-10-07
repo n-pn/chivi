@@ -103,7 +103,7 @@ class WN::Chtext
   end
 
   def save_text!(paras : Array(String), title : String = paras.shift) : String
-    parts, sizes, cksum = ChapUtil.split_rawtxt(lines: paras, title: title)
+    parts, sizes, cksum = ChapUtil.split_parts(lines: paras, title: title)
     save_text!(parts, cksum: cksum, sizes: sizes)
   end
 

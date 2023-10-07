@@ -2,6 +2,7 @@ require "./_m1_ctrl_base"
 require "./m1_tran_data"
 
 require "../../_data/logger/qtran_xlog"
+require "../../rdapp/data/chinfo"
 
 class M1::TranCtrl < AC::Base
   base "/_m1/qtran"
@@ -14,7 +15,7 @@ class M1::TranCtrl < AC::Base
     plain = false
     lines = [] of String
 
-    RD::Chdata.new(fpath).read_raw do |line|
+    RD::Chpart.new(fpath).read_raw do |line|
       data = plain ? mcore.cv_plain(line) : mcore.cv_title(line)
       lines << data.to_txt
       plain = true
@@ -177,22 +178,25 @@ class M1::TranCtrl < AC::Base
     File.open(log_file, "a", &.puts(xlog.to_json))
   end
 
-  @[AC::Route::POST("/tl_mulu")]
-  def tl_mulu(wn_id : Int32 = 0)
-    input = request.body.try(&.gets_to_end) || ""
+  @[AC::Route::PUT("/tl_mulu")]
+  def tl_mulu(dname : String, wn_id : Int32 = 0, start : Int32 = 1, limit : Int32 = 9999)
     cv_mt = MtCore.init(wn_id)
 
-    lines = String.build do |str|
-      input.each_line do |line|
-        unless line.empty?
-          line = TextUtil.normalize(line)
-          cv_mt.cv_title(line).to_txt(str)
-        end
-
-        str << '\n'
-      end
+    vtran = Hash(String, String).new do |hash, zstr|
+      vstr = cv_mt.cv_title(TextUtil.normalize(zstr)).to_txt
+      hash[zstr] = vstr
     end
 
-    render text: lines
+    crepo = RD::Chinfo.db(dname)
+    clist = RD::Chinfo.get_all(crepo, start: start, limit: limit)
+
+    clist.each do |cinfo|
+      cinfo.vtitle = vtran[cinfo.ztitle]
+      cinfo.vchdiv = vtran[cinfo.zchdiv]
+    end
+
+    RD::Chinfo.update_vinfos!(crepo, clist)
+
+    render text: "ok"
   end
 end

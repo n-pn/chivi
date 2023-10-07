@@ -47,20 +47,20 @@ module ChapUtil
   # split raw chapter text to multi parts
   # return parts (with title as first element), sizes of each part
   # and the checksum for the content (unique for part spliting)
-  def split_rawtxt(lines : Array(String), title : String = lines.shift) : SplitOutput
+  def split_parts(paras : Array(String), title : String = paras.shift) : SplitOutput
     parts = [title]
     sizes = [title.size]
 
     cksum = calc_cksum(title)
-    return {parts, sizes, cksum} if lines.empty?
+    return {parts, sizes, cksum} if paras.empty?
 
-    limit = char_limit(lines.sum(&.size))
+    limit = char_limit(paras.sum(&.size))
     cksum = calc_cksum('\n', cksum)
 
     cpart = String::Builder.new
     count = 0
 
-    lines.each do |line|
+    paras.each do |line|
       cksum = calc_cksum('\n', cksum)
       cksum = calc_cksum(line, cksum)
 

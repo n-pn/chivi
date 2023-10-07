@@ -2,7 +2,7 @@ require "crorm"
 
 require "./chflag"
 require "./seed_util"
-require "../../rdlib/_raw/raw_rmchap"
+require "../../rdapp/_raw/raw_rmchap"
 
 class WN::OldChap
   include DB::Serializable
@@ -301,7 +301,7 @@ class WN::Chinfo
 
     case xpath = old_chap._path
     when ""
-      if Rmhost.is_remote?(sname)
+      if Rmhost.remote?(sname)
         new_chap.spath = "#{sname}/#{sn_id}/#{old_chap.s_cid}"
         new_chap.rlink = Rmhost.chap_url(sname, sn_id, old_chap.s_cid)
       end
@@ -310,7 +310,7 @@ class WN::Chinfo
       sname = SeedUtil.fix_sname(sname)
 
       new_chap.spath = "#{sname}/#{sn_id}/#{s_cid}"
-      new_chap.rlink = Rmhost.chap_url(sname, sn_id, s_cid) if Rmhost.is_remote?(sname)
+      new_chap.rlink = Rmhost.chap_url(sname, sn_id, s_cid) if Rmhost.remote?(sname)
     when .starts_with?('/')
       new_chap.spath = "#{sname}/#{sn_id}/#{old_chap.s_cid}"
       new_chap.rlink = Rmhost.chap_url(sname, sn_id, old_chap.s_cid)

@@ -1,5 +1,5 @@
 export interface FileReqInit extends CV.Rdopts {
-  force: boolean
+  force?: boolean
 }
 
 export async function call_bt_zv_file(
@@ -31,11 +31,9 @@ export async function call_hviet_file(
   rinit: RequestInit = { cache: 'force-cache' },
   fetch = globalThis.fetch
 ): Promise<CV.Hvdata> {
-  const url = `/_ai/hviet?fpath=${fpath}`
+  const url = `/_ai/hviet?fpath=${fpath}&force=true`
   const res = await fetch(url, rinit)
-
-  if (res.ok) return await res.json()
-  return { hviet: [], tspan: 0, error: await res.text() }
+  return await res.json()
 }
 
 export async function call_mt_ai_file(

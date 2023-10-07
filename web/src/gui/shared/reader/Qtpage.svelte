@@ -15,6 +15,8 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let ztext: string[] = []
+  export let hviet: [string, string][][] = []
+
   export let ropts: CV.Rdopts
   export let label = ''
   export let state = 0
@@ -54,10 +56,7 @@
 
     state = 0
     if (vtran.error) return
-
-    lookup_data.update((x) => {
-      return { ...x, ropts, ztext, [rmode]: vtran.lines }
-    })
+    lookup_data.put({ ropts, ztext, hviet, [rmode]: vtran.lines })
   }
 </script>
 

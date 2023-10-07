@@ -1,7 +1,7 @@
-require "./_up_ctrl_base"
+require "./_ctrl_base"
 
-class UP::UpstemCtrl < AC::Base
-  base "/_up/stems"
+class RD::UpstemCtrl < AC::Base
+  base "/_rd/upstems"
 
   @[AC::Route::GET("/")]
   def index(
@@ -52,21 +52,7 @@ class UP::UpstemCtrl < AC::Base
 
   @[AC::Route::GET("/:up_id")]
   def show(up_id : Int32)
-    if ustem = Upstem.find(up_id)
-      json = {ustem: ustem, chaps: ustem.top_chaps(4)}
-      render json: json
-    else
-      render 404, text: "Dự án không tồn tại"
-    end
-  end
-
-  @[AC::Route::GET("/:up_id/edit")]
-  def edit(up_id : Int32)
-    if ustem = Upstem.find(up_id)
-      render json: ustem
-    else
-      render 404, text: "Dự án không tồn tại"
-    end
+    render json: get_ustem(up_id)
   end
 
   @[AC::Route::POST("/:up_id", body: form)]

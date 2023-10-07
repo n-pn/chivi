@@ -9,6 +9,9 @@
   export let rstem: CV.Rdstem
   export let rdata: CV.Chpart
 
+  $: ({ stype, sname, sn_id } = rstem)
+  $: ({ ch_no, p_idx } = rdata)
+
   $: vcoin_cost = Math.round(rstem.multp * rdata.zsize * 0.01) / 1000
 
   let msg_text = ''
@@ -17,7 +20,7 @@
   const unlock_chap = async () => {
     msg_text = 'Đang mở khoá chương...'
 
-    const url = `/_${rstem.stype}/unlock/${rstem.sname}/${rstem.sn_id}/${rdata.ch_no}/${rdata.p_idx}`
+    const url = `/_rd/unlock/${stype}/${sname}/${sn_id}/${ch_no}/${p_idx}`
     const res = await fetch(url, { method: 'PUT' })
 
     if (!res.ok) return alert(await res.text())
@@ -38,7 +41,7 @@
 
 <section>
   <h1 class="em">
-    Lỗi: Chương {rdata.ch_no} phần {rdata.p_idx} cần thiết mở khóa bằng vcoin.
+    Lỗi: Chương {ch_no} phần {p_idx} cần thiết mở khóa bằng vcoin.
   </h1>
 
   <p>

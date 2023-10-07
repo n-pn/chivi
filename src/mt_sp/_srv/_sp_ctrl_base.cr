@@ -1,6 +1,6 @@
 require "../../cv_srv"
 require "../data/*"
-require "../../rdlib/data/chdata"
+require "../../rdapp/data/chpart"
 
 abstract class AC::Base
   # add_parser("text/plain") { |_klass, body_io| body_io.gets_to_end }

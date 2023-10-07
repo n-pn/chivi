@@ -30,6 +30,8 @@ module CV_ENV
   class_getter m1_port = ENV["CV_M1_PORT"]?.try(&.to_i?) || 5110 # mt_v1 engine
   class_getter ai_port = ENV["CV_AI_PORT"]?.try(&.to_i?) || 5120 # mt_v2 engine
 
+  class_getter rd_port = ENV["CV_RD_PORT"]?.try(&.to_i?) || 5200
+
   class_getter sp_port = ENV["CV_SP_PORT"]?.try(&.to_i?) || 5300 # mt_sp helper
   class_getter ys_port = ENV["CV_YS_PORT"]?.try(&.to_i?) || 5400 # ysapp server
 
@@ -38,6 +40,8 @@ module CV_ENV
   class_getter be_host = "http://localhost:#{be_port}"
   class_getter wn_host = "http://localhost:#{wn_port}"
   class_getter up_host = "http://localhost:#{up_port}"
+
+  class_getter rd_host = "http://localhost:#{rd_port}"
 
   class_getter m1_host = "http://localhost:#{m1_port}"
   class_getter ai_host = "http://localhost:#{ai_port}"

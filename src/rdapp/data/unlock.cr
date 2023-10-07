@@ -1,7 +1,7 @@
-require "../_data"
-require "./xvcoin"
+require "../../_data/_data"
+require "../../_data/member/xvcoin"
 
-class CV::Unlock
+class RD::Unlock
   class_getter db : DB::Database = PGDB
   ###
 
@@ -58,9 +58,10 @@ class CV::Unlock
     data.tap(&.mtime = Time.utc.to_unix)
   end
 
-  def self.unlock(ustem : UP::Upstem, cinfo : UP::Chinfo, vu_id : Int32, p_idx : Int32)
+  def self.unlock(ustem : Upstem, cinfo : Chinfo, vu_id : Int32, p_idx : Int32)
     owner = ustem.viuser_id
-    ulkey = cinfo.part_name(p_idx)
+    ulkey = ustem.crepo.part_name(cinfo, p_idx)
+
     zsize = cinfo.sizes[p_idx]? || 0
     return {nil, 0} if ulkey.empty? || zsize == 0
 
@@ -69,7 +70,7 @@ class CV::Unlock
     # TODO: convert vcoin to vnd
     amount = unlock.vcoin / 1000
 
-    remain = Xvcoin.micro_transact(sender: vu_id, target: owner, amount: amount)
+    remain = CV::Xvcoin.micro_transact(sender: vu_id, target: owner, amount: amount)
     remain ? {unlock.save!, remain} : {nil, 0}
   end
 
@@ -83,7 +84,7 @@ class CV::Unlock
     # TODO: convert vcoin to vnd
     amount = unlock.vcoin / 1000
 
-    remain = Xvcoin.micro_transact(sender: vu_id, target: -1, amount: amount)
+    remain = CV::Xvcoin.micro_transact(sender: vu_id, target: -1, amount: amount)
     remain ? {unlock.save!, remain} : {nil, 0}
   end
 end

@@ -19,10 +19,9 @@
   $: owner =
     form.viuser_id == 0 || form.viuser_id == $_user.vu_id || $_user.vu_id > 3
 
-  const action = '/_up/stems'
+  $: action = form.id ? `/_rd/upstems/${form.id}` : '/_rd/upstems'
 
   async function submit() {
-    const action = form.id ? `/_up/stems/${form.id}` : '/_up/stems'
     const body = { ...form, labels: labels.split(',') }
 
     try {
@@ -46,7 +45,7 @@
   }
 
   const delete_project = async () => {
-    const res = await fetch(`/_up/stems/${form.id}`, { method: 'DELETE' })
+    const res = await fetch(`/_rd/upstems/${form.id}`, { method: 'DELETE' })
 
     if (res.ok) goto('/up')
     else errors = await res.text()

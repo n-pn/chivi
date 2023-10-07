@@ -1,9 +1,9 @@
 require "crorm"
 
-require "../_util/book_util"
-require "./raw_json/raw_tubook"
+require "../../_util/book_util"
+require "../_raw/raw_tubook"
 
-class ZR::Tubook
+class RD::Tubook
   class_getter db_path = "var/zroot/tubooks.db3"
 
   class_getter init_sql = <<-SQL

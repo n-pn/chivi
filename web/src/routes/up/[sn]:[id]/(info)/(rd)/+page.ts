@@ -4,12 +4,13 @@ import { nav_link } from '$utils/header_util'
 import type { PageLoad } from './$types'
 
 export const load = (async ({ fetch, url, params, parent }) => {
-  const { ustem, sroot } = await parent()
-
   const pg_no = +url.searchParams.get('pg') || 1
-  const api_url = `/_up/chaps/${+params.id}?pg=${pg_no}`
+  const rdurl = `/_rd/upchaps/${params.sn}/${params.id}`
 
-  const chaps = await api_get<CV.Wnchap[]>(api_url, fetch)
+  const chaps = await api_get<CV.Wnchap[]>(`${rdurl}?pg=${pg_no}`, fetch)
+  const lasts = await api_get<CV.Wnchap[]>(`${rdurl}?lm=4&reverse=true`, fetch)
+
+  const { ustem, sroot } = await parent()
   const _title = `Dự án cá nhân của ${ustem.sname}: ${ustem.vname}`
 
   const _meta: App.PageMeta = {
@@ -19,5 +20,5 @@ export const load = (async ({ fetch, url, params, parent }) => {
     ],
   }
 
-  return { chaps, pg_no, sroot, _title, _meta, intab: 'rd', ontab: 'ch' }
+  return { chaps, lasts, pg_no, sroot, _title, _meta, intab: 'rd', ontab: 'ch' }
 }) satisfies PageLoad

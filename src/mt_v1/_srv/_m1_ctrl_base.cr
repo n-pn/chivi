@@ -3,7 +3,7 @@ require "../core/m1_core"
 require "../core/tl_util"
 
 require "../../_util/hash_util"
-require "../../rdlib/data/chdata"
+require "../../rdapp/data/chpart"
 
 require "../../mt_ai/core/qt_core"
 

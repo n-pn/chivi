@@ -29,7 +29,7 @@ export const load = (async ({ url: { searchParams }, fetch }) => {
 
   const id = searchParams.get('id')
   if (id) {
-    const href = `/_up/stems/${id}/edit`
+    const href = `/_rd/upstems/${id}/edit`
     form = await api_get<CV.Upstem>(href, fetch)
   } else {
     form.wninfo_id = +searchParams.get('wn')

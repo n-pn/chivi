@@ -3,7 +3,7 @@ require "sqlite3"
 
 ENV["CV_ENV"] ||= "production"
 
-require "../../rdlib/data/rmstem"
+require "../../rdapp/data/rmstem"
 require "../../mt_ai/core/qt_core"
 
 RM_SQL = "select * from rmstems where btitle_vi = ''"

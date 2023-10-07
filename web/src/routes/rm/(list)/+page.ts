@@ -23,7 +23,7 @@ export const load = (async ({ url, fetch }) => {
     lb: url.searchParams.get('lb'),
   }
 
-  const props = await api_get<Data>(`/_up/stems${url.search}`, fetch)
+  const props = await api_get<Data>(`/_rd/upstems${url.search}`, fetch)
 
   return { props, query, _title, _meta, ontab: 'list' }
 }) satisfies PageLoad

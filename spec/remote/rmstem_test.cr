@@ -1,7 +1,7 @@
 require "json"
 require "colorize"
 
-require "../../src/rdlib/_raw/raw_rmstem.cr"
+require "../../src/rdapp/_raw/raw_rmstem.cr"
 
 def do_test(sname : String, b_id : String | Int32, fresh : Bool = false)
   puts "\n[#{Rmhost.stem_url(sname, b_id)}]".colorize.green.bold

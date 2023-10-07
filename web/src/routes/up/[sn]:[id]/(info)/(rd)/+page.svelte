@@ -12,7 +12,7 @@
 
   import ChapList from './ChapList.svelte'
 
-  import type { PageData } from '../(reader)/$types'
+  import type { PageData } from './$types'
   export let data: PageData
 
   $: ({ ustem, lasts, chaps, pg_no } = data)

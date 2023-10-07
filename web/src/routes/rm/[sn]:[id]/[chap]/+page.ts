@@ -10,7 +10,7 @@ export const load = (async ({ url, parent, params, fetch }) => {
   const up_id = +params.id
   const [ch_no, p_idx = 1] = params.chap.split('_').map((x) => parseInt(x))
 
-  const rdata_api = `/_up/chaps/${up_id}/${ch_no}/${p_idx}`
+  const rdata_api = `/_rd/rmchaps/${up_id}/${ch_no}/${p_idx}`
 
   const rdata = await api_get<CV.Chpart>(rdata_api, fetch)
   const ropts = get_ropts(rstem, rdata, url)

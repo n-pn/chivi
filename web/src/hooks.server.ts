@@ -19,6 +19,8 @@ const api_hosts = {
   _wn: `127.0.0.1:${import.meta.env.VITE_WN_PORT || 5020}`,
   _up: `127.0.0.1:${import.meta.env.VITE_UP_PORT || 5030}`,
 
+  _rd: `127.0.0.1:${import.meta.env.VITE_RD_PORT || 5200}`,
+
   _m1: `127.0.0.1:${import.meta.env.VITE_M1_PORT || 5110}`,
   _ai: `127.0.0.1:${import.meta.env.VITE_AI_PORT || 5120}`,
 

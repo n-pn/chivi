@@ -1,17 +1,12 @@
 import { api_get } from '$lib/api_call'
 import type { LayoutLoad } from './$types'
 
-export interface StemData {
-  ustem: CV.Upstem
-  chaps: CV.Wnchap[]
-}
-
 export const load = (async ({ fetch, params }) => {
   const sname = params.sn
   const up_id = +params.id
   const sroot = `/up/${sname}:${up_id}`
 
-  const { ustem, chaps } = await api_get<StemData>(`/_up/stems/${up_id}`, fetch)
+  const ustem = await api_get<CV.Upstem>(`/_rd/upstems/${up_id}`, fetch)
 
   let binfo: CV.Wninfo
 
@@ -20,5 +15,5 @@ export const load = (async ({ fetch, params }) => {
     binfo = await api_get<CV.Wninfo>(bpath, fetch)
   }
 
-  return { ustem, binfo, lasts: chaps, sname, up_id, sroot }
+  return { ustem, binfo, sname, up_id, sroot }
 }) satisfies LayoutLoad

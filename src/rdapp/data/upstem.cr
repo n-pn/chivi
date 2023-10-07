@@ -1,8 +1,9 @@
 require "../../mt_ai/core/qt_core"
 require "../../_data/_data"
-require "./uprepo"
 
-class UP::Upstem
+require "./chrepo"
+
+class RD::Upstem
   class_getter db : DB::Database = PGDB
 
   ###
@@ -36,10 +37,24 @@ class UP::Upstem
 
   @[DB::Field(ignore: true, auto: true)]
   @[JSON::Field(ignore: true)]
-  getter clist : Chrepo { Chrepo.load(@sname, @id.to_s) }
+  getter crepo : Chrepo do
+    Chrepo.load("up#{@sname}/#{@id}").tap do |repo|
+      repo.zname = "#{@zname}"
+      repo.chmax = @chap_count
+      repo.wn_id = @wninfo_id || 0
+      repo.gifts = @gifts
+      repo.plock = 5
+    end
+  end
 
   def initialize(@viuser_id, @sname, @zname, @vname = "", @labels = [] of String)
     after_initialize
+  end
+
+  def after_initialize
+    @vname = MT::QtCore.tl_hvname(@zname) if @vname.empty?
+    @labels.map! { |label| MT::QtCore.tl_hvword(label.strip, cap: true) }
+    @labels.reject!(&.blank?).uniq!
   end
 
   def mkdirs!
@@ -47,25 +62,8 @@ class UP::Upstem
     Dir.mkdir_p("var/texts/up#{@sname}/#{@id}")
   end
 
-  def after_initialize
-    @vname = MT::QtCore.tl_hvname(@zname) if @vname.empty?
-
-    @labels.map! { |label| MT::QtCore.tl_hvword(label.strip, cap: true) }
-    @labels.reject!(&.blank?).uniq!
-  end
-
-  def get_chaps(chmin : Int32, limit : Int32 = 32)
-    chmax = chmin &+ limit
-    chmax = chmax > @chap_count ? @chap_count : chmax
-    self.clist.get_all(chmin: chmin, chmax: chmax)
-  end
-
-  def top_chaps(limit : Int32 = 4)
-    self.clist.get_top(chmax: @chap_count, limit: limit)
-  end
-
   def tl_chap_info!(chmin : Int32 = 0, chmax : Int32 = @chap_count)
-    self.clist.update_vinfos!(@wninfo_id || 0, chmin: chmin, chmax: chmax)
+    self.crepo.update_vinfos!(chmin: chmin, chmax: chmax)
   end
 
   def update_stats!(chmax : Int32, mtime : Int64 = Time.utc.to_unix)
@@ -76,36 +74,16 @@ class UP::Upstem
     @@db.exec(query, @chap_count, @mtime, @id)
   end
 
-  @[AlwaysInline]
-  def gift_chaps
-    return @chap_count if @gifts == 0
-
-    gift_chaps = @chap_count * @gifts // 4
-    gift_chaps < 40 ? 40 : gift_chaps
-  end
-
-  @[AlwaysInline]
-  def chap_plock(ch_no : Int32, vu_id : Int32 = 0)
-    return 0 if @viuser_id == vu_id
-    ch_no <= gift_chaps ? 0 : 5
-  end
-
   #####
 
-  def self.find(id : Int32, uname : Nil = nil)
+  def self.find(id : Int32, sname : Nil = nil)
     query = @@schema.select_stmt(&.<< "where id = $1 limit 1")
     self.db.query_one?(query, id, as: self)
   end
 
-  def self.find(id : Int32, uname : String)
-    query = @@schema.select_stmt do |sql|
-      sql << <<-SQL
-        where id = $1 and viuser_id = (select id from viusers where uname = $2)
-        limit 1
-        SQL
-    end
-
-    self.db.query_one?(query, id, uname, as: self)
+  def self.find(id : Int32, sname : String)
+    query = @@schema.select_stmt(&.<< "where id = $1 and sname = $2 limit 1")
+    self.db.query_one?(query, id, sname, as: self)
   end
 
   def self.build_select_sql(guard : Int32 = 4,

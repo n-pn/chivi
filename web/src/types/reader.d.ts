@@ -68,9 +68,9 @@ declare namespace CV {
 
   interface Hvdata {
     hviet: Array<Array<[string, string]>>
+    ztext: Array<string>
     tspan: number
     mtime?: number
-    ztext?: Array<string>
     error?: string
   }
 

@@ -1,8 +1,8 @@
 require "crorm"
 
 require "../../_data/_data"
-require "../../rdlib/_raw/raw_rmstem"
-
+require "../../rdapp/_raw/raw_rmstem"
+require "./chinfo"
 require "./seed_type"
 
 class WN::Wnstem
@@ -43,7 +43,8 @@ class WN::Wnstem
 
   #########
 
-  def initialize(@wn_id, @sname, @s_bid = wn_id.to_s, @privi = 2_i16)
+  def initialize(@wn_id, @sname, @s_bid = wn_id.to_s)
+    @privi = self.plock(sname).to_i16
   end
 
   def init!(force : Bool = false) : Nil
@@ -82,19 +83,19 @@ class WN::Wnstem
   end
 
   def remote?
-    @sname[0] == '!' && Rmhost.is_remote?(@sname)
+    @sname[0] == '!' && Rmhost.remote?(@sname)
   end
 
   def active?
     remote? && Rmhost.from_sname!(@sname).active?
   end
 
-  def plock
-    case @sname
+  def plock(sname = @sname)
+    case sname
     when "~draft" then 1
     when "~avail" then 2
     when "~chivi" then 3
-    else               2
+    else               3
     end
   end
 

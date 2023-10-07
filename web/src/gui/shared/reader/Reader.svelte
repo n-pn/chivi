@@ -6,6 +6,7 @@
   import { Pager } from '$lib/pager'
 
   import { afterNavigate } from '$app/navigation'
+  import { call_hviet_file } from '$utils/tran_util'
 
   import Lookup2 from '$gui/parts/Lookup2.svelte'
 
@@ -50,12 +51,24 @@
   let l_idx = -1
   let state = 0 // states: 0: fresh, 1: blank, 2: stale
 
-  $: l_max = rdata.ztext.length
+  let ztext = []
+  let hviet = []
 
-  afterNavigate(() => {
+  let l_max = 0
+
+  $: if (browser && ropts.fpath) load_zdata(ropts)
+
+  async function load_zdata(ropts: CV.Rdopts) {
+    const data = await call_hviet_file(ropts)
+    hviet = data.hviet
+    ztext = data.ztext || []
+    l_max = hviet.length
+  }
+
+  afterNavigate(async () => {
+    if (focused_node) focused_node.classList.remove('focus')
     l_idx = -1
     state = 1
-    if (focused_node) focused_node.classList.remove('focus')
   })
 
   $: if (browser && l_idx >= 0) {
@@ -94,7 +107,7 @@
     {:else if rdata.error == 413}
       <Unlock {rstem} {rdata} />
     {:else if ropts.rtype == 'qt' || ropts.rtype == 'mt'}
-      <Qtpage ztext={rdata.ztext} {ropts} {label} bind:state />
+      <Qtpage {ztext} {hviet} {ropts} {label} bind:state />
     {:else}
       Chưa hoàn thiện!
     {/if}

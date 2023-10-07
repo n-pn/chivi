@@ -31,8 +31,9 @@ export const load = (async ({ url, fetch, params: { stem = '' }, parent }) => {
   const info_path = `/_wn/seeds/${wn_id}/${stem}`
   const seed_data = await api_get<SeedData>(info_path, fetch)
 
-  const up_api = `/_up/stems?wn=${wn_id}`
+  const up_api = `/_rd/upstems?wn=${wn_id}`
   const { items: ustems } = await api_get<{ items: CV.Upstem[] }>(up_api, fetch)
+
   const _meta = {
     left_nav: [
       book_nav(nvinfo.bslug, nvinfo.vtitle, 'tl'),

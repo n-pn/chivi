@@ -59,7 +59,7 @@ export const data = {
     }
   },
 
-  async load_data(rinit: RequestInit = { cache: 'default' }) {
+  async reload_data(rinit: RequestInit = { cache: 'default' }) {
     const zdata = get(data)
 
     const { ropts } = zdata
@@ -110,7 +110,7 @@ export const ctrl = {
     const ropts = get(data)
 
     let { fpath, panel: old_panel } = get(ctrl)
-    if (fpath != ropts.ropts.fpath) data.load_data()
+    if (fpath != ropts.ropts.fpath) data.reload_data()
 
     panel ||= old_panel
     ctrl.set({ panel, fpath: ropts.ropts.fpath, actived: true })

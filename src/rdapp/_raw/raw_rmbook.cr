@@ -52,7 +52,7 @@ class RawRmbook
       .sub("最后更新：", "")
   end
 
-  getter update_int : Int64 { RmUtil.parse_rmtime(update_str, @host.time_fmt) }
+  getter update_int : Int64 { Rmutil.parse_rmtime(update_str, @host.time_fmt) }
 
   getter cover : String do
     case cover = @page.get!(@host.book_cover)
@@ -64,7 +64,7 @@ class RawRmbook
 
   getter intro : String do
     case @host.seedname
-    when "!ptwxz"
+    when "!paotian.com"
       node = @page.find!(@host.book_intro[0])
       node.children.each { |child| child.remove! if child.tag_sym.in?(:span, :a) }
       Rmutil.clean_para(node.inner_text('\n'))

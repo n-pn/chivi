@@ -1,18 +1,17 @@
-import { _pgidx, stem_path } from '$lib/kit_path'
+import { _pgidx } from '$lib/kit_path'
 import { api_get } from '$lib/api_call'
 import { nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 
 export const load = (async ({ url, parent, params, fetch }) => {
-  const { ustem } = await parent()
-
-  const up_id = +params.id
   const [ch_no, p_idx = 1] = params.chap.split('_').map((x) => parseInt(x))
 
-  const rdata_api = `/_up/chaps/${up_id}/${ch_no}/${p_idx}`
-
+  const rdata_api = `/_rd/upchaps/${params.sn}/${params.id}/${ch_no}/${p_idx}`
   const rdata = await api_get<CV.Chpart>(rdata_api, fetch)
+
+  const { ustem } = await parent()
+
   const ropts = get_ropts(ustem, rdata, url.searchParams)
 
   const _title = `${rdata.title} - ${ustem.vname}`

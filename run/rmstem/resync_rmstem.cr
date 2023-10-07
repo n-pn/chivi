@@ -5,10 +5,10 @@ require "sqlite3"
 
 ENV["CV_ENV"] = "production"
 
-require "../../src/rdlib/data/rmstem"
+require "../../src/rdapp/data/rmstem"
 require "../../src/wnapp/data/wnstem"
 
-RM_SQL = "select * from rmstems where sname = $1 order by sn_id asc"
+RM_SQL = "select * from rmstems where sname = $1 and _flag <> -404 order by sn_id asc"
 WN_SQL = "select * from wnseeds where sname = $1"
 
 def update(sname : String)

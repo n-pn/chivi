@@ -14,7 +14,8 @@ const proxy = {
 
   '/_db': `http://127.0.0.1:${env.VITE_BE_PORT}`,
   '/_wn': `http://127.0.0.1:${env.VITE_WN_PORT}`,
-  '/_up': `http://127.0.0.1:${env.VITE_UP_PORT}`,
+
+  '/_rd': `http://127.0.0.1:${env.VITE_RD_PORT}`,
 
   '/_m1': `http://127.0.0.1:${env.VITE_M1_PORT}`,
   '/_ai': `http://127.0.0.1:${env.VITE_AI_PORT}`,

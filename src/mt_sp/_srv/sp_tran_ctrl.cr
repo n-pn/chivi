@@ -20,7 +20,7 @@ class SP::TranCtrl < AC::Base
     start = Time.monotonic
     mcore = MT::QtCore.hv_word
 
-    ztext = RD::Chdata.new(fpath).read_raw
+    ztext = RD::Chpart.new(fpath).read_raw
     hviet = ztext.map { |line| mcore.tokenize(line).to_txt }
 
     mtime = Time.utc.to_unix
@@ -57,7 +57,7 @@ class SP::TranCtrl < AC::Base
   @[AC::Route::GET("/btran")]
   def btran_file(fpath : String, force : Bool = true)
     start = Time.monotonic
-    cdata = RD::Chdata.new(fpath)
+    cdata = RD::Chpart.new(fpath)
 
     fpath = cdata.file_path("bt_zv.txt")
 

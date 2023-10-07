@@ -1,6 +1,6 @@
 require "colorize"
 require "option_parser"
-require "../../rdlib/data/rmstem"
+require "../../rdapp/data/rmstem"
 
 # crawl book pages from remote sources
 
@@ -9,6 +9,7 @@ class RmstemResync
 
   def initialize(@sname : String, @conns = 6, @stale = Time.utc - 10.days)
     @host = Rmhost.from_name!(sname)
+    Dir.mkdir_p "var/.keep/rmbook/#{@host.savepath}"
   end
 
   def get_max_bid
@@ -22,23 +23,26 @@ class RmstemResync
     bhtml = @host.load_page(book_href, book_file, stale: @stale)
     rtime = File.info(book_file).modification_time.to_unix
 
-    loop do
-      entry = RD::Rmstem.from_html(bhtml, @sname, sn_id.to_s, force: force)
-      return entry ? entry.upsert! && true : false
-    rescue ex : SQLite3::Exception
-      # puts ex.colorize.red
-      sleep 0.5 # do again if database is locked
-    rescue ex
-      return false
+    entry = RD::Rmstem.from_html(bhtml, @sname, sn_id.to_s, force: force)
+    entry ? entry.upsert! && true : false
+  rescue ex
+    if ex.message.try(&.ends_with?("404"))
+      query = "update rmstems set _flag = 404 where sname = $1 and sn_id = $2"
+      PGDB.exec query, @sname, sn_id.to_s
     end
+
+    false
   end
+
+  RM_SQL = "select sn_id::int from rmstems where sname = $1 and _flag = -404"
 
   def sync_all(lower : Int32, upper : Int32, force = false)
     puts "Syncing [#{@sname}] from #{lower} to #{upper}!".colorize.yellow
 
-    Dir.mkdir_p "var/.keep/rmbook/#{@host.savepath}"
+    skips = PGDB.query_all(RM_SQL, @sname, as: Int32).to_set
 
-    total = upper - lower + 1
+    input = (lower..upper).to_a.reject!(&.in?(skips))
+    total = input.size
 
     inp_ch = Channel({Int32, Int32}).new(total)
     out_ch = Channel(String).new(@conns)
@@ -56,7 +60,7 @@ class RmstemResync
       end
     end
 
-    (lower..upper).each_with_index(1) { |input, index| inp_ch.send({input, index}) }
+    input.each_with_index(1) { |input, index| inp_ch.send({input, index}) }
     total.times { puts out_ch.receive }
   end
 end

@@ -18,13 +18,13 @@
   export let zfrom = 0
   export let zupto = 0
 
-  $: ztext = $data.ztext[l_idx]
-  $: hviet = $data.hviet[l_idx]
+  $: ztext = $data.ztext[l_idx] || ''
+  $: hviet = $data.hviet[l_idx] || []
 
   let entries = []
   let current: Entry[] = []
 
-  $: if (l_idx >= 0) fetch_terms(ztext, zfrom)
+  $: if (ztext && l_idx >= 0) fetch_terms(ztext, zfrom)
 
   async function fetch_terms(input: string, zfrom: number) {
     entries = entries_cache[input] ||= []

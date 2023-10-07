@@ -8,7 +8,7 @@ class MT::AiTranCtrl < AC::Base
     start = Time.monotonic
     force = force && _privi >= 0
 
-    cdata = RD::Chdata.new(fpath)
+    cdata = RD::Chpart.new(fpath)
     mdata, _algo = cdata.read_con(_algo, force: force)
 
     ai_mt = AiCore.new(pdict)
@@ -29,8 +29,13 @@ class MT::AiTranCtrl < AC::Base
 
     render json: json
   rescue ex
-    Log.error(exception: ex) { [fpath, pdict] }
-    render 500, json: {lines: [] of String, error: ex.message}
+    status = ex.message == "404" ? 404 : 500
+
+    if status == 500
+      Log.error(exception: ex) { [fpath, pdict] }
+    end
+
+    render status, json: {lines: [] of String, error: ex.message}
   end
 
   @[AC::Route::POST("/reload")]

@@ -279,14 +279,14 @@ class Rmhost
     Hash(String, String).from_yaml File.read("#{CONF_DIR}/../hosts.yml")
   end
 
-  def self.is_remote?(sname : String)
-    mapping.has_key?(sname)
+  def self.remote?(sname : String)
+    self.mapping.has_key?(sname)
   end
 
   CACHED = {} of String => self
 
   def self.from_host!(host : String)
-    host = host.sub("www.", "")
+    host = host.lchop("www.")
     CACHED[host] ||= self.from_yaml(File.read("#{CONF_DIR}/#{host}.yml"))
   end
 
