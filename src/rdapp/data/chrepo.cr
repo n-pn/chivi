@@ -20,6 +20,7 @@ class RD::Chrepo
   property zname : String = ""
 
   def initialize(@sroot)
+    Dir.mkdir_p("var/texts/#{sroot}")
     @info_db = Chinfo.db(sroot)
   end
 
@@ -156,8 +157,6 @@ class RD::Chrepo
   end
 
   private def do_save_raw!(cinfo : Chinfo, paras : Array(String), title : String = paras.shift)
-    Dir.mkdir_p(File.dirname("var/texts/#{@sroot}"))
-
     parts, sizes, cksum = ChapUtil.split_parts(paras: paras, title: title)
 
     cinfo.cksum = ChapUtil.cksum_to_s(cksum)

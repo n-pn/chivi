@@ -75,7 +75,7 @@ class M1::ViDict
   CACHED = {} of Int32 => self
 
   def self.load(id : Int32)
-    CACHED[id] ||= find!(id)
+    CACHED[id] ||= find_by_id!(id)
   end
 
   def self.load(dname : String)

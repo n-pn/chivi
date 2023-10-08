@@ -109,7 +109,7 @@ class RD::Chinfo
 
   @@get_all_sql : String = @@schema.select_stmt(&.<< " where ch_no >= $1 and ch_no <= $2 order by ch_no asc limit $3")
 
-  def self.get_all(db : DBX, start : Int32 = 0, limit : Int32 = 32, chmax : Int32 = 9999)
+  def self.get_all(db : DBX, start : Int32 = 1, limit : Int32 = 32, chmax : Int32 = 9999)
     db.query_all(@@get_all_sql, start, chmax, limit, as: self)
   end
 
@@ -170,8 +170,8 @@ class RD::Chinfo
     end
   end
 
-  def self.update_vinfos!(cpath : String, wn_id : Int32 = 0, start = 0, limit = 9999)
-    res = "#{CV_ENV.m1_host}/_m1/qtran/tl_mulu?cpath=#{cpath}&wn_id=#{wn_id}&start=#{start}&limit=#{limit}"
+  def self.update_vinfos!(ch_db : String, wn_id : Int32 = 0, start = 0, limit = 9999)
+    res = "#{CV_ENV.m1_host}/_m1/qtran/tl_mulu?ch_db=#{ch_db}&wn_id=#{wn_id}&start=#{start}&limit=#{limit}"
     HTTP::Client.put(res, &.success?)
   end
 end

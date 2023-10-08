@@ -44,10 +44,8 @@ class RD::UpstemCtrl < AC::Base
     form.viuser_id = _vu_id
     form.wninfo_id = nil if form.wninfo_id == 0
 
-    saved = form.insert!
-    saved.mkdirs!
-
-    render json: saved
+    Dir.mkdir_p("var/stems/up#{form.sname}")
+    render json: form.insert!
   end
 
   @[AC::Route::GET("/:up_id")]

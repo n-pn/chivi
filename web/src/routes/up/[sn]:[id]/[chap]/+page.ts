@@ -7,7 +7,7 @@ import type { PageLoad } from './$types'
 export const load = (async ({ url, parent, params, fetch }) => {
   const [ch_no, p_idx = 1] = params.chap.split('_').map((x) => parseInt(x))
 
-  const rdata_api = `/_rd/upchaps/${params.sn}/${params.id}/${ch_no}/${p_idx}`
+  const rdata_api = `/_rd/chaps/up/${params.sn}/${params.id}/${ch_no}/${p_idx}`
   const rdata = await api_get<CV.Chpart>(rdata_api, fetch)
 
   const { ustem } = await parent()

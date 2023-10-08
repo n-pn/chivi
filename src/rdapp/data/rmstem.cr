@@ -55,6 +55,8 @@ class RD::Rmstem
       repo.wn_id = @wn_id
       repo.gifts = 2
       repo.plock = 3
+
+      repo.update_vinfos! if @chap_count > 0
     end
   end
 

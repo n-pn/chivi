@@ -43,6 +43,8 @@ class RD::Wnstem
       repo.wn_id = @wn_id
       repo.gifts = 2
       repo.plock = @privi.to_i
+
+      repo.update_vinfos!
     end
   end
 

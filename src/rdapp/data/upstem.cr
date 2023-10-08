@@ -44,6 +44,8 @@ class RD::Upstem
       repo.wn_id = @wninfo_id || 0
       repo.gifts = @gifts
       repo.plock = 5
+
+      repo.update_vinfos!
     end
   end
 
@@ -55,11 +57,6 @@ class RD::Upstem
     @vname = MT::QtCore.tl_hvname(@zname) if @vname.empty?
     @labels.map! { |label| MT::QtCore.tl_hvword(label.strip, cap: true) }
     @labels.reject!(&.blank?).uniq!
-  end
-
-  def mkdirs!
-    Dir.mkdir_p("var/stems/up#{@sname}")
-    Dir.mkdir_p("var/texts/up#{@sname}/#{@id}")
   end
 
   def tl_chap_info!(chmin : Int32 = 0, chmax : Int32 = @chap_count)
