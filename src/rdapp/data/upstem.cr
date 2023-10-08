@@ -13,13 +13,10 @@ class RD::Upstem
 
   field id : Int32, pkey: true, auto: true
 
-  field sname : String = "--"
-  field mtime : Int64 = Time.utc.to_unix
+  field sname : String
+  field owner : Int32
 
-  field viuser_id : Int32 = 0
-  field wninfo_id : Int32? = nil
-
-  field zname : String = ""
+  field zname : String
   field vname : String = ""
 
   field vintro : String = ""
@@ -28,10 +25,14 @@ class RD::Upstem
   field gifts : Int16 = 2
   field multp : Int16 = 4
   field guard : Int16 = 0
+
+  field wn_id : Int32? = nil
   field wndic : Bool = false
 
+  field mtime : Int64 = Time.utc.to_unix
+
   field chap_count : Int32 = 0
-  field word_count : Int32 = 0
+  field view_count : Int32 = 0
 
   timestamps
 
@@ -41,15 +42,15 @@ class RD::Upstem
     Chrepo.load("up#{@sname}/#{@id}").tap do |repo|
       repo.zname = @zname
       repo.chmax = @chap_count
-      repo.wn_id = @wninfo_id || 0
+      repo.wn_id = @wn_id || 0
       repo.gifts = @gifts
       repo.plock = 5
 
-      # repo.update_vinfos!
+      repo.update_vinfos!
     end
   end
 
-  def initialize(@viuser_id, @sname, @zname, @vname = "", @labels = [] of String)
+  def initialize(@owner, @sname, @zname, @vname = "", @labels = [] of String)
     after_initialize
   end
 
@@ -59,9 +60,9 @@ class RD::Upstem
     @labels.reject!(&.blank?).uniq!
   end
 
-  def tl_chap_info!(start : Int32 = 1, limit : Int32 = @chap_count)
-    self.crepo.update_vinfos!(start: start, limit: limit)
-  end
+  # def tl_chap_info!(start : Int32 = 1, limit : Int32 = @chap_count)
+  #   self.crepo.update_vinfos!(start: start, limit: limit)
+  # end
 
   def update_stats!(chmax : Int32, mtime : Int64 = Time.utc.to_unix)
     @mtime = mtime if @mtime < mtime
@@ -71,6 +72,16 @@ class RD::Upstem
 
     query = @@schema.update_stmt(%w{chap_count mtime})
     @@db.exec(query, @chap_count, @mtime, @id)
+  end
+
+  INC_VIEW_COUNT_SQL = <<-SQL
+    update upstems set view_count = view_count + 1
+    where id = $1
+    returning view_count
+    SQL
+
+  def inc_view_count!
+    @view_count = @@db.query_one(INC_VIEW_COUNT_SQL, @id, as: Int32)
   end
 
   #####
@@ -85,11 +96,9 @@ class RD::Upstem
     self.db.query_one?(query, id, sname, as: self)
   end
 
-  def self.build_select_sql(guard : Int32 = 4,
-                            order = "mtime",
-                            uname : String? = nil,
-                            label : String? = nil,
-                            wn_id : Int32? = nil)
+  def self.build_select_sql(guard : Int32 = 4, uname : String? = nil,
+                            wn_id : Int32? = nil, label : String? = nil,
+                            title : String? = nil, order : String = "mtime")
     args = [guard] of String | Int32
 
     query = String.build do |sql|
@@ -97,7 +106,12 @@ class RD::Upstem
 
       if uname
         args << uname
-        sql << " and viuser_id = (select id from viusers where uname = $2)"
+        sql << " and sname = '@' || $2"
+      end
+
+      if wn_id
+        args << wn_id
+        sql << " and wn_id = $#{args.size}"
       end
 
       if label
@@ -105,15 +119,16 @@ class RD::Upstem
         sql << " and $#{args.size} = any(labels)"
       end
 
-      if wn_id
-        args << wn_id
-        sql << " and wninfo_id = $#{args.size}"
+      if title
+        args << title
+        field = title =~ /\p{Han}/ ? "zname" : "vname"
+        sql << " and #{field} ilike '%' || $#{args.size} || '%'"
       end
 
       case order
-      when "ctime" then sql << " order by id desc"
       when "mtime" then sql << " order by mtime desc"
-      when "wsize" then sql << " order by word_count desc"
+      when "chmax" then sql << " order by chap_count desc"
+      else              sql << " order by id desc"
       end
 
       sql << " limit $#{args.size &+ 1} offset $#{args.size &+ 2}"

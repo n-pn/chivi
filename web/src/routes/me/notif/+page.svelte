@@ -3,7 +3,7 @@
 
   import type { PageData } from './$types'
   export let data: PageData
-  import { rel_time_vp } from '$utils/time_utils'
+  import { rel_time } from '$utils/time_utils'
 
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
@@ -18,7 +18,7 @@
       <div class="notif" class:_fresh={!notif.reached_at}>
         {@html notif.content}
         <footer class="notif-foot">
-          <time>{rel_time_vp(notif.created_at)}</time>
+          <time>{rel_time(notif.created_at)}</time>
         </footer>
       </div>
     {/each}

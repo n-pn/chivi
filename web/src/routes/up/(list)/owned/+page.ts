@@ -23,7 +23,9 @@ export const load = (async ({ url, fetch }) => {
     kw: url.searchParams.get('kw'),
   }
 
+  const search = new URLSearchParams(url.searchParams)
+  search.append('_m', 'owner')
   const props = await api_get<Data>(`/_rd/upstems${url.search}`, fetch)
 
-  return { props, query, _title, _meta, ontab: 'home' }
+  return { props, query, _title, _meta, ontab: 'mine' }
 }) satisfies PageLoad

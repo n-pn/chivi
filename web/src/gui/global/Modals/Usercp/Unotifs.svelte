@@ -3,7 +3,7 @@
   import type { Writable } from 'svelte/store'
   import { api_get } from '$lib/api_call'
 
-  import { rel_time_vp } from '$utils/time_utils'
+  import { rel_time } from '$utils/time_utils'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let _user: Writable<App.CurrentUser>
@@ -40,7 +40,7 @@
     <div class="notif" class:_fresh={!notif.reached_at}>
       {@html notif.content}
       <footer class="notif-foot">
-        <time>{rel_time_vp(notif.created_at)}</time>
+        <time>{rel_time(notif.created_at)}</time>
       </footer>
     </div>
   {/each}

@@ -14,7 +14,7 @@
 
   $: ({ ustem, sroot } = data)
 
-  $: is_owner = $_user.vu_id == ustem.viuser_id
+  $: is_owner = $_user.privi > 3 || $_user.vu_id == ustem.owner
 
   // prettier-ignore
   $: tabs = {
@@ -31,7 +31,8 @@
       { type: 'vd', href: `${sroot}/ul/term`, icon: 'package', text: 'Từ điển' },
     ],
     su: [
-      { type: 'cf', href: `${sroot}/su`, icon: 'settings', text: 'Thiết đặt' },
+      { type: 'su', href: `${sroot}/su`, icon: 'ballpen', text: 'Thông tin' },
+      { type: 'cf', href: `${sroot}/su/conf`, icon: 'settings', text: 'Thiết đặt' },
       { type: 'rm', href: `${sroot}/su/redo`, icon: 'eraser', text: 'Tẩy xóa' },
       { type: 'lg', href: `${sroot}/su/xlog`, icon: 'lock-open', text: 'Mở khóa' },
     ],
@@ -42,19 +43,19 @@
 
 <UpstemFull {ustem} binfo={data.binfo || null} />
 
-{#if is_owner || $_user.privi > 3}
+{#if is_owner}
   <nav class="admin">
-    <a href="{sroot}/ul" class="m-btn _fill _primary">
+    <a href={sroot} class="m-btn _fill">
+      <SIcon name="list" />
+      <span class="-txt">Mục lục</span>
+    </a>
+    <a href="{sroot}/ul" class="m-btn _fill _success">
       <SIcon name="upload" />
-      <span class="-txt">Thêm nội dung</span>
+      <span class="-txt">Đăng tải</span>
     </a>
-    <a href="{sroot}/su" class="m-btn">
+    <a href="{sroot}/su" class="m-btn _fill _warning">
       <SIcon name="tools" />
-      <span class="-txt">Trang quản lý</span>
-    </a>
-    <a href="/up/+proj?id={ustem.id}" class="m-btn _fill _warning">
-      <SIcon name="pencil" />
-      <span class="-txt">Sửa thông tin</span>
+      <span class="-txt">Quản lý</span>
     </a>
   </nav>
 {/if}

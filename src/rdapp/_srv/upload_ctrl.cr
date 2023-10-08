@@ -43,7 +43,7 @@ class RD::UptextCtrl < AC::Base
     raise "Bạn chỉ được upload nhiều nhất 32 chương một lúc!" if list.size > 32
 
     ustem = get_ustem(up_id)
-    guard_owner ustem.viuser_id, 2, "thêm text gốc"
+    guard_owner ustem.owner, 1, "thêm text gốc"
 
     list.each(&.save!(crepo: ustem.crepo, uname: _uname))
 
@@ -59,7 +59,7 @@ class RD::UptextCtrl < AC::Base
   @[AC::Route::PUT("/", body: :form)]
   def upsert_once(up_id : Int32, form : ZtextForm)
     ustem = get_ustem(up_id)
-    guard_owner ustem.viuser_id, 2, "thêm text gốc"
+    guard_owner ustem.owner, 1, "thêm text gốc"
 
     cinfo = form.save!(crepo: ustem.crepo, uname: _uname)
 

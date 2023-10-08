@@ -1,11 +1,34 @@
 <script lang="ts">
   import { page } from '$app/stores'
+  import { get_user } from '$lib/stores'
+  const _user = get_user()
 
   import Section from '$gui/sects/Section.svelte'
 
+  $: privi = $_user.privi
   const tabs = [
-    { type: 'list', href: `/up`, icon: 'list', text: 'Danh sách' },
-    { type: 'edit', href: `/up/+proj`, icon: 'file-plus', text: 'Tạo mới' },
+    { type: 'home', href: `/up`, icon: 'album', text: 'Danh sách' },
+    {
+      type: 'like',
+      href: `/up/liked`,
+      icon: 'heart',
+      text: 'Ưa thích',
+      mute: true,
+    },
+    {
+      type: 'mine',
+      href: `/up/owned`,
+      icon: 'at',
+      text: 'Của bạn',
+      mute: privi < 0,
+    },
+    {
+      type: '+new',
+      href: `/up/+proj`,
+      icon: 'file-plus',
+      text: 'Tạo mới',
+      mute: privi < 1,
+    },
   ]
 </script>
 
@@ -13,12 +36,13 @@
   <slot />
 </Section>
 
-<footer>Hướng dẫn: TODO!</footer>
+<footer>...</footer>
 
 <style lang="scss">
   footer {
+    height: 2rem;
     @include flex-ca;
-    padding: 0.75rem;
-    font-style: italic;
+    // padding: 0.75rem;
+    // font-style: italic;
   }
 </style>

@@ -1,5 +1,8 @@
 declare namespace CV {
   interface Upstem {
+    owner: number
+    wn_id: number
+
     id: number
 
     sname: string
@@ -18,10 +21,7 @@ declare namespace CV {
     wndic: boolean
 
     chap_count: number
-    word_count: number
-
-    viuser_id: number
-    wninfo_id: number
+    view_count: number
   }
 
   interface Rmstem {

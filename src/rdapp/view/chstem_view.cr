@@ -54,7 +54,7 @@ struct RD::ChstemView
       gifts
 
     from upstems
-    where wninfo_id = $1
+    where wn_id = $1
     order by chap_count desc, mtime desc
     SQL
 

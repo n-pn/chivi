@@ -1,5 +1,9 @@
 <script lang="ts">
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import { rel_time } from '$utils/time_utils'
+
   export let ustem: CV.Upstem
+  export let upath = '/up'
 
   $: href = `/up/${ustem.sname}:${ustem.id}`
 
@@ -8,14 +12,41 @@
 </script>
 
 <article class="ustem">
-  <div class="xtags m-chips">
-    <a class="m-chip _xs _primary" href="/up?by={uname}">{ustem.sname}</a>
+  <div class="xtags">
+    <a class="m-chip _xs _primary" href="{upath}?by={uname}">
+      <SIcon name="at" />
+      {uname}</a>
+    {#if ustem.wn_id}
+      <a class="m-chip _xs _success" href="{upath}?wn={ustem.wn_id}">
+        <SIcon name="book" />
+        {ustem.wn_id}</a>
+    {/if}
     {#each ustem.labels as label}
-      <a class="m-chip _xs" href="/up?lb={label}">{label}</a>
+      <a class="m-chip _xs _warning" href="{upath}?lb={label}">{label}</a>
     {/each}
   </div>
-  <a class="title" {href}>{ustem.vname}</a>
-  <p class="intro">{intro}...</p>
+
+  <a class="title u-fz-lg u-fg-secd" {href}>{ustem.vname}</a>
+  <p class="intro u-fz-sm u-fg-tert u-fs-i">{intro || 'Không có giới thiệu'}</p>
+
+  <div class="stats u-fz-sm u-fs-i">
+    <span class="group">
+      <span class="u-fg-mute">Cập nhật:</span>
+      <span class="u-fg-tert">{rel_time(ustem.mtime)}</span>
+    </span>
+    <span class="group">
+      <span class="u-fg-mute">Số chương:</span>
+      <span class="u-fg-tert">{ustem.chap_count}</span>
+    </span>
+    <span class="group">
+      <span class="u-fg-mute">Hệ số nhân:</span>
+      <span class="u-fg-tert">{ustem.multp}</span>
+    </span>
+    <span class="group">
+      <span class="u-fg-mute">Lượt xem:</span>
+      <span class="u-fg-tert">{ustem.view_count}</span>
+    </span>
+  </div>
 </article>
 
 <style lang="scss">
@@ -23,9 +54,9 @@
     padding: 0.5rem 1rem;
     // max-width: 30rem;
 
-    @include bgcolor(secd);
+    @include bgcolor(tert);
     @include bdradi;
-    @include border;
+    @include border(--bd-soft);
 
     & + :global(.ustem) {
       margin-top: 1rem;
@@ -34,25 +65,31 @@
 
   .xtags {
     display: flex;
-    gap: 0.2rem;
+    flex-wrap: wrap;
+    gap: 0.25em;
+  }
+
+  .m-chip {
+    gap: 0.125em;
   }
 
   .title {
     display: block;
     padding: 0.5rem 0;
 
-    @include ftsize(lg);
-    @include fgcolor(secd);
     &:hover {
       @include fgcolor(primary);
     }
   }
 
   .intro {
-    @include fgcolor(tert);
-    font-style: italic;
-    @include ftsize(sm);
     line-height: 1.25rem;
-    @include clamp($lines: 2);
+    @include clamp($lines: 1);
+  }
+
+  .stats {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
   }
 </style>

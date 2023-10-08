@@ -63,7 +63,7 @@
     <button
       class="m-btn _success _fill"
       disabled={$_user.privi < 0}
-      on:click={() => reload(2)}
+      on:click={() => reload(2, true)}
       data-tip="Cập nhật từ nguồn ngoài hoặc dịch lại nội dung"
       data-tip-loc="bottom"
       data-tip-pos="right">

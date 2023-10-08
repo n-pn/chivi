@@ -97,8 +97,6 @@ class RD::Rmstem
       @latest_cid = raw_stem.latest_cid
     end
 
-    @latest_cid = raw_stem.latest_cid
-
     clist = raw_stem.extract_clist!
     @chap_count = clist.size
 

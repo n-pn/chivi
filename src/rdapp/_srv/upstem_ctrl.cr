@@ -5,16 +5,29 @@ class RD::UpstemCtrl < AC::Base
 
   @[AC::Route::GET("/")]
   def index(
-    _s order : String = "time",
+    wn wn_id : Int32? = nil,
     by uname : String? = nil,
     lb label : String? = nil,
-    wn wn_id : Int32? = nil
+    kw title : String? = nil,
+    _s order : String = "time",
+    _m qmode : String = "index"
   )
     pg_no, limit, offset = _paginate(min: 25, max: 100)
 
-    query, args = Upstem.build_select_sql(_privi, order, uname, label, wn_id)
-    args << limit << offset
+    if qmode == "owner"
+      guard = 4
+      uname = _uname
+    else
+      guard = _privi
+    end
 
+    query, args = Upstem.build_select_sql(
+      guard: guard, uname: uname,
+      wn_id: wn_id, label: label,
+      title: title, order: order,
+    )
+
+    args << limit << offset
     items = Upstem.db.query_all(query, args: args, as: Upstem)
 
     if items.size < limit
@@ -35,17 +48,19 @@ class RD::UpstemCtrl < AC::Base
     render json: json
   end
 
-  @[AC::Route::POST("/", body: form)]
-  def create(form : Upstem)
+  @[AC::Route::POST("/", body: uform)]
+  def create(uform : Upstem)
     guard_privi 1, "tạo dự án cá nhân"
 
-    form.id = nil
-    form.sname = "@#{_uname}"
-    form.viuser_id = _vu_id
-    form.wninfo_id = nil if form.wninfo_id == 0
+    uform.id = nil
+    uform.sname = "@#{_uname}"
+    uform.owner = _vu_id
+    uform.wn_id = nil if uform.wn_id == 0
 
-    Dir.mkdir_p("var/stems/up#{form.sname}")
-    render json: form.insert!
+    ustem = uform.insert!
+    Dir.mkdir_p("var/stems/up#{uform.sname}")
+
+    render json: ustem
   end
 
   @[AC::Route::GET("/:up_id")]
@@ -65,7 +80,7 @@ class RD::UpstemCtrl < AC::Base
     term.zname = form.zname unless form.zname.empty?
     term.vname = form.vname unless form.vname.empty?
 
-    term.wninfo_id = form.wninfo_id
+    term.wn_id = form.wn_id
 
     term.vintro = form.vintro
     term.labels = form.labels

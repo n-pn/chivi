@@ -29,7 +29,6 @@
       text: 'Quản lý',
       mute: !can_edit,
     },
-    { type: 'lk', href: `${sroot}/lk`, icon: 'link', text: 'Liên kết' },
   ]
 </script>
 

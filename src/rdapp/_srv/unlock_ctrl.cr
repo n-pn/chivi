@@ -11,7 +11,7 @@ class RD::UnlockCtrl < AC::Base
     crepo = ustem.crepo
     cinfo = get_cinfo(crepo, ch_no)
 
-    entry = Unlock.new(crepo, cinfo, self._vu_id, p_idx, multp: multp, owner: ustem.viuser_id)
+    entry = Unlock.new(crepo, cinfo, self._vu_id, p_idx, multp: multp, owner: ustem.owner)
     unlock, remain = entry.unlock
 
     render json: ({unlock ? 1 : 0, remain})

@@ -64,10 +64,12 @@ class RD::ChinfoCtrl < AC::Base
   @[AC::Route::GET("/up/:sname/:sn_id/:ch_no/:p_idx")]
   def up_cpart(sname : String, sn_id : Int32, ch_no : Int32, p_idx : Int32)
     ustem = get_ustem(sn_id, sname)
+    spawn ustem.inc_view_count!
+
     cinfo = get_cinfo(ustem, ch_no)
 
     vu_id = self._vu_id
-    privi = vu_id == ustem.viuser_id ? 5 : _privi
+    privi = vu_id == ustem.owner ? 5 : _privi
 
     rdata = ustem.crepo.part_data(cinfo, p_idx, vu_id: vu_id, privi: privi)
     render 200, json: rdata

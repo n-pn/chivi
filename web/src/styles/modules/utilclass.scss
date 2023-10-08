@@ -20,20 +20,24 @@
   color: #{color(harmful, 5)};
 }
 
-.fs-i {
+.u-fs-i {
   font-style: italic;
 }
 
-.fw-b {
+.u-fw-b {
   font-weight: 500;
 }
 
-.fs-xs {
+.u-fz-xs {
   @include ftsize(xs);
 }
 
-.fs-sm {
+.u-fz-sm {
   @include ftsize(sm);
+}
+
+.u-fz-lg {
+  @include ftsize(lg);
 }
 
 .u-fg-secd {

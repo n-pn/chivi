@@ -64,7 +64,6 @@ class RD::RmstemCtrl < AC::Base
   def show(sname : String, sn_id : String, crawl : Int32 = 0, regen : Bool = false)
     rstem = get_rstem(sname, sn_id)
     rstem.update!(crawl, regen) if crawl > 0 || regen
-
     render json: rstem
   end
 
@@ -72,7 +71,7 @@ class RD::RmstemCtrl < AC::Base
   # def update(up_id : Int32, form : Rmstem)
   #   guard_privi 1, "sửa dự án cá nhân"
 
-  #   unless term = Rmstem.find(up_id, _privi < 4 ? _uname : nil)
+  #   unless term = Rmstem.finrdd(up_id, _privi < 4 ? _uname : nil)
   #     render 404, "Dự án không tồn tại hoặc bạn không đủ quyền hạn"
   #     return
   #   end

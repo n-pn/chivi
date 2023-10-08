@@ -14,12 +14,9 @@
   let form = { ...data.form }
   let labels = (form.labels || []).join(', ')
 
-  let errors: string
+  let err_text: string
 
-  $: owner =
-    form.viuser_id == 0 || form.viuser_id == $_user.vu_id || $_user.vu_id > 3
-
-  $: action = form.id ? `/_rd/upstems/${form.id}` : '/_rd/upstems'
+  const action = '/_rd/upstems'
 
   async function submit() {
     const body = { ...form, labels: labels.split(',') }
@@ -28,7 +25,7 @@
       const { sname, id } = await api_call(action, body, 'POST')
       await goto(`/up/${sname}:${id}`)
     } catch (ex) {
-      errors = ex.body.message
+      err_text = ex.body.message
     }
   }
 
@@ -43,20 +40,7 @@
     const res = await fetch(url, { method: 'POST', body: form.vintro, headers })
     form.vintro = await res.text()
   }
-
-  const delete_project = async () => {
-    const res = await fetch(`/_rd/upstems/${form.id}`, { method: 'DELETE' })
-
-    if (res.ok) goto('/up')
-    else errors = await res.text()
-  }
-
-  let confirm: number
 </script>
-
-<header>
-  <div class="m-chip _primary">Thêm/sửa tay</div>
-</header>
 
 <form {action} method="POST" on:submit|preventDefault={submit}>
   <form-group>
@@ -114,13 +98,11 @@
         class="m-input"
         name="book_id"
         placeholder="ID bộ truyện"
-        bind:value={form.wninfo_id} />
+        bind:value={form.wn_id} />
     </form-field>
   </div>
 
-  {#if errors}
-    <div class="form-msg _err">{errors}</div>
-  {/if}
+  {#if err_text}<div class="form-msg _err">{err_text}</div>{/if}
 
   <footer class="action">
     <button
@@ -132,38 +114,9 @@
       <SIcon name="privi-1" iset="icons" />
     </button>
   </footer>
-
-  {#if form.id}
-    <footer class="delete">
-      <h3>Xóa dự án</h3>
-      <p class="hints">Nhập vào ID của dự án để khẳng định việc xóa dự án:</p>
-
-      <div class="delete-input">
-        <input
-          type="number"
-          class="m-input"
-          placeholder="ID dự án"
-          bind:value={confirm} />
-        <button
-          type="button"
-          class="m-btn _harmful _fill"
-          disabled={!owner || confirm != form.id}
-          on:click={delete_project}>
-          <SIcon name="eraser" />
-          <span class="-txt">Xóa dự án</span>
-        </button>
-      </div>
-    </footer>
-  {/if}
 </form>
 
 <style lang="scss">
-  header {
-    @include border($loc: bottom);
-    padding-bottom: var(--gutter-small);
-    margin: var(--gutter) 0;
-  }
-
   .label {
     display: block;
     font-weight: 500;
@@ -206,23 +159,5 @@
     @include flex();
     justify-content: right;
     margin: 0.75rem 0;
-  }
-
-  .delete {
-    padding: 0.75rem 0;
-    @include border(--bd-soft, $loc: top);
-
-    .hints {
-      margin-bottom: 0.5rem;
-    }
-  }
-
-  .delete-input {
-    display: flex;
-    gap: 0.5rem;
-
-    input {
-      width: 10rem;
-    }
   }
 </style>

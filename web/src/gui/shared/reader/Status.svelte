@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { rel_time_vp } from '$utils/time_utils'
+  import { rel_time } from '$utils/time_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
@@ -30,7 +30,7 @@
     {#if mtime}
       <div class="entry" data-tip="Thay đổi lần cuối">
         <SIcon name="calendar" />
-        <span class="value">{rel_time_vp(mtime)}</span>
+        <span class="value">{rel_time(mtime)}</span>
       </div>
     {/if}
   </div>

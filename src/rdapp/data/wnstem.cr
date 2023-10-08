@@ -152,8 +152,7 @@ class RD::Wnstem
   end
 
   def upsert!(query = @@schema.upsert_stmt, args_ = self.db_values, db = @@db)
-    entry = db.write_one(query, *args_, as: self.class)
-    self
+    db.write_one(query, *args_, as: self.class)
   end
 
   def update_stats!(chmax : Int32, mtime : Int64 = Time.utc.to_unix)

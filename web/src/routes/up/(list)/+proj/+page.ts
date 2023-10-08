@@ -4,7 +4,7 @@ import type { PageLoad } from './$types'
 
 const empty_form: Partial<CV.Upstem> = {
   id: 0,
-  wninfo_id: 0,
+  wn_id: 0,
 
   zname: '',
   vname: '',
@@ -18,24 +18,17 @@ const empty_form: Partial<CV.Upstem> = {
 
 const _meta: App.PageMeta = {
   left_nav: [
-    nav_link('/up', 'Dự án cá nhân', 'file', { show: 'pl' }),
-    nav_link('/up/+proj', 'Thêm/Sửa', 'file-plus', { kind: 'title' }),
+    nav_link('/up', 'Sưu tầm cá nhân', 'album', { show: 'pl' }),
+    nav_link('/up/+proj', 'Thêm mới', 'file-plus', { kind: 'title' }),
   ],
   right_nav: [],
 }
 
 export const load = (async ({ url: { searchParams }, fetch }) => {
   let form = empty_form
+  form.wn_id = +searchParams.get('wn')
 
-  const id = searchParams.get('id')
-  if (id) {
-    const href = `/_rd/upstems/${id}/edit`
-    form = await api_get<CV.Upstem>(href, fetch)
-  } else {
-    form.wninfo_id = +searchParams.get('wn')
-  }
-
-  return { form, ontab: 'edit', _meta, _title: 'Thêm/sửa dự án cá nhân' }
+  return { form, ontab: '+new', _meta, _title: 'Tạo sưu tầm cá nhân' }
 }) satisfies PageLoad
 
 // export function load() {

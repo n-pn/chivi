@@ -7,4 +7,4 @@
   $: ({ items, pgidx, pgmax } = data.props)
 </script>
 
-<UpstemList {items} {pgidx} {pgmax} query={data.query} upath="/up" />
+<UpstemList {items} {pgidx} {pgmax} query={data.query} upath="/up/owned" />
