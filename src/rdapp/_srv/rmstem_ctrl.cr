@@ -61,8 +61,10 @@ class RD::RmstemCtrl < AC::Base
   # end
 
   @[AC::Route::GET("/:sname/:sn_id")]
-  def show(sname : String, sn_id : String)
-    render json: get_rstem(sname, sn_id)
+  def show(sname : String, sn_id : String, crawl : Int32 = 0, regen : Bool = false)
+    rstem = get_rstem(sname, sn_id)
+    rstem = rstem.update!(crawl, regen) if crawl > 0 || regen
+    render json: rstem
   end
 
   # @[AC::Route::POST("/:up_id", body: form)]

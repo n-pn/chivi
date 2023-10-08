@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores'
+  import { invalidate } from '$app/navigation'
 
   import { get_user } from '$lib/stores'
   const _user = get_user()
@@ -15,13 +16,13 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ rstem, lasts, chaps, pg_no, sroot } = data)
-
+  $: rstem = data.rstem
   $: chmax = rstem.chap_count
   $: pager = new Pager($page.url, { pg: 1 })
 
-  let _onload = false
-  let err_msg: string
+  let _loading = false
+  let btn_icon = 'refresh'
+  let err_text = ''
 
   let free_chap = 40
 
@@ -29,21 +30,63 @@
     free_chap = Math.floor((rstem.chap_count * rstem.gifts) / 4)
     if (free_chap < 40) free_chap = 40
   }
+
+  async function reload(crawl = 1, regen = false) {
+    const { sname, sn_id } = rstem
+
+    btn_icon = 'loader-2'
+    _loading = true
+
+    const url = `/_rd/rmstems/${sname}/${sn_id}?crawl=${crawl}&regen=${regen}`
+    const res = await fetch(url)
+    _loading = false
+
+    if (!res.ok) {
+      btn_icon = 'refresh'
+      err_text = await res.text()
+    } else {
+      btn_icon = 'check'
+      await invalidate(`rm:clist:${sname}:${sn_id}`)
+      rstem = await res.json()
+    }
+  }
 </script>
 
-<page-info>
-  <info-left>
+<header class="info">
+  <span class="left">
     <info-text>{rstem.sname}</info-text>
     <info-span>{chmax} chương</info-span>
     <info-span class="u-show-pl"><RTime mtime={rstem.update_int} /></info-span>
-  </info-left>
-</page-info>
+  </span>
 
-{#if err_msg}
-  <div class="chap-hint _error">{err_msg}</div>
+  <span class="right">
+    <button
+      class="m-btn _success _fill"
+      disabled={$_user.privi < 0}
+      on:click={() => reload(2)}
+      data-tip="Cập nhật từ nguồn ngoài hoặc dịch lại nội dung"
+      data-tip-loc="bottom"
+      data-tip-pos="right">
+      <SIcon name={btn_icon} spin={_loading} />
+      <span>Đổi mới</span>
+    </button>
+  </span>
+</header>
+
+{#if err_text}<div class="form-msg _err">{err_text}</div>{/if}
+
+{#if rstem.rlink}
+  <div class="form-msg">
+    <SIcon name="alert-triangle" />
+    Danh sách chương tiết được liên kết tới
+    <a class="m-link" href={rstem.rlink} rel="noreferrer" target="_blank"
+      >nguồn ngoài
+      <SIcon name="external-link" />
+    </a>. Bấm [Đổi mới] để cập nhật nếu thấy nội dung bị lỗi thời.
+  </div>
 {/if}
 
-<div class="chap-hint">
+<div class="form-msg">
   <SIcon name="alert-circle" />
   {#if free_chap < chmax}
     <span>
@@ -60,28 +103,31 @@
   {:else}
     <span>
       Bạn cần thiết
-      <strong class="em">đăng nhập</strong> để xem nội dung.
+      <strong class="em">đăng nhập</strong> để xem nội dung các chương.
     </span>
   {/if}
 </div>
 
 {#if chmax > 0}
   <chap-list>
-    <ChapList chaps={lasts} bhref={sroot} />
+    <ChapList chaps={data.lasts} bhref={data.sroot} />
     <div class="chlist-sep" />
-    <ChapList {chaps} bhref={sroot} />
+    <ChapList chaps={data.chaps} bhref={data.sroot} />
 
     <Footer>
       <div class="foot">
         <Mpager
           {pager}
-          pgidx={pg_no}
+          pgidx={data.pg_no}
           pgmax={Math.floor((chmax - 1) / 32) + 1} />
       </div>
     </Footer>
   </chap-list>
 {:else}
-  <p class="empty">Không có nội dung :(</p>
+  <div class="empty">
+    <h3>Chưa có nội dung.</h3>
+    <p>Bấm [Đổi mới] phía trên để cập nhật nội dung!</p>
+  </div>
 {/if}
 
 <style lang="scss">
@@ -91,7 +137,7 @@
     @include fgcolor(tert);
   }
 
-  page-info {
+  .info {
     display: flex;
     padding: 0.75rem 0;
     @include border(--bd-main, $loc: bottom);
@@ -100,7 +146,7 @@
     // @include bdradi(1rem, $loc: top);
   }
 
-  info-left {
+  .left {
     display: flex;
     flex: 1;
     margin: 0.25rem 0;
@@ -109,27 +155,18 @@
     @include bps(font-size, 13px, 14px);
   }
 
-  info-right {
+  .right {
     @include flex($gap: 0.5rem);
   }
 
-  .chap-hint {
-    // text-align: center;
-    // font-style: italic;
+  .form-msg {
     // @include flex-cx($gap: 0.5rem);
-    margin: 0.5rem 0;
 
-    @include ftsize(sm);
-    @include fgcolor(tert);
+    margin: 0.5rem 0;
 
     .em {
       @include fgcolor(warning, 5);
       font-weight: 500;
-    }
-
-    &._error {
-      font-size: italic;
-      @include fgcolor(harmful, 5);
     }
 
     :global(svg) {

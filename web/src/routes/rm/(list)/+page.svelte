@@ -40,7 +40,7 @@
 <header>
   <form
     class="search"
-    action="/up"
+    action="/rm"
     method="GET"
     on:submit|preventDefault={invoke_query}>
     {#each ['by', 'lb', 'wn'] as key}

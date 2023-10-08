@@ -73,7 +73,7 @@
   {/each}
 {:else}
   <div class="empty">
-    <SIcon name="rotate" spin={true} />
+    <SIcon name="loader-2" spin={true} />
     <p>Đang tải nội dung..</p>
   </div>
 {/if}

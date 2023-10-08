@@ -3,7 +3,9 @@ import { nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 
-export const load = (async ({ fetch, url, params, parent }) => {
+export const load = (async ({ fetch, url, params, parent, depends }) => {
+  depends(`rm:clist:${params.sn}:${params.id}`)
+
   const pg_no = +url.searchParams.get('pg') || 1
   const rdurl = `/_rd/chaps/rm/${params.sn}/${params.id}`
 

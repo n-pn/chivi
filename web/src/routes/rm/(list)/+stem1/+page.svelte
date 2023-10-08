@@ -1,8 +1,8 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import AddSeed from './AddSeed.svelte'
 
-  export let data
-  $: nvinfo = data.nvinfo
+  // export let data
+  // $: nvinfo = data.nvinfo
 
   const sources = [
     {
@@ -122,12 +122,12 @@ nhưng text thường lỗi, có thể dùng tạm khi không có nguồn khác.
                 href="{google_url} site:{site}"
                 rel="noreferrer"
                 target="_blank">Google</a>
-              <!-- {#if custom_search}
+             {#if custom_search}
                   <a
                     href={custom_search}
                     rel="noreferrer"
                     target="_blank">{site}</a>
-                {/if} -->
+                {/if}
             </td>
 
             <td class="desc">{desc}</td>
@@ -157,57 +157,58 @@ nhưng text thường lỗi, có thể dùng tạm khi không có nguồn khác.
     format khá khó chịu, cho nên cũng không được hỗ trợ.
   </p>
 </article>
+-->
 
 <style lang="scss">
-  article {
-    @include margin-y(var(--gutter));
+  // article {
+  //   @include margin-y(var(--gutter));
 
-    padding-bottom: 1rem;
+  //   padding-bottom: 1rem;
 
-    > :global(* + *) {
-      margin-top: 1rem;
-    }
-  }
+  //   > :global(* + *) {
+  //     margin-top: 1rem;
+  //   }
+  // }
 
-  summary {
-    @include ftsize(lg);
-    margin-bottom: 0.75rem;
-  }
+  // summary {
+  //   @include ftsize(lg);
+  //   margin-bottom: 0.75rem;
+  // }
 
-  .source {
-    display: flex;
-    max-width: 30rem;
-  }
+  // .source {
+  //   display: flex;
+  //   max-width: 30rem;
+  // }
 
-  .search {
-    text-align: center;
-    a {
-      display: block;
-    }
-  }
+  // .search {
+  //   text-align: center;
+  //   a {
+  //     display: block;
+  //   }
+  // }
 
-  .desc {
-    @include ftsize(xs);
-    @include fgcolor(tert);
-    max-width: 14rem;
-    line-height: 1rem;
-    padding: 0.25rem 0.5rem;
-  }
+  // .desc {
+  //   @include ftsize(xs);
+  //   @include fgcolor(tert);
+  //   max-width: 14rem;
+  //   line-height: 1rem;
+  //   padding: 0.25rem 0.5rem;
+  // }
 
-  a {
-    @include fgcolor(primary, 5);
-  }
+  // a {
+  //   @include fgcolor(primary, 5);
+  // }
 
-  .protip {
-    // margin: 1.5rem 0;
-    // line-height: 1rem;
-    font-style: italic;
-    @include fgcolor(warning, 5);
-  }
+  // .protip {
+  //   // margin: 1.5rem 0;
+  //   // line-height: 1rem;
+  //   font-style: italic;
+  //   @include fgcolor(warning, 5);
+  // }
 
-  .extra {
-    @include ftsize(sm);
-    line-height: 1rem;
-    @include fgcolor(tert);
-  }
+  // .extra {
+  //   @include ftsize(sm);
+  //   line-height: 1rem;
+  //   @include fgcolor(tert);
+  // }
 </style>
