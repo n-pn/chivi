@@ -45,7 +45,7 @@ class RD::Upstem
       repo.gifts = @gifts
       repo.plock = 5
 
-      repo.update_vinfos!
+      # repo.update_vinfos!
     end
   end
 
@@ -59,13 +59,15 @@ class RD::Upstem
     @labels.reject!(&.blank?).uniq!
   end
 
-  def tl_chap_info!(chmin : Int32 = 0, chmax : Int32 = @chap_count)
-    self.crepo.update_vinfos!(chmin: chmin, chmax: chmax)
+  def tl_chap_info!(start : Int32 = 1, limit : Int32 = @chap_count)
+    self.crepo.update_vinfos!(start: start, limit: limit)
   end
 
   def update_stats!(chmax : Int32, mtime : Int64 = Time.utc.to_unix)
-    @chap_count = chmax if @chap_count < chmax
     @mtime = mtime if @mtime < mtime
+
+    @chap_count = chmax if @chap_count < chmax
+    self.crepo.chmax = @chap_count
 
     query = @@schema.update_stmt(%w{chap_count mtime})
     @@db.exec(query, @chap_count, @mtime, @id)

@@ -25,7 +25,17 @@ abstract class AC::Base
 
   @[AlwaysInline]
   private def get_rstem(sname : String, sn_id : String)
-    RMSTEMS["#{sname}/#{sn_id}"] ||= RD::Rmstem.find(sname, sn_id) || raise NotFound.new("Nguồn nhúng không tồn tại")
+    RMSTEMS["#{sname}/#{sn_id}"] ||= begin
+      rstem = RD::Rmstem.find(sname, sn_id)
+      raise NotFound.new("Nguồn nhúng không tồn tại") unless rstem
+
+      if rstem._flag == 0 && rstem.chap_count > 0
+        rstem.crepo.update_vinfos!
+        rstem.update_flag!(1_i16)
+      end
+
+      rstem
+    end
   end
 
   @[AlwaysInline]

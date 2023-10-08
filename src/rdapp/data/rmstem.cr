@@ -56,7 +56,7 @@ class RD::Rmstem
       repo.gifts = 2
       repo.plock = 3
 
-      repo.update_vinfos! if @chap_count > 0
+      #
     end
   end
 
@@ -67,11 +67,10 @@ class RD::Rmstem
   def initialize(@sname, @sn_id, @rlink = "")
   end
 
-  @@mark_as_404_sql = "update #{@@schema.table} set rtime = $1, _flag = -404 where sname = $2 and sn_id = $3"
+  UPDATE_FLAG_SQL = "update rmstems set _flag = $1 where sname = $2 and sn_id = $3"
 
-  def mark_as_404!
-    @rtime = Time.utc.to_unix
-    @@db.exec @@mark_as_404_sql, @rtime, @sname, @sn_id
+  def update_flag!(@_flag : Int16)
+    @@db.exec UPDATE_FLAG_SQL, _flag, @sname, @sn_id
     self
   end
 
@@ -83,7 +82,7 @@ class RD::Rmstem
     rescue ex
       case ex.message || ""
       when .ends_with?("404"), .ends_with?("301")
-        return self.mark_as_404!
+        return self.update_flag!(404_i16)
       else
         raise ex
       end
@@ -106,7 +105,7 @@ class RD::Rmstem
     self.crepo.tap do |crepo|
       crepo.chmax = @chap_count
       crepo.upsert_zinfos!(clist)
-      crepo.update_vinfos!(start: 0)
+      crepo.update_vinfos! if @chap_count > 0
     end
 
     unless raw_stem.update_str.empty?
@@ -122,8 +121,10 @@ class RD::Rmstem
       @status_int = raw_stem.status_int
     end
 
-    # TODO: gen from html file modification time instead
+    # TODO: gen timestampt from html file modification time instead
     @rtime = Time.utc.to_unix
+
+    @_flag == 1_i16 if @_flag == 0
     self.upsert!(db: @@db)
   end
 
@@ -210,7 +211,7 @@ class RD::Rmstem
     args = [] of String | Int32
 
     query = String.build do |sql|
-      sql << "select * from #{@@schema.table} where 1 = 1"
+      sql << "select * from rmstems where 1 = 1"
 
       if sname
         args << sname

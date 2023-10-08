@@ -4,6 +4,7 @@ import { nav_link } from '$utils/header_util'
 import type { PageLoad } from './$types'
 
 export const load = (async ({ fetch, url, params, parent, depends }) => {
+  const { rstem, sroot } = await parent()
   depends(`rm:clist:${params.sn}:${params.id}`)
 
   const pg_no = +url.searchParams.get('pg') || 1
@@ -12,7 +13,6 @@ export const load = (async ({ fetch, url, params, parent, depends }) => {
   const chaps = await api_get<CV.Wnchap[]>(`${rdurl}?pg=${pg_no}`, fetch)
   const lasts = await api_get<CV.Wnchap[]>(`${rdurl}?lm=4&_last=true`, fetch)
 
-  const { rstem, sroot } = await parent()
   const _title = `Liên kết ${rstem.sname} - ${rstem.btitle_vi}`
 
   const _meta: App.PageMeta = {

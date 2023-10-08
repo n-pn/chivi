@@ -44,7 +44,7 @@ class RD::Wnstem
       repo.gifts = 2
       repo.plock = @privi.to_i
 
-      repo.update_vinfos!
+      # repo.update_vinfos!
     end
   end
 
@@ -157,8 +157,10 @@ class RD::Wnstem
   end
 
   def update_stats!(chmax : Int32, mtime : Int64 = Time.utc.to_unix)
-    @chap_total = chmax if @chap_total < chmax
     @mtime = mtime if @mtime < mtime
+
+    @chap_total = chmax if @chap_total < chmax
+    self.crepo.chmax = @chap_count
 
     query = @@schema.update_stmt(%w{chap_total mtime})
     @@db.exec(query, @chap_total, @mtime, @wn_id, @sname)
