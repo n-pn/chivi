@@ -6,7 +6,7 @@ require "../../_util/tran_util"
 require "../../_data/wnovel/wninfo"
 require "../../_data/wnovel/wnlink"
 require "../../mt_v1/data/v1_dict"
-require "../../zroot/raw_json/raw_ysbook"
+require "../../wnapp/_raw/raw_ysbook"
 
 require "./wninfo_data"
 
@@ -131,7 +131,7 @@ class YS::Ysbook
     find({id: y_bid}) || new({id: y_bid})
   end
 
-  def self.upsert!(raw_data : ZR::EmbedYsbook, force : Bool = false)
+  def self.upsert!(raw_data : EmbedYsbook, force : Bool = false)
     model = load(raw_data.id)
 
     model.btitle = raw_data.btitle
@@ -140,7 +140,7 @@ class YS::Ysbook
     model.tap(&.save!)
   end
 
-  def self.upsert!(raw_data : ZR::RawYsbook, force : Bool = false)
+  def self.upsert!(raw_data : RawYsbook, force : Bool = false)
     model = load(raw_data.id)
 
     return if !force && model.info_rtime >= raw_data.info_rtime

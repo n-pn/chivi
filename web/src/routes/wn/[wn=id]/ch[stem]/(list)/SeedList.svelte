@@ -10,7 +10,6 @@
 
   $: ({ nvinfo, curr_seed } = data)
   $: pg_no = +$page.url.searchParams.get('pg') || 1
-  let show_more = false
 
   $: ({ wstems = [], ustems = [], rstems = [] } = data.bstems)
   const find_stem = (wstems: CV.Chstem[], sname: string) => {
@@ -18,8 +17,11 @@
   }
 
   $: avail_stem = find_stem(wstems, '~avail')
-  $: draft_stem = find_stem(wstems, '~draft')
-  $: chivi_stem = find_stem(wstems, '~chivi')
+  // $: draft_stem = find_stem(wstems, '~draft')
+  // $: chivi_stem = find_stem(wstems, '~chivi')
+
+  let show_up = false
+  let show_rm = false
 </script>
 
 <div class="seed-list">
@@ -34,7 +36,7 @@
     </div>
   </a>
 
-  <a
+  <!-- <a
     href={seed_path(nvinfo.bslug, '~draft', pg_no)}
     class="seed-name"
     class:_active={curr_seed.sname == '~draft'}
@@ -56,23 +58,36 @@
     <div class="seed-stats">
       <strong>{chivi_stem.chmax}</strong> chương
     </div>
-  </a>
+  </a> -->
 
   <button
     class="seed-name"
-    on:click={() => (show_more = !show_more)}
-    class:_active={show_more}
-    data-tip="Các nguồn ngoài liên kết với bộ truyện"
+    on:click={() => (show_up = !show_up)}
+    class:_active={show_up}
+    data-tip="Sưu tầm cá nhân liên kết với bộ truyện"
     data-tip-loc="bottom">
-    <div class="seed-label">Nguồn khác</div>
+    <div class="seed-label">Cá nhân</div>
 
     <div class="seed-stats">
-      <strong>{rstems.length + ustems.length}+</strong> nguồn
+      <strong>{ustems.length}+</strong> nguồn
+    </div>
+  </button>
+
+  <button
+    class="seed-name"
+    on:click={() => (show_rm = !show_rm)}
+    class:_active={show_rm}
+    data-tip="Các nguồn ngoài liên kết với bộ truyện"
+    data-tip-loc="bottom">
+    <div class="seed-label">Liên kết</div>
+
+    <div class="seed-stats">
+      <strong>{rstems.length}+</strong> nguồn
     </div>
   </button>
 </div>
 
-{#if show_more}
+{#if show_up}
   <h4 class="title">Sưu tầm cá nhân:</h4>
   <div class="seed-list _extra">
     {#each ustems as { sname, sn_id, chmax }}
@@ -95,7 +110,9 @@
       <div class="btn-label">Tạo mới</div>
     </a>
   </div>
+{/if}
 
+{#if show_rm}
   <h4 class="title">Nguồn liên kết ngoài:</h4>
   <div class="seed-list _extra">
     {#each rstems as { sname, sn_id, chmax }}
