@@ -113,6 +113,8 @@ class RD::Rmstem
     clist = raw_stem.extract_clist!
     @chap_count = clist.size
 
+    Log.debug { "#{clist.size}: #{crawl}/#{regen}/#{umode}" }
+
     self.crepo.tap do |crepo|
       crepo.chmax = @chap_count
       crepo.upsert_zinfos!(clist)
@@ -183,8 +185,10 @@ class RD::Rmstem
 
   ###
 
-  def self.by_wn(wn_id : Int32)
-    get_all(wn_id, &.<< "where wn_id = $1")
+  ALL_WN_SQL = @@schema.select_stmt(&.<< " where wn_id = $1 ")
+
+  def self.all_by_wn(wn_id : Int32)
+    @@db.query_all(ALL_WN_SQL, wn_id, as: self)
   end
 
   def self.find(sname : String, sn_id : String)

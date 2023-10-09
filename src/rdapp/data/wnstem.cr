@@ -109,15 +109,20 @@ class RD::Wnstem
   end
 
   def update!(crawl : Int32 = 1, regen : Bool = false, umode : Int32 = 1) : Nil
-    rstems = Rmstem.by_wn(@wn_id).sort_by(&.rmrank)
+    rstems = Rmstem.all_by_wn(@wn_id).sort_by(&.rmrank)
 
     active = rstems.find do |rstem|
-      rstem.update!(crawl: crawl, regen: regen, umode: umode) rescue nil if rstem.rtype == 0
+      rstem.update!(crawl: crawl, regen: regen, umode: umode) if rstem.rtype == 0
+      Log.debug { "#{rstem.sname}/#{rstem.sn_id}: #{rstem.chap_count}" }
+      rstem
+    rescue
+      nil
     end
 
     unless active
       self.crepo.update_vinfos! if umode > 0
-      return self
+      @rtime = Time.utc.to_unix
+      return self.upsert!(db: @@db)
     end
 
     @mtime = active.update_int if @mtime < active.update_int
@@ -138,8 +143,7 @@ class RD::Wnstem
     end
 
     @rtime = Time.utc.to_unix
-
-    self.update!(db: @@db)
+    self.upsert!(db: @@db)
   end
 
   ####
