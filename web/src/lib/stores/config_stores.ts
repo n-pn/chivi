@@ -13,9 +13,6 @@ class ConfigData {
   r_mode = 0
   show_z = false
 
-  w_udic = false
-  w_init = false
-
   c_algo = 'auto'
   c_auto = false
 }

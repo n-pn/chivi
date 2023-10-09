@@ -57,30 +57,7 @@
               </a>
             </div>
           </td>
-          <td class="flags">
-            {#if xlog.w_udic}
-              <span class="check" data-tip="Dùng từ điển cá nhân"
-                ><SIcon name="check" />Từ điển riêng</span>
-            {/if}
-            {#if xlog.cv_ner}
-              <span
-                class="check"
-                data-tip="Dùng công cụ nhận dạng thực thể của Chivi"
-                ><SIcon name="check" />Nhận thực thể</span>
-            {/if}
-            {#if xlog.ts_sdk}
-              <span
-                class="check"
-                data-tip="Dùng công cụ nhận dạng thực thể offline của Texsmart"
-                >Texsmart SDK<SIcon name="check" /></span>
-            {/if}
-            {#if xlog.ts_acc}
-              <span
-                class="check"
-                data-tip="Dùng công cụ nhận dạng thực thể online của Texsmart"
-                >Texsmart API<SIcon name="check" /></span>
-            {/if}
-          </td>
+
           <td class="ctime"
             >{rel_time(new Date(xlog.created_at).getTime() / 1000)}</td>
         </tr>

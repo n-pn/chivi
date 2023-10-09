@@ -18,7 +18,6 @@ class CV::QtranXlog
   field point_cost : Int32 = 0
 
   field wn_dic : Int32 = 0
-  field w_udic : Bool = true
 
   field mt_ver : Int16 = 1_i16
 
@@ -33,13 +32,12 @@ class CV::QtranXlog
     @char_count,
     @viuser_id,
     @wn_dic = 0,
-    @w_udic = true,
     @mt_ver = 1_16,
     @cv_ner = false,
     @ts_sdk = false,
     @ts_acc = false
   )
-    point_cost = calculate_cost(char_count, w_udic, mt_ver, cv_ner, ts_sdk, ts_acc)
+    point_cost = calculate_cost(char_count, mt_ver, cv_ner, ts_sdk, ts_acc)
     prev_count = self.class.count(viuser_id, input_hash)
     @point_cost = prev_count < 1 ? point_cost : point_cost // (prev_count &+ 1)
   end
@@ -51,10 +49,9 @@ class CV::QtranXlog
   TS_SDK_MUL = 2
   TS_ACC_MUL = 3
 
-  def calculate_cost(c_len : Int32, w_udic = true, mt_ver = 1, cv_ner = false, ts_sdk = false, ts_acc = false)
+  def calculate_cost(c_len : Int32, mt_ver = 1, cv_ner = false, ts_sdk = false, ts_acc = false)
     cost = (c_len * MT_VER_MUL[mt_ver]).round.to_i
 
-    cost &+= c_len &* W_UDIC_MUL if w_udic
     cost &+= c_len &* CV_NER_MUL if cv_ner
     cost &+= c_len &* TS_SDK_MUL if ts_sdk
     cost &+= c_len &* TS_ACC_MUL if ts_acc
@@ -67,16 +64,16 @@ class CV::QtranXlog
       insert into #{@@schema.table} (
         viuser_id, input_hash,
         char_count, point_cost,
-        wn_dic, w_udic,
+        wn_dic,
         mt_ver, cv_ner,
         ts_sdk, ts_acc,
         created_at
-      ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       returning *
       SQL
 
     db.query_one stmt, @viuser_id, @input_hash, @char_count, @point_cost,
-      @wn_dic, @w_udic, @mt_ver, @cv_ner, @ts_sdk, @ts_acc, @created_at,
+      @wn_dic, @mt_ver, @cv_ner, @ts_sdk, @ts_acc, @created_at,
       as: self.class
   end
 

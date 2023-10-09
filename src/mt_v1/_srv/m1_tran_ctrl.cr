@@ -30,22 +30,12 @@ class M1::TranCtrl < AC::Base
     render json: {lines: lines, mtime: mtime, tspan: tspan}
   end
 
-  @w_user : String = ""
-  @w_init : Bool = false
-
-  @[AC::Route::Filter(:before_action)]
-  def before_action
-    @w_init = _read_cookie("w_init").try(&.starts_with?('t')) || false
-    w_udic = _read_cookie("w_udic").try(&.starts_with?('t')) || false
-    @w_user = w_udic ? _uname : ""
-  end
-
   @[AC::Route::POST("/")]
   def convert(wn_id : Int32 = 0, format = "mtl")
     input = request.body.try(&.gets_to_end) || ""
 
     qtran = TranData.new(input, wn_id, format)
-    cvmtl = qtran.cv_wrap(_uname, w_init: @w_init, w_stat: false) do |io, engine|
+    cvmtl = qtran.cv_wrap(_uname, w_stat: false) do |io, engine|
       cv_post(io, engine)
     end
 
@@ -55,7 +45,7 @@ class M1::TranCtrl < AC::Base
   @[AC::Route::GET("/cached")]
   def cached(type : String, name : String, wn_id : Int32 = 0, format = "mtl")
     qtran = TranData.load_cached(type, name, wn_id, format)
-    cvmtl = qtran.cv_wrap(_uname, w_init: @w_init) { |io, engine| cv_post(io, engine) }
+    cvmtl = qtran.cv_wrap(_uname) { |io, engine| cv_post(io, engine) }
 
     render json: {cvmtl: cvmtl, ztext: qtran.input, wn_id: wn_id}
   end
@@ -95,7 +85,7 @@ class M1::TranCtrl < AC::Base
 
   @[AC::Route::POST("/tl_wnovel", body: :form)]
   def tl_wnovel(form : WninfoForm, wn_id : Int32 = 0)
-    cv_mt = MtCore.init(wn_id, user: _uname, init: @w_init)
+    cv_mt = MtCore.init(wn_id, user: _uname)
 
     intro = String.build do |io|
       form.bintro.each_line.with_index do |line, idx|
@@ -131,7 +121,7 @@ class M1::TranCtrl < AC::Base
 
   @[AC::Route::PUT("/debug")]
   def debug(wn_id : Int32, w_cap : Bool = false)
-    cv_mt = MtCore.init(wn_id, user: _uname, init: @w_init)
+    cv_mt = MtCore.init(wn_id, user: _uname)
     input = request.body.try(&.gets_to_end) || ""
 
     output = String.build do |io|
@@ -150,22 +140,22 @@ class M1::TranCtrl < AC::Base
     spawn do
       ihash = HashUtil.fnv_1a(input).unsafe_as(Int32)
       isize = input.size
-      log_tran_stats(ihash, isize, wn_id, w_udic: !@w_user.empty?)
+      log_tran_stats(ihash, isize, wn_id)
     end
 
     qtran = TranData.new(input, wn_id, format: "mtl")
 
-    cvmtl = qtran.cv_wrap(w_user: @w_user, w_init: @w_init) do |io, engine|
+    cvmtl = qtran.cv_wrap(w_user: @w_user) do |io, engine|
       cv_chap(io, engine, w_title, label)
     end
 
     render text: cvmtl
   end
 
-  private def log_tran_stats(ihash : Int32, isize : Int32, wn_dic : Int32, w_udic = true)
+  private def log_tran_stats(ihash : Int32, isize : Int32, wn_dic : Int32)
     xlog = CV::QtranXlog.new(
       input_hash: ihash, char_count: isize, viuser_id: _vu_id,
-      wn_dic: wn_dic, w_udic: w_udic,
+      wn_dic: wn_dic,
       mt_ver: 1_i16, cv_ner: false,
       ts_sdk: false, ts_acc: false,
     )

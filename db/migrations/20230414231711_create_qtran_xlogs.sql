@@ -9,7 +9,6 @@ CREATE TABLE IF NOT EXISTS qtran_xlogs(
   point_cost int NOT NULL DEFAULT 0,
   --
   wn_dic int NOT NULL DEFAULT 0,
-  w_udic boolean NOT NULL DEFAULT 'f',
   --
   mt_ver smallint NOT NULL DEFAULT 1,
   cv_ner boolean NOT NULL DEFAULT 'f',

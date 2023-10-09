@@ -6,8 +6,7 @@ class M1::M1TermCtrl < AC::Base
 
   @[AC::Route::POST("/query", body: :words)]
   def lookup(words : Array(String), vd_id : Int32)
-    w_udic = cookies["w_udic"]?.try(&.value) != "f"
-    render json: M1TermView.new(words, wn_id: vd_id, uname: _uname, w_udic: w_udic)
+    render json: M1TermView.new(words, wn_id: vd_id, uname: _uname)
   end
 
   @[AC::Route::POST("/batch")]

@@ -61,7 +61,9 @@
   </p>
 {:else}
   <p>
-    Theo hệ số, bạn cần thiết <x-vcoin
+    Phần hiện tại có <span class="em">{rdata.zsize}</span> ký tự. Theo hệ số,
+    bạn cần thiết
+    <x-vcoin
       >{vcoin_cost}
       <SIcon name="vcoin" iset="icons" /></x-vcoin>
     để mở khóa cho chương. Số vcoin bạn đang có:
@@ -72,20 +74,20 @@
 
   <p>
     <em> Công thức tính: </em>
-    <code>số lượng chữ / 100_000 * hệ số nhân = số vcoin cần thiết</code>
+    <code>[Số ký tự] / 100_000 * [Hệ số nhân] = [Số vcoin cần thiết]</code>
     <br />
-    Hệ số nhân hiện tại của danh sách chương:
+    Hệ số nhân hiện tại của chương:
     <strong class="em">{cstem.multp}</strong>.
   </p>
   <p class="u-fg-tert">
     <em>
       {#if cstem.stype == 'up'}
-        Hệ số nhân của nguồn sưu tầm cá nhân do người dùng tự thiết đặt. Thử
-        liên hệ với chủ sở hữu dự án nếu thấy chưa phù hợp!
+        Gợi ý: Hệ số nhân của nguồn sưu tầm cá nhân do người dùng tự thiết đặt.
+        Thử liên hệ với chủ sở hữu dự án nếu thấy chưa phù hợp!
       {:else}
-        Hệ số nhân của chương được tính bằng hệ số nhân mặc định của nguồn
-        truyện trừ cho quyền hạn hiện tại của bạn. Quyền hạn càng cao thì hệ số
-        nhân càng giảm.
+        Gợi ý: Hệ số nhân của chương được tính bằng hệ số nhân mặc định của
+        nguồn truyện trừ cho quyền hạn hiện tại của bạn. Quyền hạn càng cao thì
+        hệ số nhân càng giảm.
       {/if}
     </em>
   </p>

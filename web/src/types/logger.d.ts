@@ -20,12 +20,8 @@ declare namespace CV {
     input_hash: number
 
     wn_dic: number
-    w_udic: boolean
 
     mt_ver: number
-    cv_ner: boolean
-    ts_sdk: boolean
-    ts_acc: boolean
 
     created_at: string
   }

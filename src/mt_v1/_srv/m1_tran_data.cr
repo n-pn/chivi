@@ -49,8 +49,8 @@ class M1::TranData
     @to_mtl = format == "mtl"
   end
 
-  def cv_wrap(w_user : String = "", w_init : Bool = false, w_stat : Bool = true, &)
-    engine = MtCore.init(@wn_id, user: w_user, init: w_init)
+  def cv_wrap(w_user : String = "", w_stat : Bool = true, &)
+    engine = MtCore.init(@wn_id, user: w_user)
 
     String.build do |io|
       tspan = Time.measure { with self yield io, engine }
