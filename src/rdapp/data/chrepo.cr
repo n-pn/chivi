@@ -55,6 +55,32 @@ class RD::Chrepo
     find(ch_no) || Chinfo.new(ch_no)
   end
 
+  def chap_mutlp(ch_no : Int32, vu_id : Int32, privi : Int32)
+    case
+    when free_chap?(ch_no) then 0_i16
+    when @owner < 0        then @multp &- privi
+    else                        @owner == vu_id ? 0_i16 : @multp
+    end
+  end
+
+  def grant_chap(cinfo : Chinfo, p_idx : Int32, multp : Int16, vu_id : Int32, force : Bool = false)
+    fpath = self.part_name(cinfo, p_idx)
+    zsize = cinfo.sizes[p_idx]? || 0
+
+    if zsize == 0 || cinfo.cksum.empty?
+      error = 414
+    elsif multp < 1 || Unlock.unlocked?(vu_id, fpath)
+      error = 0
+    elsif force
+      entry = Unlock.new(fpath, zsize, vu_id: vu_id, multp: multp, owner: @owner)
+      error = entry.unlock! ? 0 : 415
+    else
+      error = 413
+    end
+
+    {fpath, zsize, error}
+  end
+
   ####
 
   @[AlwaysInline]

@@ -76,31 +76,10 @@ class RD::ChinfoCtrl < AC::Base
 
   private def show_part(crepo : Chrepo, cinfo : Chinfo, p_idx : Int32 = 1, force : Bool = false)
     vu_id = self._vu_id
-    privi = self._privi
-
     # plock = chap_plock(cinfo.ch_no)
 
-    if crepo.free_chap?(cinfo.ch_no)
-      multp = 0_i16
-    elsif crepo.owner >= 0
-      multp = crepo.owner == vu_id ? 0_i16 : crepo.multp
-    else
-      multp = crepo.multp &- privi
-    end
-
-    zsize = cinfo.sizes[p_idx]? || 0
-    fpath = crepo.part_name(cinfo, p_idx)
-
-    if zsize == 0 || cinfo.cksum.empty?
-      error = 414
-    elsif multp < 1 || Unlock.unlocked?(vu_id, fpath)
-      error = 0
-    elsif force
-      entry = Unlock.new(crepo, cinfo, vu_id, p_idx, multp: multp, owner: crepo.owner)
-      error = entry.unlock! ? 0 : 415
-    else
-      error = 413
-    end
+    multp = crepo.chap_mutlp(cinfo.ch_no, vu_id: vu_id, privi: self._privi)
+    fpath, zsize, error = crepo.grant_chap(cinfo, p_idx, multp, vu_id: vu_id, force: force)
 
     {
       ch_no: cinfo.ch_no,

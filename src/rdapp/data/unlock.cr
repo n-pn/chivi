@@ -21,11 +21,7 @@ class RD::Unlock
   field mtime : Int64 = Time.utc.to_unix
   field flags : Int32 = 0
 
-  def initialize(crepo : Chrepo, cinfo : Chinfo,
-                 @vu_id : Int32, p_idx : Int32,
-                 @multp : Int16 = 4_i16, @owner : Int32 = -1)
-    @ulkey = crepo.part_name(cinfo, p_idx)
-    @zsize = cinfo.sizes[p_idx]? || 0
+  def initialize(@ulkey, @zsize, @vu_id, @multp = 4_i16, @owner = -1)
     @vcoin = (zsize * multp * 0.01).to_i
   end
 
