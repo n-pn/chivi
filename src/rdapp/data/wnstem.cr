@@ -42,7 +42,7 @@ class RD::Wnstem
       repo.wn_id = @wn_id
 
       repo.gifts = 2
-      repo.multp = 3
+      repo.multp = @multp
     end
   end
 
@@ -65,7 +65,7 @@ class RD::Wnstem
   def to_json(jb : JSON::Builder)
     jb.object {
       jb.field "sname", @sname
-      jb.field "sn_id", @s_bid
+      jb.field "sn_id", @wn_id
 
       jb.field "chmax", @chap_total
       jb.field "utime", @mtime
@@ -73,13 +73,10 @@ class RD::Wnstem
       jb.field "multp", @multp
       jb.field "privi", @privi
       jb.field "gifts", 2
-    }
-  end
 
-  @[AlwaysInline]
-  def gift_chaps
-    gift_chaps = @chap_total // 2
-    gift_chaps < 40 ? 40 : gift_chaps
+      jb.field "rlink", @rlink
+      jb.field "rtime", @rtime
+    }
   end
 
   @[AlwaysInline]
@@ -101,6 +98,45 @@ class RD::Wnstem
     when "~chivi" then 3
     else               3
     end
+  end
+
+  private def reload_tspan(crawl : Int32 = 1)
+    case crawl
+    when 2 then 3.minutes  # force crawl
+    when 1 then 30.minutes # normal crawl
+    else        10.years   # keep forever
+    end
+  end
+
+  def update!(crawl : Int32 = 1, regen : Bool = false) : self | Nil
+    if @rlink.empty?
+      self.crepo.update_vinfos! if @chap_total > 0
+      return
+    end
+
+    stale = Time.utc - reload_tspan(crawl)
+    raw_stem = RawRmstem.from_link(@rlink, stale: stale)
+
+    clist = raw_stem.extract_clist!
+    @chap_total = clist.size
+
+    self.crepo.tap do |crepo|
+      crepo.chmax = @chap_total
+      crepo.upsert_zinfos!(clist)
+      crepo.update_vinfos! if @chap_total > 0
+    end
+
+    if raw_stem.update_str.empty?
+      @mtime = Time.utc.to_unix
+    else
+      @mtime = raw_stem.update_int
+    end
+
+    # TODO: gen timestampt from html file modification time instead
+    @rtime = Time.utc.to_unix
+
+    @_flag == 1_i16 if @_flag == 0
+    self.upsert!(db: @@db)
   end
 
   def unpack_old_text!(force : Bool = false)
@@ -156,7 +192,7 @@ class RD::Wnstem
     @mtime = mtime if @mtime < mtime
 
     @chap_total = chmax if @chap_total < chmax
-    self.crepo.chmax = @chap_count
+    self.crepo.chmax = @chap_total
 
     query = @@schema.update_stmt(%w{chap_total mtime})
     @@db.exec(query, @chap_total, @mtime, @wn_id, @sname)

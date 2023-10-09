@@ -8,12 +8,12 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ nvinfo, curr_seed, rdata, ropts } = data)
+  $: ({ nvinfo, wstem, rdata, ropts } = data)
 
   $: ch_no = rdata.ch_no
-  // $: total = curr_seed.chap_max
+  // $: total = wstem.chap_max
 
-  $: stem_path = seed_path(nvinfo.bslug, curr_seed.sname)
+  $: stem_path = seed_path(nvinfo.bslug, wstem.sname)
   $: prev_path = rdata._prev
     ? chap_path(stem_path, rdata._prev, ropts)
     : stem_path
@@ -26,22 +26,22 @@
 
   $: crumb = [
     { text: nvinfo.vtitle, href: `/wn/${nvinfo.bslug}` },
-    { text: `[${curr_seed.sname}]`, href: stem_path },
+    { text: `[${wstem.sname}]`, href: stem_path },
     { text: rdata.chdiv || 'Chính văn' },
     { text: rdata.title },
   ]
 
   $: cstem = {
     stype: 'wn',
-    sroot: `/wn/${curr_seed.sname}:${curr_seed.sn_id}`,
+    sroot: `/wn/${wstem.sname}:${wstem.sn_id}`,
 
-    sname: curr_seed.sname,
-    sn_id: curr_seed.sn_id,
+    sname: wstem.sname,
+    sn_id: wstem.sn_id,
 
-    multp: curr_seed.multp,
-    plock: curr_seed.privi,
-    chmax: curr_seed.chmax,
-    gifts: curr_seed.gifts,
+    multp: wstem.multp,
+    plock: wstem.privi,
+    chmax: wstem.chmax,
+    gifts: wstem.gifts,
 
     zname: nvinfo.ztitle,
   }

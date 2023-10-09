@@ -9,10 +9,10 @@
   import { debounce } from '$lib/svelte'
   export let data: PageData
 
-  $: ({ nvinfo, curr_seed, dlcvs, pg_no } = data)
+  $: ({ nvinfo, ustem, dlcvs, pg_no } = data)
 
   let from = 1
-  let upto = data.curr_seed?.chmax || 1
+  let upto = data.ustem.chmax || 1
 
   let _onload = true
   let err_msg: string
@@ -25,7 +25,7 @@
   $: if (browser && from > 0 && upto >= from) {
     clearTimeout(timer)
     timer = setTimeout(() => {
-      caculate_cost(nvinfo.id, curr_seed.sname, from, upto)
+      caculate_cost(nvinfo.id, ustem.sname, from, upto)
     }, 300)
   }
 
@@ -52,7 +52,7 @@
 
     const body = {
       wn_id: nvinfo.id,
-      sname: curr_seed.sname,
+      sname: ustem.sname,
       from,
       upto,
       texsmart_pos: false,
@@ -91,7 +91,7 @@
           bind:value={from}
           disabled={_onload}
           min={1}
-          max={curr_seed.chmax} />
+          max={ustem.chmax} />
       </span>
 
       <span class="field">
@@ -103,7 +103,7 @@
           bind:value={upto}
           disabled={_onload}
           min={from}
-          max={curr_seed.chmax} />
+          max={ustem.chmax} />
       </span>
     </div>
 

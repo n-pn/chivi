@@ -10,8 +10,8 @@
   import { seed_path } from '$lib/kit_path'
   export let data: LayoutData
 
-  $: sroot = seed_path(data.nvinfo.bslug, data.curr_seed.sname)
-  $: can_edit = $_user.privi >= data.seed_data.edit_privi
+  $: sroot = seed_path(data.nvinfo.bslug, data.wstem.sname)
+  $: can_edit = $_user.privi > 2
 
   $: tabs = [
     { type: 'ch', href: `${sroot}`, icon: 'list', text: 'Chương tiết' },

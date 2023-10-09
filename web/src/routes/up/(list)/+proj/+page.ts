@@ -1,20 +1,7 @@
-import { nav_link } from '$utils/header_util'
 import { api_get } from '$lib/api_call'
+
+import { nav_link } from '$utils/header_util'
 import type { PageLoad } from './$types'
-
-const empty_form: Partial<CV.Upstem> = {
-  id: 0,
-  wn_id: 0,
-
-  zname: '',
-  vname: '',
-  uslug: '',
-
-  vintro: '',
-  labels: [],
-
-  guard: 0,
-}
 
 const _meta: App.PageMeta = {
   left_nav: [
@@ -24,11 +11,27 @@ const _meta: App.PageMeta = {
   right_nav: [],
 }
 
-export const load = (async ({ url: { searchParams }, fetch }) => {
-  let form = empty_form
-  form.wn_id = +searchParams.get('wn')
+export const load = (async ({ url: { searchParams }, parent, fetch }) => {
+  const { _user } = await parent()
 
-  return { form, ontab: '+new', _meta, _title: 'Tạo sưu tầm cá nhân' }
+  const uform = {
+    id: 0,
+    wn_id: +searchParams.get('wn') || 0,
+
+    owner: _user.vu_id,
+    sname: '@' + _user.uname,
+
+    zname: '',
+    vname: '',
+    uslug: '',
+
+    vintro: '',
+    labels: [],
+
+    guard: 0,
+  }
+
+  return { uform, ontab: '+new', _meta, _title: 'Tạo sưu tầm cá nhân' }
 }) satisfies PageLoad
 
 // export function load() {

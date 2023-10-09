@@ -80,8 +80,10 @@ class RD::ChinfoCtrl < AC::Base
 
     # plock = chap_plock(cinfo.ch_no)
 
-    if crepo.owner >= 0
-      multp = crepo.owner == privi ? 0_i16 : crepo.multp
+    if crepo.free_chap?(cinfo.ch_no)
+      multp = 0_i16
+    elsif crepo.owner >= 0
+      multp = crepo.owner == vu_id ? 0_i16 : crepo.multp
     else
       multp = crepo.multp &- privi
     end

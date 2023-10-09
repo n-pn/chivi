@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { get_user } from '$lib/stores'
   import { seed_path } from '$lib/kit_path'
 
   import { get_rtime } from '$gui/atoms/RTime.svelte'
@@ -8,69 +7,42 @@
   export let nvinfo: CV.Wninfo
   export let ubmemo: CV.Ubmemo
 
-  export let curr_seed: CV.Chroot
-  export let seed_data: CV.Wnstem
-
+  export let wstem: CV.Wnstem
   export let chaps: CV.Wnchap[]
 
   export let mark_ch_no = ubmemo.chidx
 
-  $: same_sname = curr_seed.sname == ubmemo.sname
-  $: base_url = seed_path(nvinfo.bslug, curr_seed.sname)
-
-  const _user = get_user()
-
-  function map_privi(ch_no: number): string[] {
-    let plock = seed_data.read_privi
-    if (ch_no <= Math.floor(curr_seed.chmax / 2)) plock = 0
-
-    if ($_user.privi >= plock) {
-      return ['Bạn đủ quyền xem chương', 'lock-open', 'tabler']
-    }
-
-    if (plock < 1) {
-      return ['Bạn cần đăng nhập để xem chương', 'lock', 'tabler']
-    }
-
-    return [`Cần quyền hạn ${plock} để xem chương`, `privi-${plock}`, 'sprite']
-  }
+  $: sroot = seed_path(nvinfo.bslug, wstem.sname)
 </script>
 
-{#key curr_seed.sname}
-  <div class="chaps">
-    {#each chaps as chinfo}
-      {@const [lock_text, lock_icon, lock_iset] = map_privi(chinfo.ch_no)}
+<div class="chaps">
+  {#each chaps as chinfo}
+    <a
+      href="{sroot}/{chinfo.ch_no}"
+      class="chinfo"
+      class:_active={chinfo.ch_no == mark_ch_no}
+      rel="nofollow">
+      <div class="chap-text">
+        <span class="title">{chinfo.title}</span>
+        <span class="ch_no">{chinfo.ch_no}.</span>
+      </div>
+      <div class="chap-meta">
+        <span class="chdiv">{chinfo.chdiv || 'Chính văn'}</span>
+        {#if chinfo.mtime > 0}
+          <span class="meta" data-tip="Lưu: {get_rtime(chinfo.mtime)}">
+            <SIcon name="file-download" />
+          </span>
+        {/if}
 
-      <a
-        href="{base_url}/{chinfo.ch_no}"
-        class="chinfo"
-        class:_active={chinfo.ch_no == mark_ch_no}
-        rel="nofollow">
-        <div class="chap-text">
-          <span class="title">{chinfo.title}</span>
-          <span class="ch_no">{chinfo.ch_no}.</span>
-        </div>
-        <div class="chap-meta">
-          <span class="chdiv">{chinfo.chdiv || 'Chính văn'}</span>
-          {#if chinfo.mtime > 0}
-            <span class="meta" data-tip="Lưu: {get_rtime(chinfo.mtime)}">
-              <SIcon name="file-download" />
-            </span>
-          {/if}
-
-          {#if same_sname && chinfo.ch_no == ubmemo.chidx}
-            <span class="meta" data-tip="Xem: {get_rtime(ubmemo.utime)}">
-              <SIcon name={ubmemo.locked ? 'bookmark' : 'eye'} />
-            </span>
-          {/if}
-
-          <span class="meta" data-tip={lock_text}
-            ><SIcon name={lock_icon} iset={lock_iset} /></span>
-        </div>
-      </a>
-    {/each}
-  </div>
-{/key}
+        {#if chinfo.ch_no == mark_ch_no}
+          <span class="meta" data-tip="Xem: {get_rtime(ubmemo.utime)}">
+            <SIcon name={ubmemo.locked ? 'bookmark' : 'eye'} />
+          </span>
+        {/if}
+      </div>
+    </a>
+  {/each}
+</div>
 
 <style lang="scss">
   $chap-size: 17.5rem;

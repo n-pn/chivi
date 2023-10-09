@@ -8,7 +8,7 @@
 
   export let data: LayoutData
 
-  $: ({ nvinfo, curr_seed } = data)
+  $: ({ nvinfo, wstem } = data)
   $: pg_no = +$page.url.searchParams.get('pg') || 1
 
   $: ({ wstems = [], ustems = [], rstems = [] } = data.bstems)
@@ -26,7 +26,7 @@
   <a
     href={seed_path(nvinfo.bslug, '~avail', pg_no)}
     class="seed-name"
-    class:_active={'~avail' == curr_seed.sname}
+    class:_active={'~avail' == wstem.sname}
     data-tip-loc="bottom">
     <div class="seed-label">Nguồn tổng hợp</div>
     <div class="seed-stats">
@@ -93,7 +93,7 @@
       <a
         href="/rm/{sname}:{sn_id}"
         class="seed-name _sub"
-        class:_active={sname == curr_seed.sname}>
+        class:_active={sname == wstem.sname}>
         <div class="seed-label">{sname}</div>
         <div class="seed-stats"><strong>{chmax}</strong> chương</div>
       </a>

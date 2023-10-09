@@ -20,8 +20,8 @@
   import ChapsView from './ChapsView.svelte'
 
   export let data: PageData
-  $: ({ nvinfo, curr_seed, seed_data } = data)
-  $: min_privi = seed_data.edit_privi
+  $: ({ nvinfo, ustem } = data)
+  $: min_privi = 1
 
   let chdiv = data.chdiv || ''
   let start = data.start
@@ -114,12 +114,12 @@
       alert(err_msg)
     } else {
       await invalidateAll()
-      await goto(seed_path(nvinfo.bslug, curr_seed.sname, _pgidx(start)))
+      await goto(seed_path(nvinfo.bslug, ustem.sname, _pgidx(start)))
     }
   }
 
   async function submit_part(chaps: Zchap[]) {
-    const url = `/_wn/texts/${nvinfo.id}/${curr_seed.sname}`
+    const url = `/_wn/texts/${nvinfo.id}/${ustem.sname}`
     const headers = { 'Content-type': 'application/json' }
     const body = JSON.stringify(chaps)
     const res = await fetch(url, { headers, method: 'POST', body })

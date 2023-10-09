@@ -1,18 +1,13 @@
-import { redirect } from '@sveltejs/kit'
 import { api_get } from '$lib/api_call'
-import type { LayoutLoad } from './$types'
+import { redirect } from '@sveltejs/kit'
 import { book_nav, seed_nav, quick_read_v2 } from '$utils/header_util'
+
+import type { LayoutLoad } from './$types'
 
 export interface StemList {
   wstems: CV.Chstem[]
   rstems: CV.Chstem[]
   ustems: CV.Chstem[]
-}
-
-export interface SeedData {
-  curr_seed: CV.Chroot
-  top_chaps: CV.Wnchap[]
-  seed_data: CV.Wnstem
 }
 
 export const load = (async ({ url, fetch, params: { stem = '' }, parent }) => {
@@ -27,8 +22,8 @@ export const load = (async ({ url, fetch, params: { stem = '' }, parent }) => {
   const rd_url = `/_rd/bstems/${wn_id}`
   const bstems = await api_get<StemList>(rd_url, fetch)
 
-  const info_path = `/_wn/seeds/${wn_id}/${stem}`
-  const seed_data = await api_get<SeedData>(info_path, fetch)
+  const wnurl = `/_rd/wnstems/${stem}/${wn_id}`
+  const wstem = await api_get<CV.Wnstem>(wnurl, fetch)
 
   const _meta = {
     left_nav: [
@@ -38,5 +33,5 @@ export const load = (async ({ url, fetch, params: { stem = '' }, parent }) => {
     right_nav: [quick_read_v2(nvinfo, ubmemo)],
   }
 
-  return { bstems, ...seed_data, _meta }
+  return { bstems, wstem, _meta }
 }) satisfies LayoutLoad

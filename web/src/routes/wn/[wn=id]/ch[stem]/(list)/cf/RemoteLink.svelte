@@ -4,20 +4,20 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import { goto } from '$app/navigation'
 
-  export let can_edit = true
-  export let edit_url: string
-  export let seed_data: CV.Wnstem
-
+  export let wstem: CV.Wnstem
   export let ztitle: string
 
-  let rm_link = seed_data.rlink
+  export let can_conf = true
+  export let edit_url: string
+
+  let rm_link = wstem.rlink
 
   let error = ''
 
   const update_rm_link = async () => {
     try {
       await api_call(edit_url, { rm_link }, 'PATCH')
-      seed_data = seed_data
+      wstem = wstem
       await goto('..')
     } catch (ex) {
       error = ex.body.message
@@ -92,7 +92,7 @@
 
   <button
     class="m-btn _sm _primary _fill"
-    disabled={!rm_link || !can_edit}
+    disabled={!rm_link || !can_conf}
     on:click={update_rm_link}>
     <SIcon name="square-plus" />
     <span>Thêm</span>

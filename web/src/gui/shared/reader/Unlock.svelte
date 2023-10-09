@@ -76,10 +76,20 @@
     <br />
     Hệ số nhân hiện tại của danh sách chương:
     <strong class="em">{cstem.multp}</strong>.
-    {#if cstem.stype == 'up'}<em
-        >(Thử liên hệ với chủ sở hữu dự án nếu thấy chưa phù hợp!)</em
-      >{/if}
   </p>
+  <p class="u-fg-tert">
+    <em>
+      {#if cstem.stype == 'up'}
+        Hệ số nhân của nguồn sưu tầm cá nhân do người dùng tự thiết đặt. Thử
+        liên hệ với chủ sở hữu dự án nếu thấy chưa phù hợp!
+      {:else}
+        Hệ số nhân của chương được tính bằng hệ số nhân mặc định của nguồn
+        truyện trừ cho quyền hạn hiện tại của bạn. Quyền hạn càng cao thì hệ số
+        nhân càng giảm.
+      {/if}
+    </em>
+  </p>
+
   <footer class="actions">
     <div>Thanh toán vcoin và mở khóa chương:</div>
 

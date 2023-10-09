@@ -8,18 +8,18 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let book_info: CV.Wninfo
-  export let curr_seed: CV.Chroot
+  export let wstem: CV.Wnstem
 
-  export let can_edit = false
+  export let can_conf = false
   export let edit_url: string
 
   let cut_from = 1
-  let cut_upto = curr_seed.chmax
+  let cut_upto = wstem.chmax
 
   async function cut_chapters() {
     try {
       await api_call(edit_url, { cut_from }, 'PATCH')
-      const href = seed_path(book_info.bslug, curr_seed.sname, _pgidx(cut_from))
+      const href = seed_path(book_info.bslug, wstem.sname, _pgidx(cut_from))
 
       await goto(href)
     } catch (ex) {
@@ -48,7 +48,7 @@
       class="m-input _sm"
       type="number"
       min={cut_from}
-      max={curr_seed.chmax}
+      max={wstem.chmax}
       disabled
       bind:value={cut_upto} />
   </span>
@@ -56,7 +56,7 @@
     <button
       type="button"
       class="m-btn _warning _fill"
-      disabled={!can_edit || cut_from < 0 || cut_from > curr_seed.chmax}
+      disabled={!can_conf || cut_from < 0 || cut_from > wstem.chmax}
       on:click={cut_chapters}>
       <SIcon name="cut" />
       <span>Cắt bỏ</span>

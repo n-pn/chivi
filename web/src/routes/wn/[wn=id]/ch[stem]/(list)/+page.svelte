@@ -5,7 +5,6 @@
   const _user = get_user()
 
   import { invalidateAll } from '$app/navigation'
-  import { seed_path } from '$lib/kit_path'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import RTime from '$gui/atoms/RTime.svelte'
@@ -19,7 +18,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ nvinfo, ubmemo, curr_seed, seed_data, chaps, pg_no } = data)
+  $: ({ nvinfo, ubmemo, wstem, chaps, pg_no } = data)
 
   $: pager = new Pager($page.url, { pg: 1 })
 
@@ -30,22 +29,20 @@
     _onload = true
     err_msg = ''
 
-    const api_url = `/_wn/seeds/${nvinfo.id}/${curr_seed.sname}/reload`
-    const headers = { Accept: 'application/json' }
-    const api_res = await fetch(api_url, { headers })
+    const url = `/_rd/wnstems/${wstem.sname}/${nvinfo.id}?crawl=1&regen=1`
+    const res = await fetch(url)
     _onload = false
 
-    if (!api_res.ok) {
-      const data = await api_res.json()
-      err_msg = data.message
+    if (!res.ok) {
+      err_msg = await res.text()
     } else {
       await invalidateAll()
     }
   }
 
   // $: [can_upsert, can_reload] = check_edit_privi(
-  //   curr_seed.sname,
-  //   seed_data.edit_privi,
+  //   wstem.sname,
+  //   wstem.edit_privi,
   //   $_user
   // )
 
@@ -64,19 +61,23 @@
   //   }
   // }
 
-  // prettier-ignore
-  const privi_str = (privi: number) => privi < 1 ? 'đăng nhập' : `quyền hạn ${privi}`
+  let free_chaps = 40
+  $: {
+    free_chaps = Math.floor(wstem.chmax / 2)
+    if (free_chaps < 40) free_chaps = 40
+  }
 </script>
 
 <page-info>
   <info-left>
-    <info-span>{curr_seed.chmax} chương</info-span>
-    <info-span class="u-show-pl"><RTime mtime={curr_seed.utime} /></info-span>
+    <info-span>{wstem.chmax} chương</info-span>
+    <info-span class="u-show-pl"><RTime mtime={wstem.utime} /></info-span>
   </info-left>
 
   <info-right>
     <button
-      class="m-btn _primary"
+      class="m-btn _success"
+      class:_fill={wstem.rlink}
       disabled={$_user.privi < 0}
       on:click={() => reload_chlist(2)}
       data-tip="Cập nhật từ nguồn ngoài hoặc dịch lại nội dung"
@@ -88,65 +89,58 @@
   </info-right>
 </page-info>
 
-{#if err_msg}
-  <div class="chap-hint _error">{err_msg}</div>
-{/if}
+{#if err_msg}<div class="chap-hint _error">{err_msg}</div>{/if}
 
-{#if seed_data.rlink}
-  <div class="chap-hint" class:_bold={!seed_data.fresh}>
+<!-- {#if wstem.rlink}
+  <div class="chap-hint" class:_bold={!wstem.fresh}>
     <SIcon name="alert-triangle" />
     Danh sách chương tiết được liên kết tới
-    <a class="link" href={seed_data.rlink} rel="noreferrer" target="_blank"
+    <a class="link" href={wstem.rlink} rel="noreferrer" target="_blank"
       >nguồn ngoài
       <SIcon name="external-link" />
     </a>. Bạn có thể bấm [<SIcon name="refresh" /> Đổi mới] để cập nhật theo nguồn
     ngoài.
   </div>
-{/if}
+{/if} -->
 
-{#if seed_data.gift_chaps < curr_seed.chmax}
+{#if free_chaps < wstem.chmax}
   <div class="chap-hint">
     <SIcon name="alert-circle" />
     <span>
       Chương từ <span class="em">1</span> tới
-      <span class="em">{seed_data.gift_chaps}</span> cần
+      <span class="em">{free_chaps}</span> cần
       <strong class="em">đăng nhập</strong> để xem nội dung.
     </span>
 
     <span>
-      Chương từ <span class="em">{seed_data.gift_chaps + 1}</span> tới
-      <span class="em">{curr_seed.chmax}</span> cần
-      <strong class="em">{privi_str(seed_data.read_privi)}</strong> để xem nội dung.
+      Chương từ <span class="em">{free_chaps + 1}</span> tới
+      <span class="em">{wstem.chmax}</span> cần
+      <strong class="em">mở khoá</strong> để xem nội dung.
     </span>
   </div>
-{:else if curr_seed.chmax > 0}
+{:else if wstem.chmax > 0}
   <div class="chap-hint">
     <SIcon name="alert-circle" />
     <span>
       Chương từ <span class="em">1</span> tới
-      <span class="em">{curr_seed.chmax}</span> cần
+      <span class="em">{wstem.chmax}</span> cần
       <strong class="em">đăng nhập</strong> để xem nội dung.
     </span>
   </div>
 {/if}
 
-{#if curr_seed.chmax > 0}
+{#if wstem.chmax > 0}
   <chap-list>
-    <ChapList
-      {nvinfo}
-      {ubmemo}
-      {curr_seed}
-      {seed_data}
-      chaps={data.top_chaps} />
+    <ChapList {nvinfo} {ubmemo} {wstem} chaps={data.lasts} />
     <div class="chlist-sep" />
-    <ChapList {nvinfo} {ubmemo} {curr_seed} {seed_data} {chaps} />
+    <ChapList {nvinfo} {ubmemo} {wstem} {chaps} />
 
     <Footer>
       <div class="foot">
         <Mpager
           {pager}
           pgidx={pg_no}
-          pgmax={Math.floor((curr_seed.chmax - 1) / 32) + 1} />
+          pgmax={Math.floor((wstem.chmax - 1) / 32) + 1} />
       </div>
     </Footer>
   </chap-list>

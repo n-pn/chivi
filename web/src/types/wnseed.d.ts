@@ -45,15 +45,17 @@ declare namespace CV {
   }
 
   interface Wnstem {
+    sname: string
+    sn_id: number
+
     rlink: string
     rtime: number
 
-    _flag: number
-    fresh: boolean
-    //
-    read_privi: number
-    edit_privi: number
-    gift_chaps: number
+    chmax: number
+    utime: number
+
+    multp: number
+    gifts: number
   }
 
   interface WnstemPage {

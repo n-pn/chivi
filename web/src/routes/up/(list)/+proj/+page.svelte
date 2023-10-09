@@ -1,25 +1,24 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
+  import { api_call } from '$lib/api_call'
 
   import { get_user } from '$lib/stores'
   const _user = get_user()
-
-  import { api_call } from '$lib/api_call'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
 
-  let form = { ...data.form }
-  let labels = (form.labels || []).join(', ')
+  let uform = data.uform
+  let labels = (uform.labels || []).join(', ')
 
   let err_text: string
 
   const action = '/_rd/upstems'
 
   async function submit() {
-    const body = { ...form, labels: labels.split(',') }
+    const body = { ...uform, labels: labels.split(',') }
 
     try {
       const { sname, id } = await api_call(action, body, 'POST')
@@ -30,15 +29,19 @@
   }
 
   const tl_zname = async () => {
-    const res = await fetch(`/_sp/hname?input=${form.zname}`)
-    form.vname = await res.text()
+    const res = await fetch(`/_sp/hname?input=${uform.zname}`)
+    uform.vname = await res.text()
   }
 
   const tl_intro = async () => {
     const url = `/_m1/qtran?format=txt`
     const headers = { 'Content-Type': 'text/plain' }
-    const res = await fetch(url, { method: 'POST', body: form.vintro, headers })
-    form.vintro = await res.text()
+    const res = await fetch(url, {
+      method: 'POST',
+      body: uform.vintro,
+      headers,
+    })
+    uform.vintro = await res.text()
   }
 </script>
 
@@ -53,7 +56,7 @@
         placeholder="Tên gốc tiếng trung"
         on:change={tl_zname}
         required
-        bind:value={form.zname} />
+        bind:value={uform.zname} />
     </form-field>
 
     <form-field>
@@ -63,17 +66,21 @@
         class="m-input"
         name="vname"
         placeholder="Để trắng để hệ thống tự gợi ý"
-        bind:value={form.vname} />
+        bind:value={uform.vname} />
     </form-field>
   </form-group>
 
   <div class="form-group vintro">
     <div class="form-label">
       <label for="vintro">Giới thiệu tiếng Việt</label>
-      <button type="button" disabled={!form.vintro} on:click={tl_intro}
+      <button type="button" disabled={!uform.vintro} on:click={tl_intro}
         >Dịch nhanh</button>
     </div>
-    <textarea class="m-input" name="vintro" rows="8" bind:value={form.vintro} />
+    <textarea
+      class="m-input"
+      name="vintro"
+      rows="8"
+      bind:value={uform.vintro} />
   </div>
 
   <div class="form-group labels">
@@ -98,7 +105,7 @@
         class="m-input"
         name="book_id"
         placeholder="ID bộ truyện"
-        bind:value={form.wn_id} />
+        bind:value={uform.wn_id} />
     </form-field>
   </div>
 

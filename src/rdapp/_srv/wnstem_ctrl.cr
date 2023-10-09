@@ -11,4 +11,11 @@ class RD::WnstemCtrl < AC::Base
       ustems: ChstemView.ustems_by_wn(wn_id),
     }
   end
+
+  @[AC::Route::GET("/wnstems/:sname/:sn_id")]
+  def show(sname : String, sn_id : Int32, crawl : Int32 = 0, regen : Bool = false)
+    wstem = get_wstem(sname, sn_id)
+    wstem.update!(crawl, regen) if crawl > 0 || regen
+    render json: wstem
+  end
 end
