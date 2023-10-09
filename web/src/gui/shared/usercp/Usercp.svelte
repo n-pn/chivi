@@ -33,17 +33,19 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Slider from '$gui/molds/Slider.svelte'
 
-  import Reading from './Usercp/Reading.svelte'
-  import Setting from './Usercp/Setting.svelte'
-  import Unotifs from './Usercp/Unotifs.svelte'
+  import Config from './Config.svelte'
+  import Reading from './Reading.svelte'
+  import Setting from './Setting.svelte'
+  import Unotifs from './Unotifs.svelte'
 
-  const components = [Reading, Setting, Unotifs]
+  const components = [Config, Reading, Setting, Unotifs]
 
   export let actived = false
   const _user = get_user()
 
   const tabs = [
-    { icon: 'history', btip: 'Lịch sửa đọc' },
+    { icon: 'adjustments-alt', btip: 'Giao diện' },
+    { icon: 'history', btip: 'Lịch sử' },
     { icon: 'settings', btip: 'Cài đặt' },
     { icon: 'bell', btip: 'Thông báo' },
   ]

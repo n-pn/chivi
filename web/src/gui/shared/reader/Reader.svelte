@@ -142,7 +142,8 @@
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div
-    class="reader app-fs-{$config.ftsize} app-ff-{$config.ftface} _{$config.r_mode}"
+    class="reader _{$config.r_mode} app-fs-{$config.ftsize} app-ff-{$config.ftface}"
+    style:--textlh="{$config.textlh}%"
     bind:this={reader}
     on:click|capture={(e) => handle_mouse(e, 'overview')}
     on:contextmenu|capture={(e) => handle_mouse(e, 'glossary')}>

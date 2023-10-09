@@ -4,9 +4,8 @@
 
   import { default_meta } from '$utils/header_util'
   import Item from './Header/HeaderItem.svelte'
-  import Config from './Modals/Config.svelte'
   import Appnav from './Modals/Appnav.svelte'
-  import Usercp from './Modals/Usercp.svelte'
+  import Usercp from '../shared/usercp/Usercp.svelte'
   import Dboard from './Modals/Dboard.svelte'
 
   const _user = get_user()
@@ -44,16 +43,6 @@
     <div class="-right">
       {#each meta.right_nav || [] as opts}<Item {...opts} />{/each}
 
-      {#if meta.show_config}
-        <Item
-          type="button"
-          text="Cài đặt"
-          icon="adjustments-alt"
-          data-kbd="o"
-          data-show="tl"
-          on:click={() => popups.show('config')} />
-      {/if}
-
       {#if thread}
         <Item
           type="button"
@@ -87,8 +76,6 @@
 </header>
 
 {#if $popups.appnav}<Appnav bind:actived={$popups.appnav} />{/if}
-
-{#if $popups.config}<Config bind:actived={$popups.config} />{/if}
 {#if $popups.dboard}<Dboard {thread} bind:actived={$popups.dboard} />{/if}
 {#if $popups.usercp}<Usercp bind:actived={$popups.usercp} />{/if}
 
