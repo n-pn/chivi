@@ -42,6 +42,8 @@ class RD::Rmstem
   field chap_avail : Int32 = 0
   field latest_cid : String = ""
 
+  field multp : Int16 = 3_i16
+
   field wn_id : Int32 = 0 # map to wninfo_id
   field stime : Int64 = 0 # last synced_at
   field _flag : Int16 = 0 # multi purposes, if < 0 then the stem is inactive
@@ -54,7 +56,7 @@ class RD::Rmstem
       repo.wn_id = @wn_id
 
       repo.gifts = 2
-      repo.multp = 3
+      repo.multp = @multp
     end
   end
 
