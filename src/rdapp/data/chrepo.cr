@@ -11,24 +11,29 @@ class RD::Chrepo
 
   getter sroot : String
 
+  property owner : Int32 = -1
+
   property chmax : Int32 = 9999
   property wn_id : Int32 = 0
 
-  property gifts : Int32 = 2
-  property plock : Int32 = 2
-
-  property zname : String = ""
+  property gifts : Int16 = 2
+  property multp : Int16 = 4
 
   def initialize(@sroot)
     Dir.mkdir_p("var/texts/#{sroot}")
     @info_db = Chinfo.db(sroot)
   end
 
+  # @[AlwaysInline]
+  # def chap_plock(ch_no : Int32)
+  #   return 0 if ch_no <= 40
+  #   free_chaps = @chmax * @gifts // 4
+  #   ch_no <= free_chaps ? 0 : @plock
+  # end
+
   @[AlwaysInline]
-  def chap_plock(ch_no : Int32)
-    return 0 if ch_no <= 40
-    free_chaps = @chmax * @gifts // 4
-    ch_no <= free_chaps ? 0 : @plock
+  def free_chap?(ch_no : Int32)
+    @gifts == 0 || ch_no <= 40 || ch_no <= @chmax &* @gifts // 4
   end
 
   @[AlwaysInline]
@@ -55,43 +60,6 @@ class RD::Chrepo
   @[AlwaysInline]
   def part_name(cinfo : Chinfo, p_idx : Int32)
     "#{@sroot}/#{cinfo.ch_no}-#{cinfo.cksum}-#{p_idx}"
-  end
-
-  def part_data(cinfo : Chinfo, p_idx : Int32, vu_id : Int32 = 0, privi : Int32 = -1)
-    plock = chap_plock(cinfo.ch_no)
-    zsize = cinfo.sizes[p_idx]? || 0
-    fpath = self.part_name(cinfo, p_idx)
-
-    if cinfo.cksum.empty?
-      error = 414
-    elsif privi < plock && !Unlock.unlocked?(vu_id, fpath)
-      error = 413
-    else
-      error = 0
-    end
-
-    {
-      ch_no: cinfo.ch_no,
-      p_max: cinfo.psize,
-      p_idx: p_idx,
-
-      zname: cinfo.ztitle,
-      title: cinfo.vtitle.empty? ? cinfo.ztitle : cinfo.vtitle,
-      chdiv: cinfo.vchdiv.empty? ? cinfo.zchdiv : cinfo.vchdiv,
-
-      rlink: cinfo.rlink,
-      fpath: error > 0 ? "" : fpath,
-
-      zsize: zsize,
-      plock: plock,
-      error: error,
-
-      mtime: cinfo.mtime,
-      uname: cinfo.uname,
-
-      _prev: prev_part(cinfo.ch_no, p_idx),
-      _next: next_part(cinfo.ch_no, p_idx, cinfo.psize),
-    }
   end
 
   ###
@@ -138,12 +106,20 @@ class RD::Chrepo
   ####
 
   def save_raw_from_link!(cinfo : Chinfo, uname : String, force : Bool = false)
+    return unless force || cinfo.cksum.empty?
+
     rlink = cinfo.rlink
 
-    stale = Time.utc - (force ? 1.minutes : 20.years)
-    title, paras = RawRmchap.from_link(rlink, stale: stale).parse_page!
+    if rlink.empty?
+      return # TODO: regenerate from spath
+    else
+      stale = Time.utc - (force ? 2.minutes : 20.years)
+      raw_chap = RawRmchap.from_link(rlink, stale: stale)
+    end
 
     cinfo.uname = uname
+    title, paras = raw_chap.parse_page!
+
     self.do_save_raw!(cinfo, paras: paras, title: title)
   rescue
     nil

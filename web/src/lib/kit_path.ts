@@ -32,18 +32,14 @@ export const fix_sname = (sname: string) => {
 export function chap_path(
   root: string,
   chap: number | string,
-  { rtype = 'qt', rmode = 'qt_v1' } = {}
+  { rtype = 'qt', qt_rm = 'qt_v1', mt_rm = 'mtl_1' } = {}
 ) {
   const href = `${root}/${chap}`
 
   const params = new URLSearchParams()
-
-  if (rtype == 'qt') {
-    if (rmode != 'qt_v1') params.append('qt', rmode)
-  } else if (rtype == 'mt') {
-    params.append('rm', 'mt')
-    if (rmode != 'mtl_1') params.append('mt', rmode)
-  }
+  if (rtype != 'qt') params.append('rm', rtype)
+  if (qt_rm != 'qt_v1') params.append('qt', qt_rm)
+  if (mt_rm != 'mtl_1') params.append('mt', mt_rm)
 
   const search = params.toString()
   return search ? `${href}?${search}` : href

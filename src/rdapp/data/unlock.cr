@@ -56,17 +56,17 @@ class RD::Unlock
     returning *
     SQL
 
-  def unlock(db = @@db)
-    return {nil, 0} if @ulkey.empty? || @zsize == 0
+  def unlock!(db = @@db) : Bool
+    return false if @ulkey.empty? || @zsize == 0
 
     # TODO: convert vcoin to vnd
     amount = @vcoin / 1000
     remain = CV::Xvcoin.micro_transact(sender: @vu_id, target: @owner, amount: amount)
 
-    return {nil, 0} unless remain && remain >= 0
+    return false unless remain && remain >= 0
+    db.query_one(SAVE_SQL, @vu_id, @ulkey, @owner, @zsize, @multp, @vcoin, @ctime, @mtime, @flags, as: self.class)
 
-    saved = db.query_one(SAVE_SQL, @vu_id, @ulkey, @owner, @zsize, @multp, @vcoin, @ctime, @mtime, @flags, as: self.class)
-    {saved, remain}
+    true
   end
 
   FIND_BY_UKEY_SQL = "select * from unlocks where vu_id = $1 and ulkey = $2 limit 1"

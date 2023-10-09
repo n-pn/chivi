@@ -26,15 +26,19 @@
   ]
 
   $: cstem = {
-    zname: rstem.btitle_zh,
-    sname: rstem.sname,
     stype: 'rm',
+    sroot,
+
+    sname: rstem.sname,
     sn_id: rstem.sn_id,
 
-    multp: rstem.multp,
-    plock: 3,
     chmax: rstem.chap_count,
+
+    plock: 3,
+    multp: rstem.multp,
+
     gifts: rstem.gifts,
+    zname: rstem.btitle_zh,
   }
 </script>
 

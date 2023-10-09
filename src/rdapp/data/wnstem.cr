@@ -26,7 +26,7 @@ class RD::Wnstem
   field rtime : Int64 = 0   # remote sync time
 
   field privi : Int16 = 0
-  field multp : Int16 = 4
+  field multp : Int16 = 3
 
   field _flag : Int16 = 0
   field mtime : Int64 = 0
@@ -38,13 +38,11 @@ class RD::Wnstem
   @[JSON::Field(ignore: true)]
   getter crepo : Chrepo do
     Chrepo.load("wn#{@sname}/#{@wn_id}").tap do |repo|
-      repo.zname = ""
       repo.chmax = @chap_total
       repo.wn_id = @wn_id
-      repo.gifts = 2
-      repo.plock = @privi.to_i
 
-      # repo.update_vinfos!
+      repo.gifts = 2
+      repo.multp = 3
     end
   end
 

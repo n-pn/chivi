@@ -18,17 +18,17 @@ declare namespace CV {
     p_max: number
 
     zname: string
+    rlink: string
+
     title: string
     chdiv: string
 
-    rlink: string
     fpath: string
-
-    ztext: string[]
     error: number
+
+    multp: number
     zsize: number
 
-    plock: number
     mtime: number
     uname: string
 

@@ -36,42 +36,92 @@ class RD::ChinfoCtrl < AC::Base
   ###########
 
   @[AC::Route::GET("/wn/:sname/:sn_id/:ch_no/:p_idx")]
-  def wn_cpart(sname : String, sn_id : Int32, ch_no : Int32, p_idx : Int32, force : Bool = false)
-    wstem = get_wstem(sname, sn_id)
-    cinfo = get_cinfo(wstem, ch_no)
+  def wn_cpart(sname : String, sn_id : Int32,
+               ch_no : Int32, p_idx : Int32,
+               force : Bool = false, regen : Bool = false)
+    crepo = get_wstem(sname, sn_id).crepo
+    cinfo = get_cinfo(crepo, ch_no)
 
-    if cinfo.cksum.empty? && _privi >= 0 && !cinfo.rlink.empty?
-      wstem.crepo.save_raw_from_link!(cinfo, _uname, force: force)
-    end
+    crepo.save_raw_from_link!(cinfo, _uname, force: regen) if _privi >= 0
+    rdata = show_part(crepo: crepo, cinfo: cinfo, p_idx: p_idx, force: force)
 
-    rdata = wstem.crepo.part_data(cinfo, p_idx, vu_id: _vu_id, privi: _privi)
     render 200, json: rdata
   end
 
   @[AC::Route::GET("/rm/:sname/:sn_id/:ch_no/:p_idx")]
-  def rm_cpart(sname : String, sn_id : String, ch_no : Int32, p_idx : Int32, force : Bool = false)
+  def rm_cpart(sname : String, sn_id : String,
+               ch_no : Int32, p_idx : Int32,
+               force : Bool = false, regen : Bool = false)
     crepo = get_rstem(sname, sn_id).crepo
     cinfo = get_cinfo(crepo, ch_no)
 
-    if cinfo.cksum.empty? && _privi >= 0 && !cinfo.rlink.empty?
-      crepo.save_raw_from_link!(cinfo, _uname, force: force)
-    end
+    crepo.save_raw_from_link!(cinfo, _uname, force: regen) if _privi >= 0
+    rdata = show_part(crepo: crepo, cinfo: cinfo, p_idx: p_idx, force: force)
 
-    rdata = crepo.part_data(cinfo, p_idx, vu_id: _vu_id, privi: _privi)
     render 200, json: rdata
   end
 
   @[AC::Route::GET("/up/:sname/:sn_id/:ch_no/:p_idx")]
-  def up_cpart(sname : String, sn_id : Int32, ch_no : Int32, p_idx : Int32)
+  def up_cpart(sname : String, sn_id : Int32,
+               ch_no : Int32, p_idx : Int32,
+               force : Bool = false, regen : Bool = false)
     ustem = get_ustem(sn_id, sname)
-    spawn ustem.inc_view_count!
 
     cinfo = get_cinfo(ustem, ch_no)
+    rdata = show_part(crepo: ustem.crepo, cinfo: cinfo, p_idx: p_idx, force: force)
+    spawn { ustem.inc_view_count! } if rdata[:error] < 300
 
-    vu_id = self._vu_id
-    privi = vu_id == ustem.owner ? 5 : _privi
-
-    rdata = ustem.crepo.part_data(cinfo, p_idx, vu_id: vu_id, privi: privi)
     render 200, json: rdata
+  end
+
+  private def show_part(crepo : Chrepo, cinfo : Chinfo, p_idx : Int32 = 1, force : Bool = false)
+    vu_id = self._vu_id
+    privi = self._privi
+
+    # plock = chap_plock(cinfo.ch_no)
+
+    if crepo.owner >= 0
+      multp = crepo.owner == privi ? 0_i16 : crepo.multp
+    else
+      multp = crepo.multp &- privi
+    end
+
+    zsize = cinfo.sizes[p_idx]? || 0
+    fpath = crepo.part_name(cinfo, p_idx)
+
+    if zsize == 0 || cinfo.cksum.empty?
+      error = 414
+    elsif multp < 1 || Unlock.unlocked?(vu_id, fpath)
+      error = 0
+    elsif force
+      entry = Unlock.new(crepo, cinfo, vu_id, p_idx, multp: multp, owner: crepo.owner)
+      error = entry.unlock! ? 0 : 415
+    else
+      error = 413
+    end
+
+    {
+      ch_no: cinfo.ch_no,
+      p_max: cinfo.psize,
+      p_idx: p_idx,
+
+      zname: cinfo.ztitle,
+      rlink: cinfo.rlink,
+
+      title: cinfo.vtitle.empty? ? cinfo.ztitle : cinfo.vtitle,
+      chdiv: cinfo.vchdiv.empty? ? cinfo.zchdiv : cinfo.vchdiv,
+
+      fpath: error < 300 ? fpath : "",
+      error: error,
+
+      zsize: zsize,
+      multp: multp,
+
+      mtime: cinfo.mtime,
+      uname: cinfo.uname,
+
+      _prev: crepo.prev_part(cinfo.ch_no, p_idx),
+      _next: crepo.next_part(cinfo.ch_no, p_idx, cinfo.psize),
+    }
   end
 end

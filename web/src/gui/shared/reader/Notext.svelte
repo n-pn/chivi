@@ -8,20 +8,28 @@
 
   export let cstem: CV.Chstem
   export let rdata: CV.Chpart
+  export let state = 0
 
-  $: search = cstem.zname ? `${cstem.zname} ${rdata.ztext[0]}` : ''
+  $: search = cstem.zname ? `${cstem.zname} ${rdata.zname}` : ''
 
   let _loading = false
 
   const reload_chap = async () => {
     _loading = true
 
-    const url = `/_wn/reload/${cstem.sname}/${cstem.sn_id}/${rdata.ch_no}`
-    const res = await fetch(url, { method: 'PUT' })
+    const { stype, sname, sn_id } = cstem
+    const { ch_no, p_idx } = rdata
+
+    const url = `/_rd/chaps/${stype}/${sname}/${sn_id}/${ch_no}/${p_idx}?regen=true`
+    const res = await fetch(url, { cache: 'no-cache' })
+
     _loading = false
 
     if (res.ok) {
+      rdata = await res.json()
       invalidateAll()
+
+      // state = 3
     } else {
       alert(await res.text())
     }
@@ -148,7 +156,7 @@
     <button
       class="m-btn _harmful"
       on:click={reload_chap}
-      disabled={$_user.privi < rdata.plock || !rdata.rlink}>
+      disabled={$_user.privi < 0 || !rdata.rlink}>
       <SIcon name="rotate-rectangle" spin={_loading} />
       <span>Tải lại nguồn</span>
     </button>

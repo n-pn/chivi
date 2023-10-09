@@ -21,18 +21,19 @@ declare namespace CV {
   }
 
   interface Chstem {
-    zname: string
+    sroot: string
     stype: string
 
     sname: string
     sn_id: string
 
-    plock: number
-    multp: number
-
     chmax: number // chap_count
     utime?: number // updated_at
 
+    plock: number
+    multp: number
+
+    zname: string
     gifts: number = 2
   }
 

@@ -32,15 +32,18 @@
   ]
 
   $: cstem = {
-    zname: nvinfo.ztitle,
-    sname: curr_seed.sname,
     stype: 'wn',
+    sroot: `/wn/${curr_seed.sname}:${curr_seed.sn_id}`,
+
+    sname: curr_seed.sname,
     sn_id: curr_seed.sn_id,
 
     multp: curr_seed.multp,
     plock: curr_seed.privi,
     chmax: curr_seed.chmax,
     gifts: curr_seed.gifts,
+
+    zname: nvinfo.ztitle,
   }
 </script>
 

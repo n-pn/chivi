@@ -18,6 +18,12 @@
     ['Zen', 1],
     ['Dev', 2],
   ]
+
+  const rmode_descs = [
+    'Bấm vào dòng sẽ hiện lên chi tiết dòng',
+    'Bấm vào dòng không hiện cửa sổ chi tiết',
+    'Xem các cụm từ nếu dùng chế độ dịch máy',
+  ]
 </script>
 
 <script lang="ts">
@@ -63,106 +69,126 @@
     <div class="-text">Cài đặt</div>
   </svelte:fragment>
 
-  <config-item>
-    <field-label>Màu nền:</field-label>
-    <field-input>
-      {#each wthemes as value}
-        <label class="wtheme _{value}" class:_active={value == $data.wtheme}>
-          <input
-            type="radio"
-            name="wtheme"
-            {value}
-            bind:group={$data.wtheme}
-            on:change={() => update_wtheme(value)} />
-        </label>
-      {/each}
-    </field-input>
-  </config-item>
-
-  <config-item>
-    <field-label>Cỡ chữ:</field-label>
-    <field-input>
-      <button
-        class="m-btn _sm"
-        on:click={() => ($data.ftsize -= 1)}
-        disabled={$data.ftsize == 1}>
-        <SIcon name="minus" />
-      </button>
-      <field-value>{ftsizes[$data.ftsize - 1]}</field-value>
-      <button
-        class="m-btn _sm"
-        on:click={() => ($data.ftsize += 1)}
-        disabled={$data.ftsize == 5}>
-        <SIcon name="plus" />
-      </button>
-    </field-input>
-  </config-item>
-
-  <config-item>
-    <field-label>Font chữ:</field-label>
-    <field-input>
-      <select class="m-input" name="ftface" bind:value={$data.ftface}>
-        {#each ftfaces as value, index}
-          <option value={index + 1}>{value}</option>
+  <div class="body">
+    <config-item>
+      <field-label>Màu nền:</field-label>
+      <field-input>
+        {#each wthemes as value}
+          <label class="wtheme _{value}" class:_active={value == $data.wtheme}>
+            <input
+              type="radio"
+              name="wtheme"
+              {value}
+              bind:group={$data.wtheme}
+              on:change={() => update_wtheme(value)} />
+          </label>
         {/each}
-      </select>
-    </field-input>
-  </config-item>
+      </field-input>
+    </config-item>
 
-  <config-item>
-    <field-label>Giãn dòng:</field-label>
-    <field-input>
-      <button
-        class="m-btn _sm"
-        on:click={() => ($data.textlh -= 10)}
-        disabled={$data.textlh <= 130}>
-        <SIcon name="minus" />
-      </button>
-      <field-value>{$data.textlh}%</field-value>
-      <button
-        class="m-btn _sm"
-        on:click={() => ($data.textlh += 10)}
-        disabled={$data.textlh >= 180}>
-        <SIcon name="plus" />
-      </button>
-    </field-input>
-  </config-item>
+    <config-item>
+      <field-label>Cỡ chữ:</field-label>
+      <field-input>
+        <button
+          class="m-btn _sm"
+          on:click={() => ($data.ftsize -= 1)}
+          disabled={$data.ftsize == 1}>
+          <SIcon name="minus" />
+        </button>
+        <field-value>{ftsizes[$data.ftsize - 1]}</field-value>
+        <button
+          class="m-btn _sm"
+          on:click={() => ($data.ftsize += 1)}
+          disabled={$data.ftsize == 5}>
+          <SIcon name="plus" />
+        </button>
+      </field-input>
+    </config-item>
 
-  <config-sep />
+    <config-item>
+      <field-label>Font chữ:</field-label>
+      <field-input>
+        <select class="m-input" name="ftface" bind:value={$data.ftface}>
+          {#each ftfaces as value, index}
+            <option value={index + 1}>{value}</option>
+          {/each}
+        </select>
+      </field-input>
+    </config-item>
 
-  <config-item>
-    <field-label class="small">Chế độ đọc:</field-label>
-    <field-input>
-      {#each r_modes as [label, value]}
-        <label class:_active={value == $data.r_mode}>
-          <input type="radio" name="r_mode" {value} bind:group={$data.r_mode} />
-          <span>{label}</span>
-        </label>
-      {/each}
-    </field-input>
-  </config-item>
+    <config-item>
+      <field-label>Giãn dòng:</field-label>
+      <field-input>
+        <button
+          class="m-btn _sm"
+          on:click={() => ($data.textlh -= 10)}
+          disabled={$data.textlh <= 130}>
+          <SIcon name="minus" />
+        </button>
+        <field-value>{$data.textlh}%</field-value>
+        <button
+          class="m-btn _sm"
+          on:click={() => ($data.textlh += 10)}
+          disabled={$data.textlh >= 180}>
+          <SIcon name="plus" />
+        </button>
+      </field-input>
+    </config-item>
 
-  <config-item>
-    <label class="switch">
-      <input type="checkbox" bind:checked={$lookup.enabled} />
-      <span class="switch-label">Luôn bật ô giải nghĩa:</span>
-    </label>
-  </config-item>
+    <config-sep />
 
-  <config-sep />
+    <config-item>
+      <field-label class="small">Chế độ đọc:</field-label>
+      <field-input>
+        {#each r_modes as [label, value]}
+          <label
+            class:_active={value == $data.r_mode}
+            data-tip={rmode_descs[value]}
+            data-tip-loc="bottom"
+            data-tip-pos={value == 2 ? 'right' : 'middle'}>
+            <input
+              type="radio"
+              name="r_mode"
+              {value}
+              bind:group={$data.r_mode} />
+            <span>{label}</span>
+          </label>
+        {/each}
+      </field-input>
+    </config-item>
 
-  <config-item>
-    <label class="switch">
-      <input type="checkbox" bind:checked={$data.c_auto} />
-      <span class="switch-label">Tự động phân tích ngữ pháp:</span>
-    </label>
-  </config-item>
+    <config-item>
+      <label class="switch">
+        <input type="checkbox" bind:checked={$data.show_z} />
+        <span class="switch-label">Hiển thị song song tiếng Trung:</span>
+      </label>
+    </config-item>
+
+    <!-- <config-item>
+      <label class="switch">
+        <input type="checkbox" bind:checked={$lookup.enabled} />
+        <span class="switch-label">Luôn bật ô giải nghĩa:</span>
+      </label>
+    </config-item>
+
+    <config-sep />
+
+    <config-item>
+      <label class="switch">
+        <input type="checkbox" bind:checked={$data.c_auto} />
+        <span class="switch-label">Tự động phân tích ngữ pháp:</span>
+      </label>
+    </config-item> -->
+  </div>
 </Slider>
 
 <style lang="scss">
+  .body {
+    padding: 0 1rem;
+  }
+
   config-item {
     @include flex-cy($gap: 0.5rem);
-    padding: 0 1rem;
     margin-top: 1rem;
   }
 
@@ -340,5 +366,9 @@
         @include linesd(primary, 5, $inset: false, $ndef: false);
       }
     }
+  }
+
+  label {
+    cursor: pointer;
   }
 </style>

@@ -66,10 +66,11 @@
     stale = false
 
     if (ropts.rtype == 'mt' || ropts.qt_rm == 'mt_ai') {
-      state = 2
+      state = 1
     } else {
       const mt_ai = await call_mt_ai_file(finit, rinit)
       $data.mt_ai = mt_ai.lines || []
+      state = 0
     }
   }
 </script>

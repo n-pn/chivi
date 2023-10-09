@@ -1,4 +1,10 @@
 <script context="module" lang="ts">
+  import { data as lookup_data } from '$lib/stores/lookup_stores'
+  import {
+    call_bt_zv_file,
+    call_qt_v1_file,
+    call_mt_ai_file,
+  } from '$utils/tran_util'
 </script>
 
 <script lang="ts">
@@ -23,16 +29,20 @@
   import Qtpage from './Qtpage.svelte'
 
   export let cstem: CV.Chstem
-  export let ropts: CV.Rdopts
   export let rdata: CV.Chpart
+  export let ropts: CV.Rdopts
 
   $: pager = new Pager($page.url, { rm: 'qt', qt: 'qt_v1', mt: 'mtl_1' })
   $: label = rdata.p_max > 1 ? `[${rdata.p_idx}/${rdata.p_max}]` : ''
+
+  // $: ropts.fpath = rdata.fpath
 
   let reader: HTMLDivElement
   let focused_node: HTMLElement
 
   const handle_mouse = (event: MouseEvent, panel: string = 'overview') => {
+    if ($config.r_mode == 1) return
+
     let target = event.target as HTMLElement
 
     while (target != reader) {
@@ -48,28 +58,62 @@
     lookup_ctrl.show(panel)
   }
 
-  let l_idx = -1
-  let state = 0 // states: 0: fresh, 1: blank, 2: stale
+  // states:
+  // - 0: no need to reload,
+  // - 1: reload, keep focus
+  // - 2: reload, clear vtran
+  // - 3: reload hviet + vtran
+
+  let state = 3
 
   let ztext = []
   let hviet = []
+  let vtran: CV.Qtdata | CV.Mtdata = { lines: [], mtime: 0, tspan: 0 }
 
+  let l_idx = -1
   let l_max = 0
-
-  $: if (browser && ropts.fpath) load_zdata(ropts)
-
-  async function load_zdata(ropts: CV.Rdopts) {
-    const data = await call_hviet_file(ropts)
-    hviet = data.hviet
-    ztext = data.ztext || []
-    l_max = hviet.length
-  }
 
   afterNavigate(async () => {
     if (focused_node) focused_node.classList.remove('focus')
+    state = $lookup_data.ropts.fpath == rdata.fpath ? 2 : 3
     l_idx = -1
-    state = 1
   })
+
+  $: if (browser && state > 0 && rdata.fpath) {
+    if (state > 2) ztext = hviet = []
+    if (state > 1) vtran = { lines: [], mtime: 0, tspan: 0 }
+
+    state = 0
+    ropts.fpath = rdata.fpath
+    if (ropts.fpath) load_data(ropts)
+  }
+
+  async function load_data(ropts: CV.Rdopts) {
+    if (hviet.length == 0) {
+      const data = await call_hviet_file(ropts)
+
+      hviet = data.hviet
+      ztext = data.ztext || []
+      l_max = hviet.length
+    }
+
+    const finit = { ...ropts, force: true }
+    const rinit = { cache: 'default' } as RequestInit
+
+    let rmode = ropts.qt_rm
+
+    if (ropts.rtype == 'mt' || rmode == 'mt_ai') {
+      vtran = await call_mt_ai_file(finit, rinit, fetch)
+      rmode = 'mt_ai'
+    } else if (rmode == 'bt_zv') {
+      vtran = await call_bt_zv_file(finit, rinit, fetch)
+    } else if (rmode == 'qt_v1') {
+      vtran = await call_qt_v1_file(finit, rinit, fetch)
+    }
+
+    if (vtran.error) return
+    lookup_data.put({ ropts, ztext, hviet, [rmode]: vtran.lines })
+  }
 
   $: if (browser && l_idx >= 0) {
     const new_focus = document.getElementById('L' + l_idx)
@@ -98,16 +142,16 @@
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div
-    class="reader app-fs-{$config.ftsize} app-ff-{$config.ftface}"
+    class="reader app-fs-{$config.ftsize} app-ff-{$config.ftface} _{$config.r_mode}"
     bind:this={reader}
     on:click|capture={(e) => handle_mouse(e, 'overview')}
     on:contextmenu|capture={(e) => handle_mouse(e, 'glossary')}>
     {#if rdata.error == 414}
-      <Notext {cstem} {rdata} />
-    {:else if rdata.error == 413}
-      <Unlock {cstem} {rdata} />
+      <Notext {cstem} bind:rdata bind:state />
+    {:else if rdata.error == 413 || rdata.error == 415}
+      <Unlock {cstem} bind:rdata bind:state />
     {:else if ropts.rtype == 'qt' || ropts.rtype == 'mt'}
-      <Qtpage {ztext} {hviet} {ropts} {label} bind:state />
+      <Qtpage {ztext} {vtran} {label} />
     {:else}
       Chưa hoàn thiện!
     {/if}

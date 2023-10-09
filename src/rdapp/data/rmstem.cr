@@ -50,13 +50,11 @@ class RD::Rmstem
   @[JSON::Field(ignore: true)]
   getter crepo : Chrepo do
     Chrepo.load(sroot: "rm#{@sname}/#{@sn_id}").tap do |repo|
-      repo.zname = "#{@btitle_zh} #{@author_zh}"
       repo.chmax = @chap_count
       repo.wn_id = @wn_id
-      repo.gifts = 2
-      repo.plock = 3
 
-      #
+      repo.gifts = 2
+      repo.multp = 3
     end
   end
 
@@ -74,19 +72,25 @@ class RD::Rmstem
     self
   end
 
-  def update!(crawl : Int32 = 1, regen : Bool = false) : self | Nil
-    begin
-      stale = Time.utc - reload_tspan(crawl)
-      # raw_stem = RawRmstem.from_link(@rlink, stale: stale)
-      raw_stem = RawRmstem.from_stem(@sname, @sn_id, stale: stale)
-    rescue ex
-      case ex.message || ""
-      when .ends_with?("404"), .ends_with?("301")
-        return self.update_flag!(404_i16)
-      else
-        raise ex
-      end
+  private def load_raw_stem!(crawl : Int32 = 1)
+    stale = Time.utc - reload_tspan(crawl)
+    # raw_stem = RawRmstem.from_link(@rlink, stale: stale)
+    RawRmstem.from_stem(@sname, @sn_id, stale: stale)
+  rescue ex
+    case ex.message || ""
+    when .ends_with?("404")
+      self.update_flag!(-404_i16)
+    when .ends_with?("301")
+      self.update_flag!(-301_i16)
+    else
+      raise ex
     end
+
+    nil
+  end
+
+  def update!(crawl : Int32 = 1, regen : Bool = false) : self | Nil
+    return self unless raw_stem = load_raw_stem!(crawl: crawl)
 
     # verify content changed by checking the latest chapter
     # not super reliable since some site reuse the latest chapter id for new chapter.
@@ -106,11 +110,11 @@ class RD::Rmstem
       crepo.update_vinfos! if @chap_count > 0
     end
 
-    unless raw_stem.update_str.empty?
+    if raw_stem.update_str.empty?
+      @update_int = Time.utc.to_unix
+    else
       @update_str = raw_stem.update_str
       @update_int = raw_stem.update_int
-    else
-      @update_int = Time.utc.to_unix
     end
 
     # TODO: check if status exist and is updated

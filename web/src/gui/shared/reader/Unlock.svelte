@@ -8,50 +8,66 @@
 
   export let cstem: CV.Chstem
   export let rdata: CV.Chpart
+  export let state = 0
 
   $: ({ stype, sname, sn_id } = cstem)
   $: ({ ch_no, p_idx } = rdata)
 
-  $: vcoin_cost = Math.round(cstem.multp * rdata.zsize * 0.01) / 1000
+  $: vcoin_cost = Math.round(rdata.multp * rdata.zsize * 0.01) / 1000
 
   let msg_text = ''
   let msg_type = ''
 
+  $: if (rdata.error == 415) {
+    msg_text = 'Không đủ vcoin để mở khóa chương.'
+    msg_type = 'err'
+  }
+
   const unlock_chap = async () => {
     msg_text = 'Đang mở khoá chương...'
+    msg_type = ''
 
-    const url = `/_rd/unlock/${stype}/${sname}/${sn_id}/${ch_no}/${p_idx}`
-    const res = await fetch(url, { method: 'PUT' })
+    const url = `/_rd/chaps/${stype}/${sname}/${sn_id}/${ch_no}/${p_idx}?force=true`
+    const res = await fetch(url, { method: 'GET' })
 
     if (!res.ok) return alert(await res.text())
-    const [ok, remain] = await res.json()
+    rdata = await res.json()
 
-    if (ok) {
-      msg_text = 'Mở khoá thành công, trang đang tải lại..'
+    if (rdata.error == 0) {
       msg_type = 'ok'
+      msg_text = 'Mở khoá thành công, trang đang tải lại...'
 
-      $_user.vcoin = remain
+      $_user.vcoin -= vcoin_cost
+      // state = 3
       invalidateAll()
+    } else if (rdata.error == 415) {
+      msg_text = 'Không đủ vcoin để mở khóa chương'
+      msg_type = 'err'
     } else {
-      msg_text = 'Mở khóa chương thất bại. Mời thử lại!'
+      msg_text = 'Không rõ lỗi, mời thử lại!'
       msg_type = 'err'
     }
   }
 </script>
 
-<section>
-  <h1 class="em">
-    Lỗi: Chương {ch_no} phần {p_idx} cần thiết mở khóa bằng vcoin.
-  </h1>
+<h1 class="em">
+  Lỗi: Chương {ch_no} phần {p_idx} cần thiết mở khóa bằng vcoin.
+</h1>
 
+{#if $_user.privi < 0}
   <p>
-    Theo hệ số, bạn cần thiết <v-vcoin
+    <em>Bạn chưa đăng nhập. Bấm vào <a href="/_auth/login">đây</a></em> để đăng nhập
+    hoặc đăng ký tài khoản mới.
+  </p>
+{:else}
+  <p>
+    Theo hệ số, bạn cần thiết <x-vcoin
       >{vcoin_cost}
-      <SIcon name="vcoin" iset="icons" /></v-vcoin>
+      <SIcon name="vcoin" iset="icons" /></x-vcoin>
     để mở khóa cho chương. Số vcoin bạn đang có:
-    <v-vcoin
+    <x-vcoin
       >{Math.round($_user.vcoin * 1000) / 1000}
-      <SIcon name="vcoin" iset="icons" /></v-vcoin>
+      <SIcon name="vcoin" iset="icons" /></x-vcoin>
   </p>
 
   <p>
@@ -88,7 +104,7 @@
       </div>
     {/if}
   </footer>
-</section>
+{/if}
 
 <style lang="scss">
   a:not(.m-btn) {
@@ -107,5 +123,8 @@
     flex-direction: column;
     padding: 0.75rem 0;
     @include border(--bd-soft, $loc: top);
+  }
+  .form-msg {
+    margin-top: 0;
   }
 </style>

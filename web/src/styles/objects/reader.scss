@@ -39,9 +39,14 @@
 
 .cdata {
   display: block;
+
   cursor: pointer;
 
   color: var(--fgcolor, var(--fg-main));
+
+  .reader._1 & {
+    cursor: text;
+  }
 
   .app-ff-1 & {
     font-family: var(--font-sans);
@@ -88,7 +93,7 @@
 
   @include fgcolor(secd);
 
-  @include bp-min(tm) {
+  @include bp-min(tl) {
     margin: 0 var(--gutter);
   }
 
