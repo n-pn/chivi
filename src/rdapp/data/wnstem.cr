@@ -99,7 +99,6 @@ class RD::Wnstem
 
   def plock(sname = @sname)
     case sname
-    when "~draft" then 1
     when "~avail" then 2
     when "~chivi" then 3
     else               3

@@ -22,10 +22,6 @@ Kể từ ngày 28-09-2023 thì phần danh sách chương tiết được thi�
 
 Lưu ý: Các chương thuộc về nửa đầu của danh sách là miễn phí không cần mở khóa, bạn chỉ cần thiết đăng nhập.
 
-### Tạm thời (~draft):
-
-Đây là nguồn tạo ra để cho người dùng Chivi có thể thử các tính năng liên quan tới thêm sửa text gốc, thêm bản dịch. Chương tiết của danh sách này có thể bị xóa hoặc thay đổi sau một khoảng thời gian (thường thì sẽ bị cắt còn 100 chương).
-
 #### Một số đặc điểm chính:
 
 - Danh sách chương sẽ không được liên kết tới nguồn ngoài, bạn cần thiết tự tìm text gốc.

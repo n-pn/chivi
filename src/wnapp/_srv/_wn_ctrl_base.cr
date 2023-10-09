@@ -20,7 +20,6 @@ abstract class AC::Base
 
   private def map_read_privi(sname : String)
     case sname
-    when "~draft" then 1
     when "~avail" then 2
     when "~chivi" then 3
     end

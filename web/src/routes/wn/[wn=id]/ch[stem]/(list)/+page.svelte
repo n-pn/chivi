@@ -66,17 +66,10 @@
 
   // prettier-ignore
   const privi_str = (privi: number) => privi < 1 ? 'đăng nhập' : `quyền hạn ${privi}`
-
-  const labels = {
-    '~avail': 'Tổng hợp',
-    '~draft': 'Tạm thời',
-    '~chivi': 'Chính thức',
-  }
 </script>
 
 <page-info>
   <info-left>
-    <info-text>{labels[curr_seed.sname]}</info-text>
     <info-span>{curr_seed.chmax} chương</info-span>
     <info-span class="u-show-pl"><RTime mtime={curr_seed.utime} /></info-span>
   </info-left>

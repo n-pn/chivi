@@ -11,8 +11,8 @@ abstract class AC::Base
   private def get_wstem(sname : String, wn_id : Int32)
     WNSTEMS["#{wn_id}/#{sname}"] ||= begin
       RD::Wnstem.load(wn_id, sname) do
-        raise NotFound.new("Nguồn truyện không tồn tại") unless sname.in?("~draft", "~avail", "~chivi")
-        Dir.mkdir_p("var/texts/wn#{sname}/#{wn_id}")
+        raise NotFound.new("Nguồn truyện không tồn tại") unless sname == "~avail"
+        Dir.mkdir_p("var/texts/wn~avail/#{wn_id}")
         RD::Wnstem.new(wn_id, sname, wn_id.to_s).upsert!
       end
     end

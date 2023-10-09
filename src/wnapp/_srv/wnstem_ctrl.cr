@@ -3,22 +3,6 @@ require "./_wn_ctrl_base"
 class WN::WnstemCtrl < AC::Base
   base "/_wn/seeds"
 
-  @[AC::Route::GET("/")]
-  def index(wn_id : Int32)
-    seeds = Wnstem.all_by_wn_id(wn_id)
-
-    render json: {
-      avail: find_or_init(seeds, wn_id, "~avail"),
-      draft: find_or_init(seeds, wn_id, "~draft"),
-      chivi: find_or_init(seeds, wn_id, "~chivi"),
-      globs: seeds.select(&.sname.[0].== '!'),
-    }
-  end
-
-  private def find_or_init(seeds : Array(Wnstem), wn_id : Int32, sname : String)
-    seeds.find(&.sname.== sname) || Wnstem.new(wn_id, sname).tap(&.upsert!)
-  end
-
   @[AC::Route::GET("/:wn_id/:sname/brief")]
   def brief(wn_id : Int32, sname : String)
     wnseed = get_wnseed(wn_id, sname)
