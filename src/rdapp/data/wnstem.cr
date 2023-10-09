@@ -1,10 +1,10 @@
 require "crorm"
 
 require "../../_data/_data"
-require "../_raw/raw_rmstem"
 
 require "./chrepo"
 require "./wnchap"
+require "./rmstem"
 
 class RD::Wnstem
   ############
@@ -108,134 +108,47 @@ class RD::Wnstem
     end
   end
 
-  def update!(crawl : Int32 = 1, regen : Bool = false) : self | Nil
-    if @rlink.empty?
-      self.crepo.update_vinfos! if @chap_total > 0
-      return
+  def update!(crawl : Int32 = 1, regen : Bool = false, umode : Int32 = 1) : Nil
+    rstems = Rmstem.by_wn(@wn_id).sort_by(&.rmrank)
+
+    active = rstems.find do |rstem|
+      rstem.update!(crawl: crawl, regen: regen, umode: umode) rescue nil if rstem.rtype == 0
     end
 
-    stale = Time.utc - reload_tspan(crawl)
-    raw_stem = RawRmstem.from_link(@rlink, stale: stale)
+    unless active
+      self.crepo.update_vinfos! if umode > 0
+      return self
+    end
 
-    clist = raw_stem.extract_clist!
-    @chap_total = clist.size
+    @mtime = active.update_int if @mtime < active.update_int
+    @chap_total = active.chap_count if @chap_total < active.chap_count
+
+    clist = active.crepo.get_all(start: 1, limit: active.chap_count)
 
     self.crepo.tap do |crepo|
       crepo.chmax = @chap_total
       crepo.upsert_zinfos!(clist)
-      crepo.update_vinfos! if @chap_total > 0
+
+      if umode > 0 && @chap_total > 0
+        crepo.update_vinfos!
+        @_flag == 1_i16 if @_flag == 0
+      else
+        @_flag = 0
+      end
     end
 
-    if raw_stem.update_str.empty?
-      @mtime = Time.utc.to_unix
-    else
-      @mtime = raw_stem.update_int
-    end
-
-    # TODO: gen timestampt from html file modification time instead
     @rtime = Time.utc.to_unix
 
-    @_flag == 1_i16 if @_flag == 0
-    self.upsert!(db: @@db)
-  end
-
-  def unpack_old_text!(force : Bool = false)
-    return unless force || @chap_avail < 0
-
-    raise "to be implemented!"
-
-    # chaps = self.crepo.all(&.<< "where ch_no > 0")
-
-    # clist.open_ro do |db|
-    #   sql = "select ch_no, s_cid from chaps"
-
-    #   db.query_each(sql) do |rs|
-    #     ch_no, s_cid = rs.read(Int32, Int32)
-    #     txt_path = TextStore.gen_txt_path(sname, s_bid, s_cid)
-    #     if File.file?(txt_path)
-    #       c_len = File.read(txt_path, encoding: "GB18030").size
-    #       avail += 1 if c_len > 0
-    #     else
-    #       c_len = 0
-    #     end
-
-    #     stats << {c_len, ch_no}
-    #   end
-    # end
-
-    # @repo.open_tx do |db|
-    #   query = "update chaps set c_len = ? where ch_no = ?"
-    #   stats.each { |c_len, ch_no| db.exec(query, c_len, ch_no) }
-    # end
-
-    # avail
-
-    # self.upsert!
+    self.update!(db: @@db)
   end
 
   ####
-
-  def bump_mtime(mtime : Int64, force : Bool = false)
-    @mtime = mtime if mtime > 0 || force
-  end
-
-  def bump_chmax(chmax : Int32, force : Bool = false)
-    return unless force || chmax > self.chap_total
-    @chap_total = chmax
-  end
 
   def upsert!(query = @@schema.upsert_stmt, args_ = self.db_values, db = @@db)
     db.write_one(query, *args_, as: self.class)
   end
 
-  def update_stats!(chmax : Int32, mtime : Int64 = Time.utc.to_unix)
-    @mtime = mtime if @mtime < mtime
-
-    @chap_total = chmax if @chap_total < chmax
-    self.crepo.chmax = @chap_total
-
-    query = @@schema.update_stmt(%w{chap_total mtime})
-    @@db.exec(query, @chap_total, @mtime, @wn_id, @sname)
-
-    self.crepo.chmax = @chap_total
-  end
-
   ###
-
-  private def remote_reload_tspan(_mode : Int32 = 1)
-    case _mode
-    when 2 then 3.minutes
-    when 1 then 30.minutes
-    else        10.years
-    end
-  end
-
-  def reload_chlist!(mode : Int32 = 1)
-    stale = Time.utc - remote_reload_tspan(mode)
-
-    if self.remote?
-      rmstem = RawRmstem.from_stem(@sname, @s_bid, stale: stale) rescue nil
-    elsif !@rlink.empty?
-      rmstem = RawRmstem.from_link(@rlink, stale: stale) rescue nil
-    else
-      # Do nothing
-    end
-
-    if rmstem && mode >= 0
-      sync_with_remote!(rmstem, mode: mode) rescue nil
-    end
-
-    # TODO: smart reload translation instead of force regen
-    self.update_chap_vinfos!
-  end
-
-  private def sync_with_remote!(rmstem : RawRmstem, mode : Int32 = 0)
-    clist = rmstem.extract_clist!
-    return if clist.empty?
-
-    self.crepo.upsert_zinfos!(clist)
-    self.update_stats!(clist.size, rmstem.update_int)
-  end
 
   def delete_chaps!(from : Int32 = 1, upto : Int32 = self.chap_total)
     query = "delete from chinfos where ch_no >= $1 and ch_no <= $2"
@@ -289,13 +202,4 @@ class RD::Wnstem
   end
 
   ###
-
-  def self.auto_create_privi(sname : String, uname : String) : Int32?
-    case SeedType.parse(sname)
-    when .draft? then 1
-    when .chivi? then 2
-    when .users? then 2
-    else              nil
-    end
-  end
 end

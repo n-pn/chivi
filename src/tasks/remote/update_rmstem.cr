@@ -1,37 +1,32 @@
 require "pg"
+require "sqlite3"
 require "option_parser"
 
 ENV["CV_ENV"] ||= "production"
 
-require "../../cv_env"
-require "../../_util/book_util"
-require "../../rdapp/_raw/rmhost"
+require "../../rdapp/data/rmstem"
 
-PGDB = DB.connect(CV_ENV.database_url)
-at_exit { PGDB.close }
+QUERY = "select * from rmstems where sname = $1 order by rtime asc"
 
-struct Input
-  include DB::Serializable
-  getter sname : String
-  getter sn_id : String
-end
+def update(sname : String, crawl = 0, regen = true)
+  input = PGDB.query_all QUERY, sname, as: RD::Rmstem
 
-# winfos = PGDB.query_all "select author_zh, btitle_zh, id from wninfos", as: {String, String, Int32}
-# winfos = winfos.to_h { |author, btitle, wn_id| { {author, btitle}, wn_id } }
-
-inputs = PGDB.query_all "select sname, sn_id from rmstems where rlink = ''", as: Input
-inputs = inputs.group_by { |x| x.sname }
-
-update_sql = "update rmstems set rlink = $1 where sname = $2 and sn_id = $3"
-inputs.each do |sname, rstems|
-  host = Rmhost.from_name!(sname)
-
-  PGDB.transaction do |tx|
-    db = tx.connection
-    rstems.each do |rstem|
-      rlink = host.stem_url(rstem.sn_id)
-      db.exec update_sql, rlink, rstem.sname, rstem.sn_id
-      puts "#{rstem.sname}/#{rstem.sn_id} => #{rlink}"
-    end
+  input.each do |rstem|
+    next unless rstem = rstem.update!(crawl: crawl, regen: regen)
+    Log.info { [sname, rstem.sn_id, rstem.chap_count, rstem.status_int, rstem.update_int] }
+  rescue ex
+    Log.error { ex.message }
   end
 end
+
+crawl = 0
+regen = false
+input = ["!69shuba.com"]
+
+OptionParser.parse(ARGV) do |parser|
+  parser.on("-c MODE", "crawl modes") { |x| crawl = x.to_i }
+  parser.on("-r", "regenerate") { regen = true }
+  parser.unknown_args { |args| input = args.select!(&.starts_with?('!')) }
+end
+
+input.each { |sname| update(sname, crawl: crawl, regen: regen) }

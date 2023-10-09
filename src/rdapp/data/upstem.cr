@@ -13,10 +13,10 @@ class RD::Upstem
 
   field id : Int32, pkey: true, auto: true
 
-  field sname : String
-  field owner : Int32
+  field sname : String = "@Chivi"
+  field owner : Int32 = -1
 
-  field zname : String
+  field zname : String = ""
   field vname : String = ""
 
   field vintro : String = ""

@@ -48,26 +48,6 @@
     cursor: text;
   }
 
-  .app-ff-1 & {
-    font-family: var(--font-sans);
-  }
-
-  .app-ff-2 & {
-    font-family: var(--font-serif);
-  }
-
-  .app-ff-3 & {
-    font-family: Nunito Sans, var(--font-sans);
-  }
-
-  .app-ff-4 & {
-    font-family: Lora, var(--font-serif);
-  }
-
-  .app-ff-5 & {
-    font-family: Roboto Slab, var(--font-serif);
-  }
-
   &.focus {
     @include bdradi();
     // outline: 1px solid color(primary, 5, 5);

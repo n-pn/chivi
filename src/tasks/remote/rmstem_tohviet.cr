@@ -30,7 +30,6 @@ rstems.each_slice(100) do |slice|
 
       # TODO: translate description
       rstem.genre_vi = rstem.genre_zh.split('\t').map { |x| HVIET[x] }.join('\t')
-
       rstem.update!(db: db)
     end
   end

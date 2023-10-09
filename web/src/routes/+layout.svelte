@@ -71,19 +71,22 @@
   on:keydown={handle_keydown}
   on:keyup={() => (kbd_hint = false)} />
 
-<chivi-app class="tm-{wtheme}" class:kbd-hint={kbd_hint} class:_shift={$toleft}>
+<div
+  class="tm-{wtheme} app-fs-{$config.ftsize} app-ff-{$config.ftface}"
+  class:kbd-hint={kbd_hint}
+  class:_shift={$toleft}>
   {#if $navigating}<Loader />{/if}
 
   <Header />
   <Pledge />
   <main class="app-vessel"><slot /></main>
   <Footer />
-</chivi-app>
+</div>
 
 <style lang="scss">
   $page-width: 56rem;
 
-  chivi-app {
+  div {
     --page-width: #{$page-width};
 
     display: flex;
@@ -96,6 +99,26 @@
 
     &._shift {
       @include bps(padding-right, $ls: 30rem);
+    }
+
+    &.app-ff-1 {
+      font-family: var(--font-sans, sans-serif);
+    }
+
+    &.app-ff-2 {
+      font-family: var(--font-serif, serif);
+    }
+
+    &.app-ff-3 {
+      font-family: Nunito Sans, var(--font-sans, sans-serif);
+    }
+
+    &.app-ff-4 {
+      font-family: Lora, var(--font-serif, serif);
+    }
+
+    &.app-ff-5 {
+      font-family: Roboto Slab, var(--font-serif, serif);
     }
   }
 

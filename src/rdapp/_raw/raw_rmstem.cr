@@ -92,7 +92,8 @@ class RawRmstem
     ch_no = @clist.size &+ 1
     rlink = self.full_url(href)
 
-    spath = "rm#{@host.seedname}/#{@b_id}/#{ch_no}"
+    sc_id = @host.extract_cid(rlink) rescue ch_no
+    spath = "rm#{@host.seedname}/#{@b_id}/#{sc_id}"
 
     ctitle, subdiv = ChapUtil.split_ztitle(ctitle, subdiv)
 

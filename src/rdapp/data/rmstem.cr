@@ -3,6 +3,7 @@ require "../../_data/_data"
 require "../_raw/raw_rmbook"
 require "../_raw/raw_rmstem"
 
+require "./util/rmrank"
 require "./chrepo"
 
 class RD::Rmstem
@@ -13,6 +14,8 @@ class RD::Rmstem
 
   field sname : String, pkey: true
   field sn_id : String, pkey: true
+
+  field rtype : Int16 = 0_i16
 
   field rlink : String = ""   # remote catalog link
   field rtime : Int64 = 0_i64 # last remote update
@@ -60,6 +63,10 @@ class RD::Rmstem
     end
   end
 
+  def rmrank
+    Rmrank.index(@sname)
+  end
+
   def chap_count=(@chap_count : Int32)
     self.crepo.chmax = chap_count
   end
@@ -91,14 +98,14 @@ class RD::Rmstem
     nil
   end
 
-  def update!(crawl : Int32 = 1, regen : Bool = false) : self | Nil
+  def update!(crawl : Int32 = 1, regen : Bool = false, umode : Int32 = 0) : self | Nil
     return self unless raw_stem = load_raw_stem!(crawl: crawl)
 
     # verify content changed by checking the latest chapter
     # not super reliable since some site reuse the latest chapter id for new chapter.
     # but since it is a rare occasion we can just ignore it
     if raw_stem.latest_cid == @latest_cid
-      return unless regen # always redo in force crawl
+      return unless regen || @chap_count == 0 # always redo in force crawl
     else
       @latest_cid = raw_stem.latest_cid
     end
@@ -109,7 +116,13 @@ class RD::Rmstem
     self.crepo.tap do |crepo|
       crepo.chmax = @chap_count
       crepo.upsert_zinfos!(clist)
-      crepo.update_vinfos! if @chap_count > 0
+
+      if umode > 0 && @chap_count > 0
+        crepo.update_vinfos!
+        @_flag == 1_i16 if @_flag == 0
+      else
+        @_flag = 0
+      end
     end
 
     if raw_stem.update_str.empty?
@@ -169,6 +182,10 @@ class RD::Rmstem
   # end
 
   ###
+
+  def self.by_wn(wn_id : Int32)
+    get_all(wn_id, &.<< "where wn_id = $1")
+  end
 
   def self.find(sname : String, sn_id : String)
     get(sname, sn_id, &.<< "where sname = $1 and sn_id = $2")
