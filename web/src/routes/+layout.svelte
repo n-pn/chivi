@@ -17,7 +17,7 @@
   import { api_get } from '$lib/api_call'
 
   onMount(() => {
-    $config.wtheme = $page.data._conf.theme
+    $config.wtheme = $page.data._conf.wtheme
 
     let interval = setInterval(short_pulling_user_data, 60000)
 
@@ -39,7 +39,7 @@
     }
   }
 
-  $: wtheme = browser ? $config.wtheme : $page.data._conf.theme || 'light'
+  $: wtheme = browser ? $config.wtheme : $page.data._conf.wtheme || 'light'
 
   let kbd_hint = false
 

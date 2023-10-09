@@ -1,6 +1,5 @@
 <script context="module" lang="ts">
   import { config as data, get_user } from '$lib/stores'
-  import { ctrl as lookup } from '$gui/parts/Lookup.svelte'
 
   const ftsizes = ['Rất nhỏ', 'Nhỏ vừa', 'Cỡ chuẩn', 'To vừa', 'Rất to']
   const wthemes = ['light', 'warm', 'dark', 'oled']
@@ -48,12 +47,14 @@
   }
 
   $: if (browser && $data) {
+    write_cookie('wtheme', $data.wtheme)
+
+    write_cookie('ftsize', $data.ftsize.toString())
+    write_cookie('ftface', $data.ftface.toString())
+    write_cookie('textlh', $data.textlh.toString())
+
+    write_cookie('r_mode', $data.r_mode.toString())
     write_cookie('show_z', $data.show_z ? 't' : 'f')
-
-    write_cookie('c_algo', $data.c_algo)
-    write_cookie('c_auto', $data.c_auto ? 't' : 'f')
-
-    write_cookie('theme', $data.wtheme)
   }
 
   const write_cookie = (key: string, value: string) => {
