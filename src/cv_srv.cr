@@ -219,9 +219,9 @@ end
 def start_server!(port : Int32, server_name = "Chivi")
   # Add handlers that should run before your application
   AC::Server.before(
-    ErrorHandler.new,
     AC::LogHandler.new(["upass", "new_upass"]),
-    HTTP::CompressHandler.new
+    HTTP::CompressHandler.new,
+    ErrorHandler.new,
   )
 
   AC::Session.configure do |settings|

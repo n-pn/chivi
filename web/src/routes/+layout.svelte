@@ -17,13 +17,10 @@
   import { api_get } from '$lib/api_call'
 
   onMount(() => {
-    $config.wtheme = $page.data._conf.wtheme
+    $config = $page.data._conf
 
     let interval = setInterval(short_pulling_user_data, 60000)
-
-    return () => {
-      clearInterval(interval)
-    }
+    return () => clearInterval(interval)
   })
 
   const _user = writable($page.data._user)

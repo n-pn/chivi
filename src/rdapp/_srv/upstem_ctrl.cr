@@ -34,28 +34,22 @@ class RD::UpstemCtrl < AC::Base
       total = items.size &+ offset
     else
       query = query.sub("select *", "select id")
-      args[-2] = offset &+ limit &* 3
-      args[-1] = 0
-      total = Upstem.db.query_all(query, args: args, as: Int32).size
+      args[-2] = limit &* 3
+      total = Upstem.db.query_all(query, args: args, as: Int32).size &+ offset
     end
 
-    json = {
-      items: items,
-      pgidx: pg_no,
-      pgmax: _pgidx(total, limit),
-    }
-
+    json = {items: items, pgidx: pg_no, pgmax: _pgidx(total, limit)}
     render json: json
   end
 
   @[AC::Route::POST("/", body: uform)]
   def create(uform : Upstem)
-    guard_privi 1, "tạo dự án cá nhân"
+    guard_privi 1, "tạo sưu tầm cá nhân"
 
     uform.id = nil
     uform.sname = "@#{_uname}"
     uform.owner = _vu_id
-    uform.wn_id = nil if uform.wn_id == 0
+    uform.wn_id = nil if uform.wn_id.try(&.< 1)
 
     ustem = uform.insert!
     Dir.mkdir_p("var/stems/up#{uform.sname}")
@@ -73,12 +67,8 @@ class RD::UpstemCtrl < AC::Base
 
   @[AC::Route::POST("/:up_id", body: uform)]
   def update(up_id : Int32, uform : Upstem)
-    guard_privi 1, "sửa dự án cá nhân"
-
-    unless ustem = get_ustem(up_id, _privi < 4 ? _uname : nil)
-      render(404, text: "Dự án không tồn tại hoặc bạn không đủ quyền hạn")
-      return
-    end
+    ustem = get_ustem(up_id)
+    guard_owner ustem.owner, 1, "sửa sưu tầm cá nhân"
 
     ustem.zname = uform.zname unless uform.zname.empty?
     ustem.vname = uform.vname unless uform.vname.empty?
@@ -96,12 +86,8 @@ class RD::UpstemCtrl < AC::Base
 
   @[AC::Route::PATCH("/:up_id", body: uform)]
   def config(up_id : Int32, uform : Upstem)
-    guard_privi 1, "sửa dự án cá nhân"
-
-    unless ustem = get_ustem(up_id, _privi < 4 ? _uname : nil)
-      render(404, text: "Dự án không tồn tại hoặc bạn không đủ quyền hạn")
-      return
-    end
+    ustem = get_ustem(up_id)
+    guard_owner ustem.owner, 1, "sửa sưu tầm cá nhân"
 
     ustem.guard = uform.guard
     ustem.wndic = uform.wndic
@@ -115,12 +101,8 @@ class RD::UpstemCtrl < AC::Base
 
   @[AC::Route::DELETE("/:up_id")]
   def delete(up_id : Int32)
-    guard_privi 1, "xóa dự án cá nhân"
-
-    unless get_ustem(up_id, _privi < 4 ? _uname : nil)
-      render(404, "Dự án không tồn tại hoặc bạn không đủ quyền hạn")
-      return
-    end
+    ustem = get_ustem(up_id)
+    guard_owner ustem.owner, 1, "xóa sưu tầm cá nhân"
 
     Upstem.db.exec("delete from upstems where id = $1", up_id)
     USTEMS.delete(up_id)

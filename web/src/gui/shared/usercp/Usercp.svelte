@@ -63,7 +63,7 @@
 
   <svelte:fragment slot="header-right">
     {#each tabs as { icon, btip }, tab}
-      {@const _hl = tab == 2 && $_user.unread_notif > 0}
+      {@const _hl = tab == 3 && $_user.unread_notif > 0}
       <button
         class="-btn"
         class:_active={tab == $usercp}
@@ -90,7 +90,7 @@
             <strong>{avail_until($_user.until)}</strong>
           </div>
         {/if}
-        <button class="m-btn _xs _primary" on:click={() => usercp.change_tab(1)}
+        <button class="m-btn _xs _primary" on:click={() => usercp.change_tab(2)}
           >{privi < 1 ? 'Nâng cấp' : 'Gia hạn'}</button>
       </div>
 

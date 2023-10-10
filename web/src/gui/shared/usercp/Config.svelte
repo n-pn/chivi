@@ -48,11 +48,11 @@
   $: if (browser && $data) {
     write_cookie('wtheme', $data.wtheme)
 
-    write_cookie('ftsize', $data.ftsize.toString())
-    write_cookie('ftface', $data.ftface.toString())
-    write_cookie('textlh', $data.textlh.toString())
+    write_cookie('ftsize', `${$data.ftsize}`)
+    write_cookie('ftface', `${$data.ftface}`)
+    write_cookie('textlh', `${$data.textlh}`)
 
-    write_cookie('r_mode', $data.r_mode.toString())
+    write_cookie('r_mode', `${$data.r_mode}`)
     write_cookie('show_z', $data.show_z ? 't' : 'f')
   }
 
