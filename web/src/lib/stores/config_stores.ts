@@ -12,6 +12,8 @@ class ConfigData {
 
   r_mode = 0
   show_z = false
+
+  auto_u = false
 }
 
 function load_config(): ConfigData {

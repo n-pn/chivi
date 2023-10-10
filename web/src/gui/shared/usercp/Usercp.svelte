@@ -43,6 +43,13 @@
   export let actived = false
   const _user = get_user()
 
+  $: if (actived) reload_user_data()
+
+  const reload_user_data = async () => {
+    const res = await fetch('/_db/_self')
+    if (res.ok) $_user = await res.json()
+  }
+
   const tabs = [
     { icon: 'adjustments-alt', btip: 'Giao diện' },
     { icon: 'history', btip: 'Lịch sử' },

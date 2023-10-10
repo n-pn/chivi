@@ -84,9 +84,6 @@ class CV::XvcoinCtrl < CV::BaseCtrl
         reason: form.reason,
       ).insert!
 
-      sender.cache!
-      target.cache!
-
       spawn send_vcoin_notification(sender, target, xlog)
     end
 

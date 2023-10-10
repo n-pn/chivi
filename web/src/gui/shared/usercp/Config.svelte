@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import { config as data, get_user } from '$lib/stores'
+  import { config as data } from '$lib/stores'
 
   const ftsizes = ['Rất nhỏ', 'Nhỏ vừa', 'Cỡ chuẩn', 'To vừa', 'Rất to']
   const wthemes = ['light', 'warm', 'dark', 'oled']
@@ -33,10 +33,10 @@
   let elem: HTMLElement
   $: if (elem) elem.focus()
 
-  const _user = get_user()
+  export let _user: App.CurrentUser
 
   async function update_wtheme(wtheme: string) {
-    if ($_user.privi < 0) return
+    if (_user.privi < 0) return
 
     await fetch('/_db/_self/config', {
       method: 'PUT',
@@ -47,13 +47,14 @@
 
   $: if (browser && $data) {
     write_cookie('wtheme', $data.wtheme)
+    write_cookie('show_z', $data.show_z ? 't' : 'f')
+    write_cookie('auto_u', $data.auto_u ? 't' : 'f')
 
     write_cookie('ftsize', `${$data.ftsize}`)
     write_cookie('ftface', `${$data.ftface}`)
     write_cookie('textlh', `${$data.textlh}`)
 
     write_cookie('r_mode', `${$data.r_mode}`)
-    write_cookie('show_z', $data.show_z ? 't' : 'f')
   }
 
   const write_cookie = (key: string, value: string) => {
@@ -148,6 +149,15 @@
   <label class="switch">
     <input type="checkbox" bind:checked={$data.show_z} />
     <span class="switch-label">Hiển thị song song tiếng Trung:</span>
+  </label>
+</div>
+
+<div class="config">
+  <label
+    class="switch"
+    data-tip="Tự động thanh toán vcoin cho các chương cần thiết mở khóa">
+    <input type="checkbox" bind:checked={$data.auto_u} />
+    <span class="switch-label">Tự động mở khóa chương bằng vcoin:</span>
   </label>
 </div>
 

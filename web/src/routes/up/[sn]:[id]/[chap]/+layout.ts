@@ -5,12 +5,14 @@ import { nav_link } from '$utils/header_util'
 import type { PageLoad } from './$types'
 
 export const load = (async ({ parent, params, fetch }) => {
-  const [ch_no, p_idx = 1] = params.chap.split('_').map((x) => parseInt(x))
+  const { ustem, _conf } = await parent()
 
-  const rdurl = `/_rd/chaps/up/${params.sn}/${params.id}/${ch_no}/${p_idx}`
+  const [ch_no, p_idx = 1] = params.chap.split('_').map((x) => parseInt(x))
+  const force = _conf.auto_u
+
+  const rdurl = `/_rd/chaps/up/${params.sn}/${params.id}/${ch_no}/${p_idx}?force=${force}`
   const rdata = await api_get<CV.Chpart>(rdurl, fetch)
 
-  const { ustem } = await parent()
   const _title = `${rdata.title} - ${ustem.vname}`
   // const _board = `ch:${book}:${chap}:${sname}`
 

@@ -5,15 +5,17 @@ import { seed_nav, nav_link } from '$utils/header_util'
 import type { PageLoad } from './$types'
 
 export const load = (async ({ url, parent, params, fetch }) => {
+  const { nvinfo, _conf } = await parent()
+
   const wn_id = parseInt(params.wn, 10)
   const sname = params.stem
 
   const [ch_no, p_idx = 1] = params.chap.split('_').map((x) => parseInt(x))
 
-  const rdurl = `/_rd/chaps/wn/${sname}/${wn_id}/${ch_no}/${p_idx}`
+  const force = _conf.auto_u
+  const rdurl = `/_rd/chaps/wn/${sname}/${wn_id}/${ch_no}/${p_idx}?force=${force}`
   const rdata = await api_get<CV.Chpart>(rdurl, fetch)
 
-  const { nvinfo } = await parent()
   const _title = `${rdata.title} - ${nvinfo.btitle_vi}`
   // const _board = `ch:${book}:${chap}:${sname}`
 

@@ -125,12 +125,6 @@ class CV::Viuser
     self.last_loggedin_at = Time.utc
 
     self.save!
-    self.cache!
-  end
-
-  def cache!
-    CACHE_INT.set(self.id, self)
-    CACHE_STR.set(self.uname.downcase, self)
   end
 
   ##############################################
@@ -162,17 +156,12 @@ class CV::Viuser
     end
   end
 
-  CACHE_INT = RamCache(Int32, self).new(ttl: 3.minutes)
-  CACHE_STR = RamCache(String, self).new(ttl: 3.minutes)
-
   def self.load!(id : Int32)
-    CACHE_INT.get(id) { find!({id: id}) }
+    find!({id: id})
   end
 
-  CACHED = {} of String => self
-
   def self.load!(dname : String) : self
-    CACHE_STR.get(dname.downcase) { find!({uname: dname}) }
+    find!({uname: dname})
   end
 
   def self.load_many(unames : Array(String))
