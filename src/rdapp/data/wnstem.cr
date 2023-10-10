@@ -52,16 +52,6 @@ class RD::Wnstem
     @privi = 3_i16
   end
 
-  # def init!(force : Bool = false) : Nil
-  #   return if !force && @_flag >= 0 && File.file?(Chinfo.db_path(@sname, @s_bid))
-  #   return unless Chinfo.init!(@sname, @s_bid)
-
-  #   @_flag = -@_flag
-
-  #   query = @@schema.update_stmt(%w{_flag})
-  #   @@db.exec(query, @_flag, @wn_id, @sname)
-  # end
-
   def to_json(jb : JSON::Builder)
     jb.object {
       jb.field "sname", @sname
@@ -93,36 +83,41 @@ class RD::Wnstem
   end
 
   def update!(crawl : Int32 = 1, regen : Bool = false, umode : Int32 = 1) : Nil
-    rstems = Rmstem.all_by_wn(@wn_id).sort_by(&.rmrank)
+    rstems = Rmstem.all_by_wn(@wn_id, uniq: true)
+    rstems.reject! { |x| x.rtype > 0 && x.chap_count == 0 }
 
-    active = rstems.find do |rstem|
-      rstem.update!(crawl: crawl, regen: regen, umode: umode) if rstem.rtype == 0
-      rstem unless rstem.chap_count == 0
-    rescue
-      nil
-    end
-
-    unless active
+    if rstems.empty?
       self.crepo.update_vinfos! if umode > 0 && @chap_total > 0
       @rtime = Time.utc.to_unix
       return self.upsert!(db: @@db)
     end
 
-    @mtime = active.update_int if @mtime < active.update_int
-    @chap_total = active.chap_count if @chap_total < active.chap_count
+    start = 1
 
-    clist = active.crepo.get_all(start: 1, limit: active.chap_count)
+    rstems.first(4).each do |rstem|
+      rstem.update!(crawl: crawl, regen: regen, umode: umode) if rstem.alive?
 
-    self.crepo.tap do |crepo|
-      crepo.chmax = @chap_total
-      crepo.upsert_zinfos!(clist)
+      chmax = rstem.chap_count
+      next if chmax < start
 
-      if umode > 0 && @chap_total > 0
-        crepo.update_vinfos!
-        @_flag == 1_i16 if @_flag == 0
-      else
-        @_flag = 0
-      end
+      clist = rstem.crepo.get_all(start: start, limit: chmax &- start &+ 1)
+      self.crepo.upsert_zinfos!(clist)
+
+      start = chmax
+
+      mtime = rstem.update_int
+      @mtime = mtime if @mtime < mtime
+
+      @chap_total = chmax if @chap_total < chmax
+    end
+
+    crepo.chmax = @chap_total
+
+    if umode > 0 && @chap_total > 0
+      self.crepo.update_vinfos!
+      @_flag == 1_i16 if @_flag == 0
+    else
+      @_flag = 0
     end
 
     @rtime = Time.utc.to_unix

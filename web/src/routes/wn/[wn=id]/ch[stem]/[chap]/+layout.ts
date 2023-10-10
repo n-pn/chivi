@@ -16,7 +16,7 @@ export const load = (async ({ url, parent, params, fetch }) => {
   const rdurl = `/_rd/chaps/wn/${sname}/${wn_id}/${ch_no}/${p_idx}?force=${force}`
   const rdata = await api_get<CV.Chpart>(rdurl, fetch)
 
-  const _title = `${rdata.title} - ${nvinfo.btitle_vi}`
+  const _title = `${rdata.title} - ${nvinfo.vtitle}`
   // const _board = `ch:${book}:${chap}:${sname}`
 
   const _meta: App.PageMeta = {

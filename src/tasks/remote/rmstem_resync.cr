@@ -1,5 +1,7 @@
 require "colorize"
 require "option_parser"
+
+ENV["CV_ENV"] ||= "production"
 require "../../rdapp/data/rmstem"
 
 # crawl book pages from remote sources
@@ -21,9 +23,10 @@ class RmstemResync
     book_href = @host.book_href(sn_id)
 
     bhtml = @host.load_page(book_href, book_file, stale: @stale)
-    rtime = File.info(book_file).modification_time.to_unix
 
     entry = RD::Rmstem.from_html(bhtml, @sname, sn_id.to_s, force: force)
+    entry.try(&.rtime = File.info(book_file).modification_time.to_unix)
+
     entry ? entry.upsert! && true : false
   rescue ex
     if ex.message.try(&.ends_with?("404"))

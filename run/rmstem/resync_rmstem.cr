@@ -3,20 +3,20 @@
 require "pg"
 require "sqlite3"
 
-ENV["CV_ENV"] = "production"
+ENV["CV_ENV"] ||= "production"
 
 require "../../src/rdapp/data/rmstem"
-require "../../src/wnapp/data/wnstem"
+require "../../src/rdapp/data/wnstem"
 
 RM_SQL = "select * from rmstems where sname = $1 and _flag <> -404 order by sn_id asc"
 WN_SQL = "select * from wnseeds where sname = $1"
 
-def update(sname : String)
+def resync(sname : String)
   rstems = PGDB.query_all(RM_SQL, sname, as: RD::Rmstem).to_h do |rstem|
     {rstem.sn_id, rstem}
   end
 
-  wstems = PGDB.query_all WN_SQL, sname, as: WN::Wnstem
+  wstems = PGDB.query_all WN_SQL, sname, as: RD::Wnstem
 
   index = 0
   wstems.each_slice(100) do |slice|
@@ -43,6 +43,8 @@ def update(sname : String)
   end
 end
 
-snames = PGDB.query_all "select distinct(sname) from rmstems", as: String
-
-snames.each { |sname| update(sname) }
+# resync("!biqugee.com")
+# resync("!bxwxorg.com")
+# resync("!xbiquge.bz")
+# resync("!jx.la")
+resync("!zxcs.me")

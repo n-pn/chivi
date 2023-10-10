@@ -16,6 +16,7 @@ class RD::Rmstem
   field sn_id : String, pkey: true
 
   field rtype : Int16 = 0_i16
+  field srank : Int16 = 15_i16
 
   field rlink : String = ""   # remote catalog link
   field rtime : Int64 = 0_i64 # last remote update
@@ -61,6 +62,11 @@ class RD::Rmstem
       repo.gifts = 2
       repo.multp = @multp
     end
+  end
+
+  @[AlwaysInline]
+  def alive?
+    @rtype == 0 && @_flag >= 0
   end
 
   def rmrank
@@ -185,10 +191,16 @@ class RD::Rmstem
 
   ###
 
-  ALL_WN_SQL = @@schema.select_stmt(&.<< " where wn_id = $1 ")
+  ALL_WN_SQL = @@schema.select_stmt do |sql|
+    sql << " where wn_id = $1 "
+    # sql << " order by srank asc, chap_count desc, _flag desc"
+  end
 
-  def self.all_by_wn(wn_id : Int32)
-    @@db.query_all(ALL_WN_SQL, wn_id, as: self)
+  def self.all_by_wn(wn_id : Int32, uniq : Bool = false)
+    stems = @@db.query_all(ALL_WN_SQL, wn_id, as: self)
+    # TODO: sort in database
+    stems.sort_by! { |x| {x.rmrank, -x.chap_count, -x._flag} }
+    uniq ? stems.uniq!(&.sname) : stems
   end
 
   def self.find(sname : String, sn_id : String)

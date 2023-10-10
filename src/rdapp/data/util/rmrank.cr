@@ -1,5 +1,8 @@
 module RD::Rmrank
   SNAMES = {
+    "!zxcs.me",
+    "!zadzs.com",
+    "!hetushu.com",
     "!69shuba.com",
     "!piaotian.com",
     "!133txt.com",
