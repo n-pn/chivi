@@ -4,19 +4,16 @@ import type { PageLoad } from './$types'
 export const load = (async ({ url }) => {
   const _meta = {
     left_nav: [
-      nav_link('/me', 'Cá nhân', 'user', { show: 'pl' }),
-      nav_link('/me/send-vcoin', 'Gửi tặng vcoin', 'gift', { kind: 'title' }),
-    ],
-    right_nav: [
-      nav_link('/me/vcoin-xlog', 'Lịch sử', 'money-bag', { kind: 'title' }),
+      nav_link('/me/xvcoin', 'Giao dịch', 'wallet', { show: 'ts' }),
+      nav_link('+send', 'Gửi tặng', 'gift', { kind: 'title' }),
     ],
   }
 
-  const form = {
+  const xform = {
     target: url.searchParams.get('target'),
     reason: url.searchParams.get('reason'),
     amount: +url.searchParams.get('amount') || 10,
   }
 
-  return { form, _meta, _title: 'Gửi tặng Vcoin cho người khác' }
+  return { xform, _meta, _title: 'Gửi tặng Vcoin cho người khác' }
 }) satisfies PageLoad

@@ -35,12 +35,13 @@
 
   import Config from './Config.svelte'
   import Reading from './Reading.svelte'
+  import Spending from './Spending.svelte'
   import Setting from './Setting.svelte'
-  import Unotifs from './Unotifs.svelte'
+  import Notifs from './Notifs.svelte'
 
-  const components = [Config, Reading, Setting, Unotifs]
+  const components = [Config, Reading, Notifs, Spending, Setting]
 
-  export let actived = false
+  export let actived = true
   const _user = get_user()
 
   $: if (actived) reload_user_data()
@@ -53,8 +54,9 @@
   const tabs = [
     { icon: 'adjustments-alt', btip: 'Giao diện' },
     { icon: 'history', btip: 'Lịch sử' },
-    { icon: 'settings', btip: 'Cài đặt' },
     { icon: 'bell', btip: 'Thông báo' },
+    { icon: 'wallet', btip: 'Giao dịch' },
+    { icon: 'settings', btip: 'Cài đặt' },
   ]
 
   $: privi = $_user.privi || 0
@@ -70,7 +72,7 @@
 
   <svelte:fragment slot="header-right">
     {#each tabs as { icon, btip }, tab}
-      {@const _hl = tab == 3 && $_user.unread_notif > 0}
+      {@const _hl = tab == 2 && $_user.unread_notif > 0}
       <button
         class="-btn"
         class:_active={tab == $usercp}
@@ -79,7 +81,7 @@
         data-tip={btip}
         data-tip-loc="bottom">
         <SIcon name={icon} />
-        {#if _hl}({$_user.unread_notif}){/if}
+        {#if _hl}{$_user.unread_notif}{/if}
       </button>
     {/each}
   </svelte:fragment>
@@ -97,7 +99,7 @@
             <strong>{avail_until($_user.until)}</strong>
           </div>
         {/if}
-        <button class="m-btn _xs _primary" on:click={() => usercp.change_tab(2)}
+        <button class="m-btn _xs _primary" on:click={() => usercp.change_tab(3)}
           >{privi < 1 ? 'Nâng cấp' : 'Gia hạn'}</button>
       </div>
 

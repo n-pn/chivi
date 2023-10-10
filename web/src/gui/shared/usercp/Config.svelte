@@ -27,16 +27,17 @@
 
 <script lang="ts">
   import { browser } from '$app/environment'
+  import type { Writable } from 'svelte/store'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   let elem: HTMLElement
   $: if (elem) elem.focus()
 
-  export let _user: App.CurrentUser
+  export let _user: Writable<App.CurrentUser>
 
   async function update_wtheme(wtheme: string) {
-    if (_user.privi < 0) return
+    if ($_user.privi < 0) return
 
     await fetch('/_db/_self/config', {
       method: 'PUT',

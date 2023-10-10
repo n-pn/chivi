@@ -8,7 +8,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import { get_rtime } from '$gui/atoms/RTime.svelte'
 
-  // export let _user: Writable<App.CurrentUser>
+  export let _user: Writable<App.CurrentUser>
 
   let chaps: Array<any>
   let kind = ''
@@ -25,7 +25,8 @@
 
   const chap_href = ({ bslug, sname, chidx: ch_no, cpart }) => {
     const croot = `/wn/${bslug}/ch${sname}`
-    return chap_path(croot, ch_no, { cpart, rtype: 'ai', rmode: 'avail' })
+    const cname = cpart > 1 ? `${ch_no}_${cpart}` : ch_no
+    return chap_path(croot, cname, { rtype: 'qt' })
   }
 </script>
 

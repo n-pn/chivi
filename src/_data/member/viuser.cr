@@ -183,4 +183,6 @@ class CV::Viuser
   def self.get_id(uname : String)
     PGDB.query_one("select id from viusers where uname = $1 limit 1", uname, as: Int32)
   end
+
+  class_getter system : self { self.load!(-1) }
 end

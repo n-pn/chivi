@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Writable } from 'svelte/store'
   import { api_call } from '$lib/api_call'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let _user: Writable<App.CurrentUser>
 
@@ -59,6 +60,7 @@
       type="submit"
       class="m-btn _harmful _fill"
       disabled={$_user.privi < 0}>
+      <SIcon name="device-floppy" />
       <span>Đổi mật khẩu</span>
     </button>
   </footer>

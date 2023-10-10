@@ -2,8 +2,6 @@
   import type { Writable } from 'svelte/store'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import UpgradePrivi from './Setting/UpgradePrivi.svelte'
-  import SendVcoin from './Setting/SendVcoin.svelte'
   import UpdatePasswd from './Setting/UpdatePasswd.svelte'
 
   export let _user: Writable<App.CurrentUser>
@@ -16,16 +14,6 @@
 </script>
 
 <details open>
-  <summary>Nâng quyền hạn</summary>
-  <UpgradePrivi {_user} />
-</details>
-
-<details>
-  <summary>Tặng vcoin</summary>
-  <SendVcoin {_user} />
-</details>
-
-<details>
   <summary>Đổi mật khẩu</summary>
   <UpdatePasswd {_user} />
 </details>

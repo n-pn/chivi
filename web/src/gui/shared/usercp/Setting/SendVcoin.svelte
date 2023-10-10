@@ -4,14 +4,12 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let _user: Writable<App.CurrentUser>
+  export let xform = { target: '', reason: '', amount: 10 }
 
-  let form = { target: '', reason: '', amount: 10 }
-
-  let as_admin = false
   let res_type: '' | 'ok' | 'err' = ''
   let res_text = ''
 
-  const action = '/_db/vcoins'
+  const action = '/_db/xvcoins/giving'
 
   async function submit(evt: Event) {
     evt.preventDefault()
@@ -19,12 +17,11 @@
     res_type = res_text = ''
 
     try {
-      const body = { ...form, as_admin }
-      const data = await api_call(action, body)
-      $_user.vcoin -= form.amount
+      const data = await api_call(action, xform)
+      $_user.vcoin -= xform.amount
 
       res_type = 'ok'
-      res_text = `[${data.target}] đã nhận được ${form.amount} vcoin, bạn còn có ${data.remain} vcoin.`
+      res_text = `[${data.target}] đã nhận được ${xform.amount} vcoin, bạn còn có ${data.remain} vcoin.`
     } catch (ex) {
       res_type = 'err'
       res_text = ex.body?.message
@@ -32,7 +29,7 @@
   }
 </script>
 
-<form {action} method="POST" on:submit={submit}>
+<form class="form" {action} method="POST" on:submit={submit}>
   <form-group>
     <form-field>
       <label class="form-label" for="target">Người nhận</label>
@@ -42,7 +39,7 @@
         name="target"
         placeholder="Tên tài khoản hoặc hòm thư"
         required
-        bind:value={form.target} />
+        bind:value={xform.target} />
     </form-field>
   </form-group>
 
@@ -54,29 +51,17 @@
         name="reason"
         rows="2"
         placeholder="Có thể để trắng"
-        bind:value={form.reason} />
+        bind:value={xform.reason} />
     </form-field>
   </form-group>
-
-  {#if $_user.privi > 3}
-    <label for="as_admin" class="as_admin">
-      <input
-        type="checkbox"
-        id="as_admin"
-        name="as_admin"
-        disabled={$_user.privi < 4}
-        bind:checked={as_admin} />
-      <span>Gửi dưới quyền hệ thống</span>
-    </label>
-  {/if}
 
   <div class="form-group">
     <label class="form-label" for="amount">Số vcoin muốn tặng</label>
 
     <radio-group>
       {#each [5, 10, 20, 30, 50] as value}
-        <label class="m-radio amount" class:_active={value == form.amount}>
-          <input type="radio" bind:group={form.amount} {value} />
+        <label class="m-radio amount" class:_active={value == xform.amount}>
+          <input type="radio" bind:group={xform.amount} {value} />
           {value}
         </label>
       {/each}
@@ -87,7 +72,7 @@
           class="amount"
           name="amount"
           type="number"
-          bind:value={form.amount} />
+          bind:value={xform.amount} />
       </div>
     </radio-group>
   </div>
@@ -100,15 +85,20 @@
     <button
       type="submit"
       class="m-btn _primary _fill"
-      disabled={!as_admin && $_user.vcoin < form.amount}>
+      disabled={$_user.vcoin < xform.amount}>
       <span>Gửi tặng</span>
-      <span>{form.amount}</span>
+      <span>{xform.amount}</span>
       <SIcon iset="icons" name="vcoin" />
     </button>
   </footer>
 </form>
 
 <style lang="scss">
+  .form {
+    max-width: 25rem;
+    margin: 0 auto;
+  }
+
   .form-label {
     display: block;
   }
@@ -141,13 +131,6 @@
     cursor: pointer;
   }
 
-  .as_admin {
-    display: block;
-    margin-top: 0.75rem;
-    font-weight: 500;
-    font-size: rem(15px);
-  }
-
   input.amount {
     width: 3.5rem;
     background-color: inherit;
@@ -158,5 +141,10 @@
     gap: 0.5rem;
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
+  }
+
+  .form-action {
+    @include border(--bd-soft, $loc: top);
+    padding-top: 0.75rem;
   }
 </style>

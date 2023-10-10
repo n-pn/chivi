@@ -10,17 +10,16 @@ interface XlogData extends CV.Paginate {
 export const load = (async ({ fetch, parent }) => {
   const { _user } = await parent()
 
-  const path = `/_db/vcoins?vu_id=${_user.vu_id}`
+  const path = `/_db/xvcoins?vu_id=${_user.vu_id}`
   const data = await api_get<XlogData>(path, fetch)
 
   const _meta = {
     left_nav: [
-      home_nav('ps'),
-      nav_link('/me', 'Cá nhân', 'user'),
-      nav_link('/me/vcoin-xlog', 'Vcoin', 'money-bag', { kind: 'title' }),
+      nav_link('/me', 'Cá nhân', 'user', { show: 'ts' }),
+      nav_link('/me/xvcoin', 'Giao dịch', 'wallet', { kind: 'title' }),
     ],
     right_nav: [
-      nav_link('/me/send-vcoin', 'Gửi tặng', 'gift', { kind: 'title' }),
+      nav_link('/me/xvcoin/+send', 'Gửi tặng', 'send', { kind: 'title' }),
     ],
   }
 
