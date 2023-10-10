@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { goto } from '$app/navigation'
+  import { goto, invalidate } from '$app/navigation'
 
   import { get_user } from '$lib/stores'
   const _user = get_user()
@@ -23,8 +23,9 @@
     const body = { ...uform, labels: labels.split(',') }
 
     try {
-      const { sname, id } = await api_call(action, body, 'POST')
-      await goto(`/up/${sname}:${id}`)
+      data.ustem = await api_call(action, body, 'POST')
+      await invalidate(data.sroot)
+      goto(data.sroot)
     } catch (ex) {
       err_text = ex.body.message
     }

@@ -3,6 +3,7 @@ require "sqlite3"
 require "option_parser"
 
 ENV["CV_ENV"] ||= "production"
+Log.setup_from_env
 
 require "../../rdapp/data/wnstem"
 
@@ -25,7 +26,7 @@ FRESH = (Time.utc - 1.day).to_unix
 
 wn_ids.each do |wn_id|
   wstem = wstems[wn_id]? || RD::Wnstem.new(wn_id, "~avail")
-  next if wstem.rtime > FRESH
+  next if wstem.rtime > FRESH && wstem.chap_total > 0
 
   Log.info { "#{wn_id}: #{wstem.chap_total}, #{wstem.mtime}" }
   wstem.update!(crawl: crawl, regen: regen, umode: 0)

@@ -49,18 +49,18 @@ class RD::Wnstem
   #########
 
   def initialize(@wn_id, @sname, @s_bid = wn_id.to_s)
-    @privi = self.plock(sname).to_i16
+    @privi = 3_i16
   end
 
-  def init!(force : Bool = false) : Nil
-    return if !force && @_flag >= 0 && File.file?(Chinfo.db_path(@sname, @s_bid))
-    return unless Chinfo.init!(@sname, @s_bid)
+  # def init!(force : Bool = false) : Nil
+  #   return if !force && @_flag >= 0 && File.file?(Chinfo.db_path(@sname, @s_bid))
+  #   return unless Chinfo.init!(@sname, @s_bid)
 
-    @_flag = -@_flag
+  #   @_flag = -@_flag
 
-    query = @@schema.update_stmt(%w{_flag})
-    @@db.exec(query, @_flag, @wn_id, @sname)
-  end
+  #   query = @@schema.update_stmt(%w{_flag})
+  #   @@db.exec(query, @_flag, @wn_id, @sname)
+  # end
 
   def to_json(jb : JSON::Builder)
     jb.object {
@@ -84,22 +84,6 @@ class RD::Wnstem
     ch_no <= gift_chaps ? 0 : self.plock
   end
 
-  def remote?
-    @sname[0] == '!' && Rmhost.remote?(@sname)
-  end
-
-  def active?
-    remote? && Rmhost.from_sname!(@sname).active?
-  end
-
-  def plock(sname = @sname)
-    case sname
-    when "~avail" then 2
-    when "~chivi" then 3
-    else               3
-    end
-  end
-
   private def reload_tspan(crawl : Int32 = 1)
     case crawl
     when 2 then 3.minutes  # force crawl
@@ -113,14 +97,13 @@ class RD::Wnstem
 
     active = rstems.find do |rstem|
       rstem.update!(crawl: crawl, regen: regen, umode: umode) if rstem.rtype == 0
-      Log.debug { "#{rstem.sname}/#{rstem.sn_id}: #{rstem.chap_count}" }
-      rstem
+      rstem unless rstem.chap_count == 0
     rescue
       nil
     end
 
     unless active
-      self.crepo.update_vinfos! if umode > 0
+      self.crepo.update_vinfos! if umode > 0 && @chap_total > 0
       @rtime = Time.utc.to_unix
       return self.upsert!(db: @@db)
     end
@@ -146,10 +129,11 @@ class RD::Wnstem
     self.upsert!(db: @@db)
   end
 
-  ####
+  UPDATE_FLAG_SQL = "update #{@@schema.table} set _flag = $1 where sname = $2 and wn_id = $3"
 
-  def upsert!(query = @@schema.upsert_stmt, args_ = self.db_values, db = @@db)
-    db.write_one(query, *args_, as: self.class)
+  def update_flag!(@_flag : Int16)
+    @@db.exec UPDATE_FLAG_SQL, _flag, @sname, @wn_id
+    self
   end
 
   ###
@@ -172,13 +156,13 @@ class RD::Wnstem
     self.db.query_all(stmt, wn_id, as: self)
   end
 
-  def self.get(wn_id : Int32, sname : String) : self | Nil
+  def self.find(wn_id : Int32, sname : String) : self | Nil
     stmt = self.schema.select_stmt(&.<< " where wn_id = $1 and sname = $2")
     self.db.query_one?(stmt, wn_id, sname, as: self)
   end
 
-  def self.get!(wn_id : Int32, sname : String) : self
-    self.get(wn_id, sname) || raise "wn_seed [#{wn_id}/#{sname}] not found!"
+  def self.find!(wn_id : Int32, sname : String) : self
+    self.find(wn_id, sname) || raise "wn_seed [#{wn_id}/#{sname}] not found!"
   end
 
   def self.load(wn_id : Int32, sname : String)
@@ -186,23 +170,7 @@ class RD::Wnstem
   end
 
   def self.load(wn_id : Int32, sname : String, &)
-    self.get(wn_id, sname) || yield
-  end
-
-  def self.find(id : Int32)
-    self.find!(id) rescue nil
-  end
-
-  def self.find!(id : Int32)
-    stmt = self.schema.select_stmt(&.<< " where id = $1 limit 1")
-    self.db.query_all(stmt, id, as: self)
-  end
-
-  def self.upsert!(wn_id : Int32, sname : String, s_bid = wn_id)
-    self.db.exec <<-SQL, wn_id, sname, s_bid
-      insert into wnseeds(wn_id, sname, s_bid) values ($1, $2, $3)
-      on conflict do update set s_bid = excluded.s_bid
-    SQL
+    self.find(wn_id, sname) || yield
   end
 
   ###

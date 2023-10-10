@@ -89,7 +89,10 @@
 
   .stats {
     display: flex;
-    gap: 0.5rem;
+    flex-wrap: wrap;
+    padding: 0.25rem 0;
+    line-height: 1rem;
+    gap: 0.25rem;
     margin-top: 0.25rem;
   }
 </style>

@@ -60,66 +60,71 @@ class RD::UpstemCtrl < AC::Base
     ustem = uform.insert!
     Dir.mkdir_p("var/stems/up#{uform.sname}")
 
+    USTEMS[ustem.id!] = ustem
     render json: ustem
   end
 
   @[AC::Route::GET("/:up_id")]
-  def show(up_id : Int32)
-    render json: get_ustem(up_id)
+  def show(up_id : Int32, regen : Bool = false)
+    ustem = get_ustem(up_id)
+    # TODO: retranslate here
+    render json: ustem
   end
 
-  @[AC::Route::POST("/:up_id", body: form)]
-  def update(up_id : Int32, form : Upstem)
+  @[AC::Route::POST("/:up_id", body: uform)]
+  def update(up_id : Int32, uform : Upstem)
     guard_privi 1, "sửa dự án cá nhân"
 
-    unless term = Upstem.find(up_id, _privi < 4 ? _uname : nil)
-      render 404, "Dự án không tồn tại hoặc bạn không đủ quyền hạn"
+    unless ustem = get_ustem(up_id, _privi < 4 ? _uname : nil)
+      render(404, text: "Dự án không tồn tại hoặc bạn không đủ quyền hạn")
       return
     end
 
-    term.zname = form.zname unless form.zname.empty?
-    term.vname = form.vname unless form.vname.empty?
+    ustem.zname = uform.zname unless uform.zname.empty?
+    ustem.vname = uform.vname unless uform.vname.empty?
 
-    term.wn_id = form.wn_id
+    ustem.wn_id = uform.wn_id
 
-    term.vintro = form.vintro
-    term.labels = form.labels
+    ustem.vintro = uform.vintro
+    ustem.labels = uform.labels
 
-    term.updated_at = Time.utc
+    ustem.updated_at = Time.utc
 
-    saved = term.update!
+    saved = ustem.update!
     render json: saved
   end
 
-  @[AC::Route::PATCH("/:up_id", body: form)]
-  def config(up_id : Int32, form : Upstem)
+  @[AC::Route::PATCH("/:up_id", body: uform)]
+  def config(up_id : Int32, uform : Upstem)
     guard_privi 1, "sửa dự án cá nhân"
 
-    unless term = Upstem.find(up_id, _privi < 4 ? _uname : nil)
-      render 404, "Dự án không tồn tại hoặc bạn không đủ quyền hạn"
+    unless ustem = get_ustem(up_id, _privi < 4 ? _uname : nil)
+      render(404, text: "Dự án không tồn tại hoặc bạn không đủ quyền hạn")
       return
     end
 
-    term.guard = form.guard
-    term.wndic = form.wndic
-    term.gifts = form.gifts
-    term.multp = form.multp
-    term.updated_at = Time.utc
+    ustem.guard = uform.guard
+    ustem.wndic = uform.wndic
+    ustem.gifts = uform.gifts
+    ustem.multp = uform.multp
+    ustem.updated_at = Time.utc
 
-    saved = term.update!
+    saved = ustem.update!
     render json: saved
   end
 
   @[AC::Route::DELETE("/:up_id")]
   def delete(up_id : Int32)
     guard_privi 1, "xóa dự án cá nhân"
-    uname = _privi < 4 ? _uname : nil
 
-    unless term = Upstem.find(up_id, uname)
-      raise BadRequest.new("Dự án không tồn tại hoặc bạn không đủ quyền hạn")
+    unless get_ustem(up_id, _privi < 4 ? _uname : nil)
+      render(404, "Dự án không tồn tại hoặc bạn không đủ quyền hạn")
+      return
     end
 
-    Upstem.db.exec("delete from upstems where id = $1", term.id)
+    Upstem.db.exec("delete from upstems where id = $1", up_id)
+    USTEMS.delete(up_id)
+
     render text: "ok"
   end
 end

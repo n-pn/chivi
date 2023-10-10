@@ -4,13 +4,21 @@ require "../view/*"
 require "./forms/*"
 
 abstract class AC::Base
-  WNSTEMS = {} of String => RD::Wnstem
-  RMSTEMS = {} of String => RD::Rmstem
-  UPSTEMS = {} of Int32 => RD::Upstem
+  WSTEMS = {} of String => RD::Wnstem
+  RSTEMS = {} of String => RD::Rmstem
+  USTEMS = {} of Int32 => RD::Upstem
 
   private def get_wstem(sname : String, wn_id : Int32)
-    WNSTEMS["#{wn_id}/#{sname}"] ||= begin
-      RD::Wnstem.load(wn_id, sname) do
+    WSTEMS["#{wn_id}/#{sname}"] ||= begin
+      wstem = RD::Wnstem.load(wn_id, sname)
+
+      if wstem
+        if wstem._flag == 0 && wstem.chap_total > 0
+          wstem.crepo.update_vinfos!
+          wstem.update_flag!(1_i16)
+        end
+        wstem
+      else
         raise NotFound.new("Nguồn truyện không tồn tại") unless sname == "~avail"
         Dir.mkdir_p("var/texts/wn~avail/#{wn_id}")
         RD::Wnstem.new(wn_id, sname, wn_id.to_s).upsert!
@@ -20,12 +28,12 @@ abstract class AC::Base
 
   @[AlwaysInline]
   private def get_ustem(up_id : Int32, sname : String? = nil)
-    UPSTEMS[up_id] ||= RD::Upstem.find(up_id, sname) || raise NotFound.new("Dự án không tồn tại")
+    USTEMS[up_id] ||= RD::Upstem.find(up_id, sname) || raise NotFound.new("Dự án không tồn tại")
   end
 
   @[AlwaysInline]
   private def get_rstem(sname : String, sn_id : String)
-    RMSTEMS["#{sname}/#{sn_id}"] ||= begin
+    RSTEMS["#{sname}/#{sn_id}"] ||= begin
       rstem = RD::Rmstem.find(sname, sn_id)
       raise NotFound.new("Nguồn nhúng không tồn tại") unless rstem
 
