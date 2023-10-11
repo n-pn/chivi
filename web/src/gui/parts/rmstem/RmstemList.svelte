@@ -98,7 +98,7 @@
       type="text"
       class="s-inp u-fg-secd"
       name="bt"
-      placeholder="Tìm kiếm theo tên bộ truyện"
+      placeholder="Tìm kiếm theo tên tiếng Trung hoặc Hán Việt bộ truyện"
       bind:value={query.bt} />
     <button class="s-btn u-fz-lg" type="submit"><SIcon name="search" /></button>
   </form>

@@ -289,14 +289,12 @@ class RD::Rmstem
 
       if btitle
         args << btitle
-        field = btitle =~ /\p{Han}/ ? "btitle_zh" : "btitle_vi"
-        sql << " and #{field} like '%' || $#{args.size} || '%'"
+        sql << " and _btitle_ts_ like '%' || scrub_name($#{args.size}) || '%'"
       end
 
       if author
         args << author
-        field = author =~ /\p{Han}/ ? "author_zh" : "author_vi"
-        sql << " and #{field} = $#{args.size}"
+        sql << " and _author_ts_ like '%' || scrub_name($#{args.size}) || '%'"
       end
 
       case order

@@ -3,13 +3,18 @@
 CREATE TABLE rmstems(
   sname varchar NOT NULL,
   sn_id varchar NOT NULL,
+  --
+  rtype smallint not null default 1,
   rlink varchar NOT NULL DEFAULT '',
   rtime bigint NOT NULL DEFAULT 0,
   --
   btitle_zh varchar NOT NULL DEFAULT '',
   author_zh varchar NOT NULL DEFAULT '',
-  btitle_vi citext NOT NULL DEFAULT '',
-  author_vi citext NOT NULL DEFAULT '',
+  btitle_vi varchar NOT NULL DEFAULT '',
+  author_vi varchar NOT NULL DEFAULT '',
+  --
+  _btitle_ts_ varchar GENERATED ALWAYS AS (scrub_name(btitle_zh, btitle_vi)) STORED,
+  _author_ts_ varchar GENERATED ALWAYS AS (scrub_name(author_zh, author_vi)) STORED,
   --
   cover_rm varchar NOT NULL DEFAULT '',
   cover_cv varchar NOT NULL DEFAULT '',
@@ -33,6 +38,10 @@ CREATE TABLE rmstems(
   --
   PRIMARY KEY (sname, sn_id)
 );
+
+CREATE INDEX rmstems_btitle_ts_idx ON rmstems USING GIN(_btitle_ts_ gin_trgm_ops);
+
+CREATE INDEX rmstems_author_ts_idx ON rmstems USING GIN(_author_ts_ gin_trgm_ops);
 
 -- +micrate Down
 -- SQL section 'Down' is executed when this migration is rolled back
