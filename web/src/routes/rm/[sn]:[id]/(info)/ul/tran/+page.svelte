@@ -5,7 +5,7 @@
   // export let data: PageData
 </script>
 
-<div class="empty">
+<div class="u-empty-sm">
   <h3>Nơi đăng lên các kết quả dịch có sẵn</h3>
 
   <p>
@@ -17,11 +17,6 @@
 </div>
 
 <style lang="scss">
-  .empty {
-    @include padding-y(3rem);
-    text-align: center;
-  }
-
   p {
     margin-top: 1rem;
   }

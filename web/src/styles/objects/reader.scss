@@ -246,7 +246,6 @@ x-n {
   &:hover {
     border-bottom: 1px solid var(--border);
     background: none;
-    // background: linear-gradient(to top, var(--border) 0.75px, transparent 0);
   }
 
   &:hover,
@@ -257,60 +256,4 @@ x-n {
   &:after {
     padding: 0 0.25rem;
   }
-
-  // &.focus {
-  //   @include fgcolor(secd);
-  //   background: color(success, 5, 2) !important;
-  //   .tm-dark & {
-  //     background: color(purple, 4, 3) !important;
-  //   }
-  //   .tm-oled & {
-  //     background: color(purple, 4, 4) !important;
-  //   }
-  // }
-
-  // c-g & {
-  //   cursor: pointer;
-  //   // prettier-ignore
-  //   &:hover, &.hover, &.focus { color: var(--active); }
-  // }
 }
-
-// prettier-ignore
-// @mixin vg-wrap($left: '{', $right: '}') {
-//   &:before, &:after { font-style: normal; }
-//   &:before { content: $left; }
-//   &:after { content: $right; }
-// }
-
-// v-g {
-//   --vgcolor: var(--fgmain);
-
-//   .cdata.debug & {
-//     background: none !important;
-
-//     // prettier-ignore
-//     &:before, &:after { color: var(--vgcolor); }
-//     @include vg-wrap('[', ']');
-
-//     v-n {
-//       color: var(--vgcolor);
-//       // prettier-ignore
-//       &:hover { color: var(--active); }
-//     }
-//   }
-
-//   &[d='0'],
-//   &[d='1'] {
-//     @include vg-wrap('', '');
-//   }
-
-//   $colors: (gray, green, blue, teal, orange, fuchsia, purple, pink, red);
-
-//   @for $i from 1 through 9 {
-//     &[d='#{$i}'] {
-//       $color: list.nth($colors, $i);
-//       --vgcolor: #{color($color, 5)};
-//     }
-//   }
-// }

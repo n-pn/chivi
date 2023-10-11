@@ -38,19 +38,16 @@
     </p>
   {/each}
 {:else}
-  <div class="empty">
-    <SIcon name="loader-2" spin={true} />
-    <p>Đang tải nội dung...</p>
+  <div class="u-empty">
+    <div>
+      <SIcon name="loader-2" spin={true} />
+      <p>Đang tải nội dung...</p>
+    </div>
   </div>
 {/if}
 
 <style lang="scss">
-  .empty {
-    @include flex-ca($gap: 0.25rem);
-    height: 50vh;
-    @include fgcolor(mute);
-    font-style: italic;
-
+  .u-empty {
     :global(svg) {
       font-size: 1.5em;
     }

@@ -145,7 +145,7 @@
     </Footer>
   </chap-list>
 {:else}
-  <div class="empty">
+  <div class="u-empty">
     <h2>Chưa có text gốc.</h2>
     <p>
       Hãy liên hệ với ban quản trị để khắc phục. Thông tin liên hệ xem cuối
@@ -257,19 +257,6 @@
     width: 70%;
     margin: var(--gutter) auto;
     @include border(--bd-main, $loc: bottom);
-  }
-
-  .empty {
-    @include flex-ca;
-    flex-direction: column;
-    min-height: 30vh;
-    text-align: center;
-    font-style: italic;
-    // @include ftsize(lg);
-    @include fgcolor(neutral, 5);
-    h2 {
-      margin-bottom: 2rem;
-    }
   }
 
   .foot {

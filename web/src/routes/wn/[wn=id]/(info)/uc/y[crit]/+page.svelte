@@ -45,7 +45,7 @@
       </section>
     </div>
   {:else}
-    <div class="empty">Không có phản hồi.</div>
+    <div class="u-empty">Không có phản hồi.</div>
   {/each}
 </section>
 
@@ -115,13 +115,5 @@
     > span {
       @include ftsize(sm);
     }
-  }
-
-  .empty {
-    @include flex($center: both);
-    @include fgcolor(tert);
-    font-style: italic;
-    height: 3rem;
-    margin-bottom: 1.5rem;
   }
 </style>

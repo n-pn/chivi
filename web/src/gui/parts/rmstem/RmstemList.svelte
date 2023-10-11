@@ -1,6 +1,5 @@
 <script lang="ts" context="module">
   import { page } from '$app/stores'
-
   import { goto } from '$app/navigation'
 
   const icons = { by: 'edit', wn: 'book', lb: 'tag', sn: 'world' }
@@ -28,7 +27,6 @@
   export let rpath = '/rm'
 
   $: pager = new Pager($page.url, { pg: 1, _s: 'rtime' })
-
   $: _sort = pager.get('_s')
 
   const edit_filter = (key: string) => {
@@ -195,15 +193,6 @@
       padding-left: var(--gutter);
       padding-right: var(--gutter);
     }
-  }
-
-  .empty {
-    display: flex;
-    min-height: 50vh;
-    align-items: center;
-    justify-content: center;
-    font-style: italic;
-    @include fgcolor(neutral, 6);
   }
 
   .sorts {

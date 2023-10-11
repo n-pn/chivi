@@ -51,7 +51,7 @@
             </section>
           </div>
         {:else}
-          <div class="empty">Không có phản hồi</div>
+          <div class="u-empty">Không có phản hồi</div>
         {/each}
       </div>
     </section>
@@ -166,13 +166,5 @@
     > :global(*) + :global(*) {
       margin-top: 0.75rem;
     }
-  }
-
-  .empty {
-    @include flex($center: both);
-    @include fgcolor(tert);
-    font-style: italic;
-    height: 3rem;
-    margin-bottom: 1.5rem;
   }
 </style>

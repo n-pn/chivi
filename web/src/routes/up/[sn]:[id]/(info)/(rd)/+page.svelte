@@ -82,7 +82,7 @@
     </Footer>
   </chap-list>
 {:else}
-  <p class="empty">Không có nội dung :(</p>
+  <p class="u-empty">Không có nội dung :(</p>
 {/if}
 
 <style lang="scss">
@@ -178,17 +178,6 @@
     width: 70%;
     margin: var(--gutter) auto;
     @include border(--bd-main, $loc: bottom);
-  }
-
-  .empty {
-    min-height: 30vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-style: italic;
-    @include ftsize(lg);
-    @include fgcolor(neutral, 5);
   }
 
   .foot {

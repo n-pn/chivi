@@ -1,4 +1,4 @@
-<div class="empty">
+<div class="u-empty-sm">
   <h3>Nơi thảo luận nội dung hoặc liên hệ thắc mắc</h3>
 
   <p>
@@ -10,11 +10,6 @@
 </div>
 
 <style lang="scss">
-  .empty {
-    @include padding-y(3rem);
-    text-align: center;
-  }
-
   p {
     margin-top: 1rem;
   }

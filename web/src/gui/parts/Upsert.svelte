@@ -484,9 +484,4 @@
       margin-left: -1px;
     }
   }
-
-  .empty {
-    height: 15rem;
-    @include flex-ca;
-  }
 </style>

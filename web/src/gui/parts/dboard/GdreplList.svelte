@@ -58,19 +58,11 @@
     level={0}
     fluid={$$props.fluid} />
 {:else}
-  <div class="empty">Chưa có {_kind}</div>
+  <div class="u-empty">Chưa có {_kind}</div>
 {/if}
 
 <style lang="scss">
   .new-repl {
     display: block;
-  }
-
-  .empty {
-    @include flex-ca();
-    height: 10rem;
-    max-height: 30vh;
-    font-style: italic;
-    @include fgcolor(tert);
   }
 </style>

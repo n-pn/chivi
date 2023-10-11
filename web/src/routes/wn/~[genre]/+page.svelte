@@ -21,7 +21,7 @@
 {#if books.length > 0}
   <WninfoList {books} />
 {:else}
-  <div class="empty">Danh sách trống</div>
+  <div class="u-empty">Danh sách trống</div>
 {/if}
 
 <Footer>
@@ -35,14 +35,5 @@
 
   .filter {
     @include margin-y(1.5rem);
-  }
-
-  .empty {
-    display: flex;
-    min-height: 50vh;
-    align-items: center;
-    justify-content: center;
-    font-style: italic;
-    @include fgcolor(neutral, 6);
   }
 </style>

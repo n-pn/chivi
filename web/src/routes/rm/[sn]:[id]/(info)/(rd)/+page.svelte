@@ -124,7 +124,7 @@
     </Footer>
   </chap-list>
 {:else}
-  <div class="empty">
+  <div class="u-empty">
     <h3>Chưa có nội dung.</h3>
     <p>Bấm [Đổi mới] phía trên để cập nhật nội dung!</p>
   </div>
@@ -214,17 +214,6 @@
     width: 70%;
     margin: var(--gutter) auto;
     @include border(--bd-main, $loc: bottom);
-  }
-
-  .empty {
-    min-height: 30vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-style: italic;
-    @include ftsize(lg);
-    @include fgcolor(neutral, 5);
   }
 
   .foot {

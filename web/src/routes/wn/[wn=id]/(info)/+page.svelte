@@ -99,7 +99,7 @@
         </a>
       {/if}
     {:else}
-      <div class="empty">Chưa có người đọc</div>
+      <div class="u-empty-sm">Chưa có người đọc</div>
     {/each}
   </div>
 </article>
@@ -158,13 +158,6 @@
     &:hover {
       @include fgcolor(primary, 5);
     }
-  }
-
-  .empty {
-    font-style: italic;
-    text-align: center;
-    @include fgcolor(mute);
-    @include ftsize(sm);
   }
 
   .m-chip {

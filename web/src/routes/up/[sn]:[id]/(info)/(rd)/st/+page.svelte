@@ -1,4 +1,4 @@
-<div class="empty">
+<div class="u-empty-sm">
   <h3>
     Nơi hiển thị các thay đổi gần nhất về nội dung, ví dụ thêm bản dịch mới, sửa
     text gốc....
@@ -13,11 +13,6 @@
 </div>
 
 <style lang="scss">
-  .empty {
-    @include padding-y(3rem);
-    text-align: center;
-  }
-
   p {
     margin-top: 1rem;
   }

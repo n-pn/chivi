@@ -141,3 +141,29 @@ input::-webkit-inner-spin-button {
 input[type='number'] {
   appearance: textfield;
 }
+
+.u-empty {
+  @include flex-ca;
+
+  min-height: 40vh;
+  font-style: italic;
+  flex-direction: column;
+
+  @include fgcolor(tert);
+
+  h2 {
+    margin-bottom: 2rem;
+  }
+}
+
+.u-empty-sm {
+  @include flex-ca;
+  @include padding-y(3rem);
+
+  font-style: italic;
+  @include fgcolor(mute);
+
+  p {
+    margin-top: 1rem;
+  }
+}

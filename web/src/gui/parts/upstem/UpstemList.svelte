@@ -1,9 +1,15 @@
 <script lang="ts" context="module">
   import { page } from '$app/stores'
-
   import { goto } from '$app/navigation'
 
   const icons = { by: 'at', wn: 'book', lb: 'tag' }
+
+  const sorts = {
+    ctime: 'Vừa thêm',
+    rtime: 'Đổi mới',
+    chaps: 'Số chương',
+    views: 'Lượt xem',
+  }
 </script>
 
 <script lang="ts">
@@ -21,20 +27,50 @@
   export let query = { by: '', wn: '', lb: '', kw: '' }
   export let upath = '/up'
 
-  $: pager = new Pager($page.url, { pg: 1 })
+  $: pager = new Pager($page.url, { pg: 1, _s: 'ctime' })
+  $: _sort = pager.get('_s')
+
+  const edit_filter = (key: string) => {
+    if (query.kw) {
+      query.kw += `, ${key}: ${query[key]}`
+    } else {
+      query.kw = `${key}: ${query[key]}`
+    }
+
+    delete query[key]
+    query = query
+  }
 
   const remove_filter = (key: string) => {
     delete query[key]
-    invoke_query()
+    apply_filter()
   }
 
-  const invoke_query = () => {
+  const labels = ['by', 'wn', 'lb']
+
+  const apply_filter = async () => {
+    const filters = (query.kw || '')
+      .split(',')
+      .map((x) => x.trim())
+      .filter(Boolean)
+
+    let kw = ''
+
+    for (const filter of filters) {
+      const [label, ...value] = filter.split(':')
+      if (labels.includes(label)) query[label] = value.join(':').trim()
+      else kw += filter + ','
+    }
+
+    query.kw = kw
+
     const search = Object.entries(query)
       .filter((x) => x[1])
       .map(([k, v]) => (v ? `${k}=${v}` : ''))
       .join('&')
 
-    goto(search ? `${upath}?${search}` : upath)
+    const url = search ? `${upath}?${search}` : upath
+    await goto(url)
   }
 </script>
 
@@ -43,12 +79,13 @@
     class="search"
     action={upath}
     method="GET"
-    on:submit|preventDefault={invoke_query}>
-    {#each ['by', 'lb', 'wn'] as key}
+    on:submit|preventDefault={apply_filter}>
+    {#each labels as key}
       {#if query[key]}
         <span class="s-tag">
           <SIcon name={icons[key]} />
-          <span>{query[key]}</span>
+          <button type="button" on:click={() => edit_filter(key)}
+            >{query[key]}</button>
           <button type="button" on:click={() => remove_filter(key)}>
             <SIcon name="x" />
           </button>
@@ -58,16 +95,28 @@
     <input
       type="text"
       class="s-inp u-fg-secd"
-      name="ustem_kw"
-      placeholder="Tìm kiếm theo tên sưu tầm"
+      name="kw"
+      placeholder="Tìm kiếm theo tựa tiếng Trung hoặc Hán Việt"
       bind:value={query.kw} />
     <button class="s-btn u-fz-lg" type="submit"><SIcon name="search" /></button>
   </form>
 
+  <nav class="sorts">
+    <span class="label _sort">Sắp xếp:</span>
+    {#each Object.entries(sorts) as [value, label]}
+      <a
+        href={pager.gen_url({ _s: value })}
+        class="m-chip _primary _sort"
+        class:_active={value == _sort}>
+        {label}
+      </a>
+    {/each}
+  </nav>
+
   {#each items as ustem}
     <UpstemCard {ustem} {upath} />
   {:else}
-    <div class="empty">Danh sách trống</div>
+    <div class="u-empty">Danh sách trống</div>
   {/each}
 </section>
 
@@ -122,10 +171,6 @@
     padding-left: 0.375rem;
     border-radius: 0.25rem;
 
-    span {
-      margin-left: 0.125rem;
-    }
-
     @include bgcolor(neutral, 5, 1);
   }
 
@@ -150,12 +195,8 @@
     }
   }
 
-  .empty {
-    display: flex;
-    min-height: 50vh;
-    align-items: center;
-    justify-content: center;
-    font-style: italic;
-    @include fgcolor(neutral, 6);
+  .sorts {
+    @include flex-ca($gap: 0.5rem);
+    margin-bottom: 1rem;
   }
 </style>
