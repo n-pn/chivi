@@ -15,7 +15,7 @@ class RawRmchap
 
   def self.from_path(sname : String, b_id : String | Int32, cpath : String,
                      stale : Time = Time.utc - 1.years)
-    host = Rmhost.load!(sname)
+    host = Rmhost.from_name!(sname)
     cfile = host.chap_file(b_id, cid: host.extract_cid(cpath))
 
     new(host, cpath, cfile, stale)
@@ -23,10 +23,10 @@ class RawRmchap
 
   def self.from_seed(sname : String, b_id : String | Int32, c_id : String | Int32,
                      stale = Time.utc - 1.years)
-    host = Rmhost.load!(sname)
+    host = Rmhost.from_name!(sname)
 
-    cpath = host.make_chap_path(b_id, c_id)
-    cfile = host.chap_file_path(b_id, c_id)
+    cpath = host.chap_href(b_id, c_id)
+    cfile = host.chap_file(b_id, c_id)
 
     new(host, cpath, cfile, stale)
   end
@@ -80,7 +80,7 @@ class RawRmchap
   end
 
   private def extract_generic_paras(selector : String)
-    return @paras unless container = @page.find!(selector)
+    return @paras unless container = @page.find(selector)
 
     container.children.each do |node|
       case node.tag_sym

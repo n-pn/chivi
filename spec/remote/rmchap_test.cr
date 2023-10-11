@@ -1,6 +1,6 @@
 require "colorize"
 
-require "../../src/zroot/raw_html/raw_rmchap.cr"
+require "../../src/rdapp/_raw/raw_rmchap.cr"
 
 def do_test(sname : String, s_bid : Int32 | String, s_cid : Int32 | String, reset = false)
   full_link = Rmhost.chap_url(sname, s_bid, s_cid)
@@ -8,7 +8,7 @@ def do_test(sname : String, s_bid : Int32 | String, s_cid : Int32 | String, rese
   puts
 
   stale = Time.utc - (reset ? 3.minutes : 10.years)
-  parser = ZR::RawRmchap.from_seed(sname, s_bid, s_cid, stale)
+  parser = RawRmchap.from_seed(sname, s_bid, s_cid, stale)
   parser.parse_page!
 
   puts parser.title.colorize.green
@@ -20,25 +20,26 @@ rescue err
   puts err.inspect_with_backtrace.colorize.red
 end
 
-do_test("!hetushu", 1640, 1099716, reset: false)
-do_test("!uukanshu", 514, 4531, reset: false)
+# do_test("!hetushu", 1640, 1099716, reset: false)
+# do_test("!uukanshu", 514, 4531, reset: false)
 
-do_test("!69shu", 30494, 22578503, reset: false)
-do_test("!ptwxz", 1806, 803058, reset: false)
+# do_test("!69shu", 30494, 22578503, reset: false)
+# do_test("!ptwxz", 1806, 803058, reset: false)
 
-# do_test("!rengshu", 4243, 1408503, reset: false)
+# # do_test("!rengshu", 4243, 1408503, reset: false)
 
-do_test("!b5200_org", 160872, 183484031, reset: false)
-do_test("!bxwx_gg", 127400, 52941263, reset: false)
+# do_test("!b5200_org", 160872, 183484031, reset: false)
+# do_test("!bxwx_gg", 127400, 52941263, reset: false)
 
-do_test("!xbiquge", 42736, 26039221, reset: false)
+# do_test("!xbiquge", 42736, 26039221, reset: false)
 
-# do_test("!duokan8", 1986, 400011, reset: false)
+# # do_test("!duokan8", 1986, 400011, reset: false)
 
-do_test("!paoshu8", 1986, 1447835, reset: false)
+# do_test("!paoshu8", 1986, 1447835, reset: false)
 
-do_test("!biqu5200", 139731, 174666986, reset: false)
-do_test("!tasim", 2777, 1, reset: false)
+# do_test("!biqu5200", 139731, 174666986, reset: false)
+# do_test("!tasim", 2777, 1, reset: false)
+do_test("!piaotian.com", 15296, 10909391, reset: false)
 
 # do_test("!shubaow", 150092, 32706021, reset: false)
 # do_test("!biqugee", 33775, 18804401, reset: false)

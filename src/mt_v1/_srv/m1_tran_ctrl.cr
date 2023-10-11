@@ -169,7 +169,7 @@ class M1::TranCtrl < AC::Base
   end
 
   @[AC::Route::PUT("/tl_mulu")]
-  def tl_mulu(ch_db : String, wn_id : Int32 = 0, start : Int32 = 1, limit : Int32 = 9999)
+  def tl_mulu(ch_db : String, wn_id : Int32 = 0, start : Int32 = 1, limit : Int32 = 99999)
     cv_mt = MtCore.init(wn_id)
 
     vtran = Hash(String, String).new do |hash, zstr|
@@ -178,7 +178,7 @@ class M1::TranCtrl < AC::Base
     end
 
     crepo = RD::Chinfo.db(ch_db)
-    clist = RD::Chinfo.get_all(crepo, start: start, limit: limit)
+    clist = RD::Chinfo.get_all(crepo, start: start, limit: limit &+ 1)
 
     clist.each do |cinfo|
       cinfo.vtitle = vtran[cinfo.ztitle]

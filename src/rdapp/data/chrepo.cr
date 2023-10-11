@@ -125,7 +125,7 @@ class RD::Chrepo
   end
 
   @[AlwaysInline]
-  def update_vinfos!(start : Int32 = 0, limit : Int32 = 99999)
+  def update_vinfos!(start : Int32 = 1, limit : Int32 = 99999)
     Chinfo.update_vinfos!(@sroot, wn_id: @wn_id, start: start, limit: limit)
   end
 
