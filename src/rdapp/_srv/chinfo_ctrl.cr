@@ -52,11 +52,12 @@ class RD::ChinfoCtrl < AC::Base
   def rm_cpart(sname : String, sn_id : String,
                ch_no : Int32, p_idx : Int32,
                force : Bool = false, regen : Bool = false)
-    crepo = get_rstem(sname, sn_id).crepo
-    cinfo = get_cinfo(crepo, ch_no)
+    rstem = get_rstem(sname, sn_id)
+    cinfo = get_cinfo(rstem, ch_no)
 
-    crepo.save_raw_from_link!(cinfo, _uname, force: regen) if _privi >= 0
-    rdata = show_part(crepo: crepo, cinfo: cinfo, p_idx: p_idx, force: force)
+    rstem.crepo.save_raw_from_link!(cinfo, _uname, force: regen) if _privi >= 0
+    rdata = show_part(crepo: rstem.crepo, cinfo: cinfo, p_idx: p_idx, force: force)
+    spawn { rstem.inc_view_count! } if rdata[:error] < 300
 
     render 200, json: rdata
   end

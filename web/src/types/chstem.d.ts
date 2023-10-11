@@ -73,14 +73,17 @@ declare namespace CV {
     intro_zh: string
     intro_vi: string
 
-    genre_zh: string[]
-    genre_vi: string[]
+    cover_rm: string
+    cover_vi: string
+
+    genre_zh: string
+    genre_vi: string
 
     status_int: number
     update_int: number
 
     chap_count: number
-    chap_avail: number
+    view_count: number
 
     gifts: number
     multp: number

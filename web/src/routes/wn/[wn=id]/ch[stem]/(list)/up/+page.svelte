@@ -119,7 +119,7 @@
   }
 
   async function submit_part(chaps: Zchap[]) {
-    const url = `/_wn/texts/${nvinfo.id}/${ustem.sname}`
+    const url = `/_rd/ztxts/wn${ustem.sname}/${nvinfo.id}`
     const headers = { 'Content-type': 'application/json' }
     const body = JSON.stringify(chaps)
     const res = await fetch(url, { headers, method: 'POST', body })

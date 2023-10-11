@@ -10,19 +10,15 @@ abstract class AC::Base
 
   private def get_wstem(sname : String, wn_id : Int32)
     WSTEMS["#{wn_id}/#{sname}"] ||= begin
-      wstem = RD::Wnstem.load(wn_id, sname)
-
-      if wstem
-        if wstem._flag == 0 && wstem.chap_total > 0
-          wstem.crepo.update_vinfos!
-          wstem.update_flag!(1_i16)
-        end
-        wstem
+      if wstem = RD::Wnstem.load(wn_id, sname)
+        wstem.reload_chaps_vinfo! if wstem._flag == 0
       else
         raise NotFound.new("Nguồn truyện không tồn tại") unless sname == "~avail"
         Dir.mkdir_p("var/texts/wn~avail/#{wn_id}")
-        RD::Wnstem.new(wn_id, sname, wn_id.to_s).upsert!
+        wstem = RD::Wnstem.new(wn_id, sname, wn_id.to_s).upsert!
       end
+
+      wstem
     end
   end
 

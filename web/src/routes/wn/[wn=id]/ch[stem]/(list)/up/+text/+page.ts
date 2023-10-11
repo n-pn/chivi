@@ -10,8 +10,8 @@ export async function load({ url: { searchParams }, fetch, parent, params }) {
   const sname = params.stem
   const ch_no = parseInt(searchParams.get('ch_no'), 10)
 
-  const api_url = `/_wn/texts/${wn_id}/${sname}/${ch_no}`
-  const { ztext, title, chdiv } = await api_get<ZtextRaw>(api_url, fetch)
+  const rdurl = `/_rd/chtexts/wn/${sname}/${wn_id}${ch_no}`
+  const { ztext, title, chdiv } = await api_get<ZtextRaw>(rdurl, fetch)
 
   const { nvinfo } = await parent()
 

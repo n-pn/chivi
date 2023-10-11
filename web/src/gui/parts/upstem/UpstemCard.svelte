@@ -5,7 +5,7 @@
   export let ustem: CV.Upstem
   export let upath = '/up'
 
-  $: href = `/up/${ustem.sname}:${ustem.id}`
+  $: sroot = `/up/${ustem.sname}:${ustem.id}`
 
   $: intro = ustem.vintro.split('\n').slice(0, 3).join()
   $: uname = ustem.sname.substring(1)
@@ -26,7 +26,7 @@
     {/each}
   </div>
 
-  <a class="title u-fz-lg u-fg-secd" {href}>{ustem.vname}</a>
+  <a class="title u-fz-lg u-fg-secd" href={sroot}>{ustem.vname}</a>
   <p class="intro u-fz-sm u-fg-tert u-fs-i">{intro || 'Không có giới thiệu'}</p>
 
   <div class="stats u-fz-sm u-fs-i">

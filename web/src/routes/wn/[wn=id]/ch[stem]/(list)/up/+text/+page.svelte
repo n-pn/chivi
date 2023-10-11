@@ -13,16 +13,16 @@
 
   import type { PageData } from './$types'
   export let data: PageData
+  $: ({ nvinfo } = data)
 
   let ztext = data.ztext
   let title = data.title
   let chdiv = data.chdiv
   let ch_no = data.ch_no
 
-  $: ({ nvinfo } = data)
   $: disabled = $_user.privi < 1 || ($_user.privi == 1 && ztext.length > 30000)
 
-  $: action_url = `/_wn/texts/${data.wn_id}/${data.sname}`
+  $: action_url = `/_rd/ztxts/wn${data.sname}/${data.wn_id}`
 
   async function submit(event: Event) {
     event.preventDefault()
@@ -34,7 +34,7 @@
 
     if (res.ok) {
       await invalidateAll()
-      goto(chap_path(nvinfo.bslug, data.sname, ch_no))
+      goto(chap_path(`${nvinfo.bslug}/ch${data.sname}`, ch_no))
     } else {
       alert(await res.text())
     }

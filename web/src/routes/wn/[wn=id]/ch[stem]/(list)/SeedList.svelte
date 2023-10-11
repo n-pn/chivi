@@ -70,7 +70,7 @@
         class="seed-name _sub"
         data-tip="Danh sách chương cá nhân của {sname}"
         data-tip-loc="bottom">
-        <div class="seed-label">{sname}:{sn_id}</div>
+        <div class="seed-label">{sname}</div>
         <div class="seed-stats"><strong>{chmax}</strong> chương</div>
       </a>
     {/each}

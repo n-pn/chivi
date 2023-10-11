@@ -41,6 +41,16 @@
     <span class="-text">Cập nhật:</span>
     <span class="-data">{get_rtime(ustem.mtime)}</span>
   </span>
+
+  <span class="-stat">
+    <span class="-text">Hệ số:</span>
+    <span class="-data">{ustem.multp}</span>
+  </span>
+
+  <span class="-stat">
+    <span class="-text">Lượt xem:</span>
+    <span class="-data">{ustem.view_count}</span>
+  </span>
 </div>
 
 {#if binfo}
@@ -52,11 +62,7 @@
 {/if}
 
 <div class="intro">
-  {#if ustem.vintro}
-    <Truncate html={dhtml} view_all={true} />
-  {:else}
-    <p>Chưa có giới thiệu</p>
-  {/if}
+  <Truncate html={dhtml || '<p>Chưa có giới thiệu</p>'} />
 </div>
 
 <style lang="scss">

@@ -86,11 +86,7 @@ class RD::Wnstem
     rstems = Rmstem.all_by_wn(@wn_id, uniq: true)
     rstems.reject! { |x| x.rtype > 0 && x.chap_count == 0 }
 
-    if rstems.empty?
-      self.crepo.update_vinfos! if umode > 0 && @chap_total > 0
-      @rtime = Time.utc.to_unix
-      return self.upsert!(db: @@db)
-    end
+    return self.update_rtime! if rstems.empty?
 
     start = 1
 
@@ -124,10 +120,22 @@ class RD::Wnstem
     self.upsert!(db: @@db)
   end
 
-  UPDATE_FLAG_SQL = "update #{@@schema.table} set _flag = $1 where sname = $2 and wn_id = $3"
+  def reload_chaps_vinfo!
+    self.crepo.update_vinfos! if @chap_total > 0
+    self.update_flags!(1_i16)
+  end
 
-  def update_flag!(@_flag : Int16)
-    @@db.exec UPDATE_FLAG_SQL, _flag, @sname, @wn_id
+  UPDATE_FIELD_SQL = "update #{@@schema.table} set %s = $1 where sname = $2 and wn_id = $3"
+
+  def update_rtime!(@rtime = Time.utc.to_unix)
+    query = UPDATE_FIELD_SQL % "rtime"
+    @@db.exec query, rtime, @sname, @wn_id
+    self
+  end
+
+  def update_flags!(@_flag : Int16)
+    query = UPDATE_FIELD_SQL % "_flag"
+    @@db.exec query, _flag, @sname, @wn_id
     self
   end
 

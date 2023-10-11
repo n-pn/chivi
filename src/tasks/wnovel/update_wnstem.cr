@@ -15,7 +15,7 @@ OptionParser.parse(ARGV) do |parser|
   parser.on("-r", "regenerate") { regen = true }
 end
 
-QUERY = "select id from wninfos order by id asc"
+QUERY = "select id from wninfos order by id descs"
 wn_ids = PGDB.query_all QUERY, as: Int32
 puts "total: #{wn_ids.size}"
 

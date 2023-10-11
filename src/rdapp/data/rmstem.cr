@@ -42,9 +42,11 @@ class RD::Rmstem
   field update_str : String = ""
   field update_int : Int64 = 0_i64
 
+  field latest_cid : String = ""
   field chap_count : Int32 = 0
   field chap_avail : Int32 = 0
-  field latest_cid : String = ""
+
+  field view_count : Int32 = 0
 
   field multp : Int16 = 3_i16
 
@@ -78,6 +80,16 @@ class RD::Rmstem
   end
 
   def initialize(@sname, @sn_id, @rlink = "")
+  end
+
+  INC_VIEW_COUNT_SQL = <<-SQL
+    update rmstems set view_count = view_count + 1
+    where sname = $1 and sn_id = $2
+    returning view_count
+    SQL
+
+  def inc_view_count!
+    @view_count = @@db.query_one(INC_VIEW_COUNT_SQL, @sname, @sn_id, as: Int32)
   end
 
   UPDATE_FLAG_SQL = "update rmstems set _flag = $1 where sname = $2 and sn_id = $3"
@@ -285,7 +297,8 @@ class RD::Rmstem
       case order
       when "rtime" then sql << " order by rtime desc"
       when "utime" then sql << " order by update_int desc"
-      when "count" then sql << " order by chap_count desc"
+      when "chaps" then sql << " order by chap_count desc"
+      when "views" then sql << " order by view_count desc"
       end
 
       sql << " limit $#{args.size &+ 1} offset $#{args.size &+ 2}"

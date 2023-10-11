@@ -11,7 +11,7 @@
 
   $: ({ nvinfo, wstem } = data)
 
-  $: edit_url = `/_wn/seeds/${nvinfo.id}/${wstem.sname}`
+  $: edit_url = `/_rd/wnstems/${wstem.sname}/${nvinfo.id}`
   $: ztitle = `${nvinfo.ztitle} ${nvinfo.zauthor}`
 
   $: can_conf = $_user.privi > 2
@@ -19,20 +19,10 @@
 
 <h2>Cài đặt nguồn truyện</h2>
 
-<details open>
+<!-- <details open>
   <summary>Liên kết đồng bộ với các nguồn ngoài</summary>
   <RemoteLink {ztitle} {can_conf} {edit_url} bind:wstem={data.wstem} />
-</details>
-
-<!-- <details>
-    <summary>Sao chép từ danh sách chương tiết khác</summary>
-    <CopyChapters
-      book_info={nvinfo}
-      seed_list={data.seed_list}
-      {wstem}
-      {can_edit}
-      {edit_url} />
-  </details> -->
+</details> -->
 
 <details>
   <summary>Cắt bỏ các chương tiết bị thừa</summary>

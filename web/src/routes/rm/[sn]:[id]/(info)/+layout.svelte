@@ -7,7 +7,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Section from '$gui/sects/Section.svelte'
 
-  // import UpstemFull from '$gui/parts/upstem/UpstemFull.svelte'
+  import RmstemFull from '$gui/parts/rmstem/RmstemFull.svelte'
 
   import type { LayoutData } from './$types'
   export let data: LayoutData
@@ -38,7 +38,7 @@
   $: ({ intab = 'rd', ontab = 'ch' } = $page.data)
 </script>
 
-<!-- <UpstemFull {rstem} binfo={data.binfo || null} /> -->
+<RmstemFull {rstem} binfo={data.binfo || null} />
 
 {#if $_user.privi >= 3}
   <nav class="admin">
