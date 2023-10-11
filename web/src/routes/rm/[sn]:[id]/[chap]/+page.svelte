@@ -19,7 +19,7 @@
   import Reader from '$gui/shared/reader/Reader.svelte'
 
   $: crumb = [
-    { text: 'Nguồn nhúng tự động', href: `/rm` },
+    { text: 'Nguồn liên kết nhúng', href: `/rm` },
     { text: rstem.btitle_vi, href: sroot },
     { text: rdata.chdiv || 'Chính văn' },
     { text: rdata.title },

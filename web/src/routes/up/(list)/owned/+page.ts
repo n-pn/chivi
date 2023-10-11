@@ -1,5 +1,6 @@
-import { home_nav, nav_link } from '$utils/header_util'
 import { api_get } from '$lib/api_call'
+
+import { nav_link } from '$utils/header_util'
 import type { PageLoad } from './$types'
 
 interface Data extends CV.Paginate {
@@ -10,8 +11,8 @@ const _title = 'Sưu tầm cá nhân'
 
 const _meta = {
   left_nav: [
-    home_nav('ps'),
-    nav_link('/up', 'Sưu tầm cá nhân', 'album', { show: 'pl' }),
+    nav_link('/up', 'Sưu tầm cá nhân', 'album', { show: 'pm', kind: 'title' }),
+    nav_link('owned', 'Của bạn', 'at'),
   ],
 }
 
@@ -25,7 +26,9 @@ export const load = (async ({ url, fetch }) => {
 
   const search = new URLSearchParams(url.searchParams)
   search.append('_m', 'owner')
-  const props = await api_get<Data>(`/_rd/upstems${url.search}`, fetch)
+
+  const rdurl = `/_rd/upstems?${search.toString()}`
+  const props = await api_get<Data>(rdurl, fetch)
 
   return { props, query, _title, _meta, ontab: 'mine' }
 }) satisfies PageLoad

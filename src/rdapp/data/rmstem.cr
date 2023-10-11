@@ -94,7 +94,7 @@ class RD::Rmstem
 
   UPDATE_FLAG_SQL = "update rmstems set _flag = $1 where sname = $2 and sn_id = $3"
 
-  def update_flag!(@_flag : Int16)
+  def update_flags!(@_flag : Int16)
     @@db.exec UPDATE_FLAG_SQL, _flag, @sname, @sn_id
     self
   end
@@ -106,9 +106,9 @@ class RD::Rmstem
   rescue ex
     case ex.message || ""
     when .ends_with?("404")
-      self.update_flag!(-404_i16)
+      self.update_flags!(-404_i16)
     when .ends_with?("301")
-      self.update_flag!(-301_i16)
+      self.update_flags!(-301_i16)
     else
       raise ex
     end
@@ -116,8 +116,16 @@ class RD::Rmstem
     nil
   end
 
-  def update!(crawl : Int32 = 1, regen : Bool = false, umode : Int32 = 0) : self | Nil
-    return self unless raw_stem = load_raw_stem!(crawl: crawl)
+  def reload_chaps_vinfo!
+    self.crepo.update_vinfos! if @chap_count > 0
+    self.update_flags!(1_i16) if @_flag == 0
+  end
+
+  def update!(crawl : Int32 = 1, regen : Bool = false, umode : Int32 = 1) : self | Nil
+    unless raw_stem = load_raw_stem!(crawl: crawl)
+      self.reload_chaps_vinfo! if umode > 0
+      return self
+    end
 
     # verify content changed by checking the latest chapter
     # not super reliable since some site reuse the latest chapter id for new chapter.
@@ -131,15 +139,12 @@ class RD::Rmstem
     clist = raw_stem.extract_clist!
     @chap_count = clist.size
 
-    Log.debug { "#{clist.size}: #{crawl}/#{regen}/#{umode}" }
-
     self.crepo.tap do |crepo|
       crepo.chmax = @chap_count
       crepo.upsert_zinfos!(clist)
 
-      if umode > 0 && @chap_count > 0
-        crepo.update_vinfos!
-        @_flag == 1_i16 if @_flag == 0
+      if umode > 0
+        self.reload_chaps_vinfo!
       else
         @_flag = 0
       end
@@ -269,7 +274,7 @@ class RD::Rmstem
 
       if genre
         args << genre
-        sql << " and genre_vi ilike '%' || $#{args.size} || '%'"
+        sql << " and genre_vi like '%' || $#{args.size} || '%'"
       end
 
       if wn_id
@@ -285,13 +290,13 @@ class RD::Rmstem
       if btitle
         args << btitle
         field = btitle =~ /\p{Han}/ ? "btitle_zh" : "btitle_vi"
-        sql << " and #{field} ilike '%' || $#{args.size} || '%'"
+        sql << " and #{field} like '%' || $#{args.size} || '%'"
       end
 
       if author
         args << author
         field = author =~ /\p{Han}/ ? "author_zh" : "author_vi"
-        sql << " and #{field} ilike '%' || $#{args.size} || '%'"
+        sql << " and #{field} = $#{args.size}"
       end
 
       case order

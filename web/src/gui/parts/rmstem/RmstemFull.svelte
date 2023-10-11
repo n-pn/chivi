@@ -27,7 +27,7 @@
     .join('\n')
 
   $: crumb = [
-    { text: 'Nguồn nhúng ngoài', href: `/rm` },
+    { text: 'Nguồn liên kết nhúng', href: `/rm` },
     { text: sname, href: `/rm?sn=${rstem.sname}` },
     { text: `ID: ${rstem.sn_id}` },
   ]
@@ -42,7 +42,7 @@
     <div class="links">
       <span class="xstat">
         <span class="-text"><SIcon name="edit" /></span>
-        <a class="-data _link" href="/rm?sby={author}">{author}</a>
+        <a class="-data _link" href="/rm?by={author}">{author}</a>
       </span>
 
       <span class="xstat">

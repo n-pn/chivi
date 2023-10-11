@@ -121,13 +121,13 @@ class M1::MtCore
 
   private def extract_result(nodes : Array(MtTerm))
     idx = nodes.size &- 1
-    cur = nodes.unsafe_fetch(idx)
+    cur = nodes[idx]
     idx -= cur.key.size
 
     res = MtData.new(cur)
 
     while idx > 0
-      cur = nodes.unsafe_fetch(idx)
+      cur = nodes[idx]
       idx -= cur.key.size
       res.add_node(cur)
     end

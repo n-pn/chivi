@@ -36,7 +36,7 @@ class M1::MtData
       add_head(node)
       return
     elsif @head.is_a?(MtTerm) && can_meld?(node, @head)
-      @head.val = join_val(node, head)
+      @head.val = join_val(node, @head)
       @head.key = node.key + head.key
       @head.idx = node.idx
       @head.dic = 0
@@ -82,8 +82,8 @@ class M1::MtData
   end
 
   private def join_val(left : MtNode, right : MtNode)
-    return left.val + right.val unless right.nhanzi?
-    left.val + " " + fix_hanzi_val(left, right)
+    return "#{left.val}#{right.val}" unless right.nhanzi?
+    "#{left.val} #{fix_hanzi_val(left, right)}"
   end
 
   private def fix_hanzi_val(left : MtNode, right : MtNode)

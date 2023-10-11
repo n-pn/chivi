@@ -11,18 +11,22 @@
   $: uname = ustem.sname.substring(1)
 </script>
 
-<article class="ustem">
+<article class="ustem island">
   <div class="xtags">
     <a class="m-chip _xs _primary" href="{upath}?by={uname}">
       <SIcon name="at" />
-      {uname}</a>
+      <span class="-trim">{uname}</span>
+    </a>
     {#if ustem.wn_id}
       <a class="m-chip _xs _success" href="{upath}?wn={ustem.wn_id}">
         <SIcon name="book" />
-        {ustem.wn_id}</a>
+        <span>{ustem.wn_id}</span>
+      </a>
     {/if}
     {#each ustem.labels as label}
-      <a class="m-chip _xs _warning" href="{upath}?lb={label}">{label}</a>
+      <a class="m-chip _xs _warning" href="{upath}?lb={label}">
+        <span class="-trim">{label}</span>
+      </a>
     {/each}
   </div>
 
@@ -51,16 +55,20 @@
 
 <style lang="scss">
   .ustem {
-    padding: 0.5rem 1rem;
-    // max-width: 30rem;
+    padding: 0.5rem var(--gutter);
+    row-gap: 0.5rem;
 
-    @include bgcolor(tert);
-    @include bdradi;
+    // @include bgcolor(tert);
     @include border(--bd-soft);
 
     & + :global(.ustem) {
       margin-top: 1rem;
     }
+  }
+
+  .-trim {
+    max-width: 30vw;
+    @include clamp($width: null);
   }
 
   .xtags {

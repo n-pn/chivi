@@ -21,7 +21,8 @@ end
 SELECT_SQL = <<-SQL
   select wn_id, sname, sn_id, intro_zh
   from rmstems
-  where intro_zh <> '' and intro_vi = '' and sname <> '!tw.uukanshu.com'
+  where intro_zh <> '' and intro_vi = ''
+  order by rtime desc
   SQL
 
 UPDATE_SQL = <<-SQL
@@ -37,10 +38,17 @@ inputs.group_by(&.[0]).each do |wn_id, rstems|
 
   cv_mt = M1::MtCore.init(udic: wn_id)
 
-  rstems.each do |_, sname, sn_id, intro_zh|
-    intro_vi = convert(cv_mt, intro_zh)
-    PGDB.exec UPDATE_SQL, intro_vi, sname, sn_id
-  rescue ex
-    puts [sname, sn_id, intro_zh]
+  PGDB.transaction do |tx|
+    db = tx.connection
+    # db = PGDB
+
+    rstems.each do |_, sname, sn_id, intro_zh|
+      puts({sname, sn_id})
+
+      intro_vi = convert(cv_mt, intro_zh)
+      db.exec UPDATE_SQL, intro_vi, sname, sn_id
+    rescue ex
+      puts intro_zh
+    end
   end
 end

@@ -1,7 +1,6 @@
 require "./_m1_ctrl_base"
 require "./m1_tran_data"
 
-require "../../_data/logger/qtran_xlog"
 require "../../rdapp/data/chinfo"
 
 class M1::TranCtrl < AC::Base
@@ -137,35 +136,13 @@ class M1::TranCtrl < AC::Base
   def cv_chap(wn_id : Int32 = 0, w_title : Bool = true, label : String? = nil)
     input = request.body.try(&.gets_to_end) || ""
 
-    spawn do
-      ihash = HashUtil.fnv_1a(input).unsafe_as(Int32)
-      isize = input.size
-      log_tran_stats(ihash, isize, wn_id)
-    end
-
     qtran = TranData.new(input, wn_id, format: "mtl")
 
-    cvmtl = qtran.cv_wrap(w_user: @w_user) do |io, engine|
+    cvmtl = qtran.cv_wrap do |io, engine|
       cv_chap(io, engine, w_title, label)
     end
 
     render text: cvmtl
-  end
-
-  private def log_tran_stats(ihash : Int32, isize : Int32, wn_dic : Int32)
-    xlog = CV::QtranXlog.new(
-      input_hash: ihash, char_count: isize, viuser_id: _vu_id,
-      wn_dic: wn_dic,
-      mt_ver: 1_i16, cv_ner: false,
-      ts_sdk: false, ts_acc: false,
-    )
-
-    xlog.create!
-
-    time_now = Time.local
-    log_file = "var/ulogs/qtlog/#{time_now.to_s("%F")}.log"
-
-    File.open(log_file, "a", &.puts(xlog.to_json))
   end
 
   @[AC::Route::PUT("/tl_mulu")]

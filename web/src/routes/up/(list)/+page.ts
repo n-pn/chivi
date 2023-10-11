@@ -10,8 +10,8 @@ const _title = 'Sưu tầm cá nhân'
 
 const _meta = {
   left_nav: [
-    home_nav('ps'),
-    nav_link('/up', 'Sưu tầm cá nhân', 'album', { show: 'pl' }),
+    home_nav('pl'),
+    nav_link('/up', 'Sưu tầm cá nhân', 'album', { kind: 'title' }),
   ],
 }
 

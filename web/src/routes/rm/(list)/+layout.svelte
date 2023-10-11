@@ -9,7 +9,7 @@
   $: privi = $_user.privi
 
   const tabs = [
-    { type: 'home', href: `/rm`, icon: 'album', text: 'Danh sách' },
+    { type: 'home', href: `/rm`, icon: 'world', text: 'Danh sách' },
     {
       type: 'like',
       href: `/rm/liked`,

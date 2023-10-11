@@ -57,7 +57,7 @@ class RawRmbook
   getter cover : String do
     case cover = @page.get!(@host.book_cover)
     when .starts_with?("http") then cover
-    when .starts_with?("//")   then "https#{cover}"
+    when .starts_with?("//")   then "https:#{cover}"
     else                            @host.full_url(cover)
     end
   end

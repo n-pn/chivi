@@ -6,9 +6,12 @@ interface Data extends CV.Paginate {
   items: Array<CV.Rmstem>
 }
 
-const _title = 'Liên kết nhúng ngoài'
+const _title = 'Nguồn liên kết nhúng'
 const _meta = {
-  left_nav: [home_nav('ps'), nav_link('/rd', 'Liên kết nhúng ngoài', 'file')],
+  left_nav: [
+    home_nav('pl'),
+    nav_link('/rd', 'Nguồn liên kết nhúng', 'world', { kind: 'title' }),
+  ],
 }
 
 export const load = (async ({ url, fetch }) => {

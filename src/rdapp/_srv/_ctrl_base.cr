@@ -32,12 +32,7 @@ abstract class AC::Base
     RSTEMS["#{sname}/#{sn_id}"] ||= begin
       rstem = RD::Rmstem.find(sname, sn_id)
       raise NotFound.new("Nguồn nhúng không tồn tại") unless rstem
-
-      if rstem._flag == 0 && rstem.chap_count > 0
-        rstem.crepo.update_vinfos!
-        rstem.update_flag!(1_i16)
-      end
-
+      rstem.reload_chaps_vinfo! if rstem._flag == 0
       rstem
     end
   end
