@@ -65,4 +65,38 @@ class RD::Unlock
   #   data = find(vu_id, ulkey) || new(vu_id, ulkey)
   #   data.tap(&.mtime = Time.utc.to_unix)
   # end
+
+  def self.build_select_sql(ulkey : String? = nil, vu_id : Int32? = nil,
+                            owner : Int32? = nil, order : String = "ctime")
+    args = [] of String | Int32
+
+    query = String.build do |sql|
+      sql << "select * from #{@@schema.table} where 1 = 1"
+
+      if ulkey
+        args << ulkey
+        sql << " and ulkey like $1 || '%'"
+      end
+
+      if vu_id
+        args << vu_id
+        sql << " and vu_id = $#{args.size}"
+      end
+
+      if owner
+        args << owner
+        sql << " and owner = $#{args.size}"
+      end
+
+      case order
+      when "vcoin" then sql << " order by vcoin desc"
+      when "zsize" then sql << " order by zsize desc"
+      when "ctime" then sql << " order by ctime desc"
+      end
+
+      sql << " limit $#{args.size &+ 1} offset $#{args.size &+ 2}"
+    end
+
+    {query, args}
+  end
 end

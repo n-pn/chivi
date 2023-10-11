@@ -15,9 +15,3 @@
     </em>
   </p>
 </div>
-
-<style lang="scss">
-  p {
-    margin-top: 1rem;
-  }
-</style>

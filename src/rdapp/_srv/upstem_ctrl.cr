@@ -9,7 +9,7 @@ class RD::UpstemCtrl < AC::Base
     by uname : String? = nil,
     lb label : String? = nil,
     kw title : String? = nil,
-    _s order : String = "time",
+    _s order : String = "ctime",
     _m qmode : String = "index"
   )
     pg_no, limit, offset = _paginate(min: 25, max: 100)

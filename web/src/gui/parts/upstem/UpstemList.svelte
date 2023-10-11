@@ -6,7 +6,7 @@
 
   const sorts = {
     ctime: 'Vừa thêm',
-    rtime: 'Đổi mới',
+    mtime: 'Đổi mới',
     chaps: 'Số chương',
     views: 'Lượt xem',
   }

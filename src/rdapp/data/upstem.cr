@@ -128,7 +128,8 @@ class RD::Upstem
 
       case order
       when "mtime" then sql << " order by mtime desc"
-      when "chmax" then sql << " order by chap_count desc"
+      when "chaps" then sql << " order by chap_count desc"
+      when "views" then sql << " order by view_count desc"
       else              sql << " order by id desc"
       end
 
