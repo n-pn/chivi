@@ -11,11 +11,11 @@ export const load = (async ({ fetch, url, params, parent }) => {
   const lasts = await api_get<CV.Wnchap[]>(`${rdurl}?lm=4&_last=true`, fetch)
 
   const { ustem, sroot } = await parent()
-  const _title = `Dự án cá nhân của ${ustem.sname}: ${ustem.vname}`
+  const _title = `Sưu tầm của ${ustem.sname}: ${ustem.vname}`
 
   const _meta: App.PageMeta = {
     left_nav: [
-      nav_link('/up', 'Dự án cá nhân', 'file', { show: 'ts' }),
+      nav_link('/up', 'Sưu tầm cá nhân', 'file', { show: 'ts' }),
       nav_link(sroot, ustem.vname, 'list', { show: 'pl', kind: 'title' }),
     ],
   }

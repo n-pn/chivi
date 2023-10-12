@@ -2,7 +2,7 @@
   import { chap_path, _pgidx } from '$lib/kit_path'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import Crumb from '$gui/molds/Crumb.svelte'
+  import { crumbs } from '$gui/global/Bcrumb.svelte'
   import Footer from '$gui/sects/Footer.svelte'
 
   import type { PageData } from './$types'
@@ -18,8 +18,8 @@
 
   import Reader from '$gui/shared/reader/Reader.svelte'
 
-  $: crumb = [
-    { text: 'Dự án cá nhân', href: `/up` },
+  $: $crumbs = [
+    { text: 'Sưu tầm cá nhân', href: `/up` },
     { text: ustem.vname, href: sroot },
     { text: rdata.chdiv || 'Chính văn' },
     { text: rdata.title },
@@ -42,7 +42,6 @@
   }
 </script>
 
-<Crumb items={crumb} />
 <!-- <nav class="nav-list">
   {#each links as [mode, text, dtip]}
     <a

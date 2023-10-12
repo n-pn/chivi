@@ -10,7 +10,7 @@
     'Không rõ',
     'Hệ thống',
     'Truyện chữ',
-    'Dự án khác',
+    'Sưu tầm',
     'Ngẫu nhiên',
     'Đặc biệt',
   ]

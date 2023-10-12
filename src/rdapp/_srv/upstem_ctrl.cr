@@ -14,17 +14,22 @@ class RD::UpstemCtrl < AC::Base
   )
     pg_no, limit, offset = _paginate(min: 25, max: 100)
 
-    if qmode == "owner"
+    case qmode
+    when "owner"
       guard = 4
-      uname = _uname
+      uname = self._uname
+    when "liked"
+      guard = 4
+      liked = self._vu_id
     else
-      guard = _privi
+      guard = self._privi
     end
 
     query, args = Upstem.build_select_sql(
       guard: guard, uname: uname,
       wn_id: wn_id, label: label,
-      title: title, order: order,
+      title: title, liked: liked,
+      order: order,
     )
 
     args << limit << offset

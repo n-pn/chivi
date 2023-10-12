@@ -4,17 +4,18 @@
     href?: string
     icon?: string
   }
+
+  import { writable } from 'svelte/store'
+  export const crumbs = writable<Crumb[]>([])
 </script>
 
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
-
-  export let items: Crumb[]
 </script>
 
 <nav class="bread">
   <span class="crumb"><a href="/"><SIcon name="home" />Trang chủ</a></span>
-  {#each items as { text, href, icon }}
+  {#each $crumbs as { text, href, icon }}
     <div class="crumb">
       <svelte:element this={href ? 'a' : 'span'} {href}>
         {#if icon}<SIcon name={icon} />{/if}{text}

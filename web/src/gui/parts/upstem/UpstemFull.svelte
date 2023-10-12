@@ -1,7 +1,8 @@
 <script lang="ts">
+  import { crumbs } from '$gui/global/Bcrumb.svelte'
+
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Truncate from '$gui/atoms/Truncate.svelte'
-  import Crumb from '$gui/molds/Crumb.svelte'
   import { get_rtime } from '$gui/atoms/RTime.svelte'
 
   export let ustem: CV.Upstem
@@ -14,14 +15,12 @@
     .map((x) => `<p>${x}</p>`)
     .join('\n')
 
-  $: crumb = [
-    { text: 'Dự án cá nhân', href: `/up` },
+  $: $crumbs = [
+    { text: 'Sưu tầm cá nhân', href: `/up` },
     { text: ustem.sname, href: `/up?by=${uname}` },
     { text: `ID: ${ustem.id}` },
   ]
 </script>
-
-<Crumb items={crumb} />
 
 <div class="xtags m-chips">
   <a class="m-chip _xs _primary" href="/up?by={uname}">{ustem.sname}</a>

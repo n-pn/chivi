@@ -99,7 +99,8 @@ class RD::Upstem
 
   def self.build_select_sql(guard : Int32 = 4, uname : String? = nil,
                             wn_id : Int32? = nil, label : String? = nil,
-                            title : String? = nil, order : String = "mtime")
+                            title : String? = nil, liked : Int32? = nil,
+                            order : String = "mtime")
     args = [guard] of String | Int32
 
     query = String.build do |sql|
@@ -124,6 +125,16 @@ class RD::Upstem
         args << title
         field = title =~ /\p{Han}/ ? "zname" : "vname"
         sql << " and #{field} ilike '%' || $#{args.size} || '%'"
+      end
+
+      if liked
+        args << liked
+        sql << <<-SQL
+          and id in (
+            select sn_id::int from rdmemos
+            where vu_id = $#{args.size} and sname like 'up%' and recomm > 0
+          )
+          SQL
       end
 
       case order

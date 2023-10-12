@@ -1,5 +1,5 @@
 -- +micrate Up
-CREATE TABLE ubmemos(
+CREATE TABLE wnmemos(
   id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   --
   viuser_id int NOT NULL REFERENCES viusers(id) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -24,11 +24,11 @@ CREATE TABLE ubmemos(
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX ubmemo_unique_idx ON ubmemos(nvinfo_id, viuser_id);
+CREATE UNIQUE INDEX ubmemo_unique_idx ON wnmemos(nvinfo_id, viuser_id);
 
-CREATE INDEX ubmemo_cvuser_idx ON ubmemos(status, viuser_id);
+CREATE INDEX ubmemo_cvuser_idx ON wnmemos(status, viuser_id);
 
-CREATE INDEX ubmemo_viewed_idx ON ubmemos(viuser_id, atime);
+CREATE INDEX ubmemo_viewed_idx ON wnmemos(viuser_id, atime);
 
 -- +micrate Down
-DROP TABLE IF EXISTS ubmemos;
+DROP TABLE IF EXISTS wnmemos;

@@ -5,7 +5,7 @@
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Truncate from '$gui/atoms/Truncate.svelte'
-  import Crumb from '$gui/molds/Crumb.svelte'
+  import { crumbs } from '$gui/global/Bcrumb.svelte'
   import { get_rtime } from '$gui/atoms/RTime.svelte'
   import BCover from '$gui/atoms/BCover.svelte'
 
@@ -26,14 +26,12 @@
     .map((x) => `<p>${x}</p>`)
     .join('\n')
 
-  $: crumb = [
+  $: $crumbs = [
     { text: 'Nguồn liên kết nhúng', href: `/rm` },
     { text: sname, href: `/rm?sn=${rstem.sname}` },
     { text: `ID: ${rstem.sn_id}` },
   ]
 </script>
-
-<Crumb items={crumb} />
 
 <section class="rinfo">
   <div class="names">

@@ -2,7 +2,6 @@
   import { seed_path, chap_path, _pgidx } from '$lib/kit_path'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import Crumb from '$gui/molds/Crumb.svelte'
   import Footer from '$gui/sects/Footer.svelte'
 
   import type { PageData } from './$types'
@@ -24,12 +23,12 @@
 
   import Reader from '$gui/shared/reader/Reader.svelte'
 
-  $: crumb = [
-    { text: nvinfo.vtitle, href: `/wn/${nvinfo.bslug}` },
-    { text: `[${wstem.sname}]`, href: stem_path },
-    { text: rdata.chdiv || 'Chính văn' },
-    { text: rdata.title },
-  ]
+  // data._crumb = [
+  //   { text: nvinfo.vtitle, href: `/wn/${nvinfo.bslug}` },
+  //   { text: `[${wstem.sname}]`, href: stem_path },
+  //   { text: rdata.chdiv || 'Chính văn' },
+  //   { text: rdata.title },
+  // ]
 
   $: cstem = {
     stype: 'wn',
@@ -47,7 +46,6 @@
   }
 </script>
 
-<Crumb items={crumb} />
 <!-- <nav class="nav-list">
   {#each links as [mode, text, dtip]}
     <a

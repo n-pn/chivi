@@ -3,6 +3,8 @@
   import { get_user } from '$lib/stores'
   const _user = get_user()
 
+  import { crumbs } from '$gui/global/Bcrumb.svelte'
+
   import Section from '$gui/sects/Section.svelte'
 
   $: privi = $_user.privi
@@ -13,7 +15,7 @@
       href: `/up/liked`,
       icon: 'heart',
       text: 'Ưa thích',
-      mute: true,
+      mute: privi < 0,
     },
     {
       type: 'mine',
@@ -30,6 +32,8 @@
       mute: privi < 1,
     },
   ]
+
+  $: $crumbs = [{ text: 'Sưu tầm cá nhân', href: `/up` }]
 </script>
 
 <Section {tabs} _now={$page.data.ontab}>

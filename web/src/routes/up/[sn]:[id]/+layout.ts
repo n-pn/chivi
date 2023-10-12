@@ -10,6 +10,9 @@ export const load = (async ({ fetch, params, depends }) => {
 
   const ustem = await api_get<CV.Upstem>(`/_rd/upstems/${up_id}`, fetch)
 
+  const rstem = `up${sname}/${up_id}`
+  const rmemo = await api_get<CV.Rdmemo>(`/_rd/rdmemos/${rstem}`, fetch)
+
   let binfo: CV.Wninfo
 
   if (ustem.wn_id) {
@@ -17,5 +20,5 @@ export const load = (async ({ fetch, params, depends }) => {
     binfo = await api_get<CV.Wninfo>(bpath, fetch)
   }
 
-  return { ustem, binfo, sname, up_id, sroot }
+  return { ustem, rmemo, binfo, sname, up_id, sroot }
 }) satisfies LayoutLoad

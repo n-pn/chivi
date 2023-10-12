@@ -4,7 +4,7 @@
   import { onMount, setContext } from 'svelte'
   import { writable } from 'svelte/store'
 
-  import { browser } from '$app/environment'
+  import { dev, browser } from '$app/environment'
   import { page, navigating } from '$app/stores'
 
   import { scroll, toleft, layers, config } from '$lib/stores'
@@ -13,10 +13,16 @@
   import Loader from '$gui/global/Loader.svelte'
   import Header from '$gui/global/Header.svelte'
   import Pledge from '$gui/global/Pledge.svelte'
+  import Bcrumb from '$gui/global/Bcrumb.svelte'
   import Footer from '$gui/global/Footer.svelte'
+
   import { api_get } from '$lib/api_call'
 
   onMount(() => {
+    navigator.serviceWorker.register('/service-worker.js', {
+      type: dev ? 'module' : 'classic',
+    })
+
     $config = $page.data._conf
 
     let interval = setInterval(short_pulling_user_data, 60000)
@@ -76,7 +82,11 @@
 
   <Header />
   <Pledge />
-  <main class="app-vessel"><slot /></main>
+
+  <main class="app-vessel">
+    <Bcrumb />
+    <slot />
+  </main>
   <Footer />
 </div>
 
