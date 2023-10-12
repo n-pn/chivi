@@ -30,19 +30,19 @@ export const fix_sname = (sname: string) => {
 }
 
 export function chap_path(
-  root: string,
-  chap: number | string,
-  { rtype = 'qt', qt_rm = 'qt_v1', mt_rm = 'mtl_1' } = {}
+  rpath: string,
+  ch_no: number | string,
+  { p_idx = 1, rmode = 'qt', qt_rm = 'qt_v1', mt_rm = 'mtl_1' } = {}
 ) {
-  const href = `${root}/${chap}`
+  const cpath = p_idx > 1 ? `${rpath}/${ch_no}_${p_idx}` : `${rpath}/${ch_no}`
 
   const params = new URLSearchParams()
-  if (rtype != 'qt') params.append('rm', rtype)
+  if (rmode != 'qt') params.append('rm', rmode)
   if (qt_rm != 'qt_v1') params.append('qt', qt_rm)
   if (mt_rm != 'mtl_1') params.append('mt', mt_rm)
 
   const search = params.toString()
-  return search ? `${href}?${search}` : href
+  return search ? `${cpath}?${search}` : cpath
 }
 
 export function _pgidx(index: number, limit = 32) {

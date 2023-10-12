@@ -10,8 +10,8 @@ export const load = (async ({ fetch, params, depends }) => {
 
   const ustem = await api_get<CV.Upstem>(`/_rd/upstems/${up_id}`, fetch)
 
-  const rstem = `up${sname}/${up_id}`
-  const rmemo = await api_get<CV.Rdmemo>(`/_rd/rdmemos/${rstem}`, fetch)
+  const xname = `up${sname}/${up_id}`
+  const rmemo = await api_get<CV.Rdmemo>(`/_rd/rdmemos/${xname}`, fetch)
 
   let binfo: CV.Wninfo
 

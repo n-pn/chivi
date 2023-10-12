@@ -45,7 +45,7 @@ declare namespace CV {
     pdict: string
     wn_id: number
 
-    rtype: string
+    rmode: string
     qt_rm: string
     mt_rm: string
   }

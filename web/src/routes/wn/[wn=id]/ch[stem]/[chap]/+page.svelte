@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { afterNavigate } from '$app/navigation'
+  import { mark_rdchap } from '$lib/common/rdmemo'
+
   import { seed_path, chap_path, _pgidx } from '$lib/kit_path'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
@@ -7,7 +10,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ nvinfo, wstem, rdata, ropts } = data)
+  $: ({ nvinfo, wstem, rdata, ropts, rmemo } = data)
 
   $: ch_no = rdata.ch_no
   // $: total = wstem.chap_max
@@ -44,6 +47,12 @@
 
     zname: nvinfo.ztitle,
   }
+
+  afterNavigate(async () => {
+    rmemo.vname = nvinfo.vtitle
+    rmemo.rpath = stem_path
+    data.rmemo = await mark_rdchap(rmemo, rdata, ropts)
+  })
 </script>
 
 <!-- <nav class="nav-list">

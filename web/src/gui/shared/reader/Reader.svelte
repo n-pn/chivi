@@ -100,19 +100,19 @@
     const finit = { ...ropts, force: true }
     const rinit = { cache: 'default' } as RequestInit
 
-    let rmode = ropts.qt_rm
+    let rname = ropts.qt_rm
 
-    if (ropts.rtype == 'mt' || rmode == 'mt_ai') {
+    if (ropts.rmode == 'mt' || rname == 'mt_ai') {
       vtran = await call_mt_ai_file(finit, rinit, fetch)
-      rmode = 'mt_ai'
-    } else if (rmode == 'bt_zv') {
+      rname = 'mt_ai'
+    } else if (rname == 'bt_zv') {
       vtran = await call_bt_zv_file(finit, rinit, fetch)
-    } else if (rmode == 'qt_v1') {
+    } else if (rname == 'qt_v1') {
       vtran = await call_qt_v1_file(finit, rinit, fetch)
     }
 
     if (vtran.error) return
-    lookup_data.put({ ropts, ztext, hviet, [rmode]: vtran.lines })
+    lookup_data.put({ ropts, ztext, hviet, [rname]: vtran.lines })
   }
 
   $: if (browser && l_idx >= 0) {
@@ -136,7 +136,7 @@
   ]
 </script>
 
-<Section {tabs} _now={ropts.rtype}>
+<Section {tabs} _now={ropts.rmode}>
   <Switch {pager} {ropts} />
 
   <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -151,7 +151,7 @@
       <Notext {cstem} bind:rdata bind:state />
     {:else if rdata.error == 413 || rdata.error == 415}
       <Unlock {cstem} bind:rdata bind:state />
-    {:else if ropts.rtype == 'qt' || ropts.rtype == 'mt'}
+    {:else if ropts.rmode == 'qt' || ropts.rmode == 'mt'}
       <Qtpage {ztext} {vtran} {label} />
     {:else}
       Chưa hoàn thiện!

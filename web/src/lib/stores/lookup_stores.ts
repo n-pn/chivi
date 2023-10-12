@@ -25,7 +25,7 @@ export const init_opts = {
   fpath: '',
   pdict: 'combine',
   wn_id: 0,
-  rtype: 'qt',
+  rmode: 'qt',
   qt_rm: 'qt_v1',
   mt_rm: 'mtl_1',
 }

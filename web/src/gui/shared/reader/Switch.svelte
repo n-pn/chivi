@@ -37,10 +37,10 @@
   export let pager: Pager
   export let ropts: CV.Rdopts
 
-  $: modes = all_modes[ropts.rtype] || {}
-  $: descs = all_descs[ropts.rtype] || {}
+  $: modes = all_modes[ropts.rmode] || {}
+  $: descs = all_descs[ropts.rmode] || {}
 
-  $: rmode = ropts.rtype == 'qt' ? ropts.qt_rm : ropts.mt_rm
+  $: rmode = ropts.rmode == 'qt' ? ropts.qt_rm : ropts.mt_rm
 </script>
 
 <section class="mdesc">Đang áp dụng: {descs[rmode]}.</section>
@@ -49,7 +49,7 @@
   {#each Object.entries(modes) as [_mode, label]}
     <a
       class="chip-link _active"
-      href={pager.gen_url({ rm: ropts.rtype, [ropts.rtype]: _mode })}
+      href={pager.gen_url({ rm: ropts.rmode, [ropts.rmode]: _mode })}
       data-tip={descs[_mode]}
       data-tip-loc="bottom">
       <span>{label}</span>

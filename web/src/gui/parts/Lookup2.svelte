@@ -65,7 +65,7 @@
   const load_mt_ai_data = async () => {
     stale = false
 
-    if (ropts.rtype == 'mt' || ropts.qt_rm == 'mt_ai') {
+    if (ropts.rmode == 'mt' || ropts.qt_rm == 'mt_ai') {
       state = 1
     } else {
       const mt_ai = await call_mt_ai_file(finit, rinit)

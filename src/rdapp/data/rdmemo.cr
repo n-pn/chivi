@@ -67,18 +67,32 @@ class RD::Rdmemo
 
   def inherit(mform : self, action : String = "")
     case action
-    when "rstate" then @rstate = mform.rstate
-    when "rating" then @rating = mform.rating
-    when "recomm" then @recomm = mform.recomm
-    when "last_chap"
+    when "rstate"
+      @rstate = mform.rstate
+    when "rating"
+      @rating = mform.rating
+    when "recomm"
+      @recomm = mform.recomm
+    when "chmark", "chlast"
+      @rtime = Time.utc.to_unix
+
+      @vname = mform.vname
+      @rpath = mform.rpath
+
       @last_ch_no = mform.last_ch_no
-      @last_cinfo = mform.last_cinfo.not_nil!
-    when "mark_chap"
-      @mark_ch_no = mform.mark_ch_no
-      @mark_cinfo = mform.mark_cinfo.not_nil!
+      @last_cinfo = mform.last_cinfo
+
+      if action == "chmark" || self.sequence_read?(mform.last_ch_no)
+        @mark_ch_no = mform.mark_ch_no
+        @mark_cinfo = mform.mark_cinfo
+      end
     end
 
     self
+  end
+
+  def sequence_read?(ch_no : Int32)
+    @mark_ch_no == ch_no || @mark_ch_no == ch_no &- 1
   end
 
   UPDATE_FIELD_SQL = "update #{@@schema.table} set %s = $1 where vu_id = $2 and sname = $3 and sn_id = $4"
@@ -102,17 +116,25 @@ class RD::Rdmemo
     self.find(vu_id, sname, sn_id) || new(vu_id, sname, sn_id)
   end
 
-  def self.all_liked(vu_id : Int32, limit : Int32 = 20, offset : Int32 = 0)
+  def self.get_all(vu_id : Int32, sname : Nil, rtype : String = "", limit : Int32 = 20, offset : Int32 = 0)
     self.get_all(vu_id, limit, offset) do |sql|
-      sql << " where vu_id = $1 and recomn > 0 order by rtime desc"
-      sql << " limit $2 offset $3"
+      sql << " where vu_id = $1"
+      case rtype
+      when "liked" then sql << " and recomm > 0"
+      when "rdlog" then sql << " and last_ch_no > 0"
+      end
+      sql << " order by rtime desc limit $2 offset $3"
     end
   end
 
-  def self.all_liked(vu_id : Int32, sname : String, limit : Int32 = 20, offset : Int32 = 0)
-    self.get_all(vu_id, limit, offset) do |sql|
-      sql << " where vu_id = $1 and sname like $2 || '%' and recomn > 0 order by rtime desc"
-      sql << " limit $3 offset $4"
+  def self.get_all(vu_id : Int32, sname : String, rtype : String = "", limit : Int32 = 20, offset : Int32 = 0)
+    self.get_all(vu_id, sname, limit, offset) do |sql|
+      sql << " where vu_id = $1 and sname like $2 || '%'"
+      case rtype
+      when "liked" then sql << " and recomm > 0"
+      when "rdlog" then sql << " and last_ch_no > 0"
+      end
+      sql << " order by rtime desc limit $3 offset $4"
     end
   end
 end

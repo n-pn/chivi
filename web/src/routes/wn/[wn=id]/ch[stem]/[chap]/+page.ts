@@ -16,7 +16,7 @@ function get_ropts(wn_id: number, { fpath }, params: URLSearchParams) {
     fpath,
     pdict: `book/${wn_id}`,
     wn_id: wn_id,
-    rtype: params.get('rm') || 'qt',
+    rmode: params.get('rm') || 'qt',
     qt_rm: params.get('qt') || 'qt_v1',
     mt_rm: params.get('mt') || 'mtl_1',
   }

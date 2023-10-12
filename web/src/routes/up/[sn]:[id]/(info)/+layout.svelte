@@ -10,6 +10,7 @@
   import UpstemFull from '$gui/parts/upstem/UpstemFull.svelte'
 
   import type { LayoutData } from './$types'
+  import { upsert_memo } from '$lib/common/rdmemo'
   export let data: LayoutData
 
   $: ({ ustem, sroot, rmemo } = data)
@@ -42,16 +43,7 @@
 
   const trigger_liked = async () => {
     rmemo.recomm = rmemo.recomm < 1 ? data._user.privi + 1 : 0
-
-    const rinit = {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(rmemo),
-    }
-
-    const res = await fetch('/_rd/rdmemos/recomm', rinit)
-    if (res.ok) data.rmemo = (await res.json()) as CV.Rdmemo
-    else alert(await res.text())
+    data.rmemo = await upsert_memo(rmemo, 'recomm')
   }
 </script>
 
