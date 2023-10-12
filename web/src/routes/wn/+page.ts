@@ -14,12 +14,12 @@ export const load = (async ({ url, fetch }) => {
   const _meta = {
     left_nav: [
       home_nav('tm'),
-      nav_link('/wn', 'Danh sách truyện', 'books', { kind: 'title' }),
+      nav_link('/wn', 'Thư viện', 'books', { kind: 'title' }),
     ],
     right_nav: [
       nav_link('/wn/+book', 'Thêm truyện', 'file-plus', { show: 'tm' }),
     ],
   }
 
-  return { ...data, _meta, _title: 'Danh sách truyện' }
+  return { ...data, _meta, _title: 'Thư viện truyện chữ' }
 }) satisfies PageLoad

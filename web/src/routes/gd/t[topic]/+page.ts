@@ -1,4 +1,4 @@
-import { home_nav, nav_link } from '$utils/header_util'
+import { nav_link } from '$utils/header_util'
 import { api_get } from '$lib/api_call'
 import type { PageLoad } from './$types'
 
@@ -13,7 +13,6 @@ export const load: PageLoad = async ({ fetch, params }) => {
 
   const _meta = {
     left_nav: [
-      home_nav('tm'),
       nav_link('/gd', 'Diễn đàn', 'messages'),
       nav_link(`/gd/t${params.topic}`, dtopic.title, null, { kind: 'title' }),
     ],

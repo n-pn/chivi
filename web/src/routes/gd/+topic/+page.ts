@@ -1,5 +1,5 @@
 import { api_get } from '$lib/api_call'
-import { home_nav, nav_link } from '$utils/header_util'
+import { nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 
@@ -19,7 +19,6 @@ export const load = (async ({ fetch, url }) => {
 
   const _meta = {
     left_nav: [
-      home_nav('tm'),
       nav_link('/gd', 'Diễn đàn', 'messages', { show: 'ts' }),
       nav_link(curr_path, 'Tạo/sửa chủ đề', 'edit', { show: 'ts' }),
     ],

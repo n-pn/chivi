@@ -134,5 +134,6 @@
     display: flex;
     flex-direction: column;
     position: relative;
+    margin-bottom: 0.75rem;
   }
 </style>

@@ -1,7 +1,7 @@
 import { chap_path, fix_sname, seed_path, _pgidx } from '$lib/kit_path'
 
-export const home_nav = (show: string = 'tm', title = 'Chivi') => {
-  return nav_link('/', title, null, { show, kind: 'brand' })
+export const home_nav = (show: string = 'pl') => {
+  return nav_link('/', 'Trang chủ', 'home', { show })
 }
 
 export const book_nav = (bslug: string, vname: string, show = 'tm') => {
@@ -26,9 +26,7 @@ export const nav_link = (
   icon: string | null,
   opts = {}
 ) => {
-  const res = { type: 'a', href, icon, text }
-  for (const [key, val] of Object.entries(opts)) res['data-' + key] = val
-  return res
+  return { type: 'a', href, icon, text, opts }
 }
 
 export const default_meta: App.PageMeta = {

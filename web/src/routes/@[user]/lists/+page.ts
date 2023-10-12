@@ -1,6 +1,6 @@
 import { merge_query, api_get } from '$lib/api_call'
 
-import { home_nav, nav_link } from '$utils/header_util'
+import { nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 
@@ -13,8 +13,7 @@ export const load = (async ({ url, fetch, params }) => {
 
   const _meta: App.PageMeta = {
     left_nav: [
-      home_nav('tm'),
-      nav_link(`/@${user}`, `@${user}`, ''),
+      nav_link(`/@${user}`, `${user}`, 'at'),
       nav_link(`/@${user}/lists`, 'Thư đơn', 'bookmarks'),
     ],
     right_nav: [
@@ -28,5 +27,5 @@ export const load = (async ({ url, fetch, params }) => {
   const sort = url.searchParams.get('sort') || 'utime'
   const filter = { qs: url.searchParams.get('qs'), sort }
 
-  return { vi, filter, _title, _meta }
+  return { vi, filter, _title, _meta, ontab: 'list' }
 }) satisfies PageLoad

@@ -4,31 +4,32 @@ import { nav_link } from '$utils/header_util'
 import type { PageLoad } from './$types'
 
 interface Data extends CV.Paginate {
-  items: Array<CV.Upstem>
+  items: Array<CV.Rmstem>
 }
 
-const _title = 'Sưu tầm cá nhân'
+const _title = 'Nguồn liên kết nhúng'
 
 const _meta = {
   left_nav: [
-    nav_link('/up', 'Sưu tầm', 'album', { show: 'pm', kind: 'title' }),
-    nav_link('owned', 'Của bạn', 'at'),
+    nav_link('/rm', 'Nguồn nhúng', 'world', { kind: 'title', show: 'pl' }),
+    nav_link('liked', 'Đang theo dõi', 'star'),
   ],
 }
 
 export const load = (async ({ url, fetch }) => {
   const query = {
-    by: url.searchParams.get('by'),
     wn: url.searchParams.get('wn'),
+    sn: url.searchParams.get('sn'),
     lb: url.searchParams.get('lb'),
-    kw: url.searchParams.get('kw'),
+    bt: url.searchParams.get('bt'),
+    by: url.searchParams.get('by'),
   }
 
   const search = new URLSearchParams(url.searchParams)
-  search.append('_m', 'owner')
+  search.append('_m', 'liked')
 
-  const rdurl = `/_rd/upstems?${search.toString()}`
+  const rdurl = `/_rd/rmstems?${search.toString()}`
   const props = await api_get<Data>(rdurl, fetch)
 
-  return { props, query, _title, _meta, ontab: 'mine' }
+  return { props, query, _title, _meta, ontab: 'like' }
 }) satisfies PageLoad

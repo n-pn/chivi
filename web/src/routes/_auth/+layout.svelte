@@ -1,5 +1,10 @@
 <script>
+  import { crumbs } from '$gui/global/Bcrumb.svelte'
+
+  $: $crumbs = [{ text: 'Cổng đăng nhập' }]
+
   import { afterNavigate } from '$app/navigation'
+  import Section from '$gui/sects/Section.svelte'
 
   afterNavigate(({ from }) => {
     let url = from?.url
@@ -7,43 +12,78 @@
     if (url && !url.pathname.startsWith('/_auth')) back = url.toString()
     sessionStorage.setItem('back', back)
   })
+
+  const tabs = [
+    {
+      type: 'login',
+      href: `/_auth/login`,
+      icon: 'login',
+      text: 'Đăng nhập',
+    },
+    {
+      type: 'signup',
+      href: `/_auth/signup`,
+      icon: 'user-plus',
+      text: 'Tạo tài khoản',
+    },
+    {
+      type: 'passwd',
+      href: `/_auth/passwd`,
+      icon: 'key',
+      text: 'Quên mật khẩu',
+    },
+  ]
 </script>
 
-<div class="wrap">
-  <header class="brand">
-    <img src="/icons/chivi.svg" alt="logo" />
-    <span class="-text">Chivi</span>
-  </header>
+<header class="brand">
+  <img class="blogo" src="/icons/chivi.svg" alt="logo" />
+  <span class="btext">Chivi</span>
+</header>
 
-  <article class="article island">
-    <slot />
-  </article>
-</div>
+<Section {tabs}>
+  <section class="wrap">
+    <article class=" island">
+      <slot />
+    </article>
+  </section>
+</Section>
 
 <style lang="scss">
   .wrap {
     @include flex-ca;
+
     flex-direction: column;
     flex: 1;
-    margin-bottom: var(--gutter);
-  }
-
-  .brand {
-    // font-weight: 300;
-    line-height: 2.5rem;
-    padding-bottom: 0.75rem;
-    padding-right: 0.75rem;
-
-    @include flex-ca;
-
-    > .-text {
-      margin-left: 0.5rem;
-      @include ftsize(x3);
-    }
+    margin: 3rem 0;
   }
 
   article {
     width: 100%;
     max-width: 25rem;
+
+    @include bdradi;
+    @include border;
+    padding: var(--gutter);
+  }
+
+  .brand {
+    @include flex-ca;
+    @include ftsize(x4);
+
+    // font-weight: 300;
+    line-height: 2.5rem;
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+    padding-right: 0.75rem;
+  }
+
+  .blogo {
+    height: 2.5rem;
+  }
+
+  .btext {
+    margin-left: 0.5rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
   }
 </style>

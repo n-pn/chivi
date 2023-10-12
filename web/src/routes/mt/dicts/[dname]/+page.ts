@@ -1,5 +1,5 @@
+import { nav_link } from '$utils/header_util'
 import { merge_query, api_get } from '$lib/api_call'
-import { home_nav, nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 
@@ -23,7 +23,6 @@ export const load = (async ({ fetch, url, params: { dname }, parent }) => {
 
   const _meta = {
     left_nav: [
-      home_nav('ps'),
       nav_link('/mt/dicts', 'Từ điển', 'package', { show: 'ts' }),
       nav_link(dinfo.dname, dinfo.label, '', { kind: 'title' }),
     ],

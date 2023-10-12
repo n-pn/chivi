@@ -27,6 +27,8 @@
     width: 1.1em;
     height: 1.1em;
     @include fgcolor(mute);
+    // margin-left: -0.15rem;
+    // margin-top: -0.15em;
   }
 
   span + span {

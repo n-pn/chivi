@@ -1,4 +1,4 @@
-import { home_nav, nav_link } from '$utils/header_util'
+import { nav_link } from '$utils/header_util'
 import { api_get } from '$lib/api_call'
 import type { PageLoad } from './$types'
 
@@ -9,11 +9,14 @@ export const load: PageLoad = async ({ fetch, params: { user } }) => {
   const { gdroot, rplist } = await api_get<Data>(rppath, fetch)
 
   const _meta = {
-    left_nav: [
-      home_nav('tm'),
-      nav_link(`/@${user}`, `@${user}`, null, { kind: 'title' }),
-    ],
+    left_nav: [nav_link(`/@${user}`, user, 'at', { kind: 'title' })],
   }
 
-  return { gdroot, rplist, _meta, _title: `@${user} -  Diễn đàn` }
+  return {
+    gdroot,
+    rplist,
+    _meta,
+    _title: `@${user} -  Diễn đàn`,
+    ontab: 'home',
+  }
 }

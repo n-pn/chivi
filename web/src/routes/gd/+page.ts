@@ -1,10 +1,10 @@
 import { api_get, merge_query } from '$lib/api_call'
-import { home_nav, nav_link } from '$utils/header_util'
+import { nav_link } from '$utils/header_util'
 
 import type { PageData } from './$types'
 
 const _meta = {
-  left_nav: [home_nav('tm'), nav_link('/gd', 'Diễn đàn', 'messages')],
+  left_nav: [nav_link('/gd', 'Diễn đàn', 'messages')],
 }
 
 export const load = (async ({ fetch, url }) => {

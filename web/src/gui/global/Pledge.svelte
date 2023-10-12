@@ -9,16 +9,17 @@
 
 {#if !route_id.includes('_auth')}
   <div class="app-vessel">
-    <a class="pledge" href="/hd/chuong-tiet/gioi-thieu">
-      <strong
-        >Phần danh sách chương tiết đã được thay đổi về thiết kế. Bấm vào đây để
-        xem chi tiết.</strong>
-    </a>
-
     <p class="pledge">
-      <em>
-        Trang web làm lại, nếu gặp lỗi làm ơn liên hệ trực tiếp qua Facebook của
-        trang hoặc Discord (kéo xuống dưới cùng để xem liên kết).
+      <em class="em">
+        Trang web làm lại, nếu gặp lỗi làm ơn liên hệ trực tiếp qua
+        <a
+          class="m-link"
+          target="_blank"
+          href="https://www.facebook.com/chivi.fb">Facebook</a>
+        hoặc
+        <a class="m-link" target="_blank" href="https://discord.gg/mdC3KQH"
+          >Discord</a
+        >.
       </em>
     </p>
 
@@ -51,6 +52,10 @@
     @include bgcolor(tert);
 
     @include bdradi();
+  }
+
+  .em {
+    @include fgcolor(warning, 5);
   }
 
   a.pledge {

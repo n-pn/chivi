@@ -33,15 +33,18 @@
 <header class="app-header" class:clear={$scroll > 0}>
   <nav class="app-vessel">
     <div class="-left __left">
-      <Item
+      <button
         type="button"
-        icon="menu-2"
-        on:click={() => popups.show('appnav')} />
-      {#each meta.left_nav || [] as opts}<Item {...opts} />{/each}
+        class="appbar-item _brand"
+        on:click={() => popups.show('appnav')}>
+        <img src="/icons/chivi.svg" alt="logo" />
+        <span class="appbar-text u-show-ts">Chivi</span>
+      </button>
+      {#each meta.left_nav || [] as data}<Item {...data} />{/each}
     </div>
 
     <div class="-right">
-      {#each meta.right_nav || [] as opts}<Item {...opts} />{/each}
+      {#each meta.right_nav || [] as data}<Item {...data} />{/each}
 
       {#if thread}
         <Item

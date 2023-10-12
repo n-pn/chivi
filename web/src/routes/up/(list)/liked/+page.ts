@@ -11,8 +11,8 @@ const _title = 'Sưu tầm cá nhân'
 
 const _meta = {
   left_nav: [
-    nav_link('/up', 'Sưu tầm cá nhân', 'album', { show: 'pm', kind: 'title' }),
-    nav_link('owned', 'Của bạn', 'at'),
+    nav_link('/up', 'Sưu tầm', 'album', { show: 'pm' }),
+    nav_link('owned', 'Ưa thích', 'heart'),
   ],
 }
 

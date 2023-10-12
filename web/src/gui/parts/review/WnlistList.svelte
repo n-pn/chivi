@@ -15,6 +15,8 @@
   import { page } from '$app/stores'
 
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
+  import Footer from '$gui/sects/Footer.svelte'
+
   import VilistCard from './VilistCard.svelte'
   import YslistCard from './YslistCard.svelte'
 
@@ -67,14 +69,14 @@
   {/each}
 
   {#if vi.lists.length + ys.lists.length == 0}
-    <div class="empty">
+    <div class="u-empty">
       <p class="u-fg-tert"><em>Không có nội dung</em></p>
     </div>
   {/if}
 
-  <footer class="pagi">
+  <Footer>
     <Mpager {pager} {pgidx} {pgmax} />
-  </footer>
+  </Footer>
 </div>
 
 <style lang="scss">
@@ -105,15 +107,14 @@
     }
   }
 
-  .empty {
-    @include flex-ca;
-    height: 30vh;
-  }
-
   .klass {
     @include flex-cx($gap: 0.5rem);
     @include bp-min(ts) {
       align-items: left;
     }
+  }
+
+  .lists {
+    padding-bottom: 0.75rem;
   }
 </style>

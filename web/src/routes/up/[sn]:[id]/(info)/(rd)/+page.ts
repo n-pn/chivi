@@ -15,8 +15,8 @@ export const load = (async ({ fetch, url, params, parent }) => {
 
   const _meta: App.PageMeta = {
     left_nav: [
-      nav_link('/up', 'Sưu tầm cá nhân', 'file', { show: 'ts' }),
-      nav_link(sroot, ustem.vname, 'list', { show: 'pl', kind: 'title' }),
+      nav_link('/up', 'Sưu tầm', 'album', { show: 'pl' }),
+      nav_link(sroot, ustem.vname, 'list', { kind: 'title' }),
     ],
   }
 

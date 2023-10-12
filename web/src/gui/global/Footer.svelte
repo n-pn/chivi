@@ -22,14 +22,6 @@
       <a {href} class="foot-link" target="_blank" rel="noreferrer">{text}</a>
     {/each}
   </div>
-
-  <div class="secd">
-    <strong>Công cụ: </strong>
-    {#each tools as [text, href], index}
-      {#if index > 0} <span class="sep" />{/if}
-      <a {href} class="foot-link">{text}</a>
-    {/each}
-  </div>
 </footer>
 
 <style lang="scss">
@@ -37,24 +29,23 @@
     line-height: 1rem;
 
     margin-top: auto;
-    padding: var(--gutter-pm);
+    padding: 0.75rem;
 
     @include ftsize(sm);
     @include border($loc: top);
     @include fgcolor(tert);
-    @include bgcolor(tert);
+    // @include bgcolor(tert);
   }
 
+  // .secd {
+  //   margin-top: 0.25rem;
+  // }
+
+  // .secd,
   .main {
-    margin-bottom: 0.25rem;
-  }
-
-  .main,
-  .secd {
-    display: flex;
+    @include flex-cx;
     flex-wrap: wrap;
     width: 100%;
-    justify-content: center;
     gap: 0.375rem;
   }
 

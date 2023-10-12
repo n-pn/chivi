@@ -11,7 +11,8 @@ class RD::RmstemCtrl < AC::Base
     st status : Int32? = nil,
     bt btitle : String? = nil,
     by author : String? = nil,
-    _s order : String = "rtime"
+    _s order : String = "rtime",
+    _m qmode : String = "index"
   )
     pg_no, limit, offset = _paginate(min: 25, max: 100)
 
@@ -22,6 +23,7 @@ class RD::RmstemCtrl < AC::Base
       wn_id: wn_id,
       sname: sname,
       genre: genre,
+      liked: qmode == "liked" ? self._vu_id : nil,
       order: order,
     )
     args << limit << offset

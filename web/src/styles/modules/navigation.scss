@@ -4,9 +4,8 @@
   @include flex-ca($gap: 0.5em);
   @include bps(font-size, rem(13px), $pl: rem(14px), $ts: rem(15px), $tm: 1rem);
 
+  flex-wrap: wrap;
   line-height: 1em;
-
-  @include bps(height, 1.75rem, $pl: 2rem);
 }
 
 .nav-link {
@@ -21,6 +20,8 @@
 
   @include linesd(--bd-main);
   @include bdradi();
+
+  @include bps(height, 1.75rem, $pl: 2rem);
 
   &._active,
   &:hover {

@@ -1,4 +1,4 @@
-import { home_nav, nav_link } from '$utils/header_util'
+import { nav_link } from '$utils/header_util'
 import { api_get } from '$lib/api_call'
 import type { PageLoad } from './$types'
 
@@ -10,8 +10,7 @@ export const load = (async ({ url, fetch }) => {
 
   const _meta = {
     left_nav: [
-      home_nav('ps'),
-      nav_link('/me', 'Cá nhân', 'user'),
+      nav_link('/me', 'Chính bạn', 'at'),
       nav_link('/me/notif', 'Thông báo', 'bell', { kind: 'title' }),
     ],
     right_nav: [],

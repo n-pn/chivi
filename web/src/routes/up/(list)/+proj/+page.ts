@@ -5,8 +5,8 @@ import type { PageLoad } from './$types'
 
 const _meta: App.PageMeta = {
   left_nav: [
-    nav_link('/up', 'Sưu tầm cá nhân', 'album', { show: 'pl' }),
-    nav_link('/up/+proj', 'Thêm mới', 'file-plus', { kind: 'title' }),
+    nav_link('/up', 'Sưu tầm', 'album', { show: 'pm' }),
+    nav_link('/up/+proj', 'Thêm mới', 'file-plus'),
   ],
   right_nav: [],
 }

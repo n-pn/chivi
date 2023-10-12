@@ -260,7 +260,7 @@ class RD::Rmstem
   def self.build_select_sql(
     btitle : String? = nil, author : String? = nil, status : Int32? = nil,
     wn_id : Int32? = nil, sname : String? = nil, genre : String? = nil,
-    order : String = "mtime"
+    liked : Int32? = nil, order : String = "mtime"
   )
     args = [] of String | Int32
 

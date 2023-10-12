@@ -11,10 +11,13 @@
 
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
+  import { page } from '$app/stores'
 
   export let tabs: Array<Tab>
   export let root: string = ''
   export let _now: string = ''
+
+  $: ontab = _now || $page.data.ontab
 </script>
 
 <article class="section island">
@@ -24,7 +27,7 @@
         href="{root}{href}"
         class="htab"
         class:mute
-        class:_active={type == _now}
+        class:_active={type == ontab}
         data-tip={desc}>
         <SIcon name={icon} />
         <span>{text}</span>

@@ -18,11 +18,11 @@ export const load = (async ({ url, params, fetch }) => {
 
   const _meta = {
     left_nav: [
-      nav_link(`/@${uname}`, uname, 'user', { show: 'ts' }),
+      nav_link(`/@${uname}`, uname, 'at', { show: 'ts' }),
       nav_link(url.pathname, 'Tủ truyện', 'books', { show: 'tm' }),
     ],
-    right_nav: [nav_link(`/me/books`, 'Cá nhân', 'at', { show: 'tm' })],
+    right_nav: [nav_link(`/me/books`, 'Của bạn', 'book', { show: 'tm' })],
   }
 
-  return { ...data, uname: uname, bmark, _title, _meta }
+  return { ...data, uname: uname, bmark, _title, _meta, ontab: 'book' }
 }) satisfies PageLoad

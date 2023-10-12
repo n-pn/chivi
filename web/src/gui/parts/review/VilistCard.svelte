@@ -14,7 +14,7 @@
     return Math.round(num / 1000) + 'k'
   }
 
-  $: list_path = `/@${list.u_uname}/lists/${list.tslug}`
+  $: list_path = `/wn/lists/v${list.tslug}`
 
   const handle_like = (evt: Event) => {
     evt.preventDefault()
@@ -32,20 +32,14 @@
 </script>
 
 <article class="yslist">
-  <div class="covers">
-    {#each list.covers || [] as cover, idx}
-      <div class="cover _{idx}">
-        <picture>
-          <source type="image/webp" srcset="/covers/{cover}" />
-          <img src="/imgs/empty.png" alt="" />
-        </picture>
-      </div>
-    {:else}
-      <div class="cover _0"><img src="/imgs/empty.png" alt="" /></div>
-    {/each}
-  </div>
-
   <div class="infos">
+    <def class="uname">
+      <a class="cv-user" href="/@{list.u_uname}" data-privi={list.u_privi}
+        >{list.u_uname}</a>
+      <span class="u-fg-tert">&middot;</span>
+      <span class="m-meta _larger">{rel_time(list.utime)} </span>
+    </def>
+
     <a class="vname" href={list_path}>{list.title}</a>
 
     <div class="genres">
@@ -62,57 +56,110 @@
     </div>
 
     <footer class="footer">
-      <def class="left">
-        <a class="cv-user" href="/@{list.u_uname}" data-privi={list.u_privi}
-          >{list.u_uname}</a>
+      <span class="m-meta _larger">
+        <span class="u-fg-mute">Bộ truyện:</span>
+        <span class="u-fg-tert">{list.book_count}</span>
+        <SIcon name="bookmarks" />
+      </span>
 
-        <span class="u-fg-tert">&middot;</span>
-        <span class="m-meta _larger">{rel_time(list.utime)} </span>
+      <button
+        type="button"
+        class="m-meta _larger"
+        class:_active={list.me_liked > 0}
+        disabled={$_user.privi < 0}
+        on:click={handle_like}>
+        <span class="u-fg-mute">Ưa thích:</span>
+        <span>{list.like_count}</span>
+        <SIcon name="heart" />
+      </button>
 
-        {#if $_user.uname == list.u_uname || $_user.privi > 3}
-          <span class="u-fg-tert">&middot;</span>
-          <a class="m-meta _larger fs-i" href="/wn/lists/+list?id={list.vl_id}"
-            >Sửa</a>
-        {/if}
-      </def>
-
-      <div class="right">
-        <span class="m-meta _larger" data-tip="Bộ truyện">
-          <SIcon name="bookmarks" />
-          <span>{list.book_count}</span>
-        </span>
-
-        <button
-          type="button"
-          class="m-meta _larger"
-          data-tip="Ưa thích"
-          class:_active={list.me_liked > 0}
-          disabled={$_user.privi < 0}
-          on:click={handle_like}>
-          <SIcon name="heart" />
-          <span>{list.like_count}</span>
-        </button>
-
-        <span class="m-meta _larger" data-tip="Lượt xem">
-          <SIcon name="eye" />
-          <span>{humanize(list.view_count)}</span>
-        </span>
-      </div>
+      <span class="m-meta _larger">
+        <span class="u-fg-mute">Lượt xem:</span>
+        <span>{humanize(list.view_count)}</span>
+        <SIcon name="eye" />
+      </span>
     </footer>
   </div>
+
+  <a class="covers" href={list_path}>
+    {#each list.covers || [] as cover, idx}
+      <div class="cover _{idx}">
+        <picture>
+          <source
+            type="image/webp"
+            srcset="https://cdn.chivi.app/covers/{cover}" />
+          <img src="/imgs/empty.png" alt="" />
+        </picture>
+      </div>
+    {:else}
+      <div class="cover _0"><img src="/imgs/empty.png" alt="" /></div>
+    {/each}
+  </a>
 </article>
 
 <style lang="scss">
   .yslist {
     display: flex;
 
-    margin: 1rem 0;
+    margin: 0.75rem 0;
     padding: var(--gutter);
 
     @include bgcolor(tert);
     @include bdradi;
     // @include shadow;
     @include linesd(--bd-soft);
+  }
+
+  .infos {
+    flex: 1 1;
+    padding-right: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    z-index: 9;
+    background: inherit;
+  }
+
+  .genres {
+    display: flex;
+    margin: 0.25rem 0;
+    overflow: hidden;
+  }
+
+  .genre {
+    @include fgcolor(tert);
+    font-weight: 500;
+    margin-right: 0.5rem;
+    font-size: rem(15px);
+    @include clamp($width: null);
+  }
+
+  .vdesc {
+    @include clamp(2);
+    @include fgcolor(tert);
+    font-size: rem(14px);
+    line-height: 1.25rem;
+    margin-bottom: 0.25rem;
+    font-style: italic;
+  }
+
+  .vname {
+    padding-top: 0.25rem;
+    @include clamp($width: 2);
+    @include fgcolor(secd);
+    @include ftsize(lg);
+    line-height: 1.5rem;
+    font-weight: 500;
+
+    @include hover {
+      @include fgcolor(primary, 5);
+    }
+  }
+
+  .footer {
+    margin-top: auto;
+    display: flex;
+    gap: 0.5rem;
+    // @include bps(flex-direction, column, $tm: row);
   }
 
   .covers {
@@ -150,61 +197,5 @@
       @include bdradi;
       @include shadow(2);
     }
-  }
-
-  .infos {
-    flex: 1 1;
-    padding-left: 0.75rem;
-    display: flex;
-    flex-direction: column;
-    z-index: 9;
-    background: inherit;
-  }
-
-  .genres {
-    display: flex;
-    margin: 0.25rem 0;
-    overflow: hidden;
-  }
-
-  .genre {
-    @include fgcolor(tert);
-    font-weight: 500;
-    margin-right: 0.5rem;
-    font-size: rem(15px);
-    @include clamp($width: null);
-  }
-
-  .vdesc {
-    @include clamp(2);
-    @include fgcolor(tert);
-    font-size: rem(14px);
-    line-height: 1.25rem;
-    margin-bottom: 0.25rem;
-    font-style: italic;
-  }
-
-  .vname {
-    display: block;
-    @include clamp(2);
-    @include fgcolor(secd);
-    @include ftsize(lg);
-    line-height: 1.5rem;
-    font-weight: 500;
-
-    @include hover {
-      @include fgcolor(primary, 5);
-    }
-  }
-
-  .footer {
-    margin-top: auto;
-
-    display: flex;
-    @include bps(flex-direction, column, $tm: row);
-  }
-
-  .left {
-    flex: 1;
   }
 </style>

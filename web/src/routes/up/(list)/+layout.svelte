@@ -36,7 +36,7 @@
   $: $crumbs = [{ text: 'Sưu tầm cá nhân', href: `/up` }]
 </script>
 
-<Section {tabs} _now={$page.data.ontab}>
+<Section {tabs}>
   <slot />
 </Section>
 

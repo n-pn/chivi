@@ -52,7 +52,7 @@ worker.addEventListener('fetch', (event) => {
     try {
       const response = await fetch(event.request)
 
-      if (response.ok && event.request.cache != 'only-if-cached') {
+      if (response.status < 300 && event.request.cache != 'only-if-cached') {
         cache.put(event.request, response.clone())
       }
 

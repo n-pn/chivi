@@ -8,7 +8,7 @@ export const load = (async ({ url, parent }) => {
 
   const _meta: App.PageMeta = {
     left_nav: [
-      nav_link(sroot, ustem.vname, 'file', { show: 'pl', kind: 'title' }),
+      nav_link(sroot, ustem.vname, 'album', { show: 'pl', kind: 'title' }),
       nav_link('ul', 'Đăng tải', 'upload', { show: 'pm' }),
     ],
   }

@@ -8,7 +8,7 @@ interface JsonData extends CV.Paginate {
 }
 
 const _meta: App.PageMeta = {
-  left_nav: [home_nav('ps'), nav_link('dicts', 'Từ điển', 'package')],
+  left_nav: [home_nav(), nav_link('dicts', 'Từ điển', 'package')],
 }
 
 export const load = (async ({ fetch, url }) => {

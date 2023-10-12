@@ -9,8 +9,8 @@ interface Data extends CV.Paginate {
 const _title = 'Nguồn liên kết nhúng'
 const _meta = {
   left_nav: [
-    home_nav('pl'),
-    nav_link('/rd', 'Nguồn liên kết nhúng', 'world', { kind: 'title' }),
+    home_nav(),
+    nav_link('/rd', 'Nguồn nhúng', 'world', { kind: 'title' }),
   ],
 }
 
@@ -25,5 +25,5 @@ export const load = (async ({ url, fetch }) => {
 
   const props = await api_get<Data>(`/_rd/rmstems${url.search}`, fetch)
 
-  return { props, query, _title, _meta, ontab: 'list' }
+  return { props, query, _title, _meta, ontab: 'home' }
 }) satisfies PageLoad

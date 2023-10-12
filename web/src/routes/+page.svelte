@@ -2,6 +2,9 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import WninfoList from '$gui/parts/wninfo/WninfoList.svelte'
 
+  import RmstemCard from '$gui/parts/rmstem/RmstemCard.svelte'
+  import UpstemCard from '$gui/parts/upstem/UpstemCard.svelte'
+
   import type { PageData } from './$types'
   export let data: PageData
 
@@ -10,30 +13,55 @@
   const links = [
     ['/gd', 'message', 'Diễn đàn'],
     ['/wn', 'books', 'Truyện chữ'],
-    ['/wn/crits', 'stars', 'Đánh giá'],
-    ['/wn/lists', 'bookmarks', 'Thư đơn'],
-    ['/sp/qtran', 'bolt', 'Dịch nhanh'],
+    ['/up', 'album', 'Sưu tầm'],
+    ['/rm', 'world', 'Nhúng ngoài'],
   ]
 </script>
 
 <nav class="nav-list">
   {#each links as [href, icon, text]}
     <a {href} class="nav-link">
-      <SIcon class="u-show-pl" name={icon} />
+      <SIcon class="u-show-pm" name={icon} />
       <span>{text}</span>
     </a>
   {/each}
 </nav>
+<article class="article island">
+  <section class="list">
+    <header class="head">
+      <h3 class="text">Thư viện truyện chữ</h3>
+      <a class="link" href="/wn">Xem tất cả</a>
+    </header>
 
-<section class="list">
-  <header class="head">
-    <h3 class="text">Truyện vừa xem</h3>
-    <a class="link" href="/wn">Xem tất cả</a>
-  </header>
+    <WninfoList {books} />
+  </section>
 
-  <WninfoList books={books.recent} />
-</section>
+  <section class="list">
+    <header class="head">
+      <h3 class="text">Sưu tầm cá nhân</h3>
+      <a class="link" href="/up">Xem tất cả</a>
+    </header>
+    {#each data.ustems as ustem}
+      <UpstemCard {ustem} />
+    {:else}
+      <div class="u-empty-sm">Danh sách trống</div>
+    {/each}
+  </section>
 
+  <section class="list">
+    <header class="head">
+      <h3 class="text">Liên kết nhúng ngoài</h3>
+      <a class="link" href="/rm">Xem tất cả</a>
+    </header>
+    {#each data.rstems as rstem}
+      <RmstemCard {rstem} />
+    {:else}
+      <div class="u-empty-sm">Danh sách trống</div>
+    {/each}
+  </section>
+</article>
+
+<!--
 <section class="list">
   <header class="head">
     <h3 class="text">Truyện mới cập nhật</h3>
@@ -49,42 +77,20 @@
   </header>
 
   <WninfoList books={books.weight} />
-</section>
-
-<!-- <section class="list">
-  <header class="head">
-    <h3 class="text">Đánh giá mới nhất</h3>
-    <a class="link" href="/wn/crits">Xem tất cả</a>
-  </header>
-
-  <div class="ycrit-list">
-    {#each data.ycrits as crit}
-      {@const book = data.books[crit.wn_id]}
-      <YscritCard {crit} {book} />
-    {/each}
-  </div>
-</section>
-
-<section class="list">
-  <header class="head">
-    <h3 class="text">Thư đơn mới nhất</h3>
-    <a class="link" href="/wn/lists">Xem tất cả</a>
-  </header>
-
-  <div class="ylist-list">
-    {#each data.ylists as list}
-      <YslistCard {list} />
-    {/each}
-  </div>
 </section> -->
+
 <style lang="scss">
-  .nav-link {
-    margin-top: 1.5rem;
+  .nav-list {
+    margin-bottom: 0.75rem;
   }
 
   .list {
-    margin-top: 1rem;
-    margin-bottom: 0.75rem;
+    margin: 0.75rem 0;
+    padding-bottom: 1.5rem;
+
+    &:not(:last-child) {
+      @include border(--bd-soft, $loc: bottom);
+    }
   }
 
   .head {

@@ -7,6 +7,8 @@
 <div class="list">
   {#each books as nvinfo (nvinfo)}
     <WninfoCard {nvinfo} {nvtab} />
+  {:else}
+    <div class="u-empty">Danh sách trống</div>
   {/each}
 </div>
 
