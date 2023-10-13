@@ -7,7 +7,7 @@ export const load = (async ({ parent }) => {
 
   const _meta = {
     left_nav: [
-      nav_link('.', ustem.vname, 'folder', { show: 'ts', kind: 'title' }),
+      nav_link('.', ustem.vname, 'album', { show: 'ts', kind: 'title' }),
       nav_link('dl', 'Tải xuống', 'download'),
     ],
   }

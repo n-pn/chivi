@@ -23,6 +23,7 @@ declare namespace CV {
     title: string
     chdiv: string
 
+    ztext: string[]
     fpath: string
     error: number
 

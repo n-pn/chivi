@@ -134,18 +134,15 @@ x-vcoin,
 
 .d-empty-sm {
   @include flex-ca;
-  @include padding-y(3rem);
 
+  flex-direction: column;
   font-style: italic;
+
   @include fgcolor(mute);
+  @include padding-y(3rem);
 
   p {
     margin-top: 1rem;
-  }
-
-  &._window {
-    gap: 0.25rem;
-    padding: 0.25rem 0;
   }
 }
 
