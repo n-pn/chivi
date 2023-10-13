@@ -3,8 +3,8 @@ require "./ai_node"
 class MT::M2Node
   include AiNode
 
-  getter lhsn : AiNode
-  getter rhsn : AiNode
+  property lhsn : AiNode
+  property rhsn : AiNode
 
   getter? flip = false
 
@@ -28,7 +28,14 @@ class MT::M2Node
     when .vcp? then fix_vcp!
     when .vnv? then fix_vnv!
     when .qp?  then fix_qp!
+    when .vp?  then fix_vp!
     when .dp?  then @flip = !@lhsn.attr.at_h?
+    end
+  end
+
+  def fix_vp!
+    if @rhsn.epos.noun?
+      MtPair.v_n_pair.fix_if_match!(@lhsn, @rhsn)
     end
   end
 

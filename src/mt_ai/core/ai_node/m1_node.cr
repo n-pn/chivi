@@ -3,7 +3,7 @@ require "./ai_node"
 class MT::M1Node
   include AiNode
 
-  getter node : AiNode
+  property node : AiNode
 
   def initialize(@node, @epos, @attr = :none, @_idx = 0)
     @zstr = node.zstr

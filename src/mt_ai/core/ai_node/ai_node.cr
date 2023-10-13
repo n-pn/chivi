@@ -109,6 +109,7 @@ module MT::AiNode
   ###
 
   def to_txt(io : IO, cap : Bool, und : Bool)
+    # pp [self]
     if @dnum >= 0 || self.is_a?(M0Node)
       io << ' ' unless @attr.undent?(und: und)
       @attr.render_vstr(io, @vstr, cap: cap, und: und)

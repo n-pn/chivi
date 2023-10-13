@@ -199,8 +199,8 @@ class MT::NpNode
       when .cd?, .clp?
         list.unshift(node)
       when .qp?
-        node = node.find_by_epos(:M) || node
-        MtPair.m_n_pair.fix_if_match!(node, noun)
+        m_node = node.find_by_epos(:M) || node
+        MtPair.m_n_pair.fix_if_match!(m_node, noun)
 
         list.unshift(node)
       when .adjp?

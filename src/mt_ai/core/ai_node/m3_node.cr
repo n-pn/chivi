@@ -3,9 +3,9 @@ require "./ai_node"
 class MT::M3Node
   include AiNode
 
-  getter lhsn : AiNode
-  getter midn : AiNode
-  getter rhsn : AiNode
+  property lhsn : AiNode
+  property midn : AiNode
+  property rhsn : AiNode
 
   def initialize(@lhsn, @midn, @rhsn, @epos, @attr = :none, @_idx = lhsn._idx)
     @zstr = {lhsn, midn, rhsn}.join(&.zstr)

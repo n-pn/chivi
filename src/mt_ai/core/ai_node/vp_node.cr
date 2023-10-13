@@ -120,6 +120,7 @@ class MT::VpNode
     stem = find_stem(verb)
     prfx = nil
 
+    hmax = head.size &- 1
     head.each_with_index do |node, i|
       case node.epos
       when .advp?
@@ -129,7 +130,7 @@ class MT::VpNode
         fix_p_v_pair!(node, stem)
       end
 
-      if node.attr.prfx? || i < head.size &- 1
+      if node.attr.prfx? && i == hmax
         prfx = node
       elsif node.attr.at_t?
         tail << node
@@ -138,10 +139,7 @@ class MT::VpNode
       end
     end
 
-    if prfx
-      verb = M2Node.new(prfx, verb, :VP, attr: verb.attr, flip: prfx.attr.at_t?)
-      verb.tl_whole!(dict: dict)
-    end
+    verb = combine_with_prfx(dict, verb, prfx) if prfx
 
     # TODO: split verb?
     data << read_vo!(dict, verb, _max)
@@ -152,6 +150,29 @@ class MT::VpNode
     end
 
     data
+  end
+
+  def combine_with_prfx(dict, verb, prfx)
+    if !verb.is_a?(M0Node)
+      prev = verb
+      verb = prev.first
+    end
+
+    verb = M2Node.new(prfx, verb, :VV, attr: verb.attr, flip: prfx.attr.at_t?, _idx: prfx._idx)
+    verb.tl_whole!(dict: dict)
+
+    return verb unless prev
+
+    case prev
+    when M1Node then prev.node = verb
+    when M2Node then prev.lhsn = verb
+    when M3Node then prev.lhsn = verb
+    when MxNode then prev.list[0] = verb
+    when VpNode then prev.data[0] = verb
+    when NpNode then prev.data[0] = verb
+    end
+
+    prev
   end
 
   def read_vo!(dict : AiDict, verb : AiNode, _max : Int32)
