@@ -21,7 +21,6 @@ export const load = (async ({ parent, params, fetch }) => {
       nav_link('.', rstem.btitle_vi, 'list', { show: 'pl', kind: 'title' }),
       nav_link('.', `Ch#${ch_no}`, '', { show: 'lg', kind: 'uname' }),
     ],
-    show_config: true,
   }
 
   return { rdata, _meta, _title }

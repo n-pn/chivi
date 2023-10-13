@@ -24,7 +24,6 @@ export const load = (async ({ params, fetch }) => {
 
   const _meta = {
     left_nav: [home_nav('ts'), book_nav(nvinfo.bslug, nvinfo.vtitle, '')],
-    right_nav: [quick_read_v2(nvinfo, ubmemo)],
   }
 
   return { nvinfo, ubmemo, rmemo, _meta, _title, _image, _mdesc, _board }

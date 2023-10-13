@@ -4,13 +4,14 @@
   import { get_user } from '$lib/stores'
   const _user = get_user()
 
+  import { upsert_memo } from '$lib/common/rdmemo'
+
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Section from '$gui/sects/Section.svelte'
 
   import UpstemFull from '$gui/parts/upstem/UpstemFull.svelte'
 
   import type { LayoutData } from './$types'
-  import { upsert_memo } from '$lib/common/rdmemo'
   export let data: LayoutData
 
   $: ({ ustem, sroot, rmemo } = data)
@@ -50,6 +51,11 @@
 <UpstemFull {ustem} binfo={data.binfo || null} />
 
 <nav class="quick-menu">
+  <a href={sroot} class="m-btn _fill _primary">
+    <SIcon name="list" />
+    <span class="-txt">Mục lục</span>
+  </a>
+
   <button
     class="m-btn _harmful"
     class:_fill={rmemo.recomm == 0}
@@ -58,16 +64,13 @@
     <SIcon name={rmemo.recomm > 0 ? 'heart-off' : 'heart'} />
     <span class="-txt">Ưa thích</span>
   </button>
-  <a href={sroot} class="m-btn _fill">
-    <SIcon name="list" />
-    <span class="-txt">Mục lục</span>
-  </a>
+
   {#if is_owner}
     <a href="{sroot}/ul" class="m-btn _fill _success">
       <SIcon name="upload" />
       <span class="-txt">Đăng tải</span>
     </a>
-    <a href="{sroot}/su" class="m-btn _fill _warning">
+    <a href="{sroot}/su" class="m-btn _warning">
       <SIcon name="tools" />
       <span class="-txt">Quản lý</span>
     </a>

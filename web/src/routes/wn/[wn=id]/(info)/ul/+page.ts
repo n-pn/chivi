@@ -8,21 +8,22 @@ export const load = (async ({ url, fetch, parent, params }) => {
   const data = await load_lists(url, fetch, { book })
 
   const { nvinfo } = await parent()
-  const _meta = build_meta(nvinfo)
+  const _meta: App.PageMeta = build_meta(nvinfo)
 
-  return { ...data, _meta, _title: nvinfo.vtitle }
+  return {
+    ...data,
+    ontab: 'ul',
+    _meta,
+    _title: nvinfo.vtitle,
+    _mdesc: nvinfo.bintro.substring(0, 300),
+  }
 }) satisfies PageLoad
 
 const build_meta = (book: CV.Wninfo) => {
   return {
-    desc: book.bintro.substring(0, 300),
     left_nav: [
-      home_nav('tm', ''),
-      book_nav(book.bslug, book.vtitle, 'tm'),
-      nav_link('lists', 'Thư đơn', 'bookmarks', { show: 'pl' }),
-    ],
-    right_nav: [
-      nav_link('/wn/lists/+list', 'Tạo mới', 'circle-plus', { show: 'tl' }),
+      book_nav(book.bslug, book.vtitle, 'ts'),
+      nav_link('lists', 'Thư đơn', 'bookmarks', { show: 'pm' }),
     ],
   }
 }

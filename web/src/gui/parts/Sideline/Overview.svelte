@@ -68,7 +68,7 @@
   {#if ztext}
     {@html gen_ztext_html(ztext)}
   {:else}
-    <p class="empty">Chưa có tiếng trung!</p>
+    <p class="d-empty-xs">Chưa có tiếng trung!</p>
   {/if}
 </Viewbox>
 
@@ -99,7 +99,7 @@
     {@const opts = { mode: 2, cap: true, und: true, _qc: 0 }}
     {@html gen_mt_ai_html(mt_ai, opts)}
   {:else}
-    <p class="empty">Chưa có kết quả dịch máy</p>
+    <p class="d-empty-xs">Chưa có kết quả dịch máy</p>
   {/if}
 </Viewbox>
 
@@ -120,7 +120,7 @@
   {#if vtran}
     {vtran}
   {:else}
-    <div class="blank">
+    <div class="d-empty-xs">
       <em>Chưa có kết quả dịch sẵn.</em>
       <button class="m-btn _xs _primary">Đóng góp!</button>
     </div>
@@ -144,7 +144,7 @@
   {#if bt_zv}
     {bt_zv}
   {:else}
-    <div class="blank">
+    <div class="d-empty-xs">
       <div>
         <em>Chưa có kết quả dịch sẵn.</em>
       </div>
@@ -171,7 +171,7 @@
   {#if c_gpt}
     {c_gpt}
   {:else}
-    <div class="blank">
+    <div class="d-empty-xs">
       <div>
         <em>Chưa có kết quả dịch sẵn.</em>
       </div>
@@ -198,17 +198,8 @@
   {#if qt_v1}
     {qt_v1}
   {:else}
-    <div class="blank">
+    <div class="d-empty-xs">
       <em>Chưa có kết quả dịch sẵn.</em>
     </div>
   {/if}
 </Viewbox>
-
-<style lang="scss">
-  .blank {
-    @include flex-ca;
-    gap: 0.25rem;
-    height: 100%;
-    padding: 0.25rem 0;
-  }
-</style>

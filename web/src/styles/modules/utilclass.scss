@@ -52,14 +52,6 @@
   @include fgcolor(mute);
 }
 
-.fg-link {
-  @include fgcolor(primary, 6);
-
-  &:hover {
-    @include fgcolor(primary, 5);
-  }
-}
-
 .u-show-pm {
   @include bps(display, none, $pm: initial);
 }
@@ -78,4 +70,97 @@
 
 .u-show-tl {
   @include bps(display, none, $tl: initial);
+}
+
+.u-warn {
+  @include fgcolor(warning, 5);
+  margin-bottom: 1.5rem;
+
+  code {
+    @include fgcolor(success, 6);
+    // font-weight: 800;
+  }
+}
+
+.u-bold {
+  font-weight: 500;
+}
+
+.u-link {
+  @include fgcolor(primary, 6);
+
+  &:hover {
+    @include fgcolor(primary, 5);
+  }
+}
+
+x-sname,
+.u-sname {
+  display: inline;
+  text-transform: uppercase;
+  font-weight: 500;
+  padding: 0.125em 0.25em;
+  font-size: em(13, 16);
+
+  @include fgcolor(primary, 5);
+}
+
+x-vcoin,
+.x-vcoin {
+  display: inline-flex;
+  gap: 0.1em;
+  align-items: center;
+  font-weight: 500;
+  @include fgcolor(warning);
+
+  svg {
+    stroke-width: 2px;
+  }
+}
+
+.d-empty {
+  @include flex-ca;
+
+  min-height: 40vh;
+  font-style: italic;
+  flex-direction: column;
+
+  @include fgcolor(tert);
+
+  h2 {
+    margin-bottom: 2rem;
+  }
+}
+
+.d-empty-sm {
+  @include flex-ca;
+  @include padding-y(3rem);
+
+  font-style: italic;
+  @include fgcolor(mute);
+
+  p {
+    margin-top: 1rem;
+  }
+
+  &._window {
+    gap: 0.25rem;
+    padding: 0.25rem 0;
+  }
+}
+
+.d-empty-xs {
+  @include flex-ca;
+
+  gap: 0.25rem;
+  padding: 0.25rem 0;
+
+  font-style: italic;
+  @include fgcolor(mute);
+}
+
+.x-label {
+  font-weight: 500;
+  text-transform: uppercase;
+  @include fgcolor(tert);
 }

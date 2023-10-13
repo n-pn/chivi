@@ -1,4 +1,4 @@
-<div class="u-empty-sm">
+<div class="d-empty-sm">
   <h3>
     Nơi hiển thị các thay đổi gần nhất về nội dung, ví dụ thêm bản dịch mới, sửa
     text gốc....
@@ -11,9 +11,3 @@
     </em>
   </p>
 </div>
-
-<style lang="scss">
-  p {
-    margin-top: 1rem;
-  }
-</style>

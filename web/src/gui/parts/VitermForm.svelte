@@ -524,9 +524,4 @@
       @include fgcolor(harmful);
     }
   }
-
-  .empty {
-    height: 15rem;
-    @include flex-ca;
-  }
 </style>

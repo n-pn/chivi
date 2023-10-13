@@ -116,7 +116,7 @@
   {#each items as rstem}
     <RmstemCard {rstem} {rpath} />
   {:else}
-    <div class="u-empty">Danh sách trống</div>
+    <div class="d-empty">Danh sách trống</div>
   {/each}
 </section>
 

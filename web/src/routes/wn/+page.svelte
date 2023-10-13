@@ -34,7 +34,7 @@
 {#if books.length > 0}
   <WninfoList {books} />
 {:else}
-  <div class="u-empty">Danh sách trống</div>
+  <div class="d-empty">Danh sách trống</div>
 {/if}
 
 <Footer>

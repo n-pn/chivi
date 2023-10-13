@@ -71,7 +71,7 @@
 <page-info>
   <info-left>
     <info-span>{wstem.chmax} chương</info-span>
-    <info-span class="u-show-pl"><RTime mtime={wstem.utime} /></info-span>
+    <info-span><RTime mtime={wstem.utime} /></info-span>
   </info-left>
 
   <info-right>
@@ -107,24 +107,24 @@
   <div class="chap-hint">
     <SIcon name="alert-circle" />
     <span>
-      Chương từ <span class="em">1</span> tới
-      <span class="em">{free_chaps}</span> cần
-      <strong class="em">đăng nhập</strong> để xem nội dung.
+      Chương từ <span class="u-warn">1</span> tới
+      <span class="u-warn">{free_chaps}</span> cần
+      <strong class="u-warn">đăng nhập</strong> để xem nội dung.
     </span>
 
     <span>
-      Chương từ <span class="em">{free_chaps + 1}</span> tới
-      <span class="em">{wstem.chmax}</span> cần
-      <strong class="em">mở khoá</strong> để xem nội dung.
+      Chương từ <span class="u-warn">{free_chaps + 1}</span> tới
+      <span class="u-warn">{wstem.chmax}</span> cần
+      <strong class="u-warn">mở khoá</strong> để xem nội dung.
     </span>
   </div>
 {:else if wstem.chmax > 0}
   <div class="chap-hint">
     <SIcon name="alert-circle" />
     <span>
-      Chương từ <span class="em">1</span> tới
-      <span class="em">{wstem.chmax}</span> cần
-      <strong class="em">đăng nhập</strong> để xem nội dung.
+      Chương từ <span class="u-warn">1</span> tới
+      <span class="u-warn">{wstem.chmax}</span> cần
+      <strong class="u-warn">đăng nhập</strong> để xem nội dung.
     </span>
   </div>
 {/if}
@@ -145,7 +145,7 @@
     </Footer>
   </chap-list>
 {:else}
-  <div class="u-empty">
+  <div class="d-empty">
     <h2>Chưa có text gốc.</h2>
     <p>
       Hãy liên hệ với ban quản trị để khắc phục. Thông tin liên hệ xem cuối
@@ -198,15 +198,6 @@
     @include ftsize(sm);
     @include fgcolor(tert);
 
-    &._bold {
-      font-weight: 500;
-    }
-
-    .em {
-      @include fgcolor(warning, 5);
-      font-weight: 500;
-    }
-
     &._error {
       font-size: italic;
       @include fgcolor(harmful, 5);
@@ -218,33 +209,13 @@
     }
   }
 
-  // .m-btn {
-  //   background: inherit;
-
-  //   &:hover {
-  //     @include bgcolor(secd);
-  //   }
-  // }
-  // .chinfo {
-  //   margin-bottom: var(--gutter-pl);
-  // }
-
-  info-text {
-    padding-left: 0.5rem;
-    @include label();
-    @include fgcolor(tert);
-    @include border(primary, 5, $width: 3px, $loc: left);
-  }
-
   info-span {
     font-style: italic;
     @include fgcolor(neutral, 4);
 
-    &:before {
-      display: inline-block;
+    & + &:before {
       content: '·';
-      text-align: center;
-      @include bps(width, 0.5rem, 0.75rem, 1rem);
+      padding: 0 0.375rem;
     }
   }
 
@@ -261,12 +232,5 @@
 
   .foot {
     margin-top: 1rem;
-  }
-
-  .link {
-    @include fgcolor(primary, 5);
-    &:hover {
-      @include fgcolor(primary, 6);
-    }
   }
 </style>

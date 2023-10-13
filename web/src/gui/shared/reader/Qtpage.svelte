@@ -38,7 +38,7 @@
     </p>
   {/each}
 {:else}
-  <div class="u-empty">
+  <div class="d-empty">
     <div>
       <SIcon name="loader-2" spin={true} />
       <p>Đang tải nội dung...</p>
@@ -47,7 +47,7 @@
 {/if}
 
 <style lang="scss">
-  .u-empty {
+  .d-empty {
     :global(svg) {
       font-size: 1.5em;
     }

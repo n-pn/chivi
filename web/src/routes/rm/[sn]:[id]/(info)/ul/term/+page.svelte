@@ -5,7 +5,7 @@
   // export let data: PageData
 </script>
 
-<div class="u-empty-sm">
+<div class="d-empty-sm">
   <h3>Nơi đăng lên các nghĩa tiếng Việt cho cụm từ cho công cụ dịch máy</h3>
 
   <p>

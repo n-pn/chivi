@@ -69,7 +69,7 @@
   {/each}
 
   {#if vi.lists.length + ys.lists.length == 0}
-    <div class="u-empty">
+    <div class="d-empty">
       <p class="u-fg-tert"><em>Không có nội dung</em></p>
     </div>
   {/if}

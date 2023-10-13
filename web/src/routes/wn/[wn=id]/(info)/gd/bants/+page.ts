@@ -1,4 +1,4 @@
-import { home_nav, book_nav, nav_link } from '$utils/header_util'
+import { book_nav, nav_link } from '$utils/header_util'
 import { api_get } from '$lib/api_call'
 
 import type { PageLoad } from './$types'
@@ -16,10 +16,9 @@ export const load = (async ({ url, fetch, params, parent }) => {
 
   const _meta = {
     left_nav: [
-      home_nav('tm', ''),
-      book_nav(nvinfo.bslug, nvinfo.vtitle, 'tm'),
-      nav_link('bants', 'Thảo luận', 'message', { show: 'pl' }),
+      book_nav(nvinfo.bslug, nvinfo.vtitle, 'pl'),
+      nav_link('bants', 'Thảo luận', 'message', { show: 'pm' }),
     ],
   }
-  return { rplist, gdroot, sort, _meta, _title }
+  return { rplist, gdroot, sort, _meta, _title, ontab: 'ul' }
 }) satisfies PageLoad

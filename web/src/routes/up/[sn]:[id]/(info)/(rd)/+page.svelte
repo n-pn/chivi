@@ -48,20 +48,20 @@
   <SIcon name="alert-circle" />
   {#if free_chap < chmax}
     <span>
-      Chương từ <span class="em">1</span> tới
-      <span class="em">{free_chap}</span> cần
-      <strong class="em">đăng nhập</strong> để xem nội dung.
+      Chương từ <span class="u-warn">1</span> tới
+      <span class="u-warn">{free_chap}</span> cần
+      <strong class="u-warn">đăng nhập</strong> để xem nội dung.
     </span>
 
     <span>
-      Chương từ <span class="em">{free_chap + 1}</span> tới
-      <span class="em">{chmax}</span> cần
-      <strong class="em">thanh toán vcoin</strong> để mở khoá.
+      Chương từ <span class="u-warn">{free_chap + 1}</span> tới
+      <span class="u-warn">{chmax}</span> cần
+      <strong class="u-warn">thanh toán vcoin</strong> để mở khoá.
     </span>
   {:else}
     <span>
       Bạn cần thiết
-      <strong class="em">đăng nhập</strong> để xem nội dung.
+      <strong class="u-warn">đăng nhập</strong> để xem nội dung.
     </span>
   {/if}
 </div>
@@ -82,7 +82,7 @@
     </Footer>
   </chap-list>
 {:else}
-  <p class="u-empty">Không có nội dung :(</p>
+  <p class="d-empty">Không có nội dung :(</p>
 {/if}
 
 <style lang="scss">
@@ -122,11 +122,6 @@
 
     @include ftsize(sm);
     @include fgcolor(tert);
-
-    .em {
-      @include fgcolor(warning, 5);
-      font-weight: 500;
-    }
 
     &._error {
       font-size: italic;

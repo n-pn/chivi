@@ -50,7 +50,7 @@
   }
 </script>
 
-<h1 class="em">
+<h1 class="u-warn">
   Lỗi: Chương {ch_no} phần {p_idx} cần thiết mở khóa bằng vcoin.
 </h1>
 
@@ -61,8 +61,8 @@
   </p>
 {:else}
   <p>
-    Phần hiện tại có <span class="em">{rdata.zsize}</span> ký tự. Theo hệ số,
-    bạn cần thiết
+    Phần hiện tại có <span class="u-warn">{rdata.zsize}</span> ký tự. Theo hệ
+    số, bạn cần thiết
     <x-vcoin
       >{vcoin_cost}
       <SIcon name="vcoin" iset="icons" /></x-vcoin>
@@ -77,7 +77,7 @@
     <code>[Số ký tự] / 100_000 * [Hệ số nhân] = [Số vcoin cần thiết]</code>
     <br />
     Hệ số nhân hiện tại của chương:
-    <strong class="em">{cstem.multp}</strong>.
+    <strong class="u-warn">{cstem.multp}</strong>.
   </p>
   <p class="u-fg-tert">
     <em>
@@ -107,7 +107,7 @@
     {#if msg_text}
       <div class="form-msg _{msg_type}">{msg_text}</div>
     {:else if $_user.vcoin < vcoin_cost}
-      <div class="em">
+      <div class="u-warn">
         <em>
           Bạn chưa đủ vcoin để mở khóa cho chương. Nạp vcoin theo <a
             href="/hd/donation">hướng dẫn ở đây</a

@@ -5,7 +5,7 @@
   // export let data: PageData
 </script>
 
-<div class="u-empty-sm">
+<div class="d-empty-sm">
   <h3>Sao chép nội dung từ nguồn khác</h3>
 
   <p>

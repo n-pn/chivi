@@ -37,7 +37,7 @@
 </script>
 
 <section class="notext">
-  <h1 class="em">Lỗi: Chương tiết không có nội dung.</h1>
+  <h1 class="u-warn">Lỗi: Chương tiết không có nội dung.</h1>
 
   {#if cstem.stype == 'up'}
     <p>
@@ -76,7 +76,7 @@
     </p>
   {/if}
 
-  <h2 class="em">Tự thêm text gốc cho chương:</h2>
+  <h2 class="u-warn">Tự thêm text gốc cho chương:</h2>
   {#if $_user.privi >= cstem.plock}
     <p>
       Bạn có đủ quyền hạn để thêm text gốc cho bộ truyện, bấm vào nút
@@ -110,15 +110,15 @@
     <ul>
       <li>
         Nguồn <x-sname>Tổng hợp</x-sname> cần quyền hạn tối thiểu là
-        <strong class="em">2</strong> để thêm sửa text.
+        <strong class="u-warn">2</strong> để thêm sửa text.
       </li>
       <li>
         Nguồn <x-sname>Tạm thời</x-sname> cần quyền hạn tối thiểu là
-        <strong class="em">1</strong> để thêm sửa text.
+        <strong class="u-warn">1</strong> để thêm sửa text.
       </li>
       <li>
         Nguồn <x-sname>Chính thức</x-sname> cần quyền hạn tối thiểu là
-        <strong class="em">3</strong> để thêm sửa text.
+        <strong class="u-warn">3</strong> để thêm sửa text.
       </li>
     </ul>
 
@@ -136,7 +136,8 @@
   {:else}
     <p>
       Text từ nguồn nhúng ngoài thường được tải tự động, nhưng bạn có thể tự sửa
-      text gốc nếu quyền hạn của bạn tối thiểu là <strong class="em">3</strong>
+      text gốc nếu quyền hạn của bạn tối thiểu là <strong class="u-warn"
+        >3</strong>
     </p>
 
     <p>
@@ -187,11 +188,6 @@
     &:hover {
       text-decoration: underline;
     }
-  }
-
-  .em {
-    @include fgcolor(warning, 5);
-    margin-bottom: 1.5rem;
   }
 
   .actions {

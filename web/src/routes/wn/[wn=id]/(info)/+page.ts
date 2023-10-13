@@ -19,7 +19,7 @@ export const load = async ({ fetch, params }: LoadEvent) => {
   const bdata = await api_get<BookFront>(api_url, fetch)
   const ydata = await load_ycrits(wn, fetch)
 
-  return { bdata, ydata }
+  return { bdata, ydata, ontab: 'fp' }
 }
 
 const load_ycrits = async (wn: number, fetch = globalThis.fetch) => {

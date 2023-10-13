@@ -102,11 +102,6 @@
     font-size: var(--para-fs);
   }
 
-  .em {
-    @include fgcolor(warning, 5);
-    margin-bottom: 1.5rem;
-  }
-
   cite {
     font-style: normal;
     font-variant: small-caps;
@@ -126,25 +121,6 @@
     --active: #{color($color, 4)};
     --border: #{color($color, 6)};
   }
-}
-
-x-sname {
-  display: inline;
-  text-transform: uppercase;
-  font-weight: 500;
-  padding: 0.125em 0.25em;
-  font-size: em(13, 16);
-
-  @include fgcolor(primary, 5);
-}
-
-x-vcoin,
-.x-vcoin {
-  display: inline-flex;
-  gap: 0.1em;
-  align-items: center;
-  font-weight: 500;
-  @include fgcolor(warning);
 }
 
 x-n {

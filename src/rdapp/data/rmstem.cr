@@ -297,6 +297,19 @@ class RD::Rmstem
         sql << " and _author_ts_ like '%' || scrub_name($#{args.size}) || '%'"
       end
 
+      if liked
+        args << liked
+
+        sql << <<-SQL
+          and exists (
+            select 1 from rdmemos as m
+            where m.vu_id = $#{args.size}
+            and m.sn_id = rmstems.sn_id
+            and m.sname = 'rm' || rmstems.sname
+            )
+          SQL
+      end
+
       case order
       when "rtime" then sql << " order by rtime desc"
       when "utime" then sql << " order by update_int desc"

@@ -44,7 +44,7 @@
     {#each data.ustems as ustem}
       <UpstemCard {ustem} />
     {:else}
-      <div class="u-empty-sm">Danh sách trống</div>
+      <div class="d-empty-sm">Danh sách trống</div>
     {/each}
   </section>
 
@@ -56,7 +56,7 @@
     {#each data.rstems as rstem}
       <RmstemCard {rstem} />
     {:else}
-      <div class="u-empty-sm">Danh sách trống</div>
+      <div class="d-empty-sm">Danh sách trống</div>
     {/each}
   </section>
 </article>

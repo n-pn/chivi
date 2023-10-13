@@ -20,7 +20,7 @@
   $: ontab = _now || $page.data.ontab
 </script>
 
-<article class="section island">
+<article class="section article island">
   <header class="head">
     {#each tabs as { type, href, icon, text, desc, mute }}
       <a

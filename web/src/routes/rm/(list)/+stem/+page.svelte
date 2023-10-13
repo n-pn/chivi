@@ -1,1 +1,1 @@
-<div class="u-empty">Đợi hoàn thành!</div>
+<div class="d-empty">Đợi hoàn thành!</div>

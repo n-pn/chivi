@@ -21,7 +21,6 @@ export async function load({ fetch, url, params: { type, name } }) {
       nav_link('/sp/qtran', 'Dịch nhanh', 'bolt', { show: 'ts' }),
       nav_link(name, `[${name}]`, qtran_icons[type], { kind: 'title' }),
     ],
-    show_config: true,
   }
 
   const { cvmtl, ztext } = await api_get<Data>(path, fetch)

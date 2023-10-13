@@ -158,7 +158,7 @@ module SP::Btran
     client.connect_timeout = 2
     client.read_timeout = 5
 
-    @@free_until = Time.utc + 5.minutes
+    @@free_until = Time.utc + 8.minutes
     @@free_token = client.get("/translate/auth", &.body_io.gets_to_end)
   end
 

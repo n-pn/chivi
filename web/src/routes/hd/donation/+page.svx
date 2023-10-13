@@ -11,11 +11,11 @@ mdesc: Chivi hiện không sống bằng quảng cáo, tiền ủng hộ của c
 
 Chivi hiện không sống bằng quảng cáo, tiền ủng hộ của các bạn là đầu vào duy nhất để nuôi sống trang web.
 
-<p class="em strong">
-Để ban quản trị dễ dàng phân biệt tài khoản của bạn, khi chuyển khoản ủng hộ Chivi hãy để lại lời nhắn theo định dạng <code>{code}</code>. {#if $_user.vu_id == 0}(Lưu ý: Bạn cần đăng nhập để thông tin gợi ý được chính xác.){/if}
+<p class="u-warn">
+<strong>Để ban quản trị dễ dàng phân biệt tài khoản của bạn, khi chuyển khoản ủng hộ Chivi hãy để lại lời nhắn theo định dạng <code>{code}</code>. {#if $_user.vu_id == 0}(Lưu ý: Bạn cần đăng nhập để thông tin gợi ý được chính xác.){/if}</strong>
 </p>
 
-_Mách nhỏ: Bạn có thể scan mã QR ở bên dưới. Thông tin định danh của bạn đã được điền sẵn nếu bạn dùng QR của Techcombank hoặc Vietcombank._
+_Gợi ý: Bạn có thể scan mã QR ở bên dưới. Thông tin định danh của bạn đã được điền sẵn nếu bạn dùng QR của Techcombank hoặc Vietcombank._
 
 Trong trường hợp bạn quên chưa cung cấp thông tin định danh, hãy liên hệ với ban quản trị để được hỗ trợ thông qua các kênh:
 
@@ -58,75 +58,10 @@ Trong trường hợp bạn quên chưa cung cấp thông tin định danh, hãy
 
 _Khi bạn ủng hộ Chivi bằng tiền mặt, bạn sẽ được tặng một đơn vị tiền tệ ảo là vcoin, bạn có thể dùng vcoin để nâng cấp quyền hạn, gửi tặng người dùng khác, hoặc sử dụng các tính năng nâng cao sẽ dần được phát triển bổ sung._
 
-<p class="em strong">Quy ước trao đổi: 1000 VND = 1 vcoin, $1 USD = 20 vcoin.</p>
+<p class="u-warn u-bold">Quy ước trao đổi: 1000 VND = 1 vcoin, $1 USD = 20 vcoin.</p>
 
 **Lưu ý: Hiện tại trang chưa có hệ thống thanh toán tự động, cho nên bạn chỉ được cộng vcoin sau khi ban quản trị có người kiểm tra thông tin giao dịch rồi cộng thủ công, quá trình này có thể kéo dài từ vài chục phút tới vài giờ tuỳ tình huống, mong các bạn kiên nhẫn.**
 
 Muốn nhận được vcoin nhanh hơn, hãy thử liên hệ qua các kênh liên lạc của trang như [Facebook](https://www.facebook.com/chivi.app) hoặc [Discord](https://discord.gg/mdC3KQH).
 
 Trong tương lai, nếu có nhiều người ủng hộ hơn thì quá trình này có thể sẽ được cải thiện.
-
-## Tại sao phải ủng hộ Chivi?
-
-Trang Chivi hiện tại là trang duy nhất của Việt Nam có các tính năng sau
-
-- Một máy dịch từ tiếng Trung sang tiếng Việt hoàn toàn mới dựa trên các hiểu biết về xử lý ngôn ngữ tự nhiên và trí thông minh nhân tạo, không giống các trang khác chỉ là máy dịch thay thế cụm từ dựa theo nền tảng QuickTranslator/Chinese Convert Pro đã dừng phát triển từ hơn 10 năm trước.
-
-  Vì là công cụ mới với cấu trúc phức tạp, cho nên nó cần rất nhiều thời gian và công sức để có thể hoàn thiện, hiện tại trang web cũng hoàn toàn không có nguồn tiền đầu tư từ người khác, cho nên tiền ủng hộ của các bạn là thứ duy nhấi nuôi sống người phát triển Chivi.
-
-- Hệ thống đánh giá và tổng hợp truyện theo đề tài cụ thể được bê trực tiếp từ trang đánh giá truyện nổi tiếng nhất bên tàu là Ưu Thư Võng. Thay vì chỉ biết được cái gọi là top 1 Qidian, top 1 Zhongheng thực tế toàn là số liệu giả, các bạn có thể tìm được truyện thực sự hay từ những con nghiện truyện với hơn 10 năm kinh nghiệm.
-
-Tuy công bằng mà nói thì đánh giá của người dùng Ưu Thư Võng nhiều khi hơi chua ngoa quá quắt, nhưng không thể phủ nhận rằng phần lớn những bộ được họ đánh giá cao (rating từ 6.0 trở lên) thì đều rất đáng đọc. Trong tình trạng khan hiếm truyện hay do kiểm duyệt thắt chặt thì đây là một điều cực kỳ quý giá không phải ở đâu cũng có.
-
-Trong tương lai, các bạn còn có thể tự viết các đánh giá bộ truyện cho riêng mình, có thể tạo các danh sách truyện theo ý muốn của bản thân. Để mấy tính năng này đến nhanh hơn, cách duy nhất là ủng hộ tiền cho người phát triển có thêm tài nguyên và động lực.
-
-- Nhiều danh sách chương tiết và nguồn truyện tự động cho từng bộ truyện. Tuy hiện nay cũng có nhiều trang như sangtacviet cho phép các bạn đọc truyện trực tiếp từ các trang web tiếng Trung, nhưng phần lớn là tính năng sơ sài. Trang Chivi không những cho phép các bạn thêm liên kết tới các nguồn truyện ngoài để tải chương tiết tự động, mà còn cho phép các bạn tự động đăng tải chương tiết các bạn sưu tầm được từ bên ngoài.
-
-  Trong tình hình hiện tại (các trang web áp dụng biện pháp chống sao chép lậu) thì việc cho phép dùng nhiều nguồn, tự thêm text gốc, rồi thì sửa lại text gốc khi cần thiết là yêu cầu thiết yếu để đảm bảo rằng bạn luôn có nguồn text sạch trước khi dịch.
-
-  Trong tương lai, ngoài việc thêm sửa text gốc, các bạn cũng có thể tự thêm bản dịch tay cho chương tiết truyện, có thể thêm cả chương cũng có thể chỉ thêm một dòng, có thể dùng kết quả của máy dịch Chivi làm cơ sở, cũng có thể dùng các công cụ có sẵn như Bing hay Google. Tuy cái này không phải là nhu cầu của tất cả mọi người, nhưng các bạn vẫn có thể là người thụ hưởng.
-
-  Và như đã nói ở trên, muốn có tính năng thì các bạn phải ủng hộ người phát triển.
-
-**Ngoài ra, việc duy trì một trang web với gần 500GB dữ liệu, luôn luôn dịch nội dung tức thời, cộng thêm chi phí nuôi máy chủ, mua domain, trả tiền sao lưu... đều là những khoản tiền không hề nhỏ. Chivi hiện tại và trong tương lai gần cũng không cân nhắc việc áp dụng quảng cáo để kiếm tiền, cho nên nếu các bạn không ủng hộ cho trang thì trang cũng không có kinh phí để duy trì tồn tại.**
-
-Vì vậy, nếu điều kiện cho phép, hãy ủng hộ cho Chivi để trang tiếp tục tồn tại và phát triển.
-
-<style>
-  .qr {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
-    gap: 2vw;
-
-  }
-
-  figcaption {
-    color: var(--fg-tert);
-    text-align: center;
-    text-transform: uppercase;
-    font-size: 14px;
-  }
-
-  .em {
-    font-style: italic;
-    color: #d68010;
-  }
-
-  .strong {
-    font-weight: 500;
-  }
-
-  .em code {
-    color: #0b845c;
-    font-weight: 800;
-  }
-
-  .qr img {
-    max-height: 20rem;
-    width: auto;
-  }
-
-  li + li {
-    margin-top: .5rem;
-  }
-</style >

@@ -22,11 +22,7 @@
   {/each}
 </div>
 
-{#if books.length == 0}
-  <div class="empty">Danh sách trống</div>
-{:else}
-  <WninfoList {books} nvtab="chaps" />
-{/if}
+<WninfoList {books} nvtab="chaps" />
 
 <Footer>
   <div class="pagi">

@@ -8,6 +8,7 @@
 
   import RTime from '$gui/atoms/RTime.svelte'
   import UserAction from './UserAction.svelte'
+  import Section from '$gui/sects/Section.svelte'
 
   $: nvinfo = $page.data.nvinfo
   $: ubmemo = $page.data.ubmemo
@@ -21,17 +22,17 @@
     return ''
   }
 
-  $: root_path = `/wn/${nvinfo.bslug}`
+  $: rpath = `/wn/${nvinfo.bslug}`
 
-  const tabs = [
-    { href: '', icon: 'news', text: 'Tổng quan' },
-    { href: '/uc', icon: 'stars', text: 'Đánh giá' },
-    { href: '/ul', icon: 'bookmarks', text: 'Thư đơn' },
-    { href: '/gd', icon: 'message', text: 'Thảo luận' },
+  $: tabs = [
+    { type: 'fp', href: rpath, icon: 'news', text: 'Tổng quan' },
+    { type: 'uc', href: `${rpath}/uc`, icon: 'stars', text: 'Đánh giá' },
+    { type: 'ul', href: `${rpath}/ul`, icon: 'bookmarks', text: 'Thư đơn' },
+    { type: 'gd', href: `${rpath}/gd`, icon: 'message', text: 'Thảo luận' },
   ]
 </script>
 
-<div class="main-info">
+<div class="wninfo">
   <div class="title" data-tip={nvinfo.htitle} data-tip-loc="bottom">
     <h1 class="bname _main">
       <bname-vi>{nvinfo.vtitle}</bname-vi>
@@ -117,26 +118,12 @@
   <UserAction {nvinfo} {ubmemo} />
 </div>
 
-<section class="section island">
-  <header class="section-header">
-    {#each tabs as { href, icon, text }}
-      <a
-        href="{root_path}{href}"
-        class="header-tab"
-        class:_active={href == _curr}>
-        <SIcon name={icon} />
-        <span>{text}</span>
-      </a>
-    {/each}
-  </header>
-
-  <div class="section-content">
-    <slot />
-  </div>
-</section>
+<Section {tabs}>
+  <slot />
+</Section>
 
 <style lang="scss">
-  .main-info {
+  .wninfo {
     display: grid;
     gap: var(--gutter);
     justify-content: space-between;
@@ -147,11 +134,12 @@
 
     grid-template-areas: 'a a' 'b c' 'd d';
 
-    // @include flow();
-    @include margin-y(var(--gutter));
+    margin-bottom: var(--gutter);
 
     // prettier-ignore
-    @include bp-min(pm) { --cover-size: 35%; }
+    @include bp-min(pm) {
+      --cover-size: 35%;
+    }
 
     @include bp-min(pl) {
       --cover-size: 30%;
@@ -265,93 +253,5 @@
   .label {
     font-weight: 500;
     // @include fgcolor(neutral, 8);
-  }
-
-  .section {
-    @include margin-y(var(--gutter));
-
-    @include bgcolor(tert);
-    @include shadow(2);
-    @include padding-x(var(--gutter));
-
-    @include tm-dark {
-      @include linesd(--bd-soft, $ndef: false, $inset: false);
-    }
-  }
-
-  .section-header {
-    display: flex;
-    @include border(--bd-main, $loc: bottom);
-
-    @include tm-dark {
-      @include bdcolor(neutral, 6);
-    }
-  }
-
-  .section-content {
-    padding: 0.75rem 0;
-    display: block;
-    min-height: 50vh;
-  }
-
-  .header-tab {
-    flex: 1;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-
-    font-weight: 500;
-
-    padding: 0.5rem 0 0.25rem;
-
-    @include fgcolor(neutral, 6);
-
-    :global(svg) {
-      width: 1.25rem;
-      height: 1.25rem;
-      // opacity: 0.8;
-    }
-
-    span {
-      @include ftsize(sm);
-    }
-
-    @include bp-min(ts) {
-      flex-direction: row;
-
-      padding: 0.75rem 0;
-
-      span {
-        @include ftsize(md);
-      }
-
-      :global(svg) {
-        margin-right: 0.25rem;
-      }
-    }
-
-    &._active {
-      @include fgcolor(primary, 6);
-      position: relative;
-      &:after {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        content: '';
-        @include border(primary, 5, $width: 2px, $loc: bottom);
-      }
-    }
-
-    @include tm-dark {
-      @include fgcolor(neutral, 4);
-
-      &._active {
-        @include fgcolor(primary, 4);
-      }
-    }
   }
 </style>

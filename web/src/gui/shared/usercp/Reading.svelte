@@ -149,56 +149,6 @@
     @include border(--bd-soft, $loc: top);
   }
 
-  .chips {
-    @include flex($center: horz);
-    @include bps(font-size, 12px, 12px, 13px);
-  }
-
-  .chip {
-    display: inline-flex;
-    border-radius: 0.75rem;
-    align-items: center;
-
-    padding: 0 0.75em;
-    line-height: 2.25em;
-    font-weight: 500;
-    text-transform: uppercase;
-
-    @include fgcolor(tert);
-    @include bgcolor(tert);
-    @include linesd(var(--bd-main));
-
-    &:hover,
-    &._active {
-      @include linesd(primary, 4, $ndef: false);
-      @include fgcolor(primary, 5);
-    }
-
-    @include tm-dark {
-      &:hover,
-      &._active {
-        @include linesd(primary, 5, $ndef: false);
-        @include fgcolor(primary, 4);
-      }
-    }
-
-    & + & {
-      @include bps(margin-left, 0.25rem, 0.375rem);
-    }
-
-    &._small {
-      line-height: 2em;
-      text-transform: none;
-      // @include ftsize(xs);
-    }
-
-    :global(svg) {
-      width: 1.25em;
-      height: 1.25em;
-      margin-right: 0.25em;
-    }
-  }
-
   .filter {
     margin-bottom: 1rem;
     @include flex-cx;

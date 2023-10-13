@@ -116,7 +116,7 @@
   {#each items as ustem}
     <UpstemCard {ustem} {upath} />
   {:else}
-    <div class="u-empty">Danh sách trống</div>
+    <div class="d-empty">Danh sách trống</div>
   {/each}
 </section>
 

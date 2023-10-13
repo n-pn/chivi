@@ -16,12 +16,16 @@
     {#each list.covers as cover, idx}
       <div class="cover _{idx}">
         <picture>
-          <source type="image/webp" srcset="/covers/{cover}" />
-          <img src="/imgs/empty.png" alt="" />
+          <source
+            type="image/webp"
+            srcset="https://cdn.chivi.app/covers/{cover}" />
+          <img src="https://cdn.chivi.app/empty.png" alt="" />
         </picture>
       </div>
     {:else}
-      <div class="cover _0"><img src="/imgs/empty.png" alt="" /></div>
+      <div class="cover _0">
+        <img src="https://cdn.chivi.app/empty.png" alt="" />
+      </div>
     {/each}
   </div>
 

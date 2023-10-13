@@ -45,7 +45,7 @@
       </section>
     </div>
   {:else}
-    <div class="u-empty">Không có phản hồi.</div>
+    <div class="d-empty">Không có phản hồi.</div>
   {/each}
 </section>
 

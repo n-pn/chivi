@@ -10,7 +10,7 @@
 {#if !route_id.includes('_auth')}
   <div class="app-vessel">
     <p class="pledge">
-      <em class="em">
+      <em class="u-warn">
         Trang web làm lại, nếu gặp lỗi làm ơn liên hệ trực tiếp qua
         <a
           class="m-link"

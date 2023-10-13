@@ -60,6 +60,7 @@ article {
   }
 
   a {
+    font-weight: 500;
     @include fgcolor(primary, 5);
   }
 
@@ -69,14 +70,24 @@ article {
     @include fgcolor(secd);
   }
 
-  .em {
-    font-style: italic;
-    @include fgcolor(warning, 5);
-  }
-
   pre.language-zh {
     line-height: 1.25rem;
     font-size: rem(14px);
+  }
+
+  .qr {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+    gap: 2vw;
+  }
+
+  .qr img {
+    max-height: 20rem;
+    width: auto;
+  }
+
+  li + li {
+    margin-top: 0.5rem;
   }
 }
 
@@ -141,28 +152,9 @@ input[type='number'] {
   appearance: textfield;
 }
 
-.u-empty {
-  @include flex-ca;
-
-  min-height: 40vh;
-  font-style: italic;
-  flex-direction: column;
-
-  @include fgcolor(tert);
-
-  h2 {
-    margin-bottom: 2rem;
-  }
-}
-
-.u-empty-sm {
-  @include flex-ca;
-  @include padding-y(3rem);
-
-  font-style: italic;
-  @include fgcolor(mute);
-
-  p {
-    margin-top: 1rem;
-  }
+figcaption {
+  color: var(--fg-tert);
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 14px;
 }

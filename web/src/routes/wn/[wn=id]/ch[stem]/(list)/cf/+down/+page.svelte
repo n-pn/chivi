@@ -120,7 +120,7 @@
 
     <div class="action">
       <span class="label">Số vcoin cần thiết để yêu cầu tải xuống:</span>
-      <span class="vcoin">{vcoin_cost}</span>
+      <span class="x-vcoin">{vcoin_cost}</span>
       <SIcon iset="icons" name="vcoin" />
 
       <button class="m-btn _primary _fill" disabled={_onload} on:click={submit}>
@@ -135,7 +135,7 @@
   {#if dlcvs.length > 0}
     <DlcvList {dlcvs} {pg_no} />
   {:else}
-    <div class="empty">Bạn chưa có yêu cầu tải xuống.</div>
+    <div class="d-empty">Bạn chưa có yêu cầu tải xuống.</div>
   {/if}
 </article>
 
@@ -185,17 +185,5 @@
     align-items: center;
     gap: 0.75rem;
     margin-top: 0.75rem;
-  }
-
-  .vcoin {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    @include ftsize(lg);
-    @include fgcolor(warning);
-    font-weight: 500;
-    :global(svg) {
-      stroke-width: 2px;
-    }
   }
 </style>

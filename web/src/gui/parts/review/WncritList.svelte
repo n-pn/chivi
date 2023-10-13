@@ -55,7 +55,7 @@
 
 {#if view_head}
   <header class="select">
-    <span class="label">Xuất xứ:</span>
+    <span class="label u-show-pl">Xuất xứ:</span>
 
     {#each origs as [from, name, dtip]}
       {@const page = { from, sort: _sort, smin: 1, smax: 5, pg: 1 }}
@@ -73,7 +73,7 @@
       <nav class="right">
         <a class="m-btn _primary _fill _sm" href="/wn/{bslug}/uc/+crit#cform">
           <SIcon name="ballpen" />
-          <span class="u-show-pl">Viết đánh giá</span>
+          <span class="u-show-pm">Tạo mới</span>
         </a>
       </nav>
     {/if}
@@ -150,8 +150,8 @@
     gap: 0.5rem;
 
     @include border($loc: bottom);
-    // margin-top: 0.25rem;
-    padding-bottom: 0.75rem;
+
+    padding: 0.75rem 0;
 
     .right {
       margin-left: auto;

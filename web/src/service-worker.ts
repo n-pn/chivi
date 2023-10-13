@@ -17,7 +17,7 @@ worker.addEventListener('install', (event) => {
   async function addFilesToCache() {
     const cache = await caches.open(CACHE)
     await cache.addAll(ASSET_ARR)
-    await worker.skipWaiting()
+    // await worker.skipWaiting()
   }
   event.waitUntil(addFilesToCache())
 })
@@ -27,7 +27,7 @@ worker.addEventListener('activate', (event) => {
     for (const key of await caches.keys()) {
       if (key !== CACHE) await caches.delete(key)
     }
-    await worker.clients.claim()
+    // await worker.clients.claim()
   }
 
   event.waitUntil(deleteOldCaches())

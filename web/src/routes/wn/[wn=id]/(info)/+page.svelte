@@ -11,104 +11,100 @@
   import YscritCard from '$gui/parts/review/YscritCard.svelte'
 
   import type { PageData } from './$types'
+  import Truncate from '$gui/atoms/Truncate.svelte'
   export let data: PageData
 
   $: ({ nvinfo, bdata, ydata } = data)
   $: root_path = `/wn/${nvinfo.bslug}`
 
   let short_intro = false
+  $: dhtml = nvinfo.bintro
+    .split('\n')
+    .map((x) => `<p>${x}</p>`)
+    .join('\n')
 </script>
 
-<article class="m-article">
-  <h2>Giới thiệu:</h2>
-  <div class="intro" class:_short={short_intro}>
-    {@html nvinfo.bintro
-      .split('\n')
-      .map((x) => `<p>${x}</p>`)
-      .join('\n')}
-  </div>
+<h2>Giới thiệu:</h2>
+<div class="intro" class:_short={short_intro}>
+  <Truncate html={dhtml} />
+</div>
 
-  <h3 class="sub">Từ khoá</h3>
+<h3 class="sub">Từ khoá</h3>
 
-  <div class="tags">
-    {#each nvinfo.labels as label}
-      <a class="tag" href="/wn?tagged={label}">
-        <SIcon name="hash" />
-        <span>{label}</span>
-      </a>
-    {/each}
-  </div>
+<div class="tags">
+  {#each nvinfo.labels as label}
+    <a class="tag" href="/wn?tagged={label}">
+      <SIcon name="hash" />
+      <span>{label}</span>
+    </a>
+  {/each}
+</div>
 
-  <h3 class="sub">
-    <sub-label>Đánh giá nổi bật</sub-label>
-    <a class="sub-link" href="{root_path}/uc">Xem tất cả</a>
-  </h3>
+<h3 class="sub">
+  <sub-label>Đánh giá nổi bật</sub-label>
+  <a class="sub-link" href="{root_path}/uc">Xem tất cả</a>
+</h3>
 
-  <div class="crits">
-    {#each ydata.crits as crit}
-      {@const list = ydata.lists[crit.list_id]}
-      {@const user = ydata.users[crit.user_id]}
-      {@const view_all = crit.vhtml.length < 640}
-      {#key crit.id}
-        <YscritCard
-          {crit}
-          {user}
-          {list}
-          book={null}
-          show_book={false}
-          {view_all} />
-      {/key}
-    {:else}
-      <div class="empty">Chưa có đánh giá</div>
-    {/each}
-  </div>
-
-  <h3 class="sub">
-    <sub-label>Truyện đồng tác giả</sub-label>
-    <a class="sub-link" href="/wn/={nvinfo.vauthor}">Xem tất cả</a>
-  </h3>
-
-  {#if bdata.books.length > 0}
-    <WninfoList books={bdata.books} />
+<div class="crits">
+  {#each ydata.crits as crit}
+    {@const list = ydata.lists[crit.list_id]}
+    {@const user = ydata.users[crit.user_id]}
+    {@const view_all = crit.vhtml.length < 640}
+    {#key crit.id}
+      <YscritCard
+        {crit}
+        {user}
+        {list}
+        book={null}
+        show_book={false}
+        {view_all} />
+    {/key}
   {:else}
-    <div class="empty">Danh sách trống</div>
-  {/if}
+    <div class="d-empty-sm">Chưa có đánh giá</div>
+  {/each}
+</div>
 
-  <h3 class="sub">
-    <sub-label>Danh sách độc giả</sub-label>
-  </h3>
+<h3 class="sub">
+  <sub-label>Truyện đồng tác giả</sub-label>
+  <a class="sub-link" href="/wn/={nvinfo.vauthor}">Xem tất cả</a>
+</h3>
 
-  <div class="users">
-    {#each bdata.users as { uname, privi, umark }}
-      {@const status = status_types[umark]}
-      {#if umark > 0}
-        <a
-          class="m-chip _{status_colors[status]}"
-          href="/@{uname}/books/{status}"
-          data-tip="Đánh dấu: {status_names[status]}">
-          <cv-user data-privi={privi}>{uname}</cv-user>
-          <SIcon name={status_icons[status]} />
-        </a>
-      {:else}
-        <a
-          class="m-chip _neutral"
-          href="/@{uname}/books/default"
-          data-tip="Chưa thêm đánh dấu">
-          <cv-user data-privi={privi}>{uname}</cv-user>
-          <SIcon name="eye" />
-        </a>
-      {/if}
+<WninfoList books={bdata.books} />
+
+<h3 class="sub">
+  <sub-label>Danh sách độc giả</sub-label>
+</h3>
+
+<div class="users">
+  {#each bdata.users as { uname, privi, umark }}
+    {@const status = status_types[umark]}
+    {#if umark > 0}
+      <a
+        class="m-chip _{status_colors[status]}"
+        href="/@{uname}/books/{status}"
+        data-tip="Đánh dấu: {status_names[status]}">
+        <cv-user data-privi={privi}>{uname}</cv-user>
+        <SIcon name={status_icons[status]} />
+      </a>
     {:else}
-      <div class="u-empty-sm">Chưa có người đọc</div>
-    {/each}
-  </div>
-</article>
+      <a
+        class="m-chip _neutral"
+        href="/@{uname}/books/default"
+        data-tip="Chưa thêm đánh dấu">
+        <cv-user data-privi={privi}>{uname}</cv-user>
+        <SIcon name="eye" />
+      </a>
+    {/if}
+  {:else}
+    <div class="d-empty-sm">Chưa có người đọc</div>
+  {/each}
+</div>
 
 <style lang="scss">
-  article {
-    @include bps(margin-left, 0rem, 0.25rem, 1.5rem, 2rem);
-    @include bps(margin-right, 0rem, 0.25rem, 1.5rem, 2rem);
-  }
+  // article {
+  //   @include bps(margin-left, 0rem, 0.25rem, 1.5rem, 2rem);
+  //   @include bps(margin-right, 0rem, 0.25rem, 1.5rem, 2rem);
+  // }
 
   .intro {
     word-wrap: break-word;
@@ -168,5 +164,10 @@
     display: flex;
     gap: 0.25rem;
     flex-wrap: wrap;
+  }
+
+  h2,
+  h3 {
+    margin-top: 1rem;
   }
 </style>

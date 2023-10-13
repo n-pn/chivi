@@ -87,15 +87,6 @@
   {#if mt_ai}
     {@html gen_mt_ai_html(mt_ai, { mode: 2, cap: true, und: true, _qc: 0 })}
   {:else}
-    <p class="blank">Chưa có kết quả dịch máy</p>
+    <p class="d-empty-xs">Chưa có kết quả dịch máy</p>
   {/if}
 </Viewbox>
-
-<style lang="scss">
-  .blank {
-    @include flex-ca;
-    gap: 0.25rem;
-    height: 100%;
-    padding: 0.25rem 0;
-  }
-</style>

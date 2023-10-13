@@ -54,7 +54,6 @@
 
 <header class="info">
   <span class="left">
-    <info-text>{rstem.sname}</info-text>
     <info-span>{chmax} chương</info-span>
     <info-span class="u-show-pl"><RTime mtime={rstem.update_int} /></info-span>
   </span>
@@ -90,20 +89,20 @@
   <SIcon name="alert-circle" />
   {#if free_chap < chmax}
     <span>
-      Chương từ <span class="em">1</span> tới
-      <span class="em">{free_chap}</span> cần
-      <strong class="em">đăng nhập</strong> để xem nội dung.
+      Chương từ <span class="u-warn">1</span> tới
+      <span class="u-warn">{free_chap}</span> cần
+      <strong class="u-warn">đăng nhập</strong> để xem nội dung.
     </span>
 
     <span>
-      Chương từ <span class="em">{free_chap + 1}</span> tới
-      <span class="em">{chmax}</span> cần
-      <strong class="em">thanh toán vcoin</strong> để mở khoá.
+      Chương từ <span class="u-warn">{free_chap + 1}</span> tới
+      <span class="u-warn">{chmax}</span> cần
+      <strong class="u-warn">thanh toán vcoin</strong> để mở khoá.
     </span>
   {:else}
     <span>
       Bạn cần thiết
-      <strong class="em">đăng nhập</strong> để xem nội dung các chương.
+      <strong class="u-warn">đăng nhập</strong> để xem nội dung các chương.
     </span>
   {/if}
 </div>
@@ -124,7 +123,7 @@
     </Footer>
   </chap-list>
 {:else}
-  <div class="u-empty">
+  <div class="d-empty">
     <h3>Chưa có nội dung.</h3>
     <p>Bấm [Đổi mới] phía trên để cập nhật nội dung!</p>
   </div>
@@ -160,19 +159,7 @@
   }
 
   .form-msg {
-    // @include flex-cx($gap: 0.5rem);
-
     margin: 0.5rem 0;
-
-    .em {
-      @include fgcolor(warning, 5);
-      font-weight: 500;
-    }
-
-    :global(svg) {
-      display: inline-block;
-      margin-bottom: 0.1em;
-    }
   }
 
   // .m-btn {
@@ -186,22 +173,14 @@
   //   margin-bottom: var(--gutter-pl);
   // }
 
-  info-text {
-    padding-left: 0.5rem;
-    @include label();
-    @include fgcolor(tert);
-    @include border(primary, 5, $width: 3px, $loc: left);
-  }
-
   info-span {
     font-style: italic;
     @include fgcolor(neutral, 4);
 
-    &:before {
+    &:not(first-child):before {
       display: inline-block;
       content: '·';
-      text-align: center;
-      @include bps(width, 0.5rem, 0.75rem, 1rem);
+      @include bps(padding, 0.25rem, 0.375rem, 5rem);
     }
   }
 

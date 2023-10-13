@@ -16,7 +16,7 @@ _Chivi hiện không sống bằng quảng cáo, tiền ủng hộ của các b�
 
 ### Đóng góp vào nội dung của website
 
-<p class="em">(Phần này đang được hoàn thiện, sẽ bổ sung chi tiết sau)</p>
+<p class="u-warn">(Phần này đang được hoàn thiện, sẽ bổ sung chi tiết sau)</p>
 
 ## Tác dụng của vcoin
 
@@ -27,8 +27,3 @@ _Chivi hiện không sống bằng quảng cáo, tiền ủng hộ của các b�
 - Ủng hộ trực tiếp cho hệ thống
 
 - Các tính năng khác sẽ dần được bổ sung sau...
-
-<style>
-  a { font-weight: 500; }
-  .em { font-style: italic; color: #d68010; }
-</style>

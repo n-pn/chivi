@@ -30,7 +30,6 @@ export const load = (async ({ url, fetch, params: { stem = '' }, parent }) => {
       book_nav(nvinfo.bslug, nvinfo.vtitle, 'tl'),
       seed_nav(nvinfo.bslug, stem, 1, ''),
     ],
-    right_nav: [quick_read_v2(nvinfo, ubmemo)],
   }
 
   return { bstems, wstem, _meta }

@@ -88,7 +88,7 @@
         </div>
       </div>
     {:else}
-      <div class="empty">Không có kết quả</div>
+      <div class="d-empty">Không có kết quả</div>
     {/each}
   </section>
 </article>

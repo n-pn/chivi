@@ -37,7 +37,6 @@ declare namespace App {
     url?: string
     left_nav?: HeadItem[]
     right_nav?: HeadItem[]
-    show_config?: boolean
   }
 
   interface PageData {

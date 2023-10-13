@@ -5,7 +5,7 @@
   // export let data: PageData
 </script>
 
-<div class="u-empty-sm">
+<div class="d-empty-sm">
   <h3>Nơi đăng lên kết quả phân tích cấu trúc ngữ pháp</h3>
 
   <p>
@@ -15,9 +15,3 @@
     </em>
   </p>
 </div>
-
-<style lang="scss">
-  p {
-    margin-top: 1rem;
-  }
-</style>
