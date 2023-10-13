@@ -99,32 +99,29 @@ class RD::Rmstem
     self
   end
 
-  private def load_raw_stem!(crawl : Int32 = 1)
-    stale = Time.utc - reload_tspan(crawl)
-    # raw_stem = RawRmstem.from_link(@rlink, stale: stale)
-    RawRmstem.from_stem(@sname, @sn_id, stale: stale)
-  rescue ex
-    case ex.message || ""
-    when .ends_with?("404")
-      self.update_flags!(-404_i16)
-    when .ends_with?("301")
-      self.update_flags!(-301_i16)
-    else
-      raise ex
-    end
-
-    nil
-  end
-
   def reload_chaps_vinfo!
     self.crepo.update_vinfos! if @chap_count > 0
     self.update_flags!(1_i16) if @_flag == 0
   end
 
+  private def load_raw_stem!(crawl : Int32 = 1)
+    return if @rtype > 2
+    crawl = 0 unless self.alive?
+    stale = Time.utc - reload_tspan(crawl)
+    # raw_stem = RawRmstem.from_link(@rlink, stale: stale)
+    RawRmstem.from_stem(@sname, @sn_id, stale: stale)
+  rescue ex
+    case ex.message || ""
+    when .ends_with?("404") then self.update_flags!(-404_i16)
+    when .ends_with?("301") then self.update_flags!(-301_i16)
+    else                         raise ex
+    end
+    nil
+  end
+
   def update!(crawl : Int32 = 1, regen : Bool = false, umode : Int32 = 1) : self | Nil
     unless raw_stem = load_raw_stem!(crawl: crawl)
-      self.reload_chaps_vinfo! if umode > 0
-      return self
+      return self.tap { |x| x.reload_chaps_vinfo! if umode > 0 }
     end
 
     # verify content changed by checking the latest chapter

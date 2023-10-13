@@ -69,6 +69,7 @@ enum MT::MtEpos : Int8
   NF # name prefixes
   NH # name suffixes
   NC # center nouns
+  VR # verb complement
 
   @[AlwaysInline]
   def verb?

@@ -199,7 +199,9 @@ class MT::NpNode
       when .cd?, .clp?
         list.unshift(node)
       when .qp?
-        MtPair.fix_m_n_pair!(node, noun)
+        node = node.find_by_epos(:M) || node
+        MtPair.m_n_pair.fix_if_match!(node, noun)
+
         list.unshift(node)
       when .adjp?
         noun = make_node(dict, list, epos: :NP, attr: attr)

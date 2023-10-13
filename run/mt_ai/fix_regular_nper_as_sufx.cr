@@ -1,5 +1,4 @@
-# ENV["MT_DIR"] = "/2tb/app.chivi/var/mt_db/mt_ai"
-
+# ENV["MT_DIR"] = "/2tb/dev.chivi/var/mt_db/mt_ai"
 ENV["MT_DIR"] = "/2tb/app.chivi/var/mt_db/mt_ai"
 
 require "../../src/mt_ai/data/vi_term"

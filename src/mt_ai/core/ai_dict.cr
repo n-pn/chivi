@@ -96,8 +96,23 @@ class MT::AiDict
     end
   end
 
+  def init_cd_dedup(zstr : String)
+    return unless zstr.size == 3
+    return unless zstr[0] == '一' && zstr[1] == zstr[2]
+
+    get?(zstr, :QP).try(&.vstr) || begin
+      qzstr = zstr[-1].to_s
+      qnode = get?(qzstr, :M) || get_alt?(qzstr)
+      qvstr = qnode.try(&.vstr) || qzstr
+
+      "từng #{qvstr} từng #{qvstr}"
+    end
+  end
+
   def init_cd(zstr : String)
     case
+    when qnode = init_cd_dedup(zstr)
+      qnode
     when zstr.starts_with?("分之")
       "#{tl_unit(zstr[2..])} phần"
     else
@@ -128,22 +143,6 @@ class MT::AiDict
   end
 
   def init_vv(zstr : String) : String
-    case
-    when match = MtPair.vrd_pair.find_any(zstr)
-      a_zstr, b_term = match
-      a_term = get(a_zstr, :VV)
-      "#{a_term.vstr} #{b_term.a_vstr}"
-    when zstr[-1] == '了'
-      a_term = get(zstr[..-2], :VV)
-      "#{a_term.vstr} rồi"
-    when zstr[0] == '一'
-      b_term = get(zstr[1..], :VV)
-      "#{b_term.vstr} một phát"
-    when zstr[0] == '吓'
-      b_term = get(zstr[1..], :VV)
-      "dọa #{b_term.vstr}"
-    else
-      QtCore.tl_hvword(zstr)
-    end
+    QtCore.tl_hvword(zstr)
   end
 end

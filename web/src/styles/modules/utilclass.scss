@@ -157,7 +157,27 @@ x-vcoin,
 }
 
 .x-label {
+  @include flex-cy($gap: 0.25em);
+
   font-weight: 500;
-  text-transform: uppercase;
-  @include fgcolor(tert);
+  line-height: 1.75rem;
+  // text-transform: uppercase;
+  @include fgcolor(secd);
+
+  &._sm {
+    line-height: 1.5rem;
+    @include ftsize(sm);
+  }
+}
+
+.x-field {
+  &._flex {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  input[type='text'] {
+    display: block;
+    width: 100%;
+  }
 }

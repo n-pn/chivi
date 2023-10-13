@@ -6,9 +6,62 @@ class MT::VpNode
   getter orig = [] of AiNode
   getter data = [] of AiNode
 
-  def initialize(@orig, @epos, @_idx, @attr = :none)
-    @_pos = 0
-    @zstr = orig.join(&.zstr)
+  @_pos = 0
+
+  def initialize(input, @epos, @_idx, @attr = :none)
+    @zstr = input.join(&.zstr)
+    @orig = correct_input(input)
+  end
+
+  private def correct_input(input : Array(AiNode))
+    pos = 0
+    max = input.size
+    res = Array(AiNode).new(initial_capacity: max)
+
+    while pos < max
+      node = input[pos]
+      pos &+= 1
+
+      case node.epos
+      when .vv?
+        split_vv(res, node)
+      else
+        res << node
+      end
+    end
+
+    res
+  end
+
+  private def split_vv(list : Array(AiNode), node : AiNode) : Nil
+    zstr = node.zstr
+    attr = node.attr
+    _idx = node._idx
+
+    case
+    when match = MtPair.v_c_pair.split_sufx(zstr)
+      # TODO: remove MtPair.split_sufx and using better function
+      v_zstr, c_zstr, c_term = match
+      v_node = M0Node.new(v_zstr, :VV, attr: attr, _idx: _idx)
+
+      c_attr = c_term.a_attr || MtAttr::Sufx
+      c_node = M0Node.new(c_zstr, MtEpos::VR, attr: c_attr, _idx: _idx &+ v_zstr.size)
+      c_node.set_vstr!(c_term.a_vstr)
+
+      list << M2Node.new(v_node, c_node, epos: :VRD, attr: attr, _idx: _idx)
+    when zstr[-1] == '了'
+      list << M0Node.new(node.zstr[0..-2], :VV, attr, _idx)
+      list << M0Node.new("了", :AS, :none, _idx: _idx &+ zstr.size &- 1)
+    when zstr[0] == '一'
+      list << M0Node.new("一", :AD, attr: attr, _idx: _idx)
+      list << M0Node.new(zstr[1..], :VV, attr: attr, _idx: _idx &+ 1)
+    when zstr[0] == '吓'
+      lhsn = M0Node.new("吓", :VV, :none, _idx)
+      rhsn = M0Node.new(zstr[1..], :VV, attr, _idx &+ 1)
+      list << M2Node.new(lhsn, rhsn, epos: :VCD, attr: attr, _idx: _idx)
+    else
+      list << node
+    end
   end
 
   ###
@@ -65,8 +118,9 @@ class MT::VpNode
     tail = [] of AiNode
 
     stem = find_stem(verb)
+    prfx = nil
 
-    head.each do |node|
+    head.each_with_index do |node, i|
       case node.epos
       when .advp?
         fix_d_v_pair!(node, stem)
@@ -75,11 +129,18 @@ class MT::VpNode
         fix_p_v_pair!(node, stem)
       end
 
-      if node.attr.at_t?
+      if node.attr.prfx? || i < head.size &- 1
+        prfx = node
+      elsif node.attr.at_t?
         tail << node
       else
         data << node
       end
+    end
+
+    if prfx
+      verb = M2Node.new(prfx, verb, :VP, attr: verb.attr, flip: prfx.attr.at_t?)
+      verb.tl_whole!(dict: dict)
     end
 
     # TODO: split verb?

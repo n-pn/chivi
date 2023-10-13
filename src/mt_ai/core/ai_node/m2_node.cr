@@ -93,16 +93,16 @@ class MT::M2Node
   end
 
   def fix_vcd!
-    MtPair.vcd_pair.fix_if_match!(@rhsn, @lhsn, MtStem.verb_stem(@lhsn.zstr))
+    MtPair.v_v_pair.fix_if_match!(@rhsn, @lhsn)
   end
 
   def fix_vcp!
-    MtPair.vcp_pair.fix_if_match!(@rhsn, @lhsn, MtStem.verb_stem(@lhsn.zstr))
+    MtPair.v_c_pair.fix_if_match!(@rhsn, @lhsn)
   end
 
   def fix_vrd!
-    @lhsn.find_by_epos(MtEpos::AS).try(&.add_attr!(MtAttr[Asis, Hide]))
-    MtPair.vrd_pair.fix_if_match!(@rhsn, @lhsn, MtStem.verb_stem(@lhsn.zstr))
+    @lhsn.find_by_epos(:AS).try(&.add_attr!(MtAttr[Asis, Hide]))
+    MtPair.v_c_pair.fix_if_match!(@rhsn, @lhsn)
   end
 
   ###

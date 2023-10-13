@@ -32,7 +32,7 @@
       msg_text = ex.message
     }
 
-    const fname = `[${ustem.sname}:${ustem.id}]${from_ch}-${upto_ch}.raw.txt`
+    const fname = `[${ustem.sname}_${ustem.id}]${from_ch}-${upto_ch}.raw.txt`
     send_file(to_half_width(full_text), fname)
   }
 
@@ -80,18 +80,59 @@
   }
 </script>
 
-<div class="field">
-  <div class="label">Từ chương:</div>
-  <input class="m-input" type="number" name="from_ch" bind:value={from_ch} />
+<div class="form">
+  <div class="x-field _flex">
+    <div class="x-group">
+      <div class="x-label">Từ chương:</div>
+      <input
+        class="m-input"
+        type="number"
+        name="from_ch"
+        bind:value={from_ch} />
+    </div>
+
+    <div class="x-group">
+      <div class="x-label">Tới chương:</div>
+      <input
+        class="m-input"
+        type="number"
+        name="upto_ch"
+        bind:value={upto_ch} />
+    </div>
+  </div>
+
+  <div class="x-field">
+    <label class="x-label x-check">
+      <input
+        type="checkbox"
+        name="force"
+        class="check"
+        bind:checked={auto_unlock} />
+      <span>Tự động mở khóa chương bằng Vcoin</span>
+    </label>
+  </div>
+
+  <footer>
+    <button class="m-btn _primary _fill" on:click={load_raw_text}>
+      Tải text gốc!
+    </button>
+
+    <div class="form_msg _{msg_type}">{msg_text}</div>
+  </footer>
 </div>
 
-<div class="field">
-  <div class="label">Tới chương:</div>
-  <input class="m-input" type="number" name="upto_ch" bind:value={upto_ch} />
-</div>
+<style lang="scss">
+  .form {
+    padding: 1rem 0;
+    // width: min(20rem, 100%);
+    // margin: 0 auto;
+  }
 
-<button class="m-btn _primary _fill" on:click={load_raw_text}>
-  Tải text gốc!
-</button>
+  .x-field {
+    margin-top: 0.75rem;
+  }
 
-<div class="form_msg _{msg_type}">{msg_text}</div>
+  footer {
+    padding: 0.75rem 0;
+  }
+</style>

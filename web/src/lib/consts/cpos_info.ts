@@ -330,4 +330,9 @@ export default {
     desc: 'Cụm danh từ khi có cụm định ngữ 的/之 phía trước',
     type: 'phrase',
   },
+  VR: {
+    name: 'Bổ ngữ động từ',
+    desc: 'Các từ dùng làm bổ ngữ kết quả hoặc bổ ngữ xu hướng cho động từ',
+    type: 'word',
+  },
 }

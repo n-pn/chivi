@@ -8,7 +8,7 @@ class MT::M0Node
 
   @[AlwaysInline]
   def translate!(dict : AiDict, rearrange : Bool = true) : Nil
-    self.set_term!(dict.get(@zstr, @epos))
+    self.set_term!(dict.get(@zstr, @epos)) if @dnum < 0
   end
 
   def z_each(&)

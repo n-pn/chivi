@@ -6,18 +6,16 @@ class MT::MtPair
     getter a_attr : MtAttr?
 
     getter b_vstr : String?
-    getter b_attr : MtAttr?
+    getter b_attr : MtAttr
 
-    def initialize(@a_vstr, @a_attr, @b_vstr, @b_attr)
+    def initialize(@a_vstr, @a_attr, @b_vstr, @b_attr = MtAttr::None)
     end
 
-    def self.new(cols : Array(String))
-      new(
-        a_vstr: cols[0],
-        a_attr: cols[1]?.try { |x| MtAttr.parse_list(x) },
-        b_vstr: cols[2]?.try { |x| x.empty? ? nil : x },
-        b_attr: cols[3]?.try { |x| MtAttr.parse_list(x) },
-      )
+    def initialize(cols : Array(String))
+      @a_vstr = cols[0]
+      @a_attr = cols[1]?.try { |x| MtAttr.parse_list(x) }
+      @b_vstr = cols[2]?.try { |x| x.empty? ? nil : x }
+      @b_attr = cols[3]?.try { |x| MtAttr.parse_list(x) } || MtAttr::None
     end
   end
 
@@ -43,6 +41,7 @@ class MT::MtPair
     self
   end
 
+  @[AlwaysInline]
   def get?(a_zstr : String, b_zstr : String)
     @hash[a_zstr]?.try(&.[b_zstr]?)
   end
@@ -53,48 +52,55 @@ class MT::MtPair
   end
 
   def fix_if_match!(a_node : AiNode, b_node : AiNode, b_stem = b_node.zstr) : Nil
-    return unless found = self.get?(a_node.zstr, b_stem, "_")
+    return unless entry = @hash[a_node.zstr]?
 
-    a_node.set_vstr!(found.a_vstr)
+    if b_stem.size > 1
+      b_list = {b_stem, "*#{b_stem[-1]}", "#{b_stem[0]}*", "*"}
+    else
+      b_list = {b_stem, "*"}
+    end
 
-    return unless a_attr = found.a_attr
-    a_node.set_attr!(a_attr)
+    b_list.each do |b_zstr|
+      next unless found = entry[b_zstr]?
+      a_node.set_vstr!(found.a_vstr)
 
-    return unless b_vstr = found.b_vstr
-    a_node.set_vstr!(b_vstr)
+      break unless a_attr = found.a_attr
+      a_node.set_attr!(a_attr)
 
-    return unless b_attr = found.b_attr
-    b_node.add_attr!(b_attr)
+      break unless b_vstr = found.b_vstr
+      a_node.set_vstr!(b_vstr) if b_zstr == b_node.zstr
+
+      break unless b_attr = found.b_attr
+      b_node.add_attr!(b_attr)
+
+      break
+    end
   end
 
-  getter any_re : Regex {
+  getter match_sufx : Regex {
     any_key = [] of String
-    @hash.each { |k, v| any_key << k if v.has_key?("_") }
+    @hash.each { |k, v| any_key << k if v.has_key?("*") }
     Regex.new("^(.+)(#{any_key.join('|')})$")
   }
 
-  def find_any(zstr : String)
-    return unless match = any_re.match(zstr)
-    _, a_zstr, b_zstr = match
-    {a_zstr, @hash[b_zstr]["_"]}
+  def split_sufx(zstr : String)
+    return unless match = match_sufx.match(zstr)
+    _, b_zstr, a_zstr = match
+    {b_zstr, a_zstr, @hash[a_zstr]["*"]}
+  end
+
+  def add_more(pair : Pair)
   end
 
   ###
 
   class_getter m_n_pair : self { new("m_n_pair").load_tsv! }
+  class_getter m_v_pair : self { new("m_v_pair").load_tsv! }
+
   class_getter p_v_pair : self { new("p_v_pair").load_tsv! }
-  class_getter v_n_pair : self { new("v_n_pair").load_tsv! }
   class_getter d_v_pair : self { new("d_v_pair").load_tsv! }
 
-  class_getter vcd_pair : self { new("vcd_pair").load_tsv! }
-  class_getter vcp_pair : self { new("vcp_pair").load_tsv! }
-  class_getter vrd_pair : self { new("vrd_pair").load_tsv! }
-
-  # class_getter v_r_pair : self { new("v_d_pair") }
-
-  def self.fix_m_n_pair!(q_node : AiNode, n_node : AiNode) : Void
-    return unless m_node = q_node.find_by_epos(:M)
-    n_stem = MtStem.noun_stem(n_node.last.zstr)
-    self.m_n_pair.fix_if_match!(m_node, n_node, n_stem)
-  end
+  class_getter v_v_pair : self { new("v_v_pair").load_tsv! }
+  class_getter v_n_pair : self { new("v_n_pair").load_tsv! }
+  class_getter v_c_pair : self { new("v_c_pair").load_tsv! }
 end
