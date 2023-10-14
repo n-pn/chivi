@@ -81,7 +81,7 @@ export function gen_hviet_html(hvarr: Array<[string, string]>, cap = true) {
     const asis = /Capx|Asis/.test(attr)
 
     let text = !cap || asis ? hstr : capitalize(hstr)
-    html += `<x-n data-d=0 data-b=${from} data-e=${from + 1} >${text}</x-n>`
+    html += `<x-n d=1 data-b=${from} data-e=${from + 1} >${text}</x-n>`
 
     from += 1
     cap = (cap && asis) || attr.includes('Capn')

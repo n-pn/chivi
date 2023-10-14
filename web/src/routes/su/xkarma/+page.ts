@@ -6,7 +6,7 @@ import type { PageLoad } from './$types'
 const _meta = {
   left_nav: [
     home_nav('ps'),
-    nav_link('/su/qtran-stat', 'Thống kê dịch chương', ''),
+    nav_link('/su/xkarma', 'Thống kê dịch chương', ''),
   ],
   right_nav: [nav_link('/su/qtran-xlog', 'Lịch sử dịch chương', '')],
 }

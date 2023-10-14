@@ -54,4 +54,24 @@ class MT::AiTranCtrl < AC::Base
     Log.error(exception: ex) { input }
     render 455, ex.message
   end
+
+  @[AC::Route::POST("/debug")]
+  def debug(pdict : String = "combine", m_alg = "mtl_1")
+    start = Time.monotonic
+
+    input = _read_body.strip
+    hlink = "#{CV_ENV.lp_host}/mtl_text/#{m_alg}"
+    lines = HTTP::Client.post(hlink, body: input, &.body_io.gets_to_end).lines
+
+    ai_mt = AiCore.new(pdict)
+    trees = lines.map { |line| ai_mt.tl_from_con_data(line) }
+
+    tspan = (Time.monotonic - start).total_milliseconds.round(2)
+    json = {lines: trees, tspan: tspan}
+
+    render json: json
+  rescue ex
+    Log.error(exception: ex) { input }
+    render 455, ex.message
+  end
 end

@@ -85,7 +85,7 @@ def mtl_from_file(kind):
     inp_data = read_txt_file(inp_path)
 
     mtl_data = call_mtl_task(load_task(kind), inp_data)
-    mtl_path = inp_path.replace('.txt', f'.{kind}.mtl').replace('chtext', f'nlp_wn')
+    mtl_path = inp_path.replace('.txt', f'.{kind}.mtl')
 
     with open(mtl_path, 'w', encoding='utf-8') as mtl_file:
         mtl_file.write(mtl_data.to_json())
@@ -94,7 +94,7 @@ def mtl_from_file(kind):
     return con_text
 
 @app.route("/mtl_text/<kind>", methods=['POST'])
-def mtl_from_text():
+def mtl_from_text(kind):
     inp_data = request.get_data(as_text=True).split('\n')
     mtl_data = call_mtl_task(load_task(kind), inp_data)
 
