@@ -208,12 +208,18 @@ x-c {
 
 x-z {
   font-family: Roboto, Noto Sans CJK, 'Microsoft Yahei', STXihei, sans-serif;
-  @include cv-node(gray);
+  // @include cv-node(gray);
   @include cv-node(primary);
+
+  .cdata._ct & {
+    font-weight: 500;
+    @include fgcolor(tert);
+  }
 
   &:hover,
   &.focus {
     color: var(--active);
+    border-bottom: 1px solid var(--border);
   }
 }
 
@@ -233,4 +239,9 @@ x-n {
   &:after {
     padding: 0 0.25rem;
   }
+}
+
+x-pad {
+  display: block;
+  padding-left: 0.5rem;
 }

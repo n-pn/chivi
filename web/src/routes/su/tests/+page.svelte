@@ -20,7 +20,7 @@
   <h3 class="label">Cây ngữ pháp:</h3>
 
   <div class="cdata debug _ct">
-    {@html gen_ctree_html(vtree, true, 2)}
+    {@html gen_ctree_html(vtree)}
   </div>
 
   <br />

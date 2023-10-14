@@ -66,10 +66,11 @@ enum MT::MtEpos : Int8
   OTH  # other types
 
   # # additional
-  NF # name prefixes
-  NH # name suffixes
-  NC # center nouns
-  VR # verb complement
+  NF  # name prefixes
+  NH  # name suffixes
+  NC  # center nouns
+  VR  # verb complement
+  VAS # verb + aspect phrase
 
   @[AlwaysInline]
   def verb?

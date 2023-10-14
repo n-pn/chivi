@@ -24,7 +24,11 @@ class MT::VpNode
 
       case node.epos
       when .vv?
-        split_vv(res, node)
+        if node.zstr.size > 1
+          split_vv(res, node)
+        else
+          res << node
+        end
       else
         res << node
       end
@@ -195,7 +199,7 @@ class MT::VpNode
 
       case node.epos
       when .is?(:AS)
-        verb = M2Node.new(verb, node, :VP, attr: verb.attr)
+        verb = M2Node.new(verb, node, :VAS, attr: verb.attr)
         verb.tl_whole!(dict: dict)
       when .is?(:QP)
         break if dobj || !@orig[@_pos &+ 1]?.try(&.epos.noun?)
@@ -226,8 +230,10 @@ class MT::VpNode
     stem = find_stem(verb)
 
     case stem.zstr
-    when "想" then fix_vm_xiang!(stem, dobj)
-    when "会" then fix_vm_hui!(stem, dobj)
+    when "想"  then fix_vm_xiang!(stem, dobj, nega: false)
+    when "不想" then fix_vm_xiang!(stem, dobj, nega: true)
+    when "会"  then fix_vm_hui!(stem, dobj, nega: false)
+    when "不会" then fix_vm_hui!(stem, dobj, nega: true)
     else
       fix_v_n_pair!(stem, dobj) if dobj.epos.noun?
     end
@@ -244,12 +250,12 @@ class MT::VpNode
     end
   end
 
-  def fix_vm_xiang!(vv_node : AiNode, do_node : AiNode) : Nil
+  def fix_vm_xiang!(vv_node : AiNode, do_node : AiNode, nega : Bool = false) : Nil
     do_node = do_node.first if do_node.epos.is?(:IP)
 
     case do_node.epos
     when .vp?, .vv?, .pp?
-      vv_node.set_vstr!("muốn")
+      vv_node.set_vstr!(nega ? "không muốn" : "muốn")
 
       while !do_node.is_a?(M0Node)
         do_node = do_node.first
@@ -260,13 +266,17 @@ class MT::VpNode
       do_node.set_vstr!("")
       do_node.add_attr!(:Hide)
     when .np?
-      vv_node.set_vstr!("nhớ")
+      vv_node.set_vstr!(nega ? "không nhớ" : "nhớ")
     else
-      vv_node.set_vstr!("nghĩ")
+      vv_node.set_vstr!(nega ? "không nghĩ" : "nghĩ")
     end
   end
 
-  def fix_vm_hui!(vv_node : AiNode, do_node : AiNode) : Nil
+  def fix_vm_hui!(vv_node : AiNode, do_node : AiNode, nega : Bool = false) : Nil
+    unless do_node.find_by_epos(:VV)
+      vv_node.set_vstr!(nega ? "sẽ không" : "sẽ")
+    end
+
     # TODO!
   end
 
@@ -277,6 +287,7 @@ class MT::VpNode
     when "多"
       if vv_node.epos.is?(:VA)
         ad_node.set_vstr!("bao")
+        ad_node.add_attr!(:at_h)
       else
         ad_node.set_vstr!("nhiều")
         ad_node.add_attr!(:at_t)

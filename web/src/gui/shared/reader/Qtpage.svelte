@@ -39,10 +39,7 @@
   {/each}
 {:else}
   <div class="d-empty">
-    <div>
-      <SIcon name="loader-2" spin={true} />
-      <p>Đang tải nội dung...</p>
-    </div>
+    <div><SIcon name="loader-2" spin={true} /> Đang tải nội dung...</div>
   </div>
 {/if}
 

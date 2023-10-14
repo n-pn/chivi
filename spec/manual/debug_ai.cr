@@ -6,6 +6,7 @@ text = ARGV[0]? || "(TOP (IP (IP (IP (IP (NP (NN 明眸)) (ADJP (VA 善)) (NP (N
 
 dict = ARGV[1]? || "up/1234"
 
+text = text.gsub(/\n\s+/, " ")
 data = MT::AiCore.new(dict).tl_from_con_data(text)
 
 puts "--------------------------------".colorize.dark_gray
@@ -18,7 +19,7 @@ puts
 puts "--------------------------------".colorize.dark_gray
 puts data.to_txt.colorize.yellow
 # puts "--------------------------------".colorize.dark_gray
-puts data.to_json.colorize.cyan
+# puts data.to_json.colorize.cyan
 puts "--------------------------------".colorize.dark_gray
 puts "Total time used (including loading dicts): #{(Time.monotonic - time).total_milliseconds.round}ms".colorize.red
 

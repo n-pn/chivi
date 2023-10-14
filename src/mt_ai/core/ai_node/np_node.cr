@@ -199,10 +199,7 @@ class MT::NpNode
       when .cd?, .clp?
         list.unshift(node)
       when .qp?
-        m_node = node.find_by_epos(:M) || node
-        MtPair.m_n_pair.fix_if_match!(m_node, noun)
-
-        list.unshift(node)
+        add_qp_to_list(list, node, noun)
       when .adjp?
         noun = make_node(dict, list, epos: :NP, attr: attr)
         node = M2Node.new(node, noun, epos: :NP, flip: !node.attr.at_h?, _idx: node._idx)
@@ -224,5 +221,26 @@ class MT::NpNode
 
   private def pron_at_head?(pron : AiNode, noun : AiNode)
     true
+  end
+
+  private def add_qp_to_list(list, qp_node, nn_node) : Nil
+    m_node = qp_node.find_by_epos(:M) || qp_node
+    MtPair.m_n_pair.fix_if_match!(m_node, nn_node)
+
+    unless qp_node.first.epos.od?
+      list.unshift(qp_node)
+      return
+    end
+
+    case qp_node
+    when M1Node
+      list.push(qp_node)
+    when M2Node
+      list.push(qp_node.lhsn)
+      list.unshift(qp_node.rhsn)
+    else
+      # TODO: handle M3Node and MxNode
+      list.unshift(qp_node)
+    end
   end
 end

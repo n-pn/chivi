@@ -83,7 +83,7 @@
   }
 </script>
 
-<Viewbox title="Tiếng Trung" class="_zh _lg" --lc="2">
+<Viewbox title="Tiếng Trung" class="_zh _lg" lines={2}>
   <svelte:fragment slot="tools">
     <button
       type="button"

@@ -12,13 +12,11 @@ struct CV::ViuserView
 
       jb.field "uname", @data.uname
       jb.field "privi", @data.privi
+      jb.field "level", @data.level
 
       if @full
-        jb.field "vcoin", @data.vcoin.round(2)
+        jb.field "vcoin", @data.vcoin.round(3)
         jb.field "until", @data.current_privi_until
-
-        jb.field "point_today", QtranXlog.today_point_cost(@data.id)
-        jb.field "point_limit", @data.point_limit
 
         jb.field "unread_notif", Unotif.count_unread(@data.id)
       end

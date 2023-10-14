@@ -335,4 +335,10 @@ export default {
     desc: 'Các từ dùng làm bổ ngữ kết quả hoặc bổ ngữ xu hướng cho động từ',
     type: 'word',
   },
+
+  VAS: {
+    name: 'Động từ + Động thái',
+    desc: 'Gộp động từ và trợ từ dộng thái vào thành cụm từ',
+    type: 'phrase',
+  },
 }

@@ -24,6 +24,8 @@ class CV::Viuser
   # - basic: 0 // restristed access
   # - banned: -1 // banned user is treated similar to unregisted user
 
+  column level : Int16 = 0
+
   column privi : Int32 = 0
   column privi_until : Array(Int64) = [0_i64, 0_i64, 0_i64]
 

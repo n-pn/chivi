@@ -8,6 +8,7 @@
 
   export let title = ''
   export let state = 1
+  export let lines = 3
 </script>
 
 <section>
@@ -30,7 +31,7 @@
     </span>
   </h4>
 
-  <div class="wbody {$$props.class || 'cdata'} _{state}">
+  <div class="wbody cdata {$$props.class} _{state}" style="--lc: ${lines}">
     <slot />
   </div>
 </section>
@@ -101,6 +102,10 @@
 
     &._sm {
       @include ftsize(sm);
+    }
+
+    &._ct {
+      overflow-x: scroll;
     }
   }
 

@@ -90,12 +90,25 @@ export function gen_hviet_html(hvarr: Array<[string, string]>, cap = true) {
   return html
 }
 
-export function gen_ctree_text([cpos, _idx, _len, _att, body]: CV.Cvtree) {
-  let text = `(${cpos}`
+export function gen_ctree_text(node: CV.Cvtree, level = 0, on_nl = false) {
+  const [cpos, _idx, _len, _att, body] = node
+  let text = ''
+
+  if (on_nl) {
+    text += '\n'
+    for (let i = 0; i < level; i++) text += ' '
+  }
+
+  text += `(${cpos}`
 
   if (Array.isArray(body)) {
+    const child_on_nl = body.length > 1 && !same_level_tags.includes(cpos)
+
     const orig = body.slice().sort(sort)
-    for (let i = 0; i < orig.length; i++) text += ' ' + gen_ctree_text(orig[i])
+    for (let i = 0; i < orig.length; i++) {
+      if (!child_on_nl) text += ' '
+      text += gen_ctree_text(orig[i], level + 1, child_on_nl)
+    }
   } else {
     text += ' ' + body
   }
@@ -103,32 +116,57 @@ export function gen_ctree_text([cpos, _idx, _len, _att, body]: CV.Cvtree) {
   return text + ')'
 }
 
-export function gen_ctree_html(node: CV.Cvtree, show_zh = true, level = 0) {
+const same_level_tags = [
+  'VCD',
+  'VRD',
+  'VNV',
+  'VPT',
+  'VCP',
+  'VAS',
+  'DVP',
+  'QP',
+  'DNP',
+  'DP',
+  'CLP',
+]
+
+export function gen_ctree_html(node: CV.Cvtree, level = 0, on_nl = false) {
   const [cpos, from, zlen, _attr, body, vstr, dnum] = node
   const upto = from + zlen
   const dpos = dnum % 10
   // const lock = Math.floor(dnum / 10)
 
-  let html = `<x-g l=${level % 8} data-b=${from} data-e=${upto}>`
+  let html = ''
+  if (on_nl) {
+    html = `<br/>`
+    for (let i = 0; i < level; i++) {
+      html += '&nbsp;&nbsp;'
+    }
+  }
+
+  html += `<x-g l=${level % 8} data-b=${from} data-e=${upto}>`
 
   const { name } = cpos_info[cpos] || {}
   html += `<x-c data-tip="${name}" data-b=${from} data-e=${upto} data-c=${cpos}>${cpos}</x-c>`
 
   if (Array.isArray(body)) {
-    const orig = body.slice().sort(sort)
+    const child_on_nl = body.length > 1 && !same_level_tags.includes(cpos)
 
+    const orig = body.slice().sort(sort)
     for (let i = 0; i < orig.length; i++) {
-      html += ' ' + gen_ctree_html(orig[i], show_zh, level + 1)
+      const child = orig[i]
+      html += ' ' + gen_ctree_html(child, level + 1, child_on_nl)
     }
   } else {
     const zesc = escape_htm(body)
     const vesc = escape_htm(vstr)
-    const [text, hint] = show_zh ? [zesc, vesc] : [vesc, zesc]
-
-    html += ` <x-n d=${dpos} data-tip="${hint}" data-b=${from} data-e=${upto} data-c=${cpos}>${text}</x-n>`
+    html += ` <x-n d=${dpos} data-b=${from} data-e=${upto} data-c=${cpos}>${vesc}</x-n>`
+    html += ` <x-z d=${dpos} data-b=${from} data-e=${upto} data-c=${cpos}>${zesc}</x-z>`
   }
 
-  return html + '</x-g>'
+  html += '</x-g>'
+
+  return html
 }
 
 const is_quote_start = (vstr: string) => /^“|‘|\[/.test(vstr)
