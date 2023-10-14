@@ -65,7 +65,7 @@ class YS::YsuserForm
   ###############
 
   def self.load(id : Int32)
-    find(id: id) || new(id: id)
+    find_by_id(id: id) || new(id: id)
   end
 
   def self.bulk_upsert!(raws : Enumerable(EmbedUser))

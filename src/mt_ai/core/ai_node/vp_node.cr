@@ -152,10 +152,17 @@ class MT::VpNode
     data
   end
 
-  def combine_with_prfx(dict, verb, prfx)
-    if !verb.is_a?(M0Node)
+  def combine_with_prfx(dict, verb, prfx) : AiNode
+    root = verb
+    prev = nil
+
+    while !verb.is_a?(M0Node)
       prev = verb
-      verb = prev.first
+      if verb.is_a?(VpNode)
+        verb = verb.data.first
+      else
+        verb = prev.first
+      end
     end
 
     verb = M2Node.new(prfx, verb, :VV, attr: verb.attr, flip: prfx.attr.at_t?, _idx: prfx._idx)
@@ -164,15 +171,20 @@ class MT::VpNode
     return verb unless prev
 
     case prev
-    when M1Node then prev.node = verb
-    when M2Node then prev.lhsn = verb
-    when M3Node then prev.lhsn = verb
-    when MxNode then prev.list[0] = verb
-    when VpNode then prev.data[0] = verb
-    when NpNode then prev.data[0] = verb
+    when M1Node
+      prev.node = verb
+    when M2Node, M3Node
+      prev.lhsn = verb
+    when MxNode
+      prev.list[0] = verb
+    when VpNode, NpNode
+      prev.data[0] = verb
     end
 
-    prev
+    prev.zstr = "#{prfx.zstr}#{prev.zstr}"
+    prev._idx = prfx._idx
+
+    root
   end
 
   def read_vo!(dict : AiDict, verb : AiNode, _max : Int32)

@@ -152,6 +152,7 @@ enum MT::MtAttr
     '､' => Capx | Undb,
     '、' => Capx | Undb,
     '･' => Capx | Undb | Undn,
+    '‧' => Capx | Undb | Undn,
     # extra 1
     '〈' => Capn | Undn,
     '〉' => Capx | Undb,

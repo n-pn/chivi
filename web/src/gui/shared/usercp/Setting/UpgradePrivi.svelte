@@ -1,14 +1,13 @@
 <script context="module">
   const ranges = ['2 tuần', '1 tháng', '2 tháng', '3 tháng']
+  const ranges_days = [14, 30, 60, 90]
 
   const costs = [
     [0, 0, 0, 0],
-    [10, 20, 35, 50],
-    [30, 50, 90, 130],
-    [50, 100, 175, 250],
+    [20, 40, 75, 100],
+    [40, 80, 150, 210],
+    [80, 160, 300, 420],
   ]
-
-  const ranges_days = [14, 30, 60, 90]
 </script>
 
 <script lang="ts">

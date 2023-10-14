@@ -41,7 +41,7 @@ class RD::Wnstem
       repo.chmax = @chap_total
       repo.wn_id = @wn_id
 
-      repo.gifts = 2
+      repo.gifts = 1
       repo.multp = @multp
     end
   end

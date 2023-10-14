@@ -1,14 +1,14 @@
 require "../ai_dict"
 
 module MT::AiNode
-  getter zstr = ""
-  getter vstr = ""
+  property zstr = ""
+  property vstr = ""
 
-  getter epos = MtEpos::X
-  getter attr = MtAttr::None
+  property epos = MtEpos::X
+  property attr = MtAttr::None
 
-  getter dnum = -1_i8
-  getter _idx = 0
+  property dnum = -1_i8
+  property _idx = 0
 
   abstract def z_each(& : AiNode ->)
   abstract def v_each(& : AiNode ->)
@@ -107,6 +107,10 @@ module MT::AiNode
   end
 
   ###
+
+  def to_txt
+    String.build { |io| to_txt(io, true, true) }
+  end
 
   def to_txt(io : IO, cap : Bool, und : Bool)
     # pp [self]

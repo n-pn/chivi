@@ -40,31 +40,11 @@
     }
   }
 
-  // $: [can_upsert, can_reload] = check_edit_privi(
-  //   wstem.sname,
-  //   wstem.edit_privi,
-  //   $_user
-  // )
+  let free_chaps = 0
 
-  // const check_edit_privi = (
-  //   sname: string,
-  //   edit_privi: number,
-  //   user: App.CurrentUser
-  // ): [boolean, boolean] => {
-  //   if (user.privi > 3) return [true, true]
-
-  //   if (sname[0] == '@') {
-  //     const owner = sname == '@' + user.uname
-  //     return [owner && user.privi > 1, owner && user.privi > 0]
-  //   } else {
-  //     return [user.privi >= edit_privi, user.privi >= edit_privi - 1]
-  //   }
-  // }
-
-  let free_chaps = 40
   $: {
-    free_chaps = Math.floor(wstem.chmax / 2)
-    if (free_chaps < 40) free_chaps = 40
+    free_chaps = Math.floor(wstem.chmax / 4)
+    if (free_chaps > 120) free_chaps = 120
   }
 </script>
 
@@ -103,33 +83,15 @@
   </div>
 {/if} -->
 
-{#if free_chaps < wstem.chmax}
-  <div class="chap-hint">
-    <SIcon name="alert-circle" />
-    <span>
-      Chương từ <span class="u-warn">1</span> tới
-      <span class="u-warn">{free_chaps}</span> cần
-      <strong class="u-warn">đăng nhập</strong> để xem nội dung.
-    </span>
-
-    <span>
-      Chương từ <span class="u-warn">{free_chaps + 1}</span> tới
-      <span class="u-warn">{wstem.chmax}</span> cần
-      <strong class="u-warn">mở khoá</strong> để xem nội dung.
-    </span>
-  </div>
-{:else if wstem.chmax > 0}
-  <div class="chap-hint">
-    <SIcon name="alert-circle" />
-    <span>
-      Chương từ <span class="u-warn">1</span> tới
-      <span class="u-warn">{wstem.chmax}</span> cần
-      <strong class="u-warn">đăng nhập</strong> để xem nội dung.
-    </span>
-  </div>
-{/if}
-
 {#if wstem.chmax > 0}
+  <div class="chap-hint">
+    <SIcon name="alert-circle" />
+    <span>
+      Chương từ <strong class="u-warn">{free_chaps + 1}</strong> cần
+      <strong class="u-warn">thanh toán vcoin</strong> để mở khoá.
+    </span>
+  </div>
+
   <chap-list>
     <ChapList {nvinfo} {ubmemo} {wstem} chaps={data.lasts} />
     <div class="chlist-sep" />

@@ -25,10 +25,11 @@
 
   // $: is_owner = data.sname == '@' + $_user.uname
 
-  let free_chap = 40
+  let free_chaps = 0
+
   $: {
-    free_chap = Math.floor((ustem.chap_count * ustem.gifts) / 4)
-    if (free_chap < 40) free_chap = 40
+    free_chaps = Math.floor((ustem.chap_count * ustem.gifts) / 4)
+    if (free_chaps > 120) free_chaps = 120
   }
 </script>
 
@@ -40,33 +41,17 @@
   </info-left>
 </page-info>
 
-{#if err_msg}
-  <div class="chap-hint _error">{err_msg}</div>
-{/if}
-
-<div class="chap-hint">
-  <SIcon name="alert-circle" />
-  {#if free_chap < chmax}
-    <span>
-      Chương từ <span class="u-warn">1</span> tới
-      <span class="u-warn">{free_chap}</span> cần
-      <strong class="u-warn">đăng nhập</strong> để xem nội dung.
-    </span>
-
-    <span>
-      Chương từ <span class="u-warn">{free_chap + 1}</span> tới
-      <span class="u-warn">{chmax}</span> cần
-      <strong class="u-warn">thanh toán vcoin</strong> để mở khoá.
-    </span>
-  {:else}
-    <span>
-      Bạn cần thiết
-      <strong class="u-warn">đăng nhập</strong> để xem nội dung.
-    </span>
-  {/if}
-</div>
+{#if err_msg}<div class="form-msg _error">{err_msg}</div>{/if}
 
 {#if chmax > 0}
+  <div class="form-msg">
+    <SIcon name="alert-circle" />
+    <span>
+      Chương từ <span class="u-warn">{free_chaps + 1}</span> cần
+      <strong class="u-warn">thanh toán vcoin</strong> để mở khoá.
+    </span>
+  </div>
+
   <chap-list>
     <ChapList chaps={lasts} bhref={sroot} />
     <div class="chlist-sep" />
@@ -113,37 +98,6 @@
   info-right {
     @include flex($gap: 0.5rem);
   }
-
-  .chap-hint {
-    // text-align: center;
-    // font-style: italic;
-    // @include flex-cx($gap: 0.5rem);
-    margin: 0.5rem 0;
-
-    @include ftsize(sm);
-    @include fgcolor(tert);
-
-    &._error {
-      font-size: italic;
-      @include fgcolor(harmful, 5);
-    }
-
-    :global(svg) {
-      display: inline-block;
-      margin-bottom: 0.1em;
-    }
-  }
-
-  // .m-btn {
-  //   background: inherit;
-
-  //   &:hover {
-  //     @include bgcolor(secd);
-  //   }
-  // }
-  // .chinfo {
-  //   margin-bottom: var(--gutter-pl);
-  // }
 
   info-text {
     padding-left: 0.5rem;

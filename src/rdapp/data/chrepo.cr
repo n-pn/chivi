@@ -16,7 +16,7 @@ class RD::Chrepo
   property chmax : Int32 = 9999
   property wn_id : Int32 = 0
 
-  property gifts : Int16 = 2
+  property gifts : Int16 = 1
   property multp : Int16 = 4
 
   def initialize(@sroot)
@@ -24,16 +24,19 @@ class RD::Chrepo
     @info_db = Chinfo.db(sroot)
   end
 
-  # @[AlwaysInline]
-  # def chap_plock(ch_no : Int32)
-  #   return 0 if ch_no <= 40
-  #   free_chaps = @chmax * @gifts // 4
-  #   ch_no <= free_chaps ? 0 : @plock
-  # end
+  def chmax=(@chmax : Int32)
+    @free_until = nil
+  end
+
+  getter free_until : Int32 do
+    return @chmax if @gifts == 0
+    auto_free = @chmax &* @gifts // 4
+    auto_free > 120 ? auto_free : 120
+  end
 
   @[AlwaysInline]
   def free_chap?(ch_no : Int32)
-    @gifts == 0 || ch_no <= 40 || ch_no <= @chmax &* @gifts // 4
+    ch_no < self.free_until
   end
 
   @[AlwaysInline]

@@ -24,11 +24,11 @@
   let btn_icon = 'refresh'
   let err_text = ''
 
-  let free_chap = 40
+  let free_chaps = 0
 
   $: {
-    free_chap = Math.floor((rstem.chap_count * rstem.gifts) / 4)
-    if (free_chap < 40) free_chap = 40
+    free_chaps = Math.floor(rstem.chap_count / 4)
+    if (free_chaps > 120) free_chaps = 120
   }
 
   async function reload(crawl = 1, regen = false) {
@@ -85,29 +85,15 @@
   </div>
 {/if}
 
-<div class="form-msg">
-  <SIcon name="alert-circle" />
-  {#if free_chap < chmax}
+{#if chmax > 0}
+  <div class="form-msg">
+    <SIcon name="alert-circle" />
     <span>
-      Chương từ <span class="u-warn">1</span> tới
-      <span class="u-warn">{free_chap}</span> cần
-      <strong class="u-warn">đăng nhập</strong> để xem nội dung.
-    </span>
-
-    <span>
-      Chương từ <span class="u-warn">{free_chap + 1}</span> tới
-      <span class="u-warn">{chmax}</span> cần
+      Chương từ <strong class="u-warn">{free_chaps + 1}</strong> cần
       <strong class="u-warn">thanh toán vcoin</strong> để mở khoá.
     </span>
-  {:else}
-    <span>
-      Bạn cần thiết
-      <strong class="u-warn">đăng nhập</strong> để xem nội dung các chương.
-    </span>
-  {/if}
-</div>
+  </div>
 
-{#if chmax > 0}
   <chap-list>
     <ChapList chaps={data.lasts} bhref={data.sroot} />
     <div class="chlist-sep" />

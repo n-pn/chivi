@@ -65,9 +65,9 @@ class CV::Viuser
 
   PRIVI_DAYS = {14, 30, 60, 90}
   PRIVI_COST = {
-    {10, 20, 35, 50},    # privi 1
-    {30, 50, 90, 130},   # privi 2
-    {50, 100, 175, 250}, # privi 3
+    {20, 40, 75, 100},   # privi 1
+    {40, 80, 150, 210},  # privi 2
+    {80, 160, 300, 420}, # privi 3
   }
 
   def current_privi_until(privi = self.privi)
