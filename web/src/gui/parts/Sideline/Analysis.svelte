@@ -17,7 +17,7 @@
   $: mt_ai = $data.mt_ai[l_idx]
 </script>
 
-<Viewbox title="Cây ngữ pháp:" bind:state={stats.mt_ai} class="_ct" lines={10}>
+<Viewbox title="Cây ngữ pháp:" bind:state={stats.mt_ai} class="_ct" lines={15}>
   <svelte:fragment slot="tools">
     <button
       type="button"

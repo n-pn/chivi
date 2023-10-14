@@ -192,25 +192,32 @@ class MT::VpNode
   end
 
   def read_vo!(dict : AiDict, verb : AiNode, _max : Int32)
-    iobj = dobj = nil
+    do_node = nil
+    io_node = nil
 
     while @_pos < _max
       node = self.peak_node
 
       case node.epos
       when .is?(:AS)
+        if @_pos &+ 1 < _max && node.zstr == "了"
+          node.set_vstr!("⛶")
+          node.add_attr!(:hide)
+        end
+
         verb = M2Node.new(verb, node, :VAS, attr: verb.attr)
-        verb.tl_whole!(dict: dict)
       when .is?(:QP)
-        break if dobj || !@orig[@_pos &+ 1]?.try(&.epos.noun?)
+        break if do_node || !@orig[@_pos &+ 1]?.try(&.epos.noun?)
         verb = M2Node.new(verb, node, :VP, attr: verb.attr)
       when .is?(:NP)
-        break if dobj
-        break unless !iobj && node.attr.nper? || verb.attr.vdit?
-        iobj = node
+        break if do_node
+        break unless !io_node && node.attr.nper? || verb.attr.vdit?
+        break unless !io_node && node.attr.nper? || verb.attr.vdit?
+        io_node = node
+        io_node = node
       when .vv?, .ip?, .vp?, .pp?
-        break if dobj
-        dobj = node
+        break if do_node
+        do_node = node
       else
         break
       end
@@ -218,10 +225,12 @@ class MT::VpNode
       @_pos &+= 1
     end
 
-    if iobj && !dobj
-      dobj = iobj
-      iobj = nil
-    elsif !dobj
+    if io_node && !do_node
+      do_node = io_node
+      do_node = io_node
+      io_node = nil
+      io_node = nil
+    elsif !do_node
       return verb
     end
 
@@ -230,17 +239,18 @@ class MT::VpNode
     stem = find_stem(verb)
 
     case stem.zstr
-    when "想"  then fix_vm_xiang!(stem, dobj, nega: false)
-    when "不想" then fix_vm_xiang!(stem, dobj, nega: true)
-    when "会"  then fix_vm_hui!(stem, dobj, nega: false)
-    when "不会" then fix_vm_hui!(stem, dobj, nega: true)
+    when "想"  then fix_vm_xiang!(stem, do_node, nega: false)
+    when "不想" then fix_vm_xiang!(stem, do_node, nega: true)
+    when "会"  then fix_vm_hui!(stem, do_node, nega: false)
+    when "不会" then fix_vm_hui!(stem, do_node, nega: true)
     else
-      fix_v_n_pair!(stem, dobj) if dobj.epos.noun?
+      fix_v_n_pair!(stem, do_node) if do_node.epos.noun?
     end
 
     list = [verb] of AiNode
-    list << iobj if iobj
-    list << dobj
+    list << io_node if io_node
+    list << io_node if io_node
+    list << do_node
     list << tail if tail
 
     case list.size

@@ -66,9 +66,12 @@ class MT::M2Node
     end
 
     @flip = true
-    return unless rhsn.zstr == "的" && rhsn.epos.deg?
+    return unless @rhsn.zstr == "的" && @rhsn.epos.deg?
 
-    if possestive?(lhsn)
+    if @lhsn.epos.ip? && @lhsn.first.epos.noun?
+      rhsn.set_vstr!("do")
+      rhsn.off_attr!(:hide)
+    elsif possessive?(lhsn)
       rhsn.set_vstr!("của")
       rhsn.off_attr!(:hide)
     else
@@ -80,23 +83,16 @@ class MT::M2Node
     @flip = @lhsn.epos.od? || @rhsn.zstr.includes?('之')
   end
 
-  private def possestive?(node : AiNode)
+  private def possessive?(node : AiNode)
     while true
-      return false if node.attr & MtAttr[Ndes, Ntmp] != MtAttr::None
-      return true if node.attr & MtAttr[Nper, Norg, Nloc] != MtAttr::None
+      return false if node.attr.any?(MtAttr[Ndes, Ntmp])
+      return true if node.attr.any?(MtAttr[Nper, Norg, Nloc])
 
-      case node.epos
-      when .np?
-        return true if node.is_a?(M0Node)
-        node = node.last
-      when .nn?
-        return node.attr.nper?
-      else
-        return node.epos.nn?
-      end
+      break if node.is_a?(M0Node) || !node.epos.np?
+      node = node.last
     end
 
-    false
+    node.epos.noun?
   end
 
   def fix_vcd!

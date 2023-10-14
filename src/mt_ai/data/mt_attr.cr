@@ -64,6 +64,10 @@ enum MT::MtAttr
     self & ~attr
   end
 
+  def any?(other : self)
+    (self & other) != None
+  end
+
   @[AlwaysInline]
   def to_str
     self.none? ? "" : self.to_s.gsub(" | ", ' ')

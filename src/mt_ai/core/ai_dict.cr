@@ -110,14 +110,24 @@ class MT::AiDict
   end
 
   def init_cd(zstr : String)
-    case
-    when qnode = init_cd_dedup(zstr)
-      qnode
-    when zstr.starts_with?("分之")
-      "#{tl_unit(zstr[2..])} phần"
-    else
-      tl_unit(zstr)
+    if qnode = init_cd_dedup(zstr)
+      return qnode
     end
+
+    if zstr.starts_with?("分之")
+      sufx = " phần"
+      zstr = zstr[2..]
+    else
+      sufx = ""
+    end
+
+    if q_term = get?(zstr[-1].to_s, :M)
+      sufx = "#{q_term.vstr}#{sufx}"
+      zstr = zstr[0..-2]
+    end
+
+    vstr = tl_unit(zstr)
+    sufx.empty? ? vstr : "#{vstr}#{sufx}"
   end
 
   DECIMAL_SEP = {
@@ -128,15 +138,20 @@ class MT::AiDict
 
   def tl_unit(zstr : String)
     return CharUtil.to_halfwidth(zstr) if zstr =~ /^[０-９．，－：～％]$/
-    integer_part, sep_char, fractional_part = zstr.partition(/[点．／]/)
+    real_part, sep_char, fract_part = zstr.partition(/[点．／]/)
 
-    integer_vstr = TlUnit.translate(integer_part)
-    return integer_vstr if sep_char.empty?
+    real_vstr = TlUnit.translate(real_part)
+    return real_vstr if sep_char.empty?
+
+    if fract_part.empty?
+      sep_vstr = get_alt?(sep_char).try(&.vstr) || sep_char
+      return "#{real_vstr} #{sep_vstr}"
+    end
 
     sep_vstr = DECIMAL_SEP[sep_char[0]]
-    fractional_vstr = fractional_part.empty? ? "" : TlUnit.translate(fractional_part)
+    fractional_vstr = fract_part.empty? ? "" : TlUnit.translate(fract_part)
 
-    "#{integer_vstr}#{sep_vstr}#{fractional_vstr}"
+    "#{real_vstr}#{sep_vstr}#{fractional_vstr}"
   rescue ex
     Log.error(exception: ex) { zstr }
     zstr

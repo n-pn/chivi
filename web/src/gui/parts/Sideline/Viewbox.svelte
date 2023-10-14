@@ -11,7 +11,7 @@
   export let lines = 3
 </script>
 
-<section>
+<section style="--lc: {lines}">
   <h4>
     <span class="title">{title}</span>
     <span class="tools">
@@ -31,7 +31,7 @@
     </span>
   </h4>
 
-  <div class="wbody cdata {$$props.class} _{state}" style="--lc: ${lines}">
+  <div class="wbody cdata {$$props.class} _{state}">
     <slot />
   </div>
 </section>
