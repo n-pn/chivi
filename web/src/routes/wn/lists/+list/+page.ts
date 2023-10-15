@@ -26,5 +26,5 @@ export const load = (async ({ fetch, url }) => {
     ],
     right_nav: [nav_link(right_nav, 'Thêm đánh giá', 'bookmarks', opts)],
   }
-  return { ...data, _meta, _title: 'Tạo/sửa thư đơn' }
+  return { ...data, _meta, _title: 'Tạo/sửa thư đơn', ontab: '+new' }
 }) satisfies PageLoad

@@ -46,86 +46,82 @@
   }
 </script>
 
-<article class="article island">
-  <h2>Thêm/sửa thư đơn truyện chữ</h2>
+<h2>Thêm/sửa thư đơn truyện chữ</h2>
 
-  <form class="form" {action} {method} on:submit={submit}>
-    {#if error}<section class="error">Lỗi: {error}</section>{/if}
+<form class="form" {action} {method} on:submit={submit}>
+  {#if error}<section class="error">Lỗi: {error}</section>{/if}
 
-    <section class="ibody">
-      <label class="label" for="title">Tên thư đơn</label>
-      <textarea
-        class="title m-input"
-        name="title"
-        rows="1"
-        placeholder="Tên thư đơn"
-        lang="vi"
-        bind:value={data.lform.title}
-        disabled={data.lform.id < 0} />
-    </section>
+  <section class="ibody">
+    <label class="label" for="title">Tên thư đơn</label>
+    <textarea
+      class="title m-input"
+      name="title"
+      rows="1"
+      placeholder="Tên thư đơn"
+      lang="vi"
+      bind:value={data.lform.title}
+      disabled={data.lform.id < 0} />
+  </section>
 
-    <section class="dtext">
-      <label class="label" for="dtext">Giới thiệu thư đơn</label>
+  <section class="dtext">
+    <label class="label" for="dtext">Giới thiệu thư đơn</label>
 
-      <MdForm
-        name="dtext"
-        bind:value={data.lform.dtext}
-        placeholder="Giới thiệu thư đơn"
-        min_rows={6}
-        disabled={$_user.privi < 0} />
-    </section>
+    <MdForm
+      name="dtext"
+      bind:value={data.lform.dtext}
+      placeholder="Giới thiệu thư đơn"
+      min_rows={6}
+      disabled={$_user.privi < 0} />
+  </section>
 
-    <footer class="foot">
-      <span class="klass">
-        <span class="label">Hướng đối tượng:</span>
+  <footer class="foot">
+    <span class="klass">
+      <span class="label">Hướng:</span>
 
-        {#each klasses as [value, label, tip]}
-          <label class="radio" data-tip={tip}>
-            <input type="radio" bind:group={data.lform.klass} {value} />
-            {label}
-          </label>
-        {/each}
-      </span>
-      <button
-        type="submit"
-        class="m-btn _primary _fill"
-        disabled={data.lform.title.length < 3 && data.lform.dtext.length < 1}>
-        <SIcon name="send" />
-        <span>{data.lform.id ? 'Lưu' : 'Tạo'} thư đơn</span>
-      </button>
-    </footer>
-  </form>
+      {#each klasses as [value, label, tip]}
+        <label class="radio" data-tip={tip}>
+          <input type="radio" bind:group={data.lform.klass} {value} />
+          {label}
+        </label>
+      {/each}
+    </span>
+    <button
+      type="submit"
+      class="m-btn _primary _fill"
+      disabled={data.lform.title.length < 3 && data.lform.dtext.length < 1}>
+      <SIcon name="send" />
+      <span>{data.lform.id ? 'Lưu' : 'Tạo'} thư đơn</span>
+    </button>
+  </footer>
+</form>
 
-  {#if data.lform.id > 0}
-    <h3>Xoá thư đơn</h3>
-    <p><em>Bạn chỉ xoá được thư đơn nếu nó không có bộ truyện nào.</em></p>
+{#if data.lform.id > 0}
+  <h3>Xoá thư đơn</h3>
+  <p><em>Bạn chỉ xoá được thư đơn nếu nó không có bộ truyện nào.</em></p>
 
-    <p>
-      <button class="m-btn _harmful _fill _lg" on:click={delete_list}>
-        <SIcon name="eraser" />
-        <span>Xoá thư đơn</span>
-      </button>
-    </p>
-  {/if}
+  <p>
+    <button class="m-btn _harmful _fill _lg" on:click={delete_list}>
+      <SIcon name="eraser" />
+      <span>Xoá thư đơn</span>
+    </button>
+  </p>
+{/if}
 
-  <h3>Các thư đơn khác của bạn:</h3>
+<h3>Các thư đơn khác của bạn:</h3>
+
+<div class="lists island">
   {#each data.lists as list}
     <VilistCard {list} />
   {/each}
-</article>
+</div>
 
 <style lang="scss">
-  .article {
-    @include margin-y(var(--gutter));
+  h2 {
+    @include margin-y(0.75rem);
   }
 
   .form {
-    margin-top: 1rem;
     display: block;
-    padding: 0 var(--gutter);
-
-    @include border();
-    @include bdradi();
   }
 
   section {
@@ -155,6 +151,8 @@
     display: flex;
     padding: 0.75rem 0;
 
+    @include bps(flex-direction, column, $pl: row);
+
     button {
       margin-left: auto;
     }
@@ -177,5 +175,9 @@
 
   h3 {
     margin-top: 1rem;
+  }
+
+  .lists {
+    margin: var(--gutter) 0;
   }
 </style>

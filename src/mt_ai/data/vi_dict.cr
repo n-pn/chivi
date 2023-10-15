@@ -120,11 +120,11 @@ class MT::ViDict
   end
 
   def self.find(dname : String) : self | Nil
-    self.get(dname, &.<< "where dname = $1")
+    self.get(dname, &.<< " where dname = $1")
   end
 
   def self.find!(dname : String) : self
-    self.get!(dname, &.<< "where dname = $1")
+    self.get!(dname, &.<< " where dname = $1")
   end
 
   def self.count : Int32

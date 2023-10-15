@@ -69,8 +69,8 @@ class M1::DictCtrl < AC::Base
     guard_privi dict.privi, "tải từ điển"
 
     query = String.build do |io|
-      io << "select key, val, ptag, prio from defns "
-      io << "where dic = $1 and (tab = 1"
+      io << "select key, val, ptag, prio from defns"
+      io << " where dic = $1 and (tab = 1"
       io << " or tab = 2" if temp
       io << " or (tab = 3 and uname = '#{_uname}')" if user
       io << ')'

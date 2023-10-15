@@ -18,7 +18,7 @@ class MT::ViTermCtrl < AC::Base
     args = [] of String | Int32
 
     where_stmt = String.build do |sql|
-      sql << "where 1 = 1"
+      sql << " where 1 = 1"
 
       if zstr
         args << fix_query_str(zstr)

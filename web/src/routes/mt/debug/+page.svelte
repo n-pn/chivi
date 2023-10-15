@@ -10,13 +10,15 @@
     ctrl as vtform_ctrl,
   } from '$gui/parts/VitermForm.svelte'
 
-  let pdict = 'combine'
-  let m_alg = 'mtl_1'
+  import type { PageData } from './$types'
+  export let data: PageData
+
+  let ztext = data.ztext || ''
+  let m_alg = data.m_alg || 'mtl_2'
+  let pdict = data.pdict || 'combine'
 
   $: ai_url = `/_ai/debug?pdict=${pdict}&m_alg=${m_alg}`
   $: hv_url = `/_ai/hviet?pdict=${pdict}&m_alg=${m_alg}`
-
-  let ztext = ''
 
   // prettier-ignore
   let ctree : CV.Cvtree[] = []
@@ -78,6 +80,20 @@
           bind:value={ztext} />
       </div>
 
+      <div class="m-flex">
+        <label for="" class="x-label">Thuật toán</label>
+        <input type="text" name="m_alg" class="m-input" bind:value={m_alg} />
+      </div>
+
+      <div class="m-flex">
+        <label for="" class="x-label">Từ điển riêng</label>
+        <input type="text" name="pdict" class="m-input" bind:value={pdict} />
+      </div>
+
+      <button class="m-btn _primary _fill" on:click={call_debug}>
+        <span>Parse data!</span>
+      </button>
+
       <h3 class="label">Tiếng Việt:</h3>
 
       <div class="cdata debug _hv">
@@ -110,10 +126,6 @@
       </div>
     </div>
   </div>
-
-  <button class="m-btn _primary _fill" on:click={call_debug}>
-    <span>Parse data!</span>
-  </button>
 </article>
 
 {#if $vtform_ctrl.actived} <Vtform {ropts} /> {/if}
@@ -125,6 +137,18 @@
     > * {
       flex: 1;
       height: 100%;
+    }
+  }
+
+  .m-flex {
+    margin: 0.5rem 0;
+    label {
+      width: 7rem;
+    }
+    .m-input {
+      display: block;
+      margin-left: auto;
+      flex: 1;
     }
   }
 

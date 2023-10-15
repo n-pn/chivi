@@ -54,7 +54,7 @@ class YS::YsreplForm
   ##############
 
   def self.load(yr_id : Bytes)
-    get(yr_id, &.<< "where yr_id = $1") || new(yr_id)
+    get(yr_id, &.<< " where yr_id = $1") || new(yr_id)
   end
 
   def self.bulk_upsert!(

@@ -5,7 +5,7 @@ require "../_data/wnovel/wninfo"
 require "../_data/wnovel/wnlink"
 require "../mt_v1/data/v1_dict"
 
-SELECT_SQL = ZR::Ysbook.schema.select_stmt { |stmt| stmt << "where id >= $1 and id <= $2" }
+SELECT_SQL = ZR::Ysbook.schema.select_stmt { |stmt| stmt << " where id >= $1 and id <= $2" }
 
 (0..).each do |block|
   lower = block &* 1000

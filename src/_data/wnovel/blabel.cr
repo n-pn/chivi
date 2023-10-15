@@ -65,7 +65,7 @@ class CV::Blabel
   end
 
   def self.fetch_all(type : Type)
-    self.get_all(type.value, &.<< "where \"type\" = $1 order by book_count desc")
+    self.get_all(type.value, &.<< " where \"type\" = $1 order by book_count desc")
   end
 
   ###

@@ -12,7 +12,10 @@
 </script>
 
 <script lang="ts">
+  import { goto } from '$app/navigation'
   import { page } from '$app/stores'
+
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
   import Footer from '$gui/sects/Footer.svelte'
@@ -22,7 +25,9 @@
 
   export let ys: CV.YslistList = empty
   export let vi: CV.VilistList = empty
+  export let qs = ''
 
+  export let sroot = '/wn/lists'
   export let _sort = 'utime'
 
   $: pager = new Pager($page.url, { sort: _sort, pg: 1, type: '' })
@@ -35,6 +40,21 @@
   $: pgidx = vi.pgidx > ys.pgidx ? vi.pgidx : ys.pgidx
   $: pgmax = vi.pgmax > ys.pgmax ? vi.pgmax : ys.pgmax
 </script>
+
+<header class="head">
+  <form class="search" method="get" action={sroot}>
+    <input
+      type="search"
+      class="m-input _sm"
+      bind:value={qs}
+      name="qs"
+      placeholder="Tìm tên thư đơn theo tiếng Trung hoặc tiếng Việt" />
+
+    <button type="submit">
+      <SIcon name="search" />
+    </button>
+  </form>
+</header>
 
 <div class="filter">
   <div class="klass">
@@ -80,11 +100,47 @@
 </div>
 
 <style lang="scss">
-  .filter,
-  .lists {
-    @include bps(margin-left, 0rem, $tm: 0.75rem, $tl: 1.5rem);
-    @include bps(margin-right, 0rem, $tm: 0.75rem, $tl: 1.5rem);
+  .head {
+    @include flex-ca;
+
+    padding: 0.75rem 0;
+    margin-bottom: 0.75rem;
+    @include border(--bd-soft, $loc: bottom);
   }
+
+  .search {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+    position: relative;
+
+    input {
+      display: block;
+      width: 100%;
+      padding-right: 2rem;
+    }
+    button {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      margin-right: 0.5rem;
+      // width: 1rem;
+      @include fgcolor(tert);
+      background-color: transparent;
+      &:hover {
+        @include fgcolor(primary);
+      }
+    }
+
+    // margin-bottom: var(--gutter);
+  }
+
+  // .filter,
+  // .lists {
+  //   @include bps(margin-left, 0rem, $tm: 0.75rem, $tl: 1.5rem);
+  //   @include bps(margin-right, 0rem, $tm: 0.75rem, $tl: 1.5rem);
+  // }
 
   .filter {
     display: flex;

@@ -4,7 +4,7 @@ require "../../_data/wnovel/wninfo"
 require "../../_data/wnovel/wnlink"
 require "../../mt_v1/data/v1_dict"
 
-SELECT_SQL = ZR::Tubook.schema.select_stmt { |stmt| stmt << "where id >= $1 and id <= $2" }
+SELECT_SQL = ZR::Tubook.schema.select_stmt { |stmt| stmt << " where id >= $1 and id <= $2" }
 
 total = 388508
 pages = total // 1000 + 1

@@ -56,7 +56,7 @@ class YS::YscritForm
   end
 
   def self.load(yc_id : Bytes)
-    get(yc_id, &.<< "where yc_id = $1") || new(yc_id)
+    get(yc_id, &.<< " where yc_id = $1") || new(yc_id)
   end
 
   def self.bulk_upsert!(raws : Array(RawYscrit), rtime : Int64 = Time.utc.to_unix)

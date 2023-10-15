@@ -1,0 +1,77 @@
+@use '../essence' as *;
+
+.blcard {
+  display: flex;
+
+  margin: 0.75rem 0;
+  padding: var(--gutter-small) var(--gutter);
+
+  @include border(--bd-soft);
+  @include bdradi;
+}
+
+.blcard-infos {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: inherit;
+  padding-right: var(--gutter);
+  width: calc(100% - 6rem);
+}
+
+.blcard-covers {
+  position: relative;
+  width: 5.5rem;
+  padding: 0.5rem;
+}
+
+.blcard-bcover {
+  position: absolute;
+  width: 4.5rem;
+  height: 6rem;
+
+  z-index: 2;
+
+  &._1 {
+    transform: translate(0.5rem, 0.5rem);
+    z-index: 1;
+    opacity: 0.9;
+  }
+
+  &._2 {
+    transform: translate(-0.5rem, -0.5rem);
+    // z-index: 1;
+    // opacity: 0.8;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+
+    @include bdradi;
+    @include shadow(2);
+  }
+}
+
+.blcard-vtitle {
+  display: block;
+  @include clamp(2);
+  @include fgcolor(secd);
+
+  line-height: 1.375em;
+  font-weight: 500;
+  padding: 0.2rem 0;
+
+  @include hover {
+    @include fgcolor(primary, 5);
+  }
+}
+
+.blcard-vbrief {
+  @include clamp(2);
+  @include fgcolor(tert);
+  font-style: italic;
+  line-height: 1.25em;
+  margin: 0.25em 0;
+}

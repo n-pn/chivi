@@ -83,11 +83,11 @@ class M1::ViDict
   end
 
   def self.find(dname : String) : self | Nil
-    self.get(dname, &.<< "where dname = $1")
+    self.get(dname, &.<< " where dname = $1")
   end
 
   def self.find!(dname : String) : self
-    self.get!(dname, &.<< "where dname = $1")
+    self.get!(dname, &.<< " where dname = $1")
   end
 
   def self.count : Int32
@@ -105,11 +105,11 @@ class M1::ViDict
   end
 
   def self.all_cores
-    self.get_all &.<< "where dtype = 0 or dtype = 1 order by id asc"
+    self.get_all &.<< " where dtype = 0 or dtype = 1 order by id asc"
   end
 
   def self.all_books(limit : Int32, offset = 0)
-    self.get_all limit, offset, &.<< "where id > 0 and term_total > 0 order by mtime desc limit $1 offset $2"
+    self.get_all limit, offset, &.<< " where id > 0 and term_total > 0 order by mtime desc limit $1 offset $2"
   end
 
   def self.init_wn_dict!(wn_id : Int32, bslug : String, bname : String, db = self.db)

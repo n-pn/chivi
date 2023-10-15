@@ -85,6 +85,7 @@ struct CV::GdreplCard
           on m.target_id = r.id
           and m.target_type = #{TARGET_TYPE}
           and m.viuser_id = $1
+
       SQL
 
       yield sql

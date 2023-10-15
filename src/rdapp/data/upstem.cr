@@ -88,12 +88,12 @@ class RD::Upstem
   #####
 
   def self.find(id : Int32, sname : Nil = nil)
-    query = @@schema.select_stmt(&.<< "where id = $1 limit 1")
+    query = @@schema.select_stmt(&.<< " where id = $1 limit 1")
     self.db.query_one?(query, id, as: self)
   end
 
   def self.find(id : Int32, sname : String)
-    query = @@schema.select_stmt(&.<< "where id = $1 and sname = $2 limit 1")
+    query = @@schema.select_stmt(&.<< " where id = $1 and sname = $2 limit 1")
     self.db.query_one?(query, id, sname, as: self)
   end
 

@@ -203,7 +203,7 @@
 
 #     db.open_ro do |cnn|
 #       query = @@schema.select_stmt(%w{ch_no ztitle zchdiv}) do |sql|
-#         sql << "where ch_no >= $1 and ch_no <= $2"
+#         sql << " where ch_no >= $1 and ch_no <= $2"
 #       end
 
 #       # Log.info { query.colorize.yellow }

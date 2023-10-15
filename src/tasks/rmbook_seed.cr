@@ -44,7 +44,7 @@ def seed_book(sname : String)
   rm_db = ZR::Rmbook.db(sname)
   rhost = Rmhost.from_name!(sname)
 
-  inputs = ZR::Rmbook.get_all(db: rm_db, &.<< "where btitle <> ''")
+  inputs = ZR::Rmbook.get_all(db: rm_db, &.<< " where btitle <> ''")
   inputs.sort_by! { |x| x.id.to_i? || 0 } if inputs.first.id.to_i?
 
   inputs.each_slice(200).with_index(1) do |slice, block|

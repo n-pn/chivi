@@ -181,3 +181,48 @@ x-vcoin,
     width: 100%;
   }
 }
+
+.m-flex {
+  display: flex;
+
+  &._cx {
+    justify-content: center;
+  }
+
+  &._cy {
+    align-items: center;
+  }
+}
+
+.fz-fluid {
+  @include bps(
+    font-size,
+    rem(13px),
+    $pm: rem(14px),
+    $pl: rem(15px),
+    $ts: rem(16px),
+    $tm: rem(17px)
+  );
+}
+
+.fz-fluid-sm {
+  @include bps(
+    font-size,
+    rem(12px),
+    $pm: rem(13px),
+    $pl: rem(14px),
+    $ts: rem(15px),
+    $tm: rem(16px)
+  );
+}
+
+.fz-fluid-lg {
+  @include bps(
+    font-size,
+    rem(14px),
+    $pm: rem(15px),
+    $pl: rem(16px),
+    $ts: rem(17px),
+    $tm: rem(18px)
+  );
+}

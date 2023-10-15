@@ -108,7 +108,7 @@ class RD::Rdmemo
   def self.find(vu_id : Int32, sname : String, sn_id : String)
     return nil if vu_id < 1
     self.get(vu_id, sname, sn_id, db: @@db) do |sql|
-      sql << "where vu_id = $1 and sname = $2 and sn_id = $3"
+      sql << " where vu_id = $1 and sname = $2 and sn_id = $3"
     end
   end
 

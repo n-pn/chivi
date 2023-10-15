@@ -218,11 +218,11 @@ class RD::Rmstem
   end
 
   def self.find(sname : String, sn_id : String)
-    get(sname, sn_id, &.<< "where sname = $1 and sn_id = $2")
+    get(sname, sn_id, &.<< " where sname = $1 and sn_id = $2")
   end
 
   def self.find!(sname : String, sn_id : String)
-    get!(sname, sn_id, &.<< "where sname = $1 and sn_id = $2")
+    get!(sname, sn_id, &.<< " where sname = $1 and sn_id = $2")
   end
 
   def self.from_html(bhtml : String,
