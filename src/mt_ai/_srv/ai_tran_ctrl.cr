@@ -9,11 +9,11 @@ class MT::AiTranCtrl < AC::Base
     force = force && _privi >= 0
 
     cdata = RD::Chpart.new(fpath)
-    mdata, _algo = cdata.read_con(_algo, force: force)
+    ztree, _algo = cdata.read_con(_algo, force: force)
 
     ai_mt = AiCore.new(pdict)
 
-    lines = mdata.map { |line| ai_mt.tl_from_con_data(line) }
+    lines = ztree.map { |line| ai_mt.tl_from_con_data(line) }
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
 
     cache_control 3.seconds
@@ -21,6 +21,7 @@ class MT::AiTranCtrl < AC::Base
 
     json = {
       lines: lines,
+      ztree: ztree,
       tspan: tspan,
       dsize: ai_mt.dict.dsize,
       mtime: mtime,
@@ -61,13 +62,13 @@ class MT::AiTranCtrl < AC::Base
 
     input = _read_body.strip
     hlink = "#{CV_ENV.lp_host}/mtl_text/#{m_alg}"
-    lines = HTTP::Client.post(hlink, body: input, &.body_io.gets_to_end).lines
+    ztree = HTTP::Client.post(hlink, body: input, &.body_io.gets_to_end).lines
 
     ai_mt = AiCore.new(pdict)
-    trees = lines.map { |line| ai_mt.tl_from_con_data(line) }
+    vdata = ztree.map { |line| ai_mt.tl_from_con_data(line) }
 
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
-    json = {lines: trees, tspan: tspan}
+    json = {lines: vdata, ztree: ztree, tspan: tspan}
 
     render json: json
   rescue ex

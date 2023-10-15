@@ -1,4 +1,4 @@
-ENV["CV_ENV"] = "production"
+ENV["CV_ENV"] ||= "production"
 require "../../src/_data/_data"
 require "../../src/mt_ai/data/vi_dict"
 
@@ -27,5 +27,19 @@ end
 MT::ViDict.db.open_tx do |db|
   inputs.each do |wn_id, bname|
     MT::ViDict.init_book_dict!(wn_id, bname, db: db)
+  end
+end
+
+inputs = DB.open(CV_ENV.database_url) do |db|
+  query = <<-SQL
+    select id as up_id, vname
+    from upstems order by id asc
+    SQL
+  db.query_all(query, as: {Int32, String})
+end
+
+MT::ViDict.db.open_tx do |db|
+  inputs.each do |up_db, bname|
+    MT::ViDict.init_up_dict!(up_db, bname, db: db)
   end
 end

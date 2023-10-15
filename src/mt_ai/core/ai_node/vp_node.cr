@@ -210,11 +210,13 @@ class MT::VpNode
         break if do_node || !@orig[@_pos &+ 1]?.try(&.epos.noun?)
         verb = M2Node.new(verb, node, :VP, attr: verb.attr)
       when .is?(:NP)
-        break if do_node
-        break unless !io_node && node.attr.nper? || verb.attr.vdit?
-        break unless !io_node && node.attr.nper? || verb.attr.vdit?
-        io_node = node
-        io_node = node
+        if do_node
+          break
+        elsif io_node
+          do_node = node
+        else
+          io_node = node
+        end
       when .vv?, .ip?, .vp?, .pp?
         break if do_node
         do_node = node
@@ -227,8 +229,6 @@ class MT::VpNode
 
     if io_node && !do_node
       do_node = io_node
-      do_node = io_node
-      io_node = nil
       io_node = nil
     elsif !do_node
       return verb
@@ -248,7 +248,6 @@ class MT::VpNode
     end
 
     list = [verb] of AiNode
-    list << io_node if io_node
     list << io_node if io_node
     list << do_node
     list << tail if tail

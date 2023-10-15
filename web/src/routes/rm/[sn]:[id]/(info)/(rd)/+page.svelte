@@ -166,7 +166,8 @@
     &:not(first-child):before {
       display: inline-block;
       content: '·';
-      @include bps(padding, 0.25rem, 0.375rem, 5rem);
+      @include bps(padding-left, 0.25rem, 0.375rem, 0.5rem);
+      @include bps(padding-right, 0.25rem, 0.375rem, 0.5rem);
     }
   }
 

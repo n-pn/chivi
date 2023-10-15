@@ -161,4 +161,15 @@ class MT::ViDict
       descs: "Từ điển riêng cho bộ truyện [#{bname}]",
     ).upsert!(query: query, db: db)
   end
+
+  def self.init_up_dict!(up_id : Int32, bname : String, db = self.db)
+    query = @@schema.upsert_stmt(keep_fields: %w(label descs))
+
+    self.new(
+      dname: "up/#{up_id}",
+      dtype: Dtype::Priv,
+      label: "Sưu tầm: #{bname}",
+      descs: "Từ điển riêng cho sưu tầm cá nhân [#{bname}]",
+    ).upsert!(query: query, db: db)
+  end
 end

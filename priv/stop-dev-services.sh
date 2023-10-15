@@ -5,3 +5,4 @@ sudo service ysapp-dev stop
 sudo service mt_sp-dev stop
 sudo service mt_v1-dev stop
 sudo service mt_ai-dev stop
+sudo service rdapp-dev stop
