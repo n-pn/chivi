@@ -116,7 +116,7 @@ class SP::TranCtrl < AC::Base
 
   @[AC::Route::POST("/c_gpt")]
   def c_gpt_text
-    url = "http://51.79.230.157:9090/"
+    url = "184.174.38.115:9090"
     body = {test_key: _read_body}.to_json
     headers = HTTP::Headers{"Content-Type" => "application/json"}
 

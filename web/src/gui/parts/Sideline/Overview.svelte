@@ -39,15 +39,23 @@
 
   const rinit = { cache: 'no-cache' } as RequestInit
 
+  let loading_bzv = false
+
   const load_bt_zv_data = async () => {
+    loading_bzv = true
     const bt_zv_res = await call_bt_zv_file(finit, rinit)
     if (bt_zv_res.error) alert(bt_zv_res.error)
     $data.bt_zv = bt_zv_res.lines || []
+    loading_bzv = false
   }
 
+  let loading_gpt = false
+
   const load_c_gpt_data = async () => {
+    loading_gpt = true
     const vtext_res = await from_custom_gpt(ztext)
     $data.c_gpt[l_idx] = vtext_res
+    loading_gpt = false
   }
 </script>
 
@@ -148,8 +156,10 @@
       <div>
         <em>Chưa có kết quả dịch sẵn.</em>
       </div>
-      <button class="m-btn _xs _primary" on:click={load_bt_zv_data}
-        >Dịch bằng Bing!</button>
+      <button class="m-btn _xs _primary" on:click={load_bt_zv_data}>
+        {#if loading_bzv}<SIcon name="loader-2" spin={true} />{/if}
+        <span>Dịch bằng Bing!</span>
+      </button>
     </div>
   {/if}
 </Viewbox>
@@ -175,8 +185,10 @@
       <div>
         <em>Chưa có kết quả dịch sẵn.</em>
       </div>
-      <button class="m-btn _xs _primary" on:click={load_c_gpt_data}
-        >Gọi công cụ!</button>
+      <button class="m-btn _xs _primary" on:click={load_c_gpt_data}>
+        {#if loading_gpt}<SIcon name="loader-2" spin={true} />{/if}
+        <span>Gọi công cụ!</span>
+      </button>
     </div>
   {/if}
 </Viewbox>

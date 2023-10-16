@@ -42,7 +42,7 @@
   </div>
 
   <div class="rinfo">
-    <a class="title u-fg-secd" href={sroot}>{btitle}</a>
+    <a class="title fz-fluid-lg" href={sroot}>{btitle}</a>
     <p class="intro u-fz-sm u-fg-tert u-fs-i">
       {intro || 'Không có giới thiệu'}
     </p>
@@ -144,14 +144,8 @@
     padding-bottom: 0.5rem;
     @include clamp($lines: 2);
 
-    line-height: 1.4;
-    @include bps(
-      font-size,
-      rem(15px),
-      $pl: rem(16px),
-      $ts: rem(17px),
-      $tm: rem(18px)
-    );
+    @include fgcolor(main);
+    line-height: 1.2;
 
     &:hover {
       @include fgcolor(primary);

@@ -10,19 +10,19 @@
   $: privi = $_user.privi
 
   const tabs = [
-    { type: 'home', href: `/rm`, icon: 'world', text: 'Đã liên kết' },
+    { type: 'home', href: `/rm`, icon: 'world', text: 'Danh sách' },
     {
       type: 'like',
       href: `/rm/liked`,
       icon: 'star',
-      text: 'Đang theo dõi',
-      mute: true,
+      text: 'Đã đánh dấu',
+      mute: privi < 0,
     },
     {
       type: '+new',
       href: `/rm/+stem`,
-      icon: 'file-plus',
-      text: 'Thêm nguồn nhúng',
+      icon: 'square-plus',
+      text: 'Thêm mới',
       mute: privi < 1,
     },
   ]

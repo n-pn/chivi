@@ -83,8 +83,9 @@
       {#if query[key]}
         <span class="s-tag">
           <SIcon name={icons[key]} />
-          <button type="button" on:click={() => edit_filter(key)}
-            >{query[key]}</button>
+          <button type="button" on:click={() => edit_filter(key)}>
+            <span class="trim">{query[key]}</span>
+          </button>
           <button type="button" on:click={() => remove_filter(key)}>
             <SIcon name="x" />
           </button>
@@ -98,7 +99,7 @@
       name="bt"
       placeholder="Tìm kiếm theo tên tiếng Trung hoặc Hán Việt bộ truyện"
       bind:value={query.bt} />
-    <button class="s-btn u-fz-lg" type="submit"><SIcon name="search" /></button>
+    <button class="s-btn" type="submit"><SIcon name="search" /></button>
   </form>
 
   <nav class="sorts">
@@ -128,10 +129,13 @@
   .search {
     @include flex-cy;
     margin: 1rem 0;
+    gap: 0.25rem;
 
-    padding: 0.25rem;
-    padding-right: 0.5rem;
+    padding: 0.25rem 0.5rem;
+
     border-radius: 2rem;
+    position: relative;
+    overflow: hidden;
 
     @include fgcolor(main);
     @include bgcolor(main);
@@ -158,25 +162,35 @@
       border: none;
       background-color: transparent;
 
+      @include fgcolor(tert);
+      @include ftsize(sm);
+
       &:hover {
         @include fgcolor(primary, 5);
       }
     }
   }
 
+  .trim {
+    max-width: 20vw;
+    @include clamp($width: null);
+  }
+
   .s-tag {
     @include flex-cy;
 
-    margin-left: 0.75rem;
-    padding-left: 0.375rem;
-    border-radius: 0.25rem;
+    padding-left: 0.5rem;
+    padding-right: 0.25rem;
+    border-radius: 1rem;
 
     @include bgcolor(neutral, 5, 1);
   }
 
   .s-inp {
     flex: 1;
-    padding: 0 0.75rem;
+    width: 1rem;
+    display: block;
+    padding-right: 1.5rem;
 
     border: none;
     background: transparent;
@@ -184,6 +198,19 @@
     &::placeholder {
       font-style: italic;
       @include fgcolor(tert);
+    }
+  }
+
+  .s-btn {
+    @include flex-ca;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin-right: 0.5rem;
+
+    &:hover {
+      @include fgcolor(primary, 5);
     }
   }
 

@@ -12,7 +12,6 @@
 </script>
 
 <script lang="ts">
-  import { goto } from '$app/navigation'
   import { page } from '$app/stores'
 
   import SIcon from '$gui/atoms/SIcon.svelte'

@@ -298,7 +298,7 @@ class RD::Rmstem
         args << liked
 
         sql << <<-SQL
-          and exists (
+            and exists (
             select 1 from rdmemos as m
             where m.vu_id = $#{args.size}
             and m.sn_id = rmstems.sn_id

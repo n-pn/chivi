@@ -84,8 +84,9 @@
       {#if query[key]}
         <span class="s-tag">
           <SIcon name={icons[key]} />
-          <button type="button" on:click={() => edit_filter(key)}
-            >{query[key]}</button>
+          <button type="button" on:click={() => edit_filter(key)}>
+            <span class="trim">{query[key]}</span>
+          </button>
           <button type="button" on:click={() => remove_filter(key)}>
             <SIcon name="x" />
           </button>
@@ -158,10 +159,18 @@
       border: none;
       background-color: transparent;
 
+      @include fgcolor(tert);
+      @include ftsize(sm);
+
       &:hover {
         @include fgcolor(primary);
       }
     }
+  }
+
+  .trim {
+    max-width: 30vw;
+    @include clamp($width: null);
   }
 
   .s-tag {
