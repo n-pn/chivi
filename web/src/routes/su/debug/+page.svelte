@@ -8,7 +8,7 @@
   import Vtform, {
     data as vtform_data,
     ctrl as vtform_ctrl,
-  } from '$gui/parts/Vtform.svelte'
+  } from '$gui/shared/vtform/Vtform.svelte'
 
   let pdict = 'combine'
   let m_alg = 'mtl_1'

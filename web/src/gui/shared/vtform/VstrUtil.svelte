@@ -83,7 +83,7 @@
     }
   }
 
-  $: no_cap = tform.cpos != 'NR' && tform.cpos != 'NN'
+  $: no_cap = tform.cpos != 'NR' && tform.cpos != 'NP' && tform.cpos != 'NN'
 </script>
 
 <div class="util">

@@ -124,11 +124,12 @@
   import CposPicker from '$gui/parts/CposPicker.svelte'
   import AttrPicker from '$gui/parts/AttrPicker.svelte'
 
-  import FormHead from './vtform/FormHead.svelte'
-  import VstrBtns from './vtform/VstrBtns.svelte'
-  import VstrUtil from './vtform/VstrUtil.svelte'
-  import FormBtns from './vtform/FormBtns.svelte'
-  import HelpLink from './vtform/HelpLink.svelte'
+  import Glossary from './Glossary.svelte'
+  import FormHead from './FormHead.svelte'
+  import VstrBtns from './VstrBtns.svelte'
+  import VstrUtil from './VstrUtil.svelte'
+  import FormBtns from './FormBtns.svelte'
+  import HelpLink from './HelpLink.svelte'
 
   export let ropts: CV.Rdopts
 
@@ -191,6 +192,9 @@
 
   let pick_cpos = false
   let pick_attr = false
+
+  let show_log = false
+  let show_dfn = false
 </script>
 
 <Dialog actived={$ctrl.actived} on_close={ctrl.hide} class="vtform" _size="lg">
@@ -214,24 +218,24 @@
 
     <button
       type="button"
-      class="htab _find"
+      class="htab _novel"
       class:_active={$ctrl.tab == 1}
       data-kbd="⌃1"
       on:click={() => ctrl.show(1)}
       disabled>
-      <SIcon name="compass" />
-      <span>Tra nghĩa</span>
+      <SIcon name="divide " />
+      <span>Nghĩa cặp từ</span>
     </button>
 
     <button
       type="button"
-      class="htab _novel"
+      class="htab _find"
       class:_active={$ctrl.tab == 2}
       data-kbd="⌃2"
       on:click={() => ctrl.show(2)}
       disabled>
-      <SIcon name="tools" />
-      <span>Nâng cao</span>
+      <SIcon name="cut" />
+      <span>Gộp tách từ</span>
     </button>
   </nav>
 
@@ -286,9 +290,7 @@
       <div class="fmsg">{form_msg}</div>
     {/if}
 
-    <footer class="foot">
-      <FormBtns bind:tform {privi} />
-    </footer>
+    <FormBtns bind:tform {privi} bind:show_log bind:show_dfn />
   </form>
 
   <HelpLink key={tform.init.zstr} />
@@ -300,6 +302,10 @@
 
 {#if pick_attr}
   <AttrPicker bind:output={tform.attr} bind:actived={pick_attr} />
+{/if}
+
+{#if show_dfn}
+  <Glossary bind:actived={show_dfn} ztext={$data.zline} {zfrom} {zupto} />
 {/if}
 
 <style lang="scss">
@@ -475,12 +481,6 @@
     background: transparent;
     @include fgcolor(main);
     @include ftsize(lg);
-  }
-
-  .foot {
-    @include flex-ca;
-    gap: 0.75rem;
-    padding-top: 0.75rem;
   }
 
   .fmsg {

@@ -32,6 +32,9 @@
   export let tform: Vtform
   export let privi: number
 
+  export let show_log = false
+  export let show_dfn = false
+
   $: dict_choice = dict_choices[tform.local ? 't' : 'f']
 
   function change_plock() {
@@ -46,39 +49,55 @@
   $: btn_style = button_styles[tform.local ? tform.plock : tform.plock + 3]
 </script>
 
-<button-group class="opts">
+<section class="actions">
   <button
     type="button"
-    class="m-btn _lg dict {tform.local ? 'local' : 'world'}"
-    data-kbd="o"
-    use:tooltip={dict_choice.desc}
-    data-anchor=".vtform"
-    on:click={() => (tform.local = !tform.local)}>
-    <SIcon name={dict_choice.icon} />
+    class="m-btn _success"
+    on:click={() => (show_dfn = !show_dfn)}>
+    <SIcon name="compass" />
+    <span class="-txt u-show-pl">Tra nghĩa</span>
   </button>
+
+  <button-group class="opts">
+    <button
+      type="button"
+      class="m-btn dict {tform.local ? 'local' : 'world'}"
+      data-kbd="o"
+      use:tooltip={dict_choice.desc}
+      data-anchor=".vtform"
+      on:click={() => (tform.local = !tform.local)}>
+      <SIcon name={dict_choice.icon} />
+    </button>
+
+    <button
+      type="button"
+      class="m-btn lock _{tform.plock}"
+      data-kbd="p"
+      use:tooltip={'Đổi chế độ khóa từ'}
+      data-anchor=".vtform"
+      on:click={change_plock}
+      disabled={privi <= tform.init.plock + min_privi}>
+      <SIcon name="plock-{tform.plock}" iset="icons" />
+    </button>
+  </button-group>
 
   <button
-    type="button"
-    class="m-btn _lg lock _{tform.plock}"
-    data-kbd="p"
-    use:tooltip={'Đổi chế độ khóa từ'}
-    data-anchor=".vtform"
-    on:click={change_plock}
-    disabled={privi <= tform.init.plock + min_privi}>
-    <SIcon name="plock-{tform.plock}" iset="icons" />
+    class="m-btn _lg _fill {btn_style} _send"
+    data-kbd="↵"
+    type="submit"
+    disabled={privi < tform.req_privi}>
+    <span class="text">{tform.vstr ? 'Lưu' : 'Xoá'}</span>
+    <SIcon name="privi-{tform.req_privi}" iset="icons" />
   </button>
-</button-group>
-
-<button
-  class="m-btn _lg _fill {btn_style} _send"
-  data-kbd="↵"
-  type="submit"
-  disabled={privi < tform.req_privi}>
-  <span class="text">{tform.vstr ? 'Lưu' : 'Xoá'}</span>
-  <SIcon name="privi-{tform.req_privi}" iset="icons" />
-</button>
+</section>
 
 <style lang="scss">
+  .actions {
+    @include flex-ca;
+    gap: 0.75rem;
+    padding-top: 0.75rem;
+  }
+
   button-group {
     button:not(:last-child) {
       border-top-right-radius: 0;
