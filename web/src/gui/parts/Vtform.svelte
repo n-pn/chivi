@@ -125,8 +125,9 @@
   import AttrPicker from '$gui/parts/AttrPicker.svelte'
 
   import FormHead from './vtform/FormHead.svelte'
-  import TermOpts from './vtform/TermOpts.svelte'
+  import VstrBtns from './vtform/VstrBtns.svelte'
   import VstrUtil from './vtform/VstrUtil.svelte'
+  import FormBtns from './vtform/FormBtns.svelte'
   import HelpLink from './vtform/HelpLink.svelte'
 
   export let ropts: CV.Rdopts
@@ -173,7 +174,7 @@
   const action = '/_ai/terms/once'
   const method = 'PUT'
 
-  const send_form = async () => {
+  const submit_action = async () => {
     const headers = { 'Content-type': 'application/json' }
     const body = tform.to_form_body(ropts, $data.vtree, zfrom)
 
@@ -187,17 +188,6 @@
       ctrl.hide()
     }
   }
-
-  const button_styles = [
-    '_default', // primary + plock 0
-    '_warning', // primary + plock 1
-    '_harmful', // primary + plock 2
-    '_success', // regular + plock 1
-    '_primary', // regular + plock 1
-    '_teal', // regular + plock 2
-  ]
-
-  $: btn_style = button_styles[tform.local ? tform.plock : tform.plock + 3]
 
   let pick_cpos = false
   let pick_attr = false
@@ -245,7 +235,7 @@
     </button>
   </nav>
 
-  <form class="body" {method} {action} on:submit|preventDefault={send_form}>
+  <form class="body" {method} {action} on:submit|preventDefault={submit_action}>
     <div class="main">
       <div class="main-head">
         <button
@@ -286,10 +276,10 @@
           autocomplete="off"
           autocapitalize="off" />
 
-        <TermOpts bind:tform {privi} />
+        <VstrBtns bind:tform />
       </div>
 
-      <VstrUtil bind:tform {field} {refocus} />
+      <VstrUtil bind:tform {field} />
     </div>
 
     {#if form_msg}
@@ -297,16 +287,7 @@
     {/if}
 
     <footer class="foot">
-      <button
-        class="m-btn _lg _fill {btn_style} _send"
-        data-kbd="↵"
-        type="submit"
-        disabled={privi < tform.req_privi}
-        on:click={send_form}>
-        <SIcon name="send" />
-        <span class="text">{tform.vstr ? 'Lưu' : 'Xoá'}</span>
-        <SIcon name="privi-{tform.req_privi}" iset="icons" />
-      </button>
+      <FormBtns bind:tform {privi} />
     </footer>
   </form>
 
@@ -467,10 +448,8 @@
   .main-text {
     display: flex;
     $h-outer: 3.25rem;
-    $h-inner: 2rem;
 
     height: $h-outer;
-    padding: math.div($h-outer - $h-inner, 2) 0.625rem;
 
     @include linesd(--bd-soft, $inset: true);
 
@@ -478,13 +457,13 @@
       @include linesd(primary, 4, $ndef: false);
     }
 
-    > * {
-      height: $h-inner;
-      // line-height: 1.75rem;
-    }
-
     &._fresh > * {
       font-style: italic;
+    }
+
+    input {
+      $h-inner: 2rem;
+      padding: math.div($h-outer - $h-inner, 2) 0.625rem;
     }
   }
 
@@ -502,10 +481,6 @@
     @include flex-ca;
     gap: 0.75rem;
     padding-top: 0.75rem;
-
-    ._send {
-      margin-left: auto;
-    }
   }
 
   .fmsg {

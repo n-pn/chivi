@@ -9,7 +9,7 @@
   import Vtform, {
     data as vtform_data,
     ctrl as vtform_ctrl,
-  } from '$gui/parts/VitermForm.svelte'
+  } from '$gui/parts/Vtform.svelte'
 
   import Overview from './Sideline/Overview.svelte'
   import Glossary from './Sideline/Glossary.svelte'

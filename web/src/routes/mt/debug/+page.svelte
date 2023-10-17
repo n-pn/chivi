@@ -8,7 +8,7 @@
   import Vtform, {
     data as vtform_data,
     ctrl as vtform_ctrl,
-  } from '$gui/parts/VitermForm.svelte'
+  } from '$gui/parts/Vtform.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
