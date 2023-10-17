@@ -64,5 +64,10 @@ class CV::Vicrit
       SQL
   end
 
-  ####
+  def self.get_form_data(id : Int32) : {Int32, String}
+    PGDB.query_one <<-SQL, id, as: {Int32, String}
+      select vilist_id, itext from #{@@table}
+      where id = $1
+      SQL
+  end #
 end

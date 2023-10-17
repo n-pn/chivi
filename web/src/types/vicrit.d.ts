@@ -1,19 +1,20 @@
 declare namespace CV {
   interface Vicrit {
-    user_id: number
+    vc_id: number
+    vu_id: number
+    vl_id: number
+    wn_id: number
+
     u_uname: string
     u_privi: number
 
-    book_id: number
     b_uslug: string
     b_title: string
 
-    list_id: number
     l_title: string
     l_uslug: string
     l_count: number
 
-    vc_id: number
     stars: number
     ohtml: string
     btags: string[]

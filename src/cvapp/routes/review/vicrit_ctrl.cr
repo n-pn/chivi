@@ -11,7 +11,7 @@ class CV::VicritCtrl < CV::BaseCtrl
             vtag : String? = nil)
     pg_no, limit, offset = _paginate(min: 1, max: 24)
 
-    crits = VicritCard.fetch_all(
+    crits = VicritView.fetch_all(
       self_id: _vu_id, order: sort,
       vuser: from == "me" ? _uname : user,
       wbook: book, vlist: list, btags: vtag,
@@ -19,13 +19,13 @@ class CV::VicritCtrl < CV::BaseCtrl
       limit: limit, offset: offset,
     )
 
-    total = VicritCard.count_all(
+    total = VicritView.count_all(
       vuser: from == "me" ? _uname : user,
       wbook: book, vlist: list, btags: vtag,
       s_min: smin, s_max: smax,
     )
 
-    books = Wninfo.preload(crits.map(&.book_id))
+    books = Wninfo.preload(crits.map(&.wn_id))
 
     render json: {
       crits: crits,
@@ -38,7 +38,7 @@ class CV::VicritCtrl < CV::BaseCtrl
 
   @[AC::Route::GET("/:crit_id")]
   def show(crit_id : Int32)
-    render json: VicritCard.fetch_one(crit_id, _vu_id)
+    render json: VicritView.fetch_one(crit_id, _vu_id)
   end
 
   private def load_crit(id : Int64)
@@ -50,7 +50,7 @@ class CV::VicritCtrl < CV::BaseCtrl
     guard_privi 0, "thêm/sửa đánh giá"
 
     lists = VilistCard.all_by_user(_vu_id, _vu_id)
-    crits = VicritCard.fetch_all(self_id: _vu_id, vuser: _uname, wbook: wn_id)
+    crits = VicritView.fetch_all(self_id: _vu_id, vuser: _uname, wbook: wn_id)
 
     vcrit = crits.find(&.vc_id.== vc_id)
     crits.reject!(&.vc_id.== vc_id) if vcrit
@@ -68,8 +68,8 @@ class CV::VicritCtrl < CV::BaseCtrl
     {id: 0, wn_id: wn_id, vl_id: -_vu_id, stars: 3, input: "", btags: ""}
   end
 
-  private def init_form(crit : VicritCard, wn_id : Int32)
-    vl_id, itext = VicritCard.get_form_data(crit.vc_id)
+  private def init_form(crit : VicritView, wn_id : Int32)
+    vl_id, itext = Vicrit.get_form_data(crit.vc_id)
 
     {
       id: crit.vc_id, wn_id: wn_id, vl_id: vl_id,

@@ -110,7 +110,7 @@
 
 <div class="crits">
   {#each vi.crits as crit}
-    {@const book = vi.books[crit.book_id]}
+    {@const book = vi.books[crit.wn_id]}
 
     {#key crit.vc_id}
       <VicritCard {crit} {book} {show_book} {show_list} />

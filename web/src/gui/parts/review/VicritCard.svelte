@@ -34,7 +34,7 @@
 
   $: crit_path = `/wn/${crit.b_uslug}/uc/v${crit.vc_id}`
   $: edit_path = `/wn/${crit.b_uslug}/uc/+crit?id=${crit.vc_id}`
-  $: list_path = `/@${crit.u_uname}/lists/${crit.l_uslug}`
+  $: list_path = `/wn/lists/v${crit.l_uslug}`
 </script>
 
 <article class="crit island">

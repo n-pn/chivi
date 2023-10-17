@@ -37,14 +37,14 @@ class CV::VilistCtrl < CV::BaseCtrl
 
     pg_no, limit, offset = _paginate(max: 20)
 
-    crits = VicritCard.fetch_all(
+    crits = VicritView.fetch_all(
       self_id: _vu_id, order: sort,
       vlist: list_id, btags: vtag,
       s_min: smin, s_max: smax,
       limit: limit, offset: offset,
     )
 
-    books = Wninfo.preload(crits.map(&.book_id))
+    books = Wninfo.preload(crits.map(&.wn_id))
 
     render json: {
       list: vlist,
