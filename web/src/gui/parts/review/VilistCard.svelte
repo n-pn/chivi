@@ -76,11 +76,13 @@
           <source
             type="image/webp"
             srcset="https://cdn.chivi.app/covers/{cover}" />
-          <img src="/imgs/empty.png" alt="" />
+          <img src="https://cdn.chivi.app/imgs/empty.png" alt="" />
         </picture>
       </div>
     {:else}
-      <div class="blcard-cover _0"><img src="/imgs/empty.png" alt="" /></div>
+      <div class="blcard-cover _0">
+        <img src="https://cdn.chivi.app/imgs/empty.png" alt="" />
+      </div>
     {/each}
   </a>
 </article>

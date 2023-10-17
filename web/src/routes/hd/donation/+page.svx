@@ -31,20 +31,20 @@ Trong trường hợp bạn quên chưa cung cấp thông tin định danh, hãy
     <figcaption>Techcombank</figcaption>
     <img
     src="https://img.vietqr.io/image/TCB-1606281089-compact.png?amount=50000&addInfo={code}"
-    onerror="this.src='/imgs/techcombank-fs8.png'" alt="Techcombank"/>
+    onerror="this.src='https://cdn.chivi.app/imgs/techcombank-fs8.png'" alt="Techcombank"/>
   </figure>
 
   <figure>
     <figcaption>Vietcombank</figcaption>
     <img
    src="https://img.vietqr.io/image/VCB-1035430031-compact.png?amount=50000&addInfo={code}"
-    onerror="this.src='/imgs/vietcombank-fs8.png'"
+    onerror="this.src='https://cdn.chivi.app/imgs/vietcombank-fs8.png'"
     alt="Vietcombank"/>
   </figure>
 
   <figure>
     <figcaption>Ví Mommo</figcaption>
-    <img src="/imgs/momo-fs8.png" alt="Momo"/>
+    <img src="https://cdn.chivi.app/imgs/momo-fs8.png" alt="Momo"/>
   </figure>
 </div>
 

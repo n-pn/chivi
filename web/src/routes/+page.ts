@@ -4,7 +4,7 @@ import type { PageLoad } from './$types'
 
 const _title = 'Trang chủ'
 const _mdesc = 'Truyện Tàu dịch máy, đánh giá truyện, dịch nhanh tiếng Trung...'
-const _image = '/imgs/avatar.png'
+const _image = 'https://cdn.chivi.app/imgs/avatar.png'
 
 const _meta = { left_nav: [nav_link('/', 'Trang chủ', 'home')] }
 

@@ -11,13 +11,13 @@ Chi tiết tham khảo [Tất cả về vcoin](/hd/tat-ca-ve-vcoin)
 
 ### Bước 1: Bấm vào chỗ được khoanh đỏ phía bên phải màn hình:
 
-![step 1](/imgs/privi-upgrade/step-1.png)
+![step 1](https://cdn.chivi.app/imgs/privi-upgrade/step-1.png)
 
 Ở đây thay vì tên của người viết hướng dẫn (Nipin), thì nó sẽ hiện lên tên đăng nhập của bạn trên Chivi.
 
 ### Bước 2: Bấm vào biểu tượng răng cưa (được khoanh đỏ) góc trên bên phải:
 
-![step 2](/imgs/privi-upgrade/step-2.png)
+![step 2](https://cdn.chivi.app/imgs/privi-upgrade/step-2.png)
 
 <style>
   img {
@@ -30,7 +30,7 @@ Chi tiết tham khảo [Tất cả về vcoin](/hd/tat-ca-ve-vcoin)
 
 ### Bước 3: Chọn quyền hạn + khoảng thời gian bạn muốn nâng cấp, rồi bấm nút Nâng cấp
 
-![step 3](/imgs/privi-upgrade/step-3.png)
+![step 3](https://cdn.chivi.app/imgs/privi-upgrade/step-3.png)
 
 **Lưu ý:**
 

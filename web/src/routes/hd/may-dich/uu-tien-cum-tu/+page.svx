@@ -4,7 +4,7 @@ title: Ưu tiên cụm từ trong câu
 
 <p><em>Cập nhật: 22/07/2022</em></p>
 
-Khi bạn thêm/sửa từ vựng thông qua [Hộp thoại thêm sửa từ](/hd/tu-vung/them-sua-tu), phần <a href="/imgs/uu-tien-cum-tu.png" rel="external">phía dưới bên phải</a> sẽ cho phép bạn thay đổi độ ưu tiên của cụm từ khi phân tích câu văn. Bài viết này sẽ hướng dẫn bạn việc lựa chọn độ ưu tiên cho phù hợp, và giải thích chi tiết tính năng này cho bạn nào còn chưa rõ.
+Khi bạn thêm/sửa từ vựng thông qua [Hộp thoại thêm sửa từ](/hd/tu-vung/them-sua-tu), phần <a href="https://cdn.chivi.app/imgs/uu-tien-cum-tu.png" rel="external">phía dưới bên phải</a> sẽ cho phép bạn thay đổi độ ưu tiên của cụm từ khi phân tích câu văn. Bài viết này sẽ hướng dẫn bạn việc lựa chọn độ ưu tiên cho phù hợp, và giải thích chi tiết tính năng này cho bạn nào còn chưa rõ.
 
 ## Trường hợp đặc biệt: Độ ưu tiên là `Xoá`
 

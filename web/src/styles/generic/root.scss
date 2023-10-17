@@ -84,9 +84,9 @@ p > img {
   font-style: normal;
   font-weight: 400;
   src: local(''),
-    url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-regular.woff2')
+    url('https://cdn.chivi.app/fonts/merriweather-v25-vietnamese_latin-ext_latin-regular.woff2')
       format('woff2'),
-    url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-regular.woff')
+    url('https://cdn.chivi.app/fonts/merriweather-v25-vietnamese_latin-ext_latin-regular.woff')
       format('woff');
 }
 
@@ -95,9 +95,9 @@ p > img {
   font-style: italic;
   font-weight: 400;
   src: local(''),
-    url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-italic.woff2')
+    url('https://cdn.chivi.app/fonts/merriweather-v25-vietnamese_latin-ext_latin-italic.woff2')
       format('woff2'),
-    url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-italic.woff')
+    url('https://cdn.chivi.app/fonts/merriweather-v25-vietnamese_latin-ext_latin-italic.woff')
       format('woff');
 }
 
@@ -106,9 +106,9 @@ p > img {
   font-style: normal;
   font-weight: 700;
   src: local(''),
-    url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-700.woff2')
+    url('https://cdn.chivi.app/fonts/merriweather-v25-vietnamese_latin-ext_latin-700.woff2')
       format('woff2'),
-    url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-700.woff')
+    url('https://cdn.chivi.app/fonts/merriweather-v25-vietnamese_latin-ext_latin-700.woff')
       format('woff');
 }
 
@@ -117,9 +117,9 @@ p > img {
   font-style: italic;
   font-weight: 700;
   src: local(''),
-    url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-700italic.woff2')
+    url('https://cdn.chivi.app/fonts/merriweather-v25-vietnamese_latin-ext_latin-700italic.woff2')
       format('woff2'),
-    url('/fonts/merriweather-v25-vietnamese_latin-ext_latin-700italic.woff')
+    url('https://cdn.chivi.app/fonts/merriweather-v25-vietnamese_latin-ext_latin-700italic.woff')
       format('woff');
 }
 
@@ -129,10 +129,10 @@ p > img {
   font-style: italic;
   font-weight: 400;
   src: local(''),
-    url('/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-italic.woff2')
+    url('https://cdn.chivi.app/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-italic.woff2')
       format('woff2'),
     /* Chrome 26+, Opera 23+, Firefox 39+ */
-      url('/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-italic.woff')
+      url('https://cdn.chivi.app/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-italic.woff')
       format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
@@ -142,10 +142,10 @@ p > img {
   font-style: normal;
   font-weight: 400;
   src: local(''),
-    url('/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-regular.woff2')
+    url('https://cdn.chivi.app/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-regular.woff2')
       format('woff2'),
     /* Chrome 26+, Opera 23+, Firefox 39+ */
-      url('/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-regular.woff')
+      url('https://cdn.chivi.app/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-regular.woff')
       format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
@@ -155,10 +155,10 @@ p > img {
   font-style: normal;
   font-weight: 700;
   src: local(''),
-    url('/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-700.woff2')
+    url('https://cdn.chivi.app/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-700.woff2')
       format('woff2'),
     /* Chrome 26+, Opera 23+, Firefox 39+ */
-      url('/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-700.woff')
+      url('https://cdn.chivi.app/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-700.woff')
       format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
@@ -168,10 +168,10 @@ p > img {
   font-style: italic;
   font-weight: 700;
   src: local(''),
-    url('/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-700italic.woff2')
+    url('https://cdn.chivi.app/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-700italic.woff2')
       format('woff2'),
     /* Chrome 26+, Opera 23+, Firefox 39+ */
-      url('/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-700italic.woff')
+      url('https://cdn.chivi.app/fonts/nunito-sans-v8-vietnamese_latin-ext_latin-700italic.woff')
       format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
@@ -181,10 +181,10 @@ p > img {
   font-style: normal;
   font-weight: 400;
   src: local(''),
-    url('/fonts/lora-v20-vietnamese_latin-ext_latin-regular.woff2')
+    url('https://cdn.chivi.app/fonts/lora-v20-vietnamese_latin-ext_latin-regular.woff2')
       format('woff2'),
     /* Chrome 26+, Opera 23+, Firefox 39+ */
-      url('/fonts/lora-v20-vietnamese_latin-ext_latin-regular.woff')
+      url('https://cdn.chivi.app/fonts/lora-v20-vietnamese_latin-ext_latin-regular.woff')
       format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
@@ -194,9 +194,11 @@ p > img {
   font-style: normal;
   font-weight: 700;
   src: local(''),
-    url('/fonts/lora-v20-vietnamese_latin-ext_latin-700.woff2') format('woff2'),
+    url('https://cdn.chivi.app/fonts/lora-v20-vietnamese_latin-ext_latin-700.woff2')
+      format('woff2'),
     /* Chrome 26+, Opera 23+, Firefox 39+ */
-      url('/fonts/lora-v20-vietnamese_latin-ext_latin-700.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+      url('https://cdn.chivi.app/fonts/lora-v20-vietnamese_latin-ext_latin-700.woff')
+      format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
 /* lora-italic - vietnamese_latin-ext_latin */
@@ -205,10 +207,10 @@ p > img {
   font-style: italic;
   font-weight: 400;
   src: local(''),
-    url('/fonts/lora-v20-vietnamese_latin-ext_latin-italic.woff2')
+    url('https://cdn.chivi.app/fonts/lora-v20-vietnamese_latin-ext_latin-italic.woff2')
       format('woff2'),
     /* Chrome 26+, Opera 23+, Firefox 39+ */
-      url('/fonts/lora-v20-vietnamese_latin-ext_latin-italic.woff')
+      url('https://cdn.chivi.app/fonts/lora-v20-vietnamese_latin-ext_latin-italic.woff')
       format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
@@ -218,10 +220,10 @@ p > img {
   font-style: italic;
   font-weight: 700;
   src: local(''),
-    url('/fonts/lora-v20-vietnamese_latin-ext_latin-700italic.woff2')
+    url('https://cdn.chivi.app/fonts/lora-v20-vietnamese_latin-ext_latin-700italic.woff2')
       format('woff2'),
     /* Chrome 26+, Opera 23+, Firefox 39+ */
-      url('/fonts/lora-v20-vietnamese_latin-ext_latin-700italic.woff')
+      url('https://cdn.chivi.app/fonts/lora-v20-vietnamese_latin-ext_latin-700italic.woff')
       format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
@@ -231,10 +233,10 @@ p > img {
   font-family: 'Roboto Slab';
   font-style: normal;
   font-weight: 400;
-  src: url('/fonts/roboto-slab-v24-vietnamese_latin-ext_latin-regular.woff2')
+  src: url('https://cdn.chivi.app/fonts/roboto-slab-v24-vietnamese_latin-ext_latin-regular.woff2')
       format('woff2'),
     /* Chrome 36+, Opera 23+, Firefox 39+ */
-      url('/fonts/roboto-slab-v24-vietnamese_latin-ext_latin-regular.woff')
+      url('https://cdn.chivi.app/fonts/roboto-slab-v24-vietnamese_latin-ext_latin-regular.woff')
       format('woff'); /* Chrome 5+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
@@ -244,9 +246,9 @@ p > img {
   font-family: 'Roboto Slab';
   font-style: normal;
   font-weight: 700;
-  src: url('/fonts/roboto-slab-v24-vietnamese_latin-ext_latin-700.woff2')
+  src: url('https://cdn.chivi.app/fonts/roboto-slab-v24-vietnamese_latin-ext_latin-700.woff2')
       format('woff2'),
     /* Chrome 36+, Opera 23+, Firefox 39+ */
-      url('/fonts/roboto-slab-v24-vietnamese_latin-ext_latin-700.woff')
+      url('https://cdn.chivi.app/fonts/roboto-slab-v24-vietnamese_latin-ext_latin-700.woff')
       format('woff'); /* Chrome 5+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
