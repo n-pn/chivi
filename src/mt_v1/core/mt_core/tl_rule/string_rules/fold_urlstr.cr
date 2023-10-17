@@ -21,6 +21,8 @@ module M1::TlRule
   end
 
   private def uri_component?(node : MtNode) : Bool
+    return false if node.key.empty?
+
     case node.tag
     when .litstr?, .urlstr?, .ndigit? then true
     when .puncts?

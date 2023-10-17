@@ -1,9 +1,9 @@
 require "http/client"
 require "lexbor"
 
-require "../../../src/_util/http_util"
+require "../../src/_util/http_util"
 
-HTML_DIR = "var/seeds/zxcs.me/infos"
+HTML_DIR = "/www/chivi/xyz/seeds/zxcs.me/infos"
 Dir.mkdir_p(HTML_DIR)
 
 def still_fresh?(zip_file : String)

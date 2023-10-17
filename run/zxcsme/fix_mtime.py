@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import os, sys, datetime, rarfile
 
-INP_RAR = "var/seeds/zxcs.me/_rars"
+INP_RAR = "/www/chivi/xyz/seeds/zxcs.me/_rars"
 files = os.listdir(INP_RAR)
 
 def fix_mtime(file):
@@ -14,7 +14,7 @@ def fix_mtime(file):
     os.utime(txt_file, (utime, utime))
     return utime
 
-idx_file = open("var/seeds/zxcs.me/mftime.tsv", "w")
+idx_file = open("/www/chivi/xyz/seeds/zxcs.me/mftime.tsv", "w")
 
 for file in files:
   try:
