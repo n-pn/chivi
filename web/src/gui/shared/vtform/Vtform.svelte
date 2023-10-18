@@ -37,7 +37,7 @@
     return from == lower && upto == upper ? node : null
   }
 
-  function extract_term(input: CV.Vtform): CV.Vtdata {
+  function extract_term(input: CV.Vtdata): CV.Viterm {
     const { zline, vtree, hvarr, zfrom, zupto, icpos } = input
     const zstr = zline.substring(zfrom, zupto)
 
@@ -70,7 +70,7 @@
   }
 
   export const data = {
-    ...writable<CV.Vtform>(init_data),
+    ...writable<CV.Vtdata>(init_data),
     put(
       zline: string,
       hvarr: Array<[string, string]>,
@@ -110,7 +110,7 @@
   import { get_user } from '$lib/stores'
   const _user = get_user()
 
-  import { Vtform } from '$lib/models/viterm'
+  import { Viform } from '$lib/models/viterm'
 
   import { onDestroy } from 'svelte'
 
@@ -133,10 +133,10 @@
 
   export let ropts: CV.Rdopts
 
-  export let on_close = (_term?: CV.Vtdata) => {}
+  export let on_close = (_term?: CV.Viterm) => {}
   onDestroy(() => on_close(null))
 
-  const cached = new Map<string, Vtform>()
+  const cached = new Map<string, Viform>()
 
   function make_form(zfrom: number, zupto: number, icpos: string) {
     const key = `${zfrom}-${zupto}-${icpos}`
@@ -145,7 +145,7 @@
     if (old) return old
 
     const term = data.get_term(zfrom, zupto, icpos)
-    const form = new Vtform(term, privi)
+    const form = new Viform(term, privi)
 
     cached.set(key, form)
     return form

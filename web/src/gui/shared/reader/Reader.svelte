@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { data as lookup_data } from '$lib/stores/lookup_stores'
   import {
-    call_bt_zv_file,
+    call_bt_zv_text,
     call_qt_v1_file,
     call_mt_ai_file,
   } from '$utils/tran_util'
@@ -106,7 +106,7 @@
       vtran = await call_mt_ai_file(finit, rinit, fetch)
       rname = 'mt_ai'
     } else if (rname == 'bt_zv') {
-      vtran = await call_bt_zv_file(finit, rinit, fetch)
+      vtran = await call_bt_zv_text(ztext, finit, rinit, fetch)
     } else if (rname == 'qt_v1') {
       vtran = await call_qt_v1_file(finit, rinit, fetch)
     }

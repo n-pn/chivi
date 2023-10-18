@@ -1,7 +1,7 @@
 import { writable, get } from 'svelte/store'
 
 import {
-  call_bt_zv_file,
+  call_bt_zv_text,
   call_hviet_file,
   call_qt_v1_file,
   call_mt_ai_file,
@@ -71,7 +71,7 @@ export const data = {
     }
 
     if (zdata.bt_zv.length == 0) {
-      const bt_zv = await call_bt_zv_file(finit, rinit)
+      const bt_zv = await call_bt_zv_text(zdata.ztext, finit, rinit)
       zdata.bt_zv = bt_zv.lines || []
     }
 

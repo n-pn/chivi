@@ -200,15 +200,21 @@ class MT::VpNode
 
       case node.epos
       when .is?(:AS)
-        if @_pos &+ 1 < _max && node.zstr == "了"
-          node.set_vstr!("⛶")
-          node.add_attr!(:hide)
+        if node.zstr == "了"
+          if @_pos &+ 1 < _max
+            node.set_vstr!("⛶")
+            node.add_attr!(:hide)
+          elsif do_node || io_node
+            node.set_epos!(:SP)
+            break
+          end
         end
 
         verb = M2Node.new(verb, node, :VAS, attr: verb.attr)
       when .is?(:QP)
         break if do_node || !@orig[@_pos &+ 1]?.try(&.epos.noun?)
         verb = M2Node.new(verb, node, :VP, attr: verb.attr)
+        verb.tl_whole!(dict: dict)
       when .is?(:NP)
         if do_node
           break
@@ -254,8 +260,8 @@ class MT::VpNode
 
     case list.size
     when 1 then list.first
-    when 2 then M2Node.new(list.first, list.last, epos: :VP)
-    else        MxNode.new(list, epos: :VP)
+    when 2 then M2Node.new(list.first, list.last, epos: :VP).tap(&.tl_whole!(dict: dict))
+    else        MxNode.new(list, epos: :VP).tap(&.tl_whole!(dict: dict))
     end
   end
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let orig: CV.Vtform
+  export let orig: CV.Vtdata
 
   export let zfrom: number
   export let zupto: number
@@ -15,7 +15,7 @@
 
   $: [pre_chars, out_chars, suf_chars] = split_ztext(chars, zfrom, zupto)
 
-  function split_ztext(chars: Array<String>, zfrom: number, zupto: number) {
+  function split_ztext(chars: string[], zfrom: number, zupto: number) {
     let z_min = zfrom - 10
     if (z_min < 0) z_min = 0
 

@@ -28,6 +28,8 @@ declare namespace CV {
     mtime: number
 
     plock: number
+    local: boolean
+    hviet: string
   }
 
   export type Cvtree = [
@@ -39,27 +41,4 @@ declare namespace CV {
     string?, // vstr
     number? // vdic
   ]
-
-  export interface Vtform {
-    zline: string
-
-    zfrom: number
-    zupto: number
-    icpos: string
-
-    vtree: CV.Cvtree
-    hvarr: Array<[string, string]>
-  }
-
-  export interface Vtdata {
-    zstr: string
-    vstr: string
-    cpos: string
-    attr: string
-
-    plock: number
-    local: boolean
-
-    hviet: string
-  }
 }

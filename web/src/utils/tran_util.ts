@@ -1,5 +1,30 @@
+import { btran_text } from './qtran_utils/btran_free'
+
 export interface FileReqInit extends CV.Rdopts {
   force?: boolean
+}
+
+export async function call_bt_zv_text(
+  input: string[],
+  { fpath, force = false }: FileReqInit,
+  rinit: RequestInit = { cache: 'force-cache' },
+  fetch = globalThis.fetch
+): Promise<CV.Qtdata> {
+  const start = performance.now()
+  const lines = await btran_text(input)
+
+  if (lines.length > 0) {
+    console.log('successful using browser to translate from bing')
+    const tspan = performance.now() - start
+    // TODO: save to server
+    return { lines, tspan }
+  }
+
+  const url = `/_sp/btran?fpath=${fpath}&force=${force}`
+  const res = await fetch(url, rinit)
+
+  if (res.ok) return await res.json()
+  return { lines: [], tspan: 0, error: await res.text() }
 }
 
 export async function call_bt_zv_file(

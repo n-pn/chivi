@@ -2,11 +2,11 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   import { tooltip } from '$lib/actions'
-  import type { Vtform } from '$lib/models/viterm'
+  import type { Viform } from '$lib/models/viterm'
 
   // import { type CvtermForm, hint, req_privi } from './_shared'
 
-  export let tform: Vtform
+  export let tform: Viform
 </script>
 
 <div class="opts">

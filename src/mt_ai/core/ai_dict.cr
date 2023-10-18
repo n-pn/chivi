@@ -122,7 +122,7 @@ class MT::AiDict
     end
 
     if q_term = get?(zstr[-1].to_s, :M)
-      sufx = "#{q_term.vstr}#{sufx}"
+      sufx = " #{q_term.vstr}#{sufx}"
       zstr = zstr[0..-2]
     end
 

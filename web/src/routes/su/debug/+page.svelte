@@ -11,7 +11,7 @@
   } from '$gui/shared/vtform/Vtform.svelte'
 
   let pdict = 'combine'
-  let m_alg = 'mtl_1'
+  let m_alg = 'mtl_3'
 
   $: ai_url = `/_ai/debug?pdict=${pdict}&m_alg=${m_alg}`
   $: hv_url = `/_ai/hviet?pdict=${pdict}&m_alg=${m_alg}`
@@ -34,7 +34,6 @@
     const vdata = await fetch(ai_url, rinit).then((r) => r.json())
     ctree = vdata.lines
 
-    console.log(vdata.ztree)
     navigator.clipboard.writeText(vdata.ztree[0])
   }
 
@@ -122,9 +121,7 @@
   </button>
 </article>
 
-{#if $vtform_ctrl.actived}
-  <Vtform {ropts} />
-{/if}
+{#if $vtform_ctrl.actived}<Vtform {ropts} />{/if}
 
 <style lang="scss">
   .preview {

@@ -1,6 +1,6 @@
 import { gen_ctree_text } from '$lib/mt_data_2'
 
-export class Vtform {
+export class Viform {
   // static from(key: string, dic: number = 0, privi = -1) {
   //   const term = { key, val: '', ptag: '', wseg: 2, dic, tab: 1 }
   //   return new CvtermForm(term, dic, privi)

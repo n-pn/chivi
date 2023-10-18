@@ -39,6 +39,13 @@
 <section class="notext">
   <h1 class="u-warn">Lỗi: Chương tiết không có nội dung.</h1>
 
+  {#if $_user.privi < 0}
+    <p class="u-warn">
+      Bạn chưa đăng nhập! Chức năng tự tải chương tiết từ nguồi ngoài chỉ được
+      áp dụng cho người dùng đã đăng nhập vào hệ thống!
+    </p>
+  {/if}
+
   {#if cstem.stype == 'up'}
     <p>
       Bạn đang đọc nội dung do người dùng Chivi tự quản lý. Thử liên hệ với chủ

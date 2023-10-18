@@ -28,7 +28,7 @@
 
 <script lang="ts">
   import { tooltip } from '$lib/actions'
-  import type { Vtform } from '$lib/models/viterm'
+  import type { Viform } from '$lib/models/viterm'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
@@ -36,7 +36,7 @@
   import { btran_word } from '$utils/qtran_utils/btran_free'
   import { gtran_word } from '$utils/qtran_utils/gtran_free'
 
-  export let tform: Vtform
+  export let tform: Viform
   export let field: HTMLInputElement
 
   let show_more = false
