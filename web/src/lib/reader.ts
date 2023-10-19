@@ -142,16 +142,16 @@ export class Rdpage {
     this.state.hviet = 1
   }
 
-  gen_rinit(rmode: number): RequestInit {
-    return { cache: rmode == 2 ? 'no-cache' : 'force-cache' }
+  gen_rinit(cache: number): RequestInit {
+    return { cache: cache == 2 ? 'no-cache' : 'force-cache' }
   }
 
-  async load_hviet(rmode = 0) {
-    if (rmode < 2 && this.state.hviet > 0) return this
-    if (rmode == 0) return this
+  async load_hviet(cache = 0) {
+    if (cache < 2 && this.state.hviet > 0) return this
+    if (cache == 0) return this
 
     const url = `/_ai/qt/hviet?fpath=${this.ropts.fpath}`
-    const res = await fetch(url, this.gen_rinit(rmode))
+    const res = await fetch(url, this.gen_rinit(cache))
     if (!res.ok) return this
 
     this.tspan.hviet = +res.headers.get('X-TSPAN')
@@ -176,9 +176,9 @@ export class Rdpage {
     this.state.bt_zv = 1
   }
 
-  async load_bt_zv(rmode = 0) {
-    if (rmode < 2 && this.state.bt_zv > 0) return this
-    if (rmode == 0) return this
+  async load_bt_zv(cache = 0, force = false) {
+    if (cache < 2 && this.state.bt_zv > 0) return this
+    if (cache == 0) return this
 
     const start = performance.now()
     const bt_zv = await btran_text(this.ztext)
@@ -192,8 +192,8 @@ export class Rdpage {
       return this
     }
 
-    const url = `/_sp/btran?fpath=${this.ropts.fpath}&force=${rmode > 1}`
-    const res = await fetch(url, this.gen_rinit(rmode))
+    const url = `/_sp/btran?fpath=${this.ropts.fpath}&force=${force}`
+    const res = await fetch(url, this.gen_rinit(cache))
     if (!res.ok) return this
 
     const { lines, tspan, mtime } = await res.json()
@@ -216,12 +216,12 @@ export class Rdpage {
     this.state.qt_v1 = 1
   }
 
-  async load_qt_v1(rmode = 0) {
-    if (rmode < 2 && this.state.qt_v1 > 0) return this
-    if (rmode == 0) return this
+  async load_qt_v1(cache = 0, force = false) {
+    if (cache < 2 && this.state.qt_v1 > 0) return this
+    if (cache == 0) return this
 
     const url = `/_m1/qtran?fpath=${this.ropts.fpath}&wn_id=${this.ropts.wn_id}`
-    const res = await fetch(url, this.gen_rinit(rmode))
+    const res = await fetch(url, this.gen_rinit(cache))
     if (!res.ok) return this
 
     const { lines, tspan, mtime } = await res.json()
@@ -244,15 +244,14 @@ export class Rdpage {
     this.state.mt_ai = 1
   }
 
-  async load_mt_ai(rmode = 0) {
-    if (rmode < 2 && this.state.mt_ai > 0) return this
-    if (rmode == 0) return this
+  async load_mt_ai(cache = 0, force = false) {
+    if (cache < 2 && this.state.mt_ai > 0) return this
+    if (cache == 0) return this
 
     const { fpath, pdict, mt_rm } = this.ropts
-    const force = rmode == 2
 
     const url = `/_ai/qtran?fpath=${fpath}&pdict=${pdict}&_algo=${mt_rm}&force=${force}`
-    const res = await fetch(url, this.gen_rinit(rmode))
+    const res = await fetch(url, this.gen_rinit(cache))
     if (!res.ok) return this
 
     const { lines, tspan, mtime } = await res.json()
@@ -322,19 +321,19 @@ export class Rdpage {
     }
   }
 
-  async load_vtran(mode = 1) {
+  async load_vtran(cache = 1, force = false) {
     console.log('loading!')
     const { rmode, qt_rm } = this.ropts
 
     if (rmode == 'mt' || qt_rm == 'mt_ai') {
       // const rmode = mt_rm != this.ropts.mt_rm ? 2 : 1
-      await this.load_mt_ai(mode)
+      await this.load_mt_ai(cache, force)
       return this.mt_ai
     } else if (qt_rm == 'bt_zv') {
-      await this.load_bt_zv(mode)
+      await this.load_bt_zv(cache, force)
       return this.bt_zv
     } else if (qt_rm == 'qt_v1') {
-      await this.load_qt_v1(mode)
+      await this.load_qt_v1(cache, force)
       return this.qt_v1
     }
   }

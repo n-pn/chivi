@@ -46,7 +46,6 @@
 
   afterNavigate(() => {
     l_idx = -1
-    vtran = []
   })
 
   $: l_max = rdata.ztext.length
@@ -54,11 +53,7 @@
   $: rdpage = init_page(rdata, ropts)
   let rdword = new Rdword(undefined)
 
-  $: vtran = rdpage.get_vtran()
-  $: if (browser && vtran.length == 0) rdpage.load_vtran(1)
-
   function init_page(rdata: CV.Chpart, ropts: CV.Rdopts) {
-    vtran = []
     let rdpage = rdpages.get(rdata.fpath)
 
     if (!rdpage) {
