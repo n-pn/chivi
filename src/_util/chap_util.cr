@@ -4,20 +4,12 @@ require "./text_util"
 module ChapUtil
   extend self
 
-  def split_ztext(ztext : String)
-    lines = [] of String
-
-    ztext.each_line do |line|
-      lines << TextUtil.canon_clean(line) unless line.blank?
-    end
-
-    lines
-  end
-
   def clean_zchdiv(chdiv : String)
     chdiv = chdiv.gsub(/《.*》/, "").gsub(/\n|\t|\s{2,}/, '　')
     TextUtil.canon_clean(chdiv)
   end
+
+  ###
 
   NUMS = "零〇一二两三四五六七八九十百千"
   VOLS = "集卷季"
@@ -28,8 +20,8 @@ module ChapUtil
     /^【(第?[#{NUMS}\d]+[#{VOLS}])】(.+)$/,
   }
 
-  def split_ztitle(title : String, chdiv = "") : Tuple(String, String)
-    title = TextUtil.canon_clean(title)
+  def split_ztitle(title : String, chdiv = "", cleaned : Bool = false) : Tuple(String, String)
+    title = TextUtil.canon_clean(title) unless cleaned
     return {title, chdiv} unless chdiv.empty?
 
     DIVS.each do |regex|
@@ -41,6 +33,16 @@ module ChapUtil
 
     {title, chdiv}
   end
+
+  ###
+
+  def split_lines(ztext : String)
+    lines = [] of String
+    ztext.each_line { |line| lines << TextUtil.canon_clean(line) unless line.blank? }
+    lines
+  end
+
+  ##
 
   alias SplitOutput = {Array(String), Array(Int32), UInt32}
 
@@ -95,6 +97,36 @@ module ChapUtil
     char_count < CHAR_UPPER ? CHAR_UPPER : char_count // (char_count / CHAR_LIMIT).round.to_i
   end
 
+  def split_cztext(paras : Array(String), title : String = paras.shift)
+    parts = String::Builder.new(title)
+    sizes = String::Builder.new(title.size.to_s)
+
+    if paras.empty?
+      return {parts.to_s, sizes.to_s, calc_cksum(title).to_i64}
+    end
+
+    zlens = paras.map(&.size)
+    limit = char_limit(zlens.sum)
+
+    count = 0
+
+    paras.each_with_index do |line, l_id|
+      parts << '\n' if count == 0
+      parts << '\n' << line
+
+      count &+= zlens[l_id]
+      next if count < limit
+
+      sizes << ' ' << count.to_s
+      count = 0
+    end
+
+    parts = parts.to_s
+    sizes << ' ' << count if count > 0
+
+    {parts, sizes.to_s, calc_cksum(parts).to_i64}
+  end
+
   # 1.to(100) do |x|
   #   puts [x * 100, char_limit(x * 100)]
   # end
@@ -124,12 +156,11 @@ module ChapUtil
     cksum
   end
 
-  @[AlwaysInline]
-  def cksum_to_s(cksum : UInt32)
+  def cksum_to_s(cksum : UInt32 | Int64)
     # NOTE: this is actually not cover the whole range of UInt32, as it can
     # only represent 32 ** 6 = 1073741824 integers
-    # but as the chapter count for each novel is as most 10000
-    # it does not matter much
+    # but as we save chapter with both checksum and chap id number, it does not
+    # really matter
     # if we use 7 characters then there will be chance when it overflow the UInt32
     # limit when we convert this back to integer for fast comparision,
     # so it is not worth it to add an extra character

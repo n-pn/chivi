@@ -1,5 +1,6 @@
 require "json"
 require "../../../_util/text_util"
+require "../../data/czdata"
 
 struct RD::ZtextForm
   include JSON::Serializable
@@ -18,14 +19,11 @@ struct RD::ZtextForm
   end
 
   def save!(crepo : Chrepo, uname : String = "")
-    cinfo = crepo.load(@ch_no)
-
-    cinfo.ztitle = @title
-    cinfo.zchdiv = @chdiv
-
-    cinfo.spath = "#{crepo.sroot}/#{@ch_no}"
-    cinfo.uname = uname
-
-    crepo.save_raw_from_text!(cinfo, @ztext)
+    zdata = Czdata.new(
+      ch_no: @ch_no, cbody: @ztext,
+      title: @title, chdiv: @chdiv,
+      uname: uname, zorig: "#{crepo.sroot}/#{@ch_no}"
+    )
+    crepo.save_czdata!(zdata)
   end
 end

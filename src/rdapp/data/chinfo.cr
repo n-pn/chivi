@@ -139,15 +139,21 @@ class RD::Chinfo
 
   @@get_last_sql = "select * from chinfos order by ch_no desc limit 1"
 
-  def self.find_last(db)
+  def self.find_last(db : DBX)
     db.query_one?(@@get_last_sql, as: self)
   end
 
-  @@get_sizes_sql : String = "select sizes from #{@@schema.table} where ch_no >= $1 and ch_no <= $2"
+  @@get_sizes_sql = "select sizes from chinfos where ch_no >= $1 and ch_no <= $2"
 
-  def self.word_count(db, chmin : Int32, chmax : Int32)
+  def self.word_count(db : DBX, chmin : Int32, chmax : Int32)
     sizes = db.query_all(@@get_sizes_sql, chmin, chmax, as: String)
     sizes.sum(&.split(' ').sum(&.to_i))
+  end
+
+  @@get_chdiv_sql = "select chdiv from chinfos where ch_no <= $1 order by ch_no desc limit 1"
+
+  def self.get_chdiv(db, ch_no : Int32)
+    db.query_one?(@@get_chdiv_sql, ch_no, as: String) || ""
   end
 
   ###

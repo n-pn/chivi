@@ -1,4 +1,5 @@
 require "./chinfo"
+require "./czdata"
 require "./unlock"
 require "../_raw/raw_rmchap"
 
@@ -20,8 +21,14 @@ class RD::Chrepo
   property multp : Int16 = 4
 
   def initialize(@sroot)
-    Dir.mkdir_p("var/texts/#{sroot}")
     @info_db = Chinfo.db(sroot)
+    @text_db = Czdata.db(sroot)
+
+    @bak_dir = "var/users/upload/#{sroot}"
+    Dir.mkdir_p(@bak_dir)
+
+    @txt_dir = "var/texts/#{sroot}"
+    Dir.mkdir_p(@txt_dir)
   end
 
   def chmax=(@chmax : Int32)
@@ -52,6 +59,11 @@ class RD::Chrepo
   @[AlwaysInline]
   def find(ch_no : Int32)
     Chinfo.find(@info_db, ch_no)
+  end
+
+  @[AlwaysInline]
+  def get_chdiv(ch_no : Int32)
+    Chinfo.get_chdiv(@info_db, ch_no)
   end
 
   def load(ch_no : Int32)
@@ -154,8 +166,33 @@ class RD::Chrepo
     nil
   end
 
+  def save_czdata!(zdata : Czdata)
+    cksum = ChapUtil.cksum_to_s(zdata.cksum)
+
+    spawn File.write("#{@bak_dir}/#{zdata.ch_no}-#{cksum}.json", zdata.to_pretty_json)
+    spawn zdata.upsert!(db: @text_db)
+
+    cinfo = self.load(zdata.ch_no)
+    cinfo.ztitle = zdata.title
+    cinfo.zchdiv = zdata.chdiv
+
+    cinfo.uname = zdata.uname
+    cinfo.mtime = zdata.mtime
+    cinfo.spath = zdata.zorig
+
+    cinfo.cksum = cksum
+    cinfo.sizes = zdata.sizes
+
+    zdata.parts.split("\n\n").each_with_index do |ptext, p_idx|
+      cdata = Chpart.new(part_name(cinfo, p_idx))
+      cdata.save_raw!(ptext, p_idx > 0 ? zdata.title : nil)
+    end
+
+    cinfo.upsert!(db: @info_db)
+  end
+
   def save_raw_from_text!(cinfo : Chinfo, ztext : String, uname : String = "")
-    lines = ChapUtil.split_ztext(ztext)
+    lines = ChapUtil.split_lines(ztext)
     cinfo.ztitle = lines.first if cinfo.ztitle.empty?
 
     self.do_save_raw!(cinfo, lines)

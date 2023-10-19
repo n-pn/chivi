@@ -102,12 +102,8 @@ class RD::Wnstem
       start = chmax
 
       mtime = rstem.update_int
-      @mtime = mtime if @mtime < mtime
-
-      @chap_total = chmax if @chap_total < chmax
+      self.update_stats!(chmax, mtime, atomic: false)
     end
-
-    crepo.chmax = @chap_total
 
     if umode > 0 && @chap_total > 0
       self.crepo.update_vinfos!
@@ -118,6 +114,18 @@ class RD::Wnstem
 
     @rtime = Time.utc.to_unix
     self.upsert!(db: @@db)
+  end
+
+  def update_stats!(chmax : Int32, mtime : Int64 = Time.utc.to_unix, atomic : Bool = false)
+    @mtime = mtime if @mtime < mtime
+
+    @chap_total = chmax if @chap_total < chmax
+    self.crepo.chmax = @chap_total
+
+    return unless atomic
+
+    query = @@schema.update_stmt(%w{chap_total mtime})
+    @@db.exec(query, @chap_total, @mtime, @wn_id, @sname)
   end
 
   def reload_chaps_vinfo!
