@@ -7,11 +7,11 @@
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let ztext: string[] = []
-  export let vtran: CV.Qtdata | CV.Mtdata = { lines: [], mtime: 0, tspan: 0 }
+  export let rdpage
+
   export let label = ''
 
-  $: [title, ...paras] = vtran?.lines || []
+  $: [title, ...paras] = rdpage.get_vtran()
 
   $: r_mode = $config.r_mode == 2 ? 2 : 1
   $: show_z = $config.show_z
@@ -22,17 +22,14 @@
   }
 </script>
 
-{#if vtran.error}
-  <h1>Lỗi hệ thống:</h1>
-  <p>{vtran.error || 'Không rõ lỗi, mời liên hệ ban quản trị!'}</p>
-{:else if title}
-  {#if show_z}<h1 class="zdata">{ztext[0]}</h1>{/if}
+{#if title}
+  {#if show_z}<h1 class="zdata">{rdpage.ztext[0]}</h1>{/if}
   <h1 id="L0" class="cdata" data-line="0">
     {@html gen_vdata(title)}
     {label}
   </h1>
   {#each paras as para, _idx}
-    {#if show_z}<p class="zdata">{ztext[_idx + 1]}</p>{/if}
+    {#if show_z}<p class="zdata">{rdpage.ztext[_idx + 1]}</p>{/if}
     <p id="L{_idx + 1}" class="cdata" data-line={_idx + 1}>
       {@html gen_vdata(para)}
     </p>

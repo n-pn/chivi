@@ -126,17 +126,20 @@ module MT::AiNode
   def to_json(jb : JSON::Builder) : Nil
     jb.array do
       jb.string @epos.to_s
-      jb.number @_idx
-      jb.number @zstr.size
-      jb.string(@attr.none? ? "" : @attr.to_str)
 
       if @dnum >= 0 || self.is_a?(M0Node)
         jb.string @zstr
-        jb.string @vstr
-        jb.number @dnum
       else
         jb.array { self.v_each(&.to_json(jb)) }
       end
+
+      jb.number @_idx
+      jb.number @_idx &+ @zstr.size
+
+      jb.string @vstr
+      jb.string(@attr.none? ? "" : @attr.to_str)
+
+      jb.number @dnum
     end
   end
 end

@@ -4,11 +4,15 @@
 </script>
 
 <script lang="ts">
+  import { copy_to_clipboard } from '$utils/btn_utils'
+
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let title = ''
   export let state = 1
   export let lines = 3
+
+  export let wdata = ''
 </script>
 
 <section style="--lc: {lines}">
@@ -16,6 +20,16 @@
     <span class="title">{title}</span>
     <span class="tools">
       <slot name="tools" />
+      <button
+        type="button"
+        class="-btn"
+        data-tip="Sao chép bản dịch vào clipboard"
+        data-tip-loc="bottom"
+        data-tip-pos="right"
+        disabled={!wdata}
+        on:click={() => copy_to_clipboard(wdata)}>
+        <SIcon name="copy" />
+      </button>
 
       {#each icons as icon, new_state}
         <button
@@ -33,6 +47,7 @@
 
   <div class="wbody cdata {$$props.class} _{state}">
     <slot />
+    {#if !wdata}<div class="d-empty-xs"><slot name="empty" /></div>{/if}
   </div>
 </section>
 

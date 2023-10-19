@@ -1,46 +1,46 @@
+<script lang="ts" context="module">
+  import { writable } from 'svelte/store'
+
+  export const ctrl = {
+    ...writable({ actived: false, panel: 'overview' }),
+    hide: () => {
+      ctrl.update(({ panel }) => ({ panel, actived: false }))
+    },
+    show(panel: string = '') {
+      ctrl.update((x) => ({ panel: panel || x.panel, actived: true }))
+    },
+  }
+</script>
+
 <script lang="ts">
-  import { ctrl, data, init_opts } from '$lib/stores/lookup_stores'
-  import { call_mt_ai_file } from '$utils/tran_util'
+  import { type Rdpage, Rdword } from '$lib/reader'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Slider from '$gui/molds/Slider.svelte'
   import Footer from '$gui/sects/Footer.svelte'
 
-  import Vtform, {
-    data as vtform_data,
-    ctrl as vtform_ctrl,
-  } from '$gui/shared/vtform/Vtform.svelte'
+  import { ctrl as vtform_ctrl } from '$gui/shared/vtform/Vtform.svelte'
 
   import Overview from './Sideline/Overview.svelte'
   import Glossary from './Sideline/Glossary.svelte'
   import Analysis from './Sideline/Analysis.svelte'
 
-  export let ropts = init_opts
+  export let rdpage: Rdpage
+  export let rdword: Rdword
+
   export let state = 0
   export let l_idx = 0
   export let l_max = 0
 
-  let zfrom = 0
-  let zupto = 1
+  $: rdline = rdpage.lines[l_idx]
 
   const node_names = ['X-N', 'X-C', 'X-Z']
 
   function handle_click({ target }) {
     if (!node_names.includes(target.nodeName)) return
 
-    zfrom = +target.dataset.b
-    zupto = +target.dataset.e
-
-    if ($ctrl.panel != 'glossary') {
-      const icpos = target.dataset.c || 'X'
-
-      const ztext = $data.ztext[l_idx]
-      const hviet = $data.hviet[l_idx]
-      const mt_ai = $data.mt_ai[l_idx]
-
-      vtform_data.put(ztext, hviet, mt_ai, zfrom, zupto, icpos)
-      vtform_ctrl.show(0)
-    }
+    rdword = new Rdword(target)
+    if ($ctrl.panel != 'glossary') vtform_ctrl.show(0)
   }
 
   function handle_ctxmenu(event: MouseEvent) {
@@ -48,9 +48,7 @@
     if (!node_names.includes(target.nodeName)) return
 
     event.preventDefault()
-
-    zfrom = +target.dataset.b
-    zupto = +target.dataset.e
+    rdword = new Rdword(target)
     $ctrl.panel = 'glossary'
   }
 
@@ -59,17 +57,14 @@
   let stale = false
   $: if (stale) load_mt_ai_data()
 
-  const rinit = { cache: 'no-cache' } as RequestInit
-  $: finit = { ...$data.ropts, force: true }
-
   const load_mt_ai_data = async () => {
     stale = false
 
-    if (ropts.rmode == 'mt' || ropts.qt_rm == 'mt_ai') {
+    if (rdpage.ropts.rmode == 'mt' || rdpage.ropts.qt_rm == 'mt_ai') {
       state = 1
     } else {
-      const mt_ai = await call_mt_ai_file(finit, rinit)
-      $data.mt_ai = mt_ai.lines || []
+      rdpage.load_mt_ai(2)
+      rdpage = rdpage
       state = 0
     }
   }
@@ -133,11 +128,11 @@
     on:click={handle_click}
     on:contextmenu={handle_ctxmenu}>
     {#if $ctrl.panel == 'overview'}
-      <Overview {l_idx} bind:stale />
+      <Overview bind:rdpage bind:rdline />
     {:else if $ctrl.panel == 'glossary'}
-      <Glossary {l_idx} {viewer} bind:zfrom bind:zupto />
+      <Glossary {rdpage} {rdline} {viewer} bind:rdword />
     {:else}
-      <Analysis {l_idx} bind:stale />
+      <Analysis {rdpage} {rdline} />
     {/if}
   </section>
 
@@ -178,9 +173,9 @@
   </Footer>
 </Slider>
 
-{#if $vtform_ctrl.actived}
-  <Vtform ropts={$data.ropts} on_close={(term) => (stale = !!term)} />
-{/if}
+<!-- {#if $vtform_ctrl.actived}
+  <Vtform ropts={rddata.ropts} on_close={(term) => (stale = !!term)} />
+{/if} -->
 
 <style lang="scss">
   .cbody {

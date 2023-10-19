@@ -81,6 +81,7 @@ class RD::ChinfoCtrl < AC::Base
 
     multp = crepo.chap_mutlp(cinfo.ch_no, vu_id: vu_id, privi: self._privi)
     fpath, zsize, error = crepo.grant_chap(cinfo, p_idx, multp, vu_id: vu_id, force: force)
+    fpath = "" if error > 0
 
     {
       ch_no: cinfo.ch_no,
@@ -92,13 +93,13 @@ class RD::ChinfoCtrl < AC::Base
 
       title: cinfo.vtitle.empty? ? cinfo.ztitle : cinfo.vtitle,
       chdiv: cinfo.vchdiv.empty? ? cinfo.zchdiv : cinfo.vchdiv,
-
-      fpath: error < 300 ? fpath : "",
       error: error,
 
+      fpath: fpath,
+      ztext: fpath.empty? ? [] of String : Chpart.read_raw(fpath),
       zsize: zsize,
-      multp: multp,
 
+      multp: multp,
       mtime: cinfo.mtime,
       uname: cinfo.uname,
 

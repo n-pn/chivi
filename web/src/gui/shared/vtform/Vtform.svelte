@@ -1,22 +1,11 @@
 <script lang="ts" context="module">
   import { get, writable } from 'svelte/store'
+  import type { Rdline } from '$lib/reader'
 
   import { gen_mt_ai_text, gen_hviet_text } from '$lib/mt_data_2'
 
-  const init_data = {
-    zline: '',
-
-    zfrom: 0,
-    zupto: 0,
-    icpos: '',
-
-    vtree: ['', 0, 0, '', '', '', 0] as CV.Cvtree,
-    hvarr: [] as Array<[string, string]>,
-  }
-
   function find_vdata_node(node: CV.Cvtree, lower = 0, upper = 0, icpos = '') {
-    const [cpos, from, zlen, _atrr, body] = node
-    const upto = from + zlen
+    const [cpos, body, from, upto, _vstr, _attr, _dnum] = node
 
     if (from > lower || upto < upper) return null
 
@@ -26,8 +15,7 @@
     }
 
     for (const child of body as Array<CV.Cvtree>) {
-      const [_cpos, from, zlen, _attr] = child
-      const upto = from + zlen
+      const [_cpos, _body, from, upto] = child
 
       if (from <= lower && upto >= upper) {
         return find_vdata_node(child, lower, upper, icpos)
@@ -37,7 +25,7 @@
     return from == lower && upto == upper ? node : null
   }
 
-  function extract_term(input: CV.Vtdata): CV.Viterm {
+  function extract_term(input): CV.Viterm {
     const { zline, vtree, hvarr, zfrom, zupto, icpos } = input
     const zstr = zline.substring(zfrom, zupto)
 
@@ -69,34 +57,34 @@
     }
   }
 
-  export const data = {
-    ...writable<CV.Vtdata>(init_data),
-    put(
-      zline: string,
-      hvarr: Array<[string, string]>,
-      vtree: CV.Cvtree,
-      zfrom = 0,
-      zupto = -1,
-      icpos = ''
-    ) {
-      if (zupto <= zfrom) zupto = hvarr.length
+  // export const data = {
+  //   ...writable<CV.Vtdata>(init_data),
+  //   put(
+  //     zline: string,
+  //     hvarr: Array<[string, string]>,
+  //     vtree: CV.Cvtree,
+  //     zfrom = 0,
+  //     zupto = -1,
+  //     icpos = ''
+  //   ) {
+  //     if (zupto <= zfrom) zupto = hvarr.length
 
-      data.set({ zline, hvarr, vtree, zfrom, zupto, icpos })
-    },
-    get_term(_from = -1, _upto = -1, _cpos = '?') {
-      const input = { ...get(data) }
-      if (_from >= 0) input.zfrom = _from
-      if (_upto >= 0) input.zupto = _upto
-      if (_cpos != '') input.icpos = _cpos
+  //     data.set({ zline, hvarr, vtree, zfrom, zupto, icpos })
+  //   },
+  //   get_term(_from = -1, _upto = -1, _cpos = '?') {
+  //     const input = { ...get(data) }
+  //     if (_from >= 0) input.zfrom = _from
+  //     if (_upto >= 0) input.zupto = _upto
+  //     if (_cpos != '') input.icpos = _cpos
 
-      return extract_term(input)
-    },
+  //     return extract_term(input)
+  //   },
 
-    get_cpos(zfrom: number, zupto: number) {
-      const input = get(data)
-      return zfrom == input.zfrom && zupto == input.zupto ? input.icpos : ''
-    },
-  }
+  //   get_cpos(zfrom: number, zupto: number) {
+  //     const input = get(data)
+  //     return zfrom == input.zfrom && zupto == input.zupto ? input.icpos : ''
+  //   },
+  // }
 
   export const ctrl = {
     ...writable({ actived: false, tab: 0 }),
@@ -131,6 +119,7 @@
   import FormBtns from './FormBtns.svelte'
   import HelpLink from './HelpLink.svelte'
 
+  export let rline: Rdline
   export let ropts: CV.Rdopts
 
   export let on_close = (_term?: CV.Viterm) => {}

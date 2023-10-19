@@ -21,27 +21,28 @@ struct MT::QtNode
   SEP = 'ǀ'
 
   def to_mtl(io : IO, cap : Bool, und : Bool)
-    io << '\t'
-    io << ' ' unless @attr.undent?(und)
-    cap, und = @attr.render_vstr(io, @vstr, cap, und)
+    io << (@attr.undent?(und) ? '\u200b' : ' ')
+    vstr, cap = @attr.fix_vstr(@vstr, cap)
 
-    io << SEP << @_dic << SEP << @_idx << SEP << @zstr.size
-    {cap, und}
-  end
+    zlen = @zstr.size
+    zidx = 0
 
-  include JSON::Serializable
+    if zlen == vstr.size
+      vstr.each_char do |char|
+        io << '\u200b' if zidx > 0
+        io << char
+        zidx &+= 1
+      end
+    else
+      vstr.split(' ') do |word|
+        io << ' ' if zidx > 0
+        io << word
+        zidx &+= 1
+      end
 
-  def to_json(jb : JSON::Builder) : Nil
-    jb.array do
-      jb.string "_"
-      jb.number @_idx
-      jb.number @zstr.size
-
-      jb.string(@attr.none? ? "" : @attr.to_str)
-
-      jb.string @zstr
-      jb.string @vstr
-      jb.number @_dic
+      (zlen &- zidx).times { io << '\u200b' }
     end
+
+    {cap, @attr.undn?}
   end
 end

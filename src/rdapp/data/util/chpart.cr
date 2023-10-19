@@ -96,4 +96,8 @@ struct RD::Chpart
   def self.read_raw(spath : String)
     new(spath).read_raw
   end
+
+  def self.read_raw(spath : String, &)
+    new(spath).read_raw { |line| yield line }
+  end
 end

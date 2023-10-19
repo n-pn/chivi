@@ -1,51 +1,25 @@
 <script context="module" lang="ts">
-  let stats = {
-    ztext: 1,
-    mtran: 2,
-    vtran: 2,
-    bt_zv: 1,
-    c_gpt: 1,
-    qt_v1: 1,
-  }
+  import type { Rdpage, Rdline } from '$lib/reader'
+  let states = { ztext: 1, mtran: 2, vtran: 2, bt_zv: 1, c_gpt: 1, qt_v1: 1 }
 </script>
 
 <script lang="ts">
-  import { data } from '$lib/stores/lookup_stores'
-  import { copy_to_clipboard } from '$utils/btn_utils'
-
-  import {
-    gen_mt_ai_html,
-    gen_ztext_html,
-    gen_mt_ai_text,
-  } from '$lib/mt_data_2'
-
-  import { call_bt_zv_file, from_custom_gpt } from '$utils/tran_util'
+  import { gen_ztext_html } from '$lib/mt_data_2'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import Viewbox from './Viewbox.svelte'
+  import Wpanel from '$gui/molds/Wpanel.svelte'
 
-  export let l_idx = 0
-  export let stale = false
-
-  $: ztext = $data.ztext[l_idx]
-  $: mt_ai = $data.mt_ai[l_idx]
-  $: bt_zv = $data.bt_zv[l_idx]
-  $: qt_v1 = $data.qt_v1[l_idx]
-  $: c_gpt = $data.c_gpt[l_idx]
-
-  let vtran = ''
-
-  $: finit = { ...$data.ropts, force: true }
-
-  const rinit = { cache: 'no-cache' } as RequestInit
+  export let rdpage: Rdpage
+  export let rdline: Rdline
 
   let loading_bzv = false
 
   const load_bt_zv_data = async () => {
     loading_bzv = true
-    const bt_zv_res = await call_bt_zv_file(finit, rinit)
-    if (bt_zv_res.error) alert(bt_zv_res.error)
-    $data.bt_zv = bt_zv_res.lines || []
+    await rdpage.load_bt_zv()
+    rdpage = rdpage
+
+    rdpage = await rdpage.load_bt_zv(2)
     loading_bzv = false
   }
 
@@ -53,165 +27,84 @@
 
   const load_c_gpt_data = async () => {
     loading_gpt = true
-    const vtext_res = await from_custom_gpt(ztext)
-    $data.c_gpt[l_idx] = vtext_res
+    console.log('c_gpt')
+    rdline = await rdline.load_c_gpt()
+
     loading_gpt = false
   }
 </script>
 
-<Viewbox title="Tiếng Trung" bind:state={stats.ztext} class="_zh _lg" --lc="2">
-  <svelte:fragment slot="tools">
-    <button
-      type="button"
-      class="-btn"
-      disabled={!ztext}
-      data-tip="Sao chép text gốc vào clipboard"
-      data-tip-loc="bottom"
-      data-tip-pos="right"
-      on:click={() => copy_to_clipboard(ztext)}>
-      <SIcon name="copy" />
+<Wpanel
+  title="Tiếng Trung"
+  bind:state={states.ztext}
+  class="_zh _lg"
+  --lc="2"
+  wdata={rdline.ztext}>
+  {#if rdline.ztext}{@html rdline.ztext_html}{/if}
+  <p slot="empty">Chưa có tiếng trung!</p>
+</Wpanel>
+
+<Wpanel
+  title="Dịch máy mới:"
+  bind:state={states.mtran}
+  class="cdata"
+  --lc="5"
+  wdata={rdline.mt_ai_text}>
+  {#if rdline.mt_ai}{@html rdline.mt_ai_html}{/if}
+  <div slot="empty">Chưa có kết quả dịch máy</div>
+</Wpanel>
+
+<Wpanel
+  title="Dịch thủ công:"
+  bind:state={states.vtran}
+  class="_vi"
+  --lc="4"
+  wdata={rdline.vtran}>
+  {#if rdline.vtran} {rdline.vtran} {/if}
+  <div slot="empty">
+    <em>Chưa có kết quả dịch sẵn.</em>
+    <button class="m-btn _xs _primary">Đóng góp!</button>
+  </div>
+</Wpanel>
+
+<Wpanel
+  title="Dịch bằng Bing:"
+  bind:state={states.bt_zv}
+  class="_sm"
+  --lc="3"
+  wdata={rdline.bt_zv}>
+  {#if rdline.bt_zv}{rdline.bt_zv}{/if}
+  <div slot="empty">
+    <em>Chưa có kết quả dịch sẵn.</em>
+    <button class="m-btn _xs _primary" on:click={load_bt_zv_data}>
+      {#if loading_bzv}<SIcon name="loader-2" spin={true} />{/if}
+      <span>Dịch bằng Bing!</span>
     </button>
-  </svelte:fragment>
+  </div>
+</Wpanel>
 
-  {#if ztext}
-    {@html gen_ztext_html(ztext)}
-  {:else}
-    <p class="d-empty-xs">Chưa có tiếng trung!</p>
-  {/if}
-</Viewbox>
-
-<Viewbox title="Dịch máy mới:" bind:state={stats.mtran} class="cdata" --lc="5">
-  <svelte:fragment slot="tools">
-    <button
-      type="button"
-      class="-btn"
-      on:click={() => (stale = true)}
-      data-tip="Dịch lại sau khi đã thay đổi nghĩa của từ"
-      data-tip-loc="bottom"
-      data-tip-pos="right">
-      <SIcon name="refresh-dot" />
+<Wpanel
+  title="GPT Tiên hiệp:"
+  bind:state={states.c_gpt}
+  class="_sm"
+  --lc="3"
+  wdata={rdline.c_gpt}>
+  {#if rdline.c_gpt}{rdline.c_gpt}{/if}
+  <div slot="empty">
+    <em>Chưa có kết quả dịch sẵn.</em>
+    <button class="m-btn _xs _primary" on:click={load_c_gpt_data}>
+      {#if loading_gpt}<SIcon name="loader-2" spin={true} />{/if}
+      <span>Gọi công cụ!</span>
     </button>
+  </div>
+</Wpanel>
 
-    <button
-      type="button"
-      class="-btn"
-      data-tip="Sao chép dịch máy vào clipboard"
-      data-tip-loc="bottom"
-      data-tip-pos="right"
-      disabled={!mt_ai}
-      on:click={() => copy_to_clipboard(gen_mt_ai_text(mt_ai))}>
-      <SIcon name="copy" />
-    </button>
-  </svelte:fragment>
-  {#if mt_ai}
-    {@const opts = { mode: 2, cap: true, und: true, _qc: 0 }}
-    {@html gen_mt_ai_html(mt_ai, opts)}
-  {:else}
-    <p class="d-empty-xs">Chưa có kết quả dịch máy</p>
-  {/if}
-</Viewbox>
-
-<Viewbox title="Dịch thủ công:" bind:state={stats.vtran} class="_vi" --lc="4">
-  <svelte:fragment slot="tools">
-    <button
-      type="button"
-      class="-btn"
-      data-tip="Sao chép bản dịch vào clipboard"
-      data-tip-loc="bottom"
-      data-tip-pos="right"
-      disabled={!vtran}
-      on:click={() => copy_to_clipboard(vtran)}>
-      <SIcon name="copy" />
-    </button>
-  </svelte:fragment>
-
-  {#if vtran}
-    {vtran}
-  {:else}
-    <div class="d-empty-xs">
-      <em>Chưa có kết quả dịch sẵn.</em>
-      <button class="m-btn _xs _primary">Đóng góp!</button>
-    </div>
-  {/if}
-</Viewbox>
-
-<Viewbox title="Dịch bằng Bing:" bind:state={stats.bt_zv} class="_sm" --lc="3">
-  <svelte:fragment slot="tools">
-    <button
-      type="button"
-      class="-btn"
-      data-tip="Sao chép bản dịch vào clipboard"
-      data-tip-loc="bottom"
-      data-tip-pos="right"
-      disabled={!bt_zv}
-      on:click={() => copy_to_clipboard(bt_zv)}>
-      <SIcon name="copy" />
-    </button>
-  </svelte:fragment>
-
-  {#if bt_zv}
-    {bt_zv}
-  {:else}
-    <div class="d-empty-xs">
-      <div>
-        <em>Chưa có kết quả dịch sẵn.</em>
-      </div>
-      <button class="m-btn _xs _primary" on:click={load_bt_zv_data}>
-        {#if loading_bzv}<SIcon name="loader-2" spin={true} />{/if}
-        <span>Dịch bằng Bing!</span>
-      </button>
-    </div>
-  {/if}
-</Viewbox>
-
-<Viewbox title="GPT Tiên hiệp:" bind:state={stats.c_gpt} class="_sm" --lc="3">
-  <svelte:fragment slot="tools">
-    <button
-      type="button"
-      class="-btn"
-      data-tip="Sao chép bản dịch vào clipboard"
-      data-tip-loc="bottom"
-      data-tip-pos="right"
-      disabled={!c_gpt}
-      on:click={() => copy_to_clipboard(c_gpt)}>
-      <SIcon name="copy" />
-    </button>
-  </svelte:fragment>
-
-  {#if c_gpt}
-    {c_gpt}
-  {:else}
-    <div class="d-empty-xs">
-      <div>
-        <em>Chưa có kết quả dịch sẵn.</em>
-      </div>
-      <button class="m-btn _xs _primary" on:click={load_c_gpt_data}>
-        {#if loading_gpt}<SIcon name="loader-2" spin={true} />{/if}
-        <span>Gọi công cụ!</span>
-      </button>
-    </div>
-  {/if}
-</Viewbox>
-
-<Viewbox title="Dịch máy cũ:" bind:state={stats.qt_v1} class="_sm" --lc="3">
-  <svelte:fragment slot="tools">
-    <button
-      type="button"
-      class="-btn"
-      data-tip="Sao chép bản dịch vào clipboard"
-      data-tip-loc="bottom"
-      data-tip-pos="right"
-      disabled={!qt_v1}
-      on:click={() => copy_to_clipboard(qt_v1)}>
-      <SIcon name="copy" />
-    </button>
-  </svelte:fragment>
-
-  {#if qt_v1}
-    {qt_v1}
-  {:else}
-    <div class="d-empty-xs">
-      <em>Chưa có kết quả dịch sẵn.</em>
-    </div>
-  {/if}
-</Viewbox>
+<Wpanel
+  title="Dịch máy cũ:"
+  bind:state={states.qt_v1}
+  class="_sm"
+  --lc="3"
+  wdata={rdline.qt_v1}>
+  {#if rdline.qt_v1}{rdline.qt_v1}{/if}
+  <em slot="empty">Chưa có kết quả dịch sẵn.</em>
+</Wpanel>

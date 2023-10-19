@@ -10,7 +10,7 @@ function capitalize(str: String) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
-const sort = (a: CV.Cvtree, b: CV.Cvtree) => a[1] - b[1]
+const sort = (a: CV.Cvtree, b: CV.Cvtree) => a[2] - b[2]
 
 export function gen_ztext_text(input: CV.Cvtree) {
   const stack = [input]
@@ -21,7 +21,7 @@ export function gen_ztext_text(input: CV.Cvtree) {
     const node = stack.pop()
     if (!node) break
 
-    const body = node[4]
+    const body = node[1]
 
     if (Array.isArray(body)) {
       const orig = body.slice().sort(sort)
@@ -46,52 +46,30 @@ export function gen_ztext_html(ztext: string) {
   return html
 }
 
-export function gen_hviet_text(hvarr: Array<[string, string]>, cap = false) {
-  let text = ''
-  let p_ws = false
-
-  for (const [hstr, attr] of hvarr) {
-    if (attr.includes('Hide')) continue
-
-    if (p_ws && !attr.includes('Undb')) text += ' '
-    p_ws = !attr.includes('Undn')
-
-    const asis = /Capx|Asis/.test(attr)
-
-    if (!cap || asis) text += hstr
-    else text += capitalize(hstr)
-
-    cap = (cap && asis) || attr.includes('Capn')
-  }
-
-  return text
+export function gen_hviet_text(input: string[], cap = false) {
+  const text = input.join('').replace('\u200b', '')
+  return cap ? text : text.toLowerCase()
 }
 
-export function gen_hviet_html(hvarr: Array<[string, string]>, cap = true) {
+export function gen_hviet_html(input: string[], cap = true) {
   let html = ''
-  let p_ws = false
   let from = 0
 
-  for (const [hstr, attr] of hvarr) {
-    if (attr.includes('Hide')) continue
+  for (const vstr of input) {
+    if (vstr.charAt(0) == ' ') html += ' '
+    let vesc = escape_htm(vstr.substring(1))
 
-    if (p_ws && !attr.includes('Undb')) html += ' '
-    p_ws = !attr.includes('Undn')
-
-    const asis = /Capx|Asis/.test(attr)
-
-    let text = !cap || asis ? hstr : capitalize(hstr)
-    html += `<x-n d=1 data-b=${from} data-e=${from + 1} >${text}</x-n>`
+    if (!cap) vesc = vesc.toLowerCase()
+    html += `<x-n d=1 data-b=${from} data-e=${from + 1} >${vesc}</x-n>`
 
     from += 1
-    cap = (cap && asis) || attr.includes('Capn')
   }
 
   return html
 }
 
 export function gen_ctree_text(node: CV.Cvtree, level = 0, on_nl = false) {
-  const [cpos, _idx, _len, _att, body] = node
+  const [cpos, body] = node
   let text = ''
 
   if (on_nl) {
@@ -131,8 +109,7 @@ const same_level_tags = [
 ]
 
 export function gen_ctree_html(node: CV.Cvtree, level = 0, on_nl = false) {
-  const [cpos, from, zlen, _attr, body, vstr, dnum] = node
-  const upto = from + zlen
+  const [cpos, body, from, upto, vstr, _attr, dnum] = node
   const dpos = dnum % 10
   // const lock = Math.floor(dnum / 10)
 
@@ -208,7 +185,7 @@ export function gen_mt_ai_html(
   opts.und ??= true
   opts._qc ??= 0
 
-  const [cpos, zidx, zlen, attr, body, vstr, vdic] = node
+  const [cpos, body, from, upto, vstr, attr, dnum] = node
   if (attr.includes('Hide')) return ''
 
   let html = ''
@@ -237,10 +214,9 @@ export function gen_mt_ai_html(
     opts.cap = (opts.cap && asis) || attr.includes('Capn')
 
     if (opts.mode == 2) {
-      const upto = zidx + zlen
-      const dtyp = vdic % 10
+      const dtyp = dnum % 10
 
-      html += `<x-n d=${dtyp} data-b=${zidx} data-e=${upto} data-c=${cpos}>`
+      html += `<x-n d=${dtyp} data-b=${from} data-e=${upto} data-c=${cpos}>`
       html += render_mtl(vesc, cpos)
       html += `</x-n>`
     } else if (opts.mode == 1) {
@@ -277,7 +253,8 @@ export function gen_mt_ai_text(
   opts = { cap: true, und: true },
   _raw = false
 ) {
-  const [_pos, _idx, _len, attr, body, vstr] = node
+  if (!node) return ''
+  const [_pos, body, _idx, _len, vstr, attr] = node
   if (attr.includes('Hide')) return _raw ? vstr : ''
 
   let text = ''

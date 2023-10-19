@@ -55,10 +55,13 @@ export async function call_hviet_file(
   { fpath }: FileReqInit,
   rinit: RequestInit = { cache: 'force-cache' },
   fetch = globalThis.fetch
-): Promise<CV.Hvdata> {
-  const url = `/_ai/hviet?fpath=${fpath}&force=true`
+): Promise<string[][]> {
+  const url = `/_ai/qt/hviet?fpath=${fpath}`
   const res = await fetch(url, rinit)
-  return await res.json()
+  if (!res.ok) return undefined
+
+  const lines = (await res.text()).split('\n')
+  return lines.map((line: string) => line.match(/[\s\u200b].[^\s\u200b]*/g))
 }
 
 export async function call_mt_ai_file(

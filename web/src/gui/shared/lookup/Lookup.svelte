@@ -1,23 +1,30 @@
 <script lang="ts" context="module">
   type Entry = [number, Record<string, string>]
   let entries_cache: Record<string, Entry[]> = {}
-
-  import type { Rdword, Rdline } from '$lib/reader'
 </script>
 
 <script lang="ts">
+  import { data } from '$lib/stores/lookup_stores'
   import { api_call } from '$lib/api_call'
+  import { copy_to_clipboard } from '$utils/btn_utils'
 
-  import Viewbox from '../../molds/Wpanel.svelte'
+  import { gen_ztext_html, gen_hviet_html } from '$lib/mt_data_2'
+
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import Wpanel from '$gui/molds/Wpanel.svelte'
 
   export let viewer: HTMLElement
-  export let rdline: Rdline
-  export let rdword: Rdword
+  export let l_idx = 0
+  export let zfrom = 0
+  export let zupto = 0
+
+  $: ztext = $data.ztext[l_idx] || ''
+  $: hviet = $data.hviet[l_idx] || []
 
   let entries = []
   let current: Entry[] = []
 
-  $: if (rdline.ztext) fetch_terms(rdline.ztext, rdword.from || 0)
+  $: if (ztext && l_idx >= 0) fetch_terms(ztext, zfrom)
 
   async function fetch_terms(input: string, zfrom: number) {
     entries = entries_cache[input] ||= []
@@ -54,17 +61,17 @@
   const focused = []
 
   function update_focus() {
-    current = entries[rdword.from] || []
+    current = entries[zfrom] || []
 
-    let upto = rdword.from
-    if (current.length > 0) upto += +current[0][0]
+    if (current.length == 0) zupto = zfrom
+    else zupto = zfrom + +current[0][0]
 
     if (!viewer) return
 
     focused.forEach((x) => x.classList.remove('focus'))
     focused.length = 0
 
-    for (let i = rdword.from; i < upto; i++) {
+    for (let i = zfrom; i < zupto; i++) {
       const nodes = viewer.querySelectorAll(`[data-b="${i}"]`)
 
       nodes.forEach((x: HTMLElement) => {
@@ -76,22 +83,40 @@
   }
 </script>
 
-<Viewbox title="Tiếng Trung" class="_zh _lg" lines={2} wdata={rdline.ztext}>
-  {#if rdline.ztext}{@html rdline.ztext_html}{/if}
-  <p slot="empty">Chưa có tiếng trung!</p>
-</Viewbox>
+<Wpanel title="Tiếng Trung" class="_zh _lg" lines={2}>
+  <svelte:fragment slot="tools">
+    <button
+      type="button"
+      class="-btn"
+      disabled={!ztext}
+      data-tip="Sao chép text gốc vào clipboard"
+      data-tip-loc="bottom"
+      data-tip-pos="right"
+      on:click={() => copy_to_clipboard(ztext)}>
+      <SIcon name="copy" />
+    </button>
+  </svelte:fragment>
 
-<Viewbox title="Hán Việt" class="_hv" lines={3} wdata={rdline.hviet_text}>
-  {#if rdline.hviet}{@html rdline.hviet_html}{/if}
-  <p slot="empty">Chưa có Hán Việt!</p>
-</Viewbox>
+  {#if ztext}
+    {@html gen_ztext_html(ztext)}
+  {:else}
+    <p class="empty">Chưa có tiếng trung!</p>
+  {/if}
+</Wpanel>
+
+<Wpanel title="Hán Việt" class="_hv" --lc="3">
+  {#if hviet}
+    {@html gen_hviet_html(hviet)}
+  {:else}
+    <p class="empty">Chưa có Hán Việt!</p>
+  {/if}
+</Wpanel>
 
 <section class="terms">
   {#each current as [size, terms]}
     <div class="entry">
       <h3 class="word" lang="zh">
-        <span class="ztext"
-          >{rdline.get_ztext(rdword.from, rdword.from + size)}</span>
+        <span class="ztext">{ztext.substring(zfrom, zfrom + size)}</span>
         <span class="hviet" />
       </h3>
 

@@ -2,110 +2,53 @@ require "colorize"
 require "file_utils"
 require "compress/zip"
 
+ENV["CZ_DIR"] = "/mnt/serve/chivi.app/texts"
+
 require "../../src/_util/file_util"
-require "../../src/_util/char_util"
-require "../../src/rdapp/data/chinfo"
-require "../../src/rdapp/_raw/rmhost"
-
-class Czinfo
-  include Crorm::Model
-  schema "chinfos", :sqlite, multi: true
-
-  field ch_no : Int32, pkey: true
-  field title : String
-  field chdiv : String
-  field mtime : Int64
-
-  def initialize(@ch_no, @title, @chdiv, @mtime)
-  end
-
-  PATCH_SQL = <<-SQL
-    insert into chinfos(ch_no, spath, ztitle, zchdiv, mtime)
-    values ($1, $2, $3, $4, $5)
-    SQL
-
-  def upsert!(db, sname, sn_id)
-    db.exec PATCH_SQL, @ch_no, "rm!zxcs.me/#{sn_id}/#{ch_no}", @title, @chdiv, @mtime
-  end
-end
-
-struct Cinput
-  property chdiv : String
-  property lines : Array(String)
-  getter title : String { lines[0]? || "" }
-
-  def initialize(@chdiv, @lines)
-  end
-end
+require "../../src/rdapp/data/czdata"
 
 TEXT_DIR = "/www/chivi/xyz/seeds/zxcs.me/texts"
-SAVE_DIR = "/www/chivi/xyz/seeds/zxcs.me/split"
+SAVE_DIR = "/mnt/serve/chivi.app/texts/!zxcs.me"
 
 SKIP_CHOICE = ARGV.includes?("--skip")
 
-def split_chaps!(inp_file : String, label = "1/1")
-  sn_id = File.basename(inp_file, ".txt")
-
-  meta_file = File.join(SAVE_DIR, "#{sn_id}.jsonl")
-  return if File.file?(meta_file)
-
+def split_chaps!(sn_id : Int32, label = "1/1")
+  inp_file = "#{TEXT_DIR}/#{sn_id}.txt"
   input = File.read(inp_file).split(/\R/)
 
-  puts "\n- <#{label}> [#{TEXT_DIR}/#{sn_id}.txt] #{input.size} lines".colorize.yellow
-
+  puts "\n- <#{label}> [#{inp_file}] #{input.size} lines".colorize.yellow
   return unless chaps = split_chapters(sn_id, input)
 
-  chaps = cleanup_chaps(chaps)
   mtime = File.info(inp_file).modification_time.to_unix
+  chaps = export_chaps(chaps, sn_id, mtime)
 
-  infos = chaps.map_with_index(1) do |chap, idx|
-    Czinfo.new(idx, chap.title, chap.chdiv, mtime)
-  end
+  repo = RD::Czdata.db("!zxcs.me/#{sn_id}")
+  repo.open_tx { |db| chaps.each(&.upsert!(db: db)) }
 
-  save_dir = File.join(SAVE_DIR, sn_id)
-
-  if good_enough?(infos)
-    save_texts!(chaps, save_dir)
-    File.write(meta_file, infos.map(&.to_json).join('\n'))
-    return
-  end
-
+  return if good_enough?(chaps)
   return puts "  Skipped".colorize.red if SKIP_CHOICE
-
-  print "\nChoice (r: redo, d: delete, s: delete + exit, else: keep): "
+  print "\nChoice (y: keep, r: redo, d: delete, else: exit): "
 
   STDIN.flush
   case char = STDIN.raw(&.read_char)
-  when 'd', 's', 'r'
-    FileUtils.rm_rf(save_dir)
-    puts "\n\n- [#{save_dir}] deleted! (choice: #{char})".colorize.red
-
-    if char == 'r'
-      split_chaps!(inp_file, label)
-    elsif char == 's'
-      exit(0)
-    end
+  when 'r'
+    puts "\n - redoing..."
+    split_chaps!(sn_id, label) # redo
+  when ' ', 'y'
+    puts "\n\n- Keeping [#{sn_id}] result".colorize.yellow
   else
-    save_texts!(chaps, save_dir)
-    File.write(meta_file, infos.map(&.to_json).join('\n'))
-
-    puts "\n\n- Entries [#{sn_id}] saved!".colorize.yellow
-  end
-end
-
-def save_texts!(chaps, out_dir)
-  Dir.mkdir_p(out_dir)
-  chaps.each_with_index(1) do |cdata, ch_no|
-    File.write("#{out_dir}/#{ch_no}.txt", cdata.lines.join('\n'))
+    File.delete(repo.db_path)
+    puts "\n\n- [#{repo.db_path}] deleted! (choice: #{char})".colorize.red
+    exit(0) unless char == 'd'
   end
 end
 
 # ameba:disable Metrics/CyclomaticComplexity
-def split_chapters(sn_id : String, lines : Array(String))
+def split_chapters(sn_id : Int32, lines : Array(String))
   case sn_id
-  when "4683", "3868", "4314", "3199", "4942", "1552"
+  when 4683, 3868, 4314, 3199, 4942, 1552
     return split_blanks(lines)
-  when "3401"
+  when 3401
     return split_delimit(lines)
   end
 
@@ -190,7 +133,7 @@ def split_nested(input : Array(String))
       lines = [] of String
     end
 
-    lines << line.strip
+    lines << line.tr("　", " ").strip
   end
 
   chaps << lines unless lines.empty?
@@ -231,7 +174,7 @@ def split_delimit(input : Array(String))
         lines = [] of String
       end
     else
-      lines << line.strip
+      lines << line.tr("　", " ").strip
     end
   end
 
@@ -241,20 +184,35 @@ def split_delimit(input : Array(String))
   chaps
 end
 
-def cleanup_chaps(input : Array(Array(String)))
+def export_chaps(input : Array(Array(String)), sn_id : Int32, mtime : Int64)
   while intro_name?(input.first)
     input.shift
   end
 
-  chaps = [] of Cinput
+  chaps = [] of RD::Czdata
   chdiv = ""
+  prev_was_chdiv = false
 
-  input.each do |lines|
-    if lines.size == 1
-      chdiv = lines.first
-    else
-      chaps << Cinput.new(chdiv.strip, lines.map(&.strip))
+  input.each do |cbody|
+    if cbody.size == 1
+      raise "invalid #{cbody}" if prev_was_chdiv
+
+      chdiv = CharUtil.to_canon(cbody.first.strip)
+      prev_was_chdiv = true
+      next
     end
+
+    ch_no = chaps.size &+ 1
+    prev_was_chdiv = false
+
+    chaps << RD::Czdata.new(
+      ch_no: ch_no,
+      cbody: cbody,
+      chdiv: chdiv,
+      uname: "!zxcs.me",
+      zorig: "#{sn_id}/#{ch_no}",
+      mtime: mtime
+    )
   end
 
   chaps
@@ -273,18 +231,20 @@ INTROS = {
   "书籍介绍",
   "书籍简介",
   "小说简介",
+  "内容简介",
 }
+INTRO_RE = Regex.new("#{INTROS.join('|')}")
 
 def intro_name?(chap : Array(String))
   return true if chap.last =~ /^作者：/
-  INTROS.any? { |x| chap.first.includes?(x) }
+  chap.first.starts_with?(INTRO_RE)
 end
 
-def good_enough?(infos : Array(Czinfo))
+def good_enough?(infos : Array(RD::Czdata))
   last = infos.last
   return true if last.title.includes?("第#{last.ch_no}章")
 
-  bads = [] of String
+  bads = [] of RD::Czdata
 
   infos.each do |cinfo|
     case cinfo.chdiv
@@ -293,34 +253,22 @@ def good_enough?(infos : Array(Czinfo))
       next
     else
       if cinfo.chdiv.size > 20
-        bads << "#{cinfo.title} -- #{cinfo.chdiv}"
+        bads << cinfo
         next
       end
     end
 
     case cinfo.title
-    when "引言", "结束语", "引 子", "开始", "感言", "前言",
-         "锲子", "结语", "楔子", "作者的话", "小结",
-         .includes?("后记"),
-         .includes?("完本了"),
-         .includes?("作品相关"),
-         .includes?("结束感言"),
-         .includes?("完本感言"),
-         .includes?("完结感言"),
-         .includes?("完稿感言"),
-         .includes?("完稿感言"),
-         .includes?("结后感言"),
-         .includes?("全本感言"),
-         .includes?("次卷预告"),
-         .includes?("写在结束的话"),
-         .=~(/^【?(序|第|终卷|楔子|引子|尾声|番外|终章|末章|终曲|后记|后续|结局)/),
-         .=~(/^【?(前记|篇外|前言|后篇|外传|尾章|初章|引章|卷末|最终回|最终章|终结章|终之章|大结局|人物介绍|更新说明)/),
-         .=~(/^\d+、/),
-         .=~(/^[【\[\(]\d+[】\]\)]/),
-         .=~(/^章?[零〇一二两三四五六七八九十百千+]^/)
+    when .matches?(/^(梗子|引言|结束语|引 子|开始|感言|前言|锲子|结语|楔子|作者的话|小结|故事简介|完本公告|完本说明)$/),
+         .matches?(/后记|完本了|作品相关|结束感言|完本感言|完结感言|完稿感言|结后感言|全本感言|次卷预告|写在结束的话/),
+         .matches?(/^【?(序|第|终卷|楔子|引子|尾声|番外|终章|末章|终曲|后记|后续|结局)/),
+         .matches?(/^【?(前记|篇外|前言|后篇|外传|尾章|初章|引章|卷末|最终回|最终章|终结章|终之章|大结局|人物介绍|更新说明)/),
+         .matches?(/^\d+、/),
+         .matches?(/^[【\[\(]\d+[】\]\)]/),
+         .matches?(/^章?[零〇一二两三四五六七八九十百千+]^/)
       next
     else
-      bads << "#{cinfo.title} -- #{cinfo.chdiv}"
+      bads << cinfo
     end
   end
 
@@ -328,13 +276,21 @@ def good_enough?(infos : Array(Czinfo))
     puts "\nSeems good enough, skip checking!".colorize.green
     true
   else
-    puts "\n- wrong format (#{bads.size}): ", bads.first(30).join("\n\n").colorize.red
+    puts "\n- wrong format (#{bads.size}): ".colorize.red
+    bads.first(10).each do |cinfo|
+      meta = {title: cinfo.title, chdiv: cinfo.chdiv, ch_no: cinfo.ch_no, sizes: cinfo.sizes}
+      puts meta.to_pretty_json.colorize.red
+    end
+
     false
   end
 end
 
-inp_files = Dir.glob("#{TEXT_DIR}/*.txt").sort_by! { |x| File.basename(x, ".txt").to_i.- }
+inputs = Dir.glob("#{TEXT_DIR}/*.txt").map { |x| File.basename(x, ".txt").to_i }
+exists = Dir.glob("#{SAVE_DIR}/*-ztext.db3").map { |x| File.basename(x, "-ztext.db3").to_i }.to_set
 
-inp_files.each_with_index do |inp_file, index|
-  split_chaps!(inp_file, "#{index}/#{inp_files.size}")
+inputs.reject!(&.in?(exists)).sort_by!(&.-)
+
+inputs.each_with_index do |sn_id, index|
+  split_chaps!(sn_id, "#{index}/#{inputs.size}")
 end

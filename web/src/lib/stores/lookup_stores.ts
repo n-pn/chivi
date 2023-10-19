@@ -10,13 +10,13 @@ import {
 export interface Data {
   ropts: CV.Rdopts
 
-  ztext: Array<string>
-  hviet: Array<Array<[string, string]>>
+  ztext: string[]
+  hviet: string[][]
 
-  bt_zv: Array<string>
-  qt_v1: Array<string>
-  c_gpt: Array<string>
-  mt_ai: Array<CV.Cvtree>
+  bt_zv: string[]
+  qt_v1: string[]
+  c_gpt: string[]
+  mt_ai: CV.Cvtree[]
 
   vtran: Record<string, string>
 }
@@ -67,7 +67,8 @@ export const data = {
 
     if (zdata.hviet.length == 0) {
       const hviet = await call_hviet_file(finit, rinit)
-      zdata.hviet = hviet.hviet || []
+      console.log({ hviet })
+      zdata.hviet = hviet || []
     }
 
     if (zdata.bt_zv.length == 0) {

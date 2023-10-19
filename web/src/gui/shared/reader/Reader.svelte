@@ -1,10 +1,6 @@
 <script context="module" lang="ts">
-  import { data as lookup_data } from '$lib/stores/lookup_stores'
-  import {
-    call_bt_zv_text,
-    call_qt_v1_file,
-    call_mt_ai_file,
-  } from '$utils/tran_util'
+  import { Rdpage, Rdword } from '$lib/reader'
+  const rdpages = new Map<string, Rdpage>()
 </script>
 
 <script lang="ts">
@@ -12,11 +8,9 @@
   import { Pager } from '$lib/pager'
 
   import { afterNavigate } from '$app/navigation'
-  import { call_hviet_file } from '$utils/tran_util'
 
-  import Lookup2 from '$gui/parts/Lookup2.svelte'
-
-  import { ctrl as lookup_ctrl } from '$lib/stores/lookup_stores'
+  import Lookup2, { ctrl as lookup_ctrl } from '$gui/parts/Lookup2.svelte'
+  import Vtform, { ctrl as vtform_ctrl } from '$gui/shared/vtform/Vtform.svelte'
 
   import { browser } from '$app/environment'
   import { config } from '$lib/stores'
@@ -40,24 +34,6 @@
   let reader: HTMLDivElement
   let focused_node: HTMLElement
 
-  const handle_mouse = (event: MouseEvent, panel: string = 'overview') => {
-    if ($config.r_mode == 1) return
-
-    let target = event.target as HTMLElement
-
-    while (target != reader) {
-      if (target.classList.contains('cdata')) break
-      target = target.parentElement
-    }
-
-    if (target == reader) return
-
-    event.preventDefault()
-
-    l_idx = +target.dataset.line
-    lookup_ctrl.show(panel)
-  }
-
   // states:
   // - 0: no need to reload,
   // - 1: reload, keep focus
@@ -65,54 +41,56 @@
   // - 3: reload hviet + vtran
 
   let state = 3
-
-  let ztext = []
-  let hviet = []
-  let vtran: CV.Qtdata | CV.Mtdata = { lines: [], mtime: 0, tspan: 0 }
-
   let l_idx = -1
   let l_max = 0
 
-  afterNavigate(async () => {
-    if (focused_node) focused_node.classList.remove('focus')
-    state = $lookup_data.ropts.fpath == rdata.fpath ? 2 : 3
+  afterNavigate(() => {
     l_idx = -1
+    vtran = []
   })
 
-  $: if (browser && state > 0 && rdata.fpath) {
-    if (state > 2) ztext = hviet = []
-    if (state > 1) vtran = { lines: [], mtime: 0, tspan: 0 }
+  $: l_max = rdata.ztext.length
 
-    state = 0
-    ropts.fpath = rdata.fpath
-    if (ropts.fpath) load_data(ropts)
+  $: rdpage = init_page(rdata, ropts)
+  let rdword = new Rdword(undefined)
+
+  $: vtran = rdpage.get_vtran()
+  $: if (browser && vtran.length == 0) rdpage.load_vtran(1)
+
+  function init_page(rdata: CV.Chpart, ropts: CV.Rdopts) {
+    vtran = []
+    let rdpage = rdpages.get(rdata.fpath)
+
+    if (!rdpage) {
+      rdpage = new Rdpage(rdata.ztext, ropts)
+      rdpages.set(rdata.fpath, rdpage)
+    } else {
+      if (rdpage.ropts.mt_rm != ropts.mt_rm) {
+        rdpage.state.mt_ai = 0
+      }
+      rdpage.ropts = ropts
+      // TODO: invalidate mt_ai data if algorithm changed
+    }
+
+    return rdpage
   }
 
-  async function load_data(ropts: CV.Rdopts) {
-    if (hviet.length == 0) {
-      const data = await call_hviet_file(ropts)
+  const handle_mouse = (event: MouseEvent, panel: string = 'overview') => {
+    if ($config.r_mode == 1) return
+    $lookup_ctrl.panel = panel
 
-      hviet = data.hviet
-      ztext = data.ztext || []
-      l_max = hviet.length
+    let target = event.target as HTMLElement
+    if (target.nodeName == 'X-N') rdword = new Rdword(target)
+
+    while (target != reader) {
+      if (target.classList.contains('cdata')) break
+      target = target.parentElement
     }
 
-    const finit = { ...ropts, force: true }
-    const rinit = { cache: 'default' } as RequestInit
+    if (target == reader) return
+    event.preventDefault()
 
-    let rname = ropts.qt_rm
-
-    if (ropts.rmode == 'mt' || rname == 'mt_ai') {
-      vtran = await call_mt_ai_file(finit, rinit, fetch)
-      rname = 'mt_ai'
-    } else if (rname == 'bt_zv') {
-      vtran = await call_bt_zv_text(ztext, finit, rinit, fetch)
-    } else if (rname == 'qt_v1') {
-      vtran = await call_qt_v1_file(finit, rinit, fetch)
-    }
-
-    if (vtran.error) return
-    lookup_data.put({ ropts, ztext, hviet, [rname]: vtran.lines })
+    l_idx = +target.dataset.line
   }
 
   $: if (browser && l_idx >= 0) {
@@ -125,7 +103,13 @@
       focused_node.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
     }
 
-    lookup_ctrl.show()
+    console.log(new_focus)
+    active_lookup_panel()
+  }
+
+  const active_lookup_panel = async () => {
+    rdpage = await rdpage.reload({ qt_v1: 1, mt_ai: 1, bt_zv: 1 })
+    lookup_ctrl.show('')
   }
 
   const tabs = [
@@ -134,6 +118,11 @@
     // { type: 'tl', icon: 'ballpen', text: 'Dịch tay' },
     // { type: 'cf', icon: 'tool', text: 'Công cụ' },
   ]
+
+  const on_term_change = (term?: CV.Viterm) => {
+    console.log({ term })
+    // todo
+  }
 </script>
 
 <Section {tabs} _now={ropts.rmode}>
@@ -152,7 +141,7 @@
     {:else if rdata.error == 413 || rdata.error == 415}
       <Unlock {cstem} bind:rdata bind:state />
     {:else if ropts.rmode == 'qt' || ropts.rmode == 'mt'}
-      <Qtpage {ztext} {vtran} {label} />
+      <Qtpage {rdpage} {label} />
     {:else}
       Chưa hoàn thiện!
     {/if}
@@ -172,7 +161,13 @@
     disabled={l_idx == l_max} />
 </div>
 
-<Lookup2 bind:state {ropts} bind:l_idx {l_max} />
+{#if rdpage && $lookup_ctrl.actived}
+  <Lookup2 bind:rdpage bind:rdword bind:state bind:l_idx {l_max} />
+{/if}
+
+<!-- {#if $vtform_ctrl.actived}
+  <Vtform bind:rdline={rdpage[l_idx]} on_close={on_term_change} />
+{/if} -->
 
 <style lang="scss">
   .reader {

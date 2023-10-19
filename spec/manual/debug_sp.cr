@@ -26,6 +26,8 @@ tests.each do |test|
 
   puts res.to_txt.colorize.light_yellow
   puts "-----".colorize.dark_gray
+  puts res.to_mtl.colorize.light_yellow
+  puts "-----".colorize.dark_gray
 rescue ex
   puts ex.inspect_with_backtrace
 end

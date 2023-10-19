@@ -45,4 +45,8 @@ class MT::QtCore
   def translate(str : String, cap : Bool = true)
     tokenize(str).to_txt(cap: cap)
   end
+
+  def to_mtl(str : String)
+    tokenize(str).to_mtl(cap: true)
+  end
 end

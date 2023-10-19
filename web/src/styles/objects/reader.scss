@@ -233,6 +233,7 @@ x-n {
 
   // .cdata:hover &,
   .cdata.focus &,
+  &.focus,
   &:hover {
     border-bottom: 1px solid var(--border);
     background: none;
