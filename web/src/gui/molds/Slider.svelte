@@ -5,17 +5,22 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let actived = false
+  export let sticked = false
 
   export let _sticky = false
   export let _slider = 'right'
 
-  let sticked = false
-
   $: $toleft = sticked && actived
+
   $: if ($navigating) actived = false
 
   let klass = $$props.class || 'slider'
   $: layers.toggle(actived, '.' + klass)
+
+  const hide_slider = () => {
+    actived = false
+    $toleft = false
+  }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -24,7 +29,7 @@
   class="slider-wrap"
   class:_active={actived}
   class:_sticky={sticked}
-  on:click={() => (actived = false)} />
+  on:click={hide_slider} />
 
 <div
   class="slider-main {klass}"
@@ -47,7 +52,7 @@
     <button
       class="-btn"
       data-kbd="esc"
-      on:click={() => (actived = false)}
+      on:click={hide_slider}
       data-tip="Đóng"
       data-tip-loc="bottom">
       <SIcon name="x" />

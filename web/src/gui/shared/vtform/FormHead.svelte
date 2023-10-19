@@ -1,64 +1,50 @@
 <script lang="ts">
+  import { Rdword, type Rdline } from '$lib/reader'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let orig: CV.Vtdata
+  export let on_close = () => {}
 
-  export let zfrom: number
-  export let zupto: number
-  export let icpos: string
-  export let hviet: string
+  export let rline: Rdline
+  export let rword: Rdword
 
-  export let actived = true
-
-  $: chars = Array.from(orig.zline)
+  $: chars = Array.from(rline.ztext)
   $: zsize = chars.length
 
-  $: [pre_chars, out_chars, suf_chars] = split_ztext(chars, zfrom, zupto)
+  $: [pre_chars, out_chars, suf_chars] = split_ztext(chars, rword)
 
-  function split_ztext(chars: string[], zfrom: number, zupto: number) {
-    let z_min = zfrom - 10
-    if (z_min < 0) z_min = 0
+  function split_ztext(chars: string[], { from, upto }) {
+    let zmin = from - 10
+    if (zmin < 0) zmin = 0
 
     return [
-      chars.slice(z_min, zfrom),
-      chars.slice(zfrom, zupto),
-      chars.slice(zupto, zupto + 10),
+      chars.slice(zmin, from),
+      chars.slice(from, upto),
+      chars.slice(upto, upto + 10),
     ]
   }
 
   function change_index(index: number) {
-    if (index != zfrom && index < zupto) zfrom = index
-    if (index >= zfrom) zupto = index + 1
+    let { from, upto } = rword
+    if (index != from && index < upto) from = index
+    if (index >= from) upto = index + 1
+    rword = new Rdword(from, upto, 'X')
   }
 
   function shift_lower(value = 0) {
-    value += zfrom
+    value += rword.from
     if (value < 0 || value >= zsize) return
-
-    zfrom = value
-    if (zupto <= value) zupto = value + 1
+    rword = new Rdword(value, rword.upto <= value ? value + 1 : rword.upto, 'X')
   }
 
   function shift_upper(value = 0) {
-    value += zupto
+    value += rword.upto
     if (value < 1 || value > zsize) return
-
-    zupto = value
-    if (zfrom >= value) zfrom = value - 1
-  }
-
-  function restore_state() {
-    zfrom = orig.zfrom
-    zupto = orig.zupto
-    icpos = orig.icpos
+    rword = new Rdword(rword.from >= value ? value - 1 : rword.from, value, 'X')
   }
 </script>
 
 <header class="head">
-  <button
-    class="m-btn _text"
-    on:click={() => restore_state()}
-    data-tip="Phục hồi chọn từ">
+  <button class="m-btn _text" data-tip="Phục hồi chọn từ">
     <svg xmlns="http://www.w3.org/2000/svg" class="m-icon" viewBox="0 0 24 24">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M3.06 13a9 9 0 1 0 .49 -4.087" />
@@ -70,7 +56,7 @@
   <button
     class="btn _left _hide"
     data-kbd="←"
-    disabled={zfrom == 0}
+    disabled={rword.from == 0}
     on:click={() => shift_lower(-1)}>
     <SIcon name="chevron-left" />
   </button>
@@ -78,7 +64,7 @@
   <button
     class="btn _left"
     data-kbd="⇧←"
-    disabled={zfrom == zsize - 1}
+    disabled={rword.from == zsize - 1}
     on:click={() => shift_lower(1)}>
     <SIcon name="chevron-right" />
   </button>
@@ -99,7 +85,7 @@
           <button
             class="key-btn _out"
             type="button"
-            on:click={() => change_index(zfrom + idx)}>{chr}</button>
+            on:click={() => change_index(rword.from + idx)}>{chr}</button>
         {/each}
         {#if out_chars.length > 6}
           <span class="trim">(+{out_chars.length - 6})</span>
@@ -116,14 +102,14 @@
       </div>
     </div>
     <div class="hlit">
-      <span>{hviet}</span>
+      <span>{rline.get_hviet(rword.from, rword.upto)}</span>
     </div>
   </div>
 
   <button
     class="btn _right"
     data-kbd="⇧→"
-    disabled={zupto == 1}
+    disabled={rword.upto == 1}
     on:click={(e) => shift_upper(-1)}>
     <SIcon name="chevron-left" />
   </button>
@@ -131,16 +117,12 @@
   <button
     class="btn _right _hide"
     data-kbd="→"
-    disabled={zupto == zsize}
+    disabled={rword.upto == zsize}
     on:click={(e) => shift_upper(1)}>
     <SIcon name="chevron-right" />
   </button>
 
-  <button
-    type="button"
-    class="m-btn _text"
-    data-kbd="esc"
-    on:click={() => (actived = false)}>
+  <button type="button" class="m-btn _text" data-kbd="esc" on:click={on_close}>
     <SIcon name="x" />
   </button>
 </header>

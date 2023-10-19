@@ -25,7 +25,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   import { tooltip } from '$lib/actions'
-  import type { Viform } from '$lib/models/viterm'
+  import type { Viform } from './viform'
 
   // import { type CvtermForm, hint, req_privi } from './_shared'
 
@@ -76,7 +76,7 @@
       use:tooltip={'Đổi chế độ khóa từ'}
       data-anchor=".vtform"
       on:click={change_plock}
-      disabled={privi <= tform.init.plock + min_privi}>
+      disabled={privi <= tform.tinit.plock + min_privi}>
       <SIcon name="plock-{tform.plock}" iset="icons" />
     </button>
   </button-group>

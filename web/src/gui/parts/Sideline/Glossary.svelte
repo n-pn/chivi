@@ -11,13 +11,13 @@
   import Viewbox from '../../molds/Wpanel.svelte'
 
   export let viewer: HTMLElement
-  export let rdline: Rdline
-  export let rdword: Rdword
+  export let rline: Rdline
+  export let rword: Rdword
 
   let entries = []
   let current: Entry[] = []
 
-  $: if (rdline.ztext) fetch_terms(rdline.ztext, rdword.from || 0)
+  $: if (rline.ztext) fetch_terms(rline.ztext, rword.from || 0)
 
   async function fetch_terms(input: string, zfrom: number) {
     entries = entries_cache[input] ||= []
@@ -54,9 +54,9 @@
   const focused = []
 
   function update_focus() {
-    current = entries[rdword.from] || []
+    current = entries[rword.from] || []
 
-    let upto = rdword.from
+    let upto = rword.from
     if (current.length > 0) upto += +current[0][0]
 
     if (!viewer) return
@@ -64,7 +64,7 @@
     focused.forEach((x) => x.classList.remove('focus'))
     focused.length = 0
 
-    for (let i = rdword.from; i < upto; i++) {
+    for (let i = rword.from; i < upto; i++) {
       const nodes = viewer.querySelectorAll(`[data-b="${i}"]`)
 
       nodes.forEach((x: HTMLElement) => {
@@ -76,13 +76,13 @@
   }
 </script>
 
-<Viewbox title="Tiếng Trung" class="_zh _lg" lines={2} wdata={rdline.ztext}>
-  {#if rdline.ztext}{@html rdline.ztext_html}{/if}
+<Viewbox title="Tiếng Trung" class="_zh _lg" lines={2} wdata={rline.ztext}>
+  {#if rline.ztext}{@html rline.ztext_html}{/if}
   <p slot="empty">Chưa có tiếng trung!</p>
 </Viewbox>
 
-<Viewbox title="Hán Việt" class="_hv" lines={3} wdata={rdline.hviet_text}>
-  {#if rdline.hviet}{@html rdline.hviet_html}{/if}
+<Viewbox title="Hán Việt" class="_hv" lines={3} wdata={rline.hviet_text}>
+  {#if rline.hviet}{@html rline.hviet_html}{/if}
   <p slot="empty">Chưa có Hán Việt!</p>
 </Viewbox>
 
@@ -91,7 +91,7 @@
     <div class="entry">
       <h3 class="word" lang="zh">
         <span class="ztext"
-          >{rdline.get_ztext(rdword.from, rdword.from + size)}</span>
+          >{rline.get_ztext(rword.from, rword.from + size)}</span>
         <span class="hviet" />
       </h3>
 

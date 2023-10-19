@@ -7,11 +7,11 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Wpanel from '$gui/molds/Wpanel.svelte'
 
-  export let rdpage: Rdpage
-  export let rdline: Rdline
+  export let rpage: Rdpage
+  export let rline: Rdline
 
   const reload_ctree = async () => {
-    rdpage = await rdpage.load_mt_ai(2)
+    rpage = await rpage.load_mt_ai(2)
   }
 </script>
 
@@ -20,7 +20,7 @@
   bind:state={stats.mt_ai}
   class="_ct"
   lines={15}
-  wdata={rdline.ctree_text}>
+  wdata={rline.ctree_text}>
   <svelte:fragment slot="tools">
     <button
       type="button"
@@ -32,8 +32,8 @@
       <SIcon name="refresh-dot" />
     </button>
   </svelte:fragment>
-  {#if rdline.mt_ai}
-    {@html rdline.ctree_html}
+  {#if rline.mt_ai}
+    {@html rline.ctree_html}
   {:else}
     <p class="blank">Chưa có cây ngữ pháp</p>
   {/if}

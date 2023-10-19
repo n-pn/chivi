@@ -44,8 +44,6 @@ struct RD::Chpart
   end
 
   def read_con(m_alg : String = "mtl_1", force = false)
-    is_existed = false
-
     case
     when m_alg == "mtl_3"
       con_path = self.file_path("hmeg.con")
@@ -56,7 +54,7 @@ struct RD::Chpart
       m_alg = "mtl_1"
     end
 
-    if File.file?(con_path)
+    if File.info?(con_path).try(&.size.> 0)
       read_con_file(con_path, m_alg)
     elsif force
       call_hanlp_file_api(self.file_path("raw.txt"), con_path, m_alg)
@@ -71,11 +69,14 @@ struct RD::Chpart
   end
 
   def call_hanlp_file_api(txt_path : String, con_path : String, m_alg : String)
+    txt_data = File.read(txt_path)
+    txt_path = URI.encode_path_segment(txt_path)
     link = "#{CV_ENV.lp_host}/mtl_file/#{m_alg}?file=#{txt_path}"
 
-    HTTP::Client.get(link) do |res|
-      raise "error: #{res.body}" unless res.status.success?
+    HTTP::Client.get(link, body: txt_data) do |res|
       con_data = res.body_io.gets_to_end
+      raise "error: [#{con_data}] for #{txt_path}" unless res.status.success?
+
       spawn File.write(con_path, con_data)
       {con_data.lines, m_alg}
     end

@@ -85,7 +85,7 @@ def mtl_from_file(kind):
     inp_data = read_txt_file(inp_path)
 
     mtl_data = call_mtl_task(load_task(kind), inp_data)
-    mtl_path = inp_path.replace('.txt', f'.{kind}.mtl')
+    mtl_path = inp_path.replace('.raw.txt', f'.{kind}.mtl')
 
     with open(mtl_path, 'w', encoding='utf-8') as mtl_file:
         mtl_file.write(mtl_data.to_json())

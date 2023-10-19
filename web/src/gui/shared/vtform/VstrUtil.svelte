@@ -28,7 +28,7 @@
 
 <script lang="ts">
   import { tooltip } from '$lib/actions'
-  import type { Viform } from '$lib/models/viterm'
+  import type { Viform } from './viform'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
@@ -75,7 +75,6 @@
 
   const handle_click = (event: Event) => {
     const target = event.target as HTMLElement
-    console.log(target)
     const vstr = target.dataset['vstr']
     if (vstr) {
       tform.vstr = vstr
@@ -143,7 +142,7 @@
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="util-more" on:click={handle_click}>
       {#if more_type == 'hviet'}
-        {#each gen_format_hints(tform.init.hviet) as vstr}
+        {#each gen_format_hints(tform.hviet) as vstr}
           <span class="txt" class:_same={tform.vstr == vstr} data-vstr={vstr}>
             {vstr}
           </span>
@@ -156,7 +155,7 @@
         {/each}
       {:else if more_type == 'trans'}
         <SIcon name="brand-google" />
-        {#await gtran_word(tform.init.zstr, 'vi', no_cap)}
+        {#await gtran_word(tform.ztext, 'vi', no_cap)}
           <SIcon name="loader-2" spin={true} />
         {:then vstr_list}
           {#each vstr_list as vstr}
@@ -168,7 +167,7 @@
 
         <SIcon name="brand-bing" />
 
-        {#await btran_word(tform.init.zstr, 'auto', no_cap)}
+        {#await btran_word(tform.ztext, 'auto', no_cap)}
           <SIcon name="loader-2" spin={true} />
         {:then vstr_list}
           {#each vstr_list as vstr}
@@ -180,7 +179,7 @@
 
         <img class="sep" src="/icons/deepl.svg" alt="deepl" />
 
-        {#await deepl(tform.init.zstr, 0)}
+        {#await deepl(tform.ztext, 0)}
           <SIcon name="loader-2" spin={true} />
         {:then vstr}
           <span class="txt" class:_same={tform.vstr == vstr} data-vstr={vstr}>

@@ -1,71 +1,69 @@
 <script lang="ts">
-  import {
-    gen_ctree_html,
-    gen_hviet_html,
-    gen_mt_ai_html,
-  } from '$lib/mt_data_2'
+  import { Rdpage, Rdword } from '$lib/reader'
 
-  import Vtform, {
-    data as vtform_data,
-    ctrl as vtform_ctrl,
-  } from '$gui/shared/vtform/Vtform.svelte'
+  import Vtform, { ctrl as vtform_ctrl } from '$gui/shared/vtform/Vtform.svelte'
+  import { onMount } from 'svelte'
 
-  let pdict = 'combine'
-  let m_alg = 'mtl_3'
+  let ropts = {
+    fpath: '',
+    pdict: 'combine',
+    wn_id: 0,
+    rmode: 'mt',
+    qt_rm: 'bing',
+    mt_rm: 'mtl_3',
+  }
 
-  $: ai_url = `/_ai/debug?pdict=${pdict}&m_alg=${m_alg}`
-  $: hv_url = `/_ai/hviet?pdict=${pdict}&m_alg=${m_alg}`
+  $: ai_url = `/_ai/debug?pdict=${ropts.pdict}&m_alg=${ropts.mt_rm}`
+  $: hv_url = `/_ai/hviet?pdict=${ropts.pdict}&m_alg=${ropts.mt_rm}`
 
   let ztext =
     '“既然你现在魔道双修，或许可以利用你体内同时存在两套的､本该是水火不容的根基，做一些出人意料的事情。”'
 
-  // prettier-ignore
-  let ctree : CV.Cvtree[] = [["TOP",0,51,"",[["IP",0,51,"",[["PU",0,1,"Capx Undn","“","“",2],["CP",1,9,"",[["ADVP",1,2,"",[["CS",1,2,"","既然","như đã",2]]],["IP",3,7,"",[["NP",3,1,"Nper",[["PN",3,1,"Nper","你","ngươi",2]]],["NP",4,2,"Ntmp",[["NT",4,2,"Ntmp","现在","hiện tại",2]]],["NP",6,2,"",[["NN",6,2,"","魔道","ma đạo",2]]],["VP",8,2,"",[["VV",8,2,"","双修","song tu",2]]]]]]],["PU",10,1,"Capx Undb","，",",",2],["VP",11,38,"",[["ADVP",11,2,"Vmod",[["AD",11,2,"Vmod","或许","có lẽ",2]]],["VP",13,36,"",[["VP",13,36,"",[["VV",13,2,"","可以","có thể",2],["VP",15,34,"",[["VP",15,12,"",[["VV",15,2,"","利用","lợi dụng",2],["NP",17,10,"",[["NP",17,3,"",[["NP",17,3,"Ndes Nloc",[["PN",17,1,"Nper","你","ngươi",2],["NN",18,2,"Ndes Nloc","体内","trong cơ thể",2]]]]],["VP",20,7,"",[["ADVP",20,2,"",[["AD",20,2,"","同时","đồng thời",2]]],["VP",22,5,"",[["VRD",22,2,"",[["VV",22,1,"","存","tồn",2],["VR",23,1,"Sufx","在","tại",26]]],["NP",24,3,"",[["DNP",24,3,"",[["DEC",26,1,"Hide","的","⛶",2],["QP",24,2,"",[["CD",24,1,"","两","hai",2],["CLP",25,1,"",[["M",25,1,"","套","bộ",2]]]]]]]]]]]]]]]]],["PU",27,1,"Capx Undb","、",",",5],["VP",28,21,"",[["VP",28,21,"",[["VV",28,2,"","本该","vốn nên",4],["VP",30,19,"",[["VP",30,8,"",[["VC",30,1,"","是","là",2],["NP",31,7,"",[["NP",31,7,"",[["NP",36,2,"",[["NN",36,2,"","根基","căn cơ",2]]],["CP",31,5,"",[["CP",31,5,"",[["IP",31,4,"",[["VP",31,4,"","水火不容","thuỷ hoả bất dung",2]]],["DEC",35,1,"Hide","的","⛶",2]]]]]]]]]]],["PU",38,1,"Capx Undb","，",",",2],["VP",39,10,"",[["VV",39,1,"","做","làm",2],["NP",40,9,"",[["NP",40,9,"",[["QP",40,2,"","一些","một chút",2],["NP",47,2,"",[["NN",47,2,"","事情","sự tình",2]]],["CP",42,5,"",[["CP",42,5,"",[["IP",42,4,"",[["VP",42,4,"","出人意料","ngoài dự đoán của mọi người",2]]],["DEC",46,1,"Hide","的","⛶",2]]]]]]]]]]]]]]]]]]]]]]]]],["PU",49,1,"Capn Undb","。",".",2],["PU",50,1,"Capx Undb","”","”",2]]]]]]
-
-  // prettier-ignore
-  let hviet : [string,string][][] = [[["“","Capx Undn"],["kí",""],["nhiên",""],["nhĩ",""],["hiện",""],["tại",""],["ma",""],["đạo",""],["song",""],["tu",""],[",","Capx Undb"],["hoặc",""],["hứa",""],["khả",""],["dĩ",""],["lợi",""],["dụng",""],["nhĩ",""],["thể",""],["nội",""],["đồng",""],["thời",""],["tồn",""],["tại",""],["lưỡng",""],["sáo",""],["đích",""],[",","Capx Undb"],["bản",""],["cai",""],["thị",""],["thuỷ",""],["hoả",""],["bất",""],["dung",""],["đích",""],["căn",""],["cơ",""],[",","Capx Undb"],["tố",""],["nhất",""],["ta",""],["xuất",""],["nhân",""],["ý",""],["liệu",""],["đích",""],["sự",""],["tình",""],[".","Capn Undb"],["”","Capx Undb"]]]
+  $: rpage = new Rdpage(ztext.split('\n'), ropts)
+  const rinit = { body: ztext, method: 'POST' }
 
   const call_debug = async () => {
-    const rinit = { body: ztext, method: 'POST' }
-
-    const hdata = await fetch(hv_url, rinit).then((r) => r.json())
-    hviet = hdata.hviet
+    const hdata = await fetch(hv_url, rinit).then((r) => r.text())
+    rpage.hviet = hdata
+      .split('\n')
+      .map((x) => x.match(/[\s\u200b].[^\s\u200b]*/g))
 
     const vdata = await fetch(ai_url, rinit).then((r) => r.json())
-    ctree = vdata.lines
+    rpage.mt_ai = vdata.lines
 
     navigator.clipboard.writeText(vdata.ztree[0])
-  }
 
-  const ropts: CV.Rdopts = {
-    fpath: '',
-    pdict,
-    rmode: 'mt',
-    mt_rm: m_alg,
-    qt_rm: '',
-    wn_id: 0,
+    vtform_ctrl.show(0)
   }
 
   const node_names = ['X-N', 'X-C', 'X-Z']
 
-  let zfrom = 1
-  let zupto = 3
-  let icpos = 'CS'
+  let rword = new Rdword(1, 3, 'CS')
 
   function handle_click({ target }) {
     if (!node_names.includes(target.nodeName)) return
-
-    zfrom = +target.dataset.b
-    zupto = +target.dataset.e
-
-    const icpos = target.dataset.c || 'X'
-
-    vtform_data.put(ztext, hviet[0], ctree[0], zfrom, zupto, icpos)
+    rword = Rdword.from(target)
     vtform_ctrl.show(0)
   }
 
-  $: vtform_data.put(ztext, hviet[0], ctree[0], zfrom, zupto, icpos)
-  $: vtform_ctrl.show(0)
+  onMount(() => {
+    rpage = new Rdpage(ztext.split('\n'), ropts)
+
+    rpage.hviet = JSON.parse(
+      '[["​“","​Kí"," nhiên"," nhĩ"," hiện"," tại"," ma"," đạo"," song"," tu","​,"," hoặc"," hứa"," khả"," dĩ"," lợi"," dụng"," nhĩ"," thể"," nội"," đồng"," thời"," tồn"," tại"," lưỡng"," sáo"," đích","​,"," bản"," cai"," thị"," thuỷ"," hoả"," bất"," dung"," đích"," căn"," cơ","​,"," tố"," nhất"," ta"," xuất"," nhân"," ý"," liệu"," đích"," sự"," tình","​.","​”"]]'
+    )
+    rpage.mt_ai = JSON.parse(
+      '[["TOP",[["IP",[["PU","“",0,1,"“","Capx Undn",2],["CP",[["ADVP",[["CS","既然",1,3,"như đã","",2]],1,3,"","",-1],["IP",[["NP",[["PN","你",3,4,"ngươi","Nper",2]],3,4,"","Nper",-1],["VP",[["NP",[["NT","现在",4,6,"hiện tại","Ntmp",2]],4,6,"","Ntmp",-1],["QP",[["NP",[["NN","魔道",6,8,"ma đạo","",2]],6,8,"","",-1],["QP",[["AD","双",8,9,"đôi","",2]],8,9,"","",-1]],6,9,"","",-1],["VP",[["VV","修",9,10,"tu","",2]],9,10,"","",-1]],4,10,"","",-1]],3,10,"","",-1]],1,10,"","",-1],["PU","，",10,11,",","Capx Undb",2],["VP",[["ADVP",[["AD","或许",11,13,"có lẽ","Vmod",2]],11,13,"","Vmod",-1],["VP",[["VP",[["VV","可以",13,15,"có thể","",2],["VP",[["VP",[["VP",[["VV","利用",15,17,"lợi dụng","",2],["NP",[["NP",[["NP",[["NP",[["NN","、",27,28,",","Capx Undb",14]],27,28,"","Capx Undb",-1],["CP",[["CP",[["IP",[["VP",[["NP",[["NN",[["NP",[["NN","体内",18,20,"trong cơ thể","Ndes Nloc",2]],18,20,"","Ndes Nloc",-1],["NP",[["PN","你",17,18,"ngươi","Nper",2]],17,18,"","Nper",-1]],17,20,"","Ndes Nloc",-1]],17,20,"","",-1],["VP",[["ADVP",[["AD","同时",20,22,"đồng thời","",2]],20,22,"","",-1],["VP",[["VRD",[["VV","存",22,23,"tồn","",2],["VR","在",23,24,"tại","Sufx",26]],22,24,"","",-1],["QP",[["CD","两",24,25,"hai","",2],["CLP",[["M","套",25,26,"bộ","",2]],25,26,"","",-1]],24,26,"","",-1]],22,26,"","",-1]],20,26,"","",-1]],17,26,"","",-1]],17,26,"","",-1],["DEC","的",26,27,"⛶","Hide",2]],17,27,"","",-1]],17,27,"","",-1]],17,28,"","Capx",-1]],17,28,"","",-1],["NP",[["NP",[["NN","根基",36,38,"căn cơ","",2]],36,38,"","",-1],["CP",[["CP",[["IP",[["VP",[["VP",[["VV","本该",28,30,"vốn nên","",4],["VP",[["VP",[["VC","是",30,31,"là","",2],["IP",[["NP",[["NN","水火",31,33,"nước lửa","",2]],31,33,"","",-1],["VP",[["VV","不容",33,35,"không để cho","",2]],33,35,"","",-1]],31,35,"","",-1]],30,35,"","",-1]],30,35,"","",-1]],28,35,"","",-1]],28,35,"","",-1]],28,35,"","",-1],["DEC","的",35,36,"⛶","Hide",2]],28,36,"","",-1]],28,36,"","",-1]],28,38,"","",-1]],17,38,"","",-1]],15,38,"","",-1]],15,38,"","",-1],["PU","，",38,39,",","Capx Undb",2],["VP",[["VP",[["VV","做",39,40,"làm","",2],["NP",[["NP",[["QP","一些",40,42,"một chút","",2],["NP",[["NN","事情",47,49,"sự tình","",2]],47,49,"","",-1],["CP",[["CP",[["IP",[["VP","出人意料",42,46,"ngoài dự đoán của mọi người","",2]],42,46,"","",-1],["DEC","的",46,47,"⛶","Hide",2]],42,47,"","",-1]],42,47,"","",-1]],40,49,"","",-1]],40,49,"","",-1]],39,49,"","",-1]],39,49,"","",-1]],15,49,"","",-1]],13,49,"","",-1]],13,49,"","",-1]],11,49,"","",-1],["PU","。",49,50,".","Capn Undb",2],["PU","”",50,51,"”","Capx Undb",2]],0,51,"","",-1]],0,51,"","",-1]]'
+    )
+    // vtform_ctrl.show(0)
+  })
+
+  const on_vtform_close = async (changed = false) => {
+    if (changed) {
+      const vdata = await fetch(ai_url, rinit).then((r) => r.json())
+      rpage.mt_ai = vdata.lines
+    }
+  }
 </script>
 
 <article class="article island">
@@ -86,21 +84,16 @@
       <h3 class="label">Tiếng Việt:</h3>
 
       <div class="cdata debug _hv">
-        {#each ctree as cdata}
-          {@html gen_mt_ai_html(cdata, {
-            mode: 2,
-            cap: true,
-            und: true,
-            _qc: 0,
-          })}
+        {#each rpage.lines as rline}
+          {@html rline.mt_ai_html}
         {/each}
       </div>
 
       <h3 class="label">Hán Việt:</h3>
 
       <div class="cdata debug _hv">
-        {#each hviet as hdata}
-          {@html gen_hviet_html(hdata, true)}
+        {#each rpage.lines as rline}
+          {@html rline.hviet_html}
         {/each}
       </div>
     </div>
@@ -109,8 +102,8 @@
       <h3 class="label">Cây ngữ pháp:</h3>
 
       <div class="cdata debug _ct">
-        {#each ctree as cdata}
-          {@html gen_ctree_html(cdata)}
+        {#each rpage.lines as rline}
+          {@html rline.ctree_html}
         {/each}
       </div>
     </div>
@@ -121,7 +114,9 @@
   </button>
 </article>
 
-{#if $vtform_ctrl.actived}<Vtform {ropts} />{/if}
+{#if $vtform_ctrl.actived}
+  <Vtform rline={rpage.lines[0]} {rword} {ropts} on_close={on_vtform_close} />
+{/if}
 
 <style lang="scss">
   .preview {

@@ -37,15 +37,15 @@ class MT::QtTranCtrl < AC::Base
     start = Time.monotonic
     mcore = QtCore.hv_word
 
-    hviet = [] of HvietToVarr
-    _read_body.each_line { |line| hviet << HvietToVarr.new(mcore.tokenize(line)) }
+    hviet = String.build do |io|
+      _read_body.each_line do |line|
+        io << mcore.to_mtl(line) << '\n'
+      end
+    end
 
-    tspan = (Time.monotonic - start).total_milliseconds.round(2)
-    mtime = Time.utc.to_unix
-
-    render json: {hviet: hviet, tspan: tspan, mtime: mtime}
+    render text: hviet
   rescue ex
     Log.error(exception: ex) { ex.message }
-    render 500, json: {hviet: [] of String, error: ex.message}
+    render 500, text: ex.message
   end
 end

@@ -7,22 +7,29 @@ import {
   gen_mt_ai_text,
   gen_hviet_text,
   gen_hviet_html,
+  flatten_tree,
 } from '$lib/mt_data_2'
 
 export class Rdword {
   from: number
   upto: number
   cpos: string
-  constructor(node: HTMLElement) {
-    if (node) {
-      this.from = +node.dataset.b || 0
-      this.upto = +node.dataset.e || 0
-      this.cpos = node.dataset.c || 'X'
-    } else {
-      this.from = 0
-      this.upto = 0
-      this.cpos = 'X'
-    }
+
+  constructor(from: number = 0, upto: number = 1, cpos: string = 'X') {
+    this.from = from
+    this.upto = upto
+    this.cpos = cpos
+  }
+
+  match(from: number, upto: number, cpos: string) {
+    if (from != this.from || upto != this.upto) return false
+    return this.cpos == cpos || cpos == 'X'
+  }
+
+  static from(node: HTMLElement) {
+    if (!node) return new Rdword()
+    const { b, e, c } = node.dataset
+    return new Rdword(+b || 0, +e || 1, c || 'X')
   }
 }
 
@@ -67,6 +74,13 @@ export class Rdline {
     return this.ztext.substring(word.from, word.upto)
   }
 
+  get_hviet(from: number, upto: number) {
+    if (!this.hviet) return ''
+
+    const hviet = this.hviet.slice(from, upto)
+    return gen_hviet_text(hviet)
+  }
+
   get ztext_html() {
     if (!this.ztext) return ''
     return gen_ztext_html(this.ztext)
@@ -101,6 +115,14 @@ export class Rdline {
     if (!this.hviet) return ''
     return gen_hviet_html(this.hviet)
   }
+
+  get_mt_ai_list(from: number, upto: number) {
+    const list = flatten_tree(this.mt_ai)
+
+    return list.filter((node) => {
+      return node[2] <= from && node[3] >= upto
+    })
+  }
 }
 
 interface Rstate {
@@ -119,8 +141,8 @@ export class Rdpage {
   tspan: Rstate
   mtime: Rstate
 
-  constructor(ztext_list: string[], ropts: CV.Rdopts) {
-    this.lines = ztext_list.map((ztext) => new Rdline(ztext))
+  constructor(ztext: string[], ropts: CV.Rdopts) {
+    this.lines = ztext.map((x) => new Rdline(x))
     this.ropts = ropts
     this.state = { hviet: 0, mt_ai: 0, qt_v1: 0, bt_zv: 0, c_gpt: 0, vtran: 0 }
     this.tspan = { hviet: 0, mt_ai: 0, qt_v1: 0, bt_zv: 0, c_gpt: 0, vtran: 0 }
@@ -169,7 +191,7 @@ export class Rdpage {
   }
 
   set bt_zv(input: string[]) {
-    for (let i = 0; i < input.length; i++) {
+    for (let i = 0; i < this.lines.length; i++) {
       this.lines[i].bt_zv = input[i]
     }
 
@@ -210,7 +232,7 @@ export class Rdpage {
   }
 
   set qt_v1(input: string[]) {
-    for (let i = 0; i < input.length; i++) {
+    for (let i = 0; i < this.lines.length; i++) {
       this.lines[i].qt_v1 = input[i]
     }
     this.state.qt_v1 = 1
@@ -238,20 +260,24 @@ export class Rdpage {
   }
 
   set mt_ai(input: CV.Cvtree[]) {
-    for (let i = 0; i < input.length; i++) {
+    if (input.length == 0) return
+
+    for (let i = 0; i < this.lines.length; i++) {
       this.lines[i].mt_ai = input[i]
     }
     this.state.mt_ai = 1
   }
 
   async load_mt_ai(cache = 0, force = false) {
-    if (cache < 2 && this.state.mt_ai > 0) return this
-    if (cache == 0) return this
+    if (cache == 0 || (cache < 1 && this.state.mt_ai > 0)) return this
 
     const { fpath, pdict, mt_rm } = this.ropts
+    const zpath = encodeURIComponent(fpath)
+    const zdict = encodeURIComponent(pdict)
 
-    const url = `/_ai/qtran?fpath=${fpath}&pdict=${pdict}&_algo=${mt_rm}&force=${force}`
-    const res = await fetch(url, this.gen_rinit(cache))
+    const url = `/_ai/qtran?fpath=${zpath}&pdict=${zdict}&_algo=${mt_rm}&force=${force}`
+
+    const res = await globalThis.fetch(url, this.gen_rinit(cache))
     if (!res.ok) return this
 
     const { lines, tspan, mtime } = await res.json()
@@ -303,7 +329,7 @@ export class Rdpage {
   async reload(rmode: Partial<Rstate> = {}) {
     this.load_hviet(rmode.hviet || 1)
     this.load_qt_v1(rmode.qt_v1 || 1)
-    // this.load_bt_zv(rmode.bt_zv || 1)
+    this.load_bt_zv(rmode.bt_zv || 1)
     this.load_mt_ai(rmode.mt_ai || 1)
     return this
   }
@@ -321,8 +347,7 @@ export class Rdpage {
     }
   }
 
-  async load_vtran(cache = 1, force = false) {
-    console.log('loading!')
+  async load_vtran(cache = 1, force = true) {
     const { rmode, qt_rm } = this.ropts
 
     if (rmode == 'mt' || qt_rm == 'mt_ai') {

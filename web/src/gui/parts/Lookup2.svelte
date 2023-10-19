@@ -1,13 +1,18 @@
 <script lang="ts" context="module">
   import { writable } from 'svelte/store'
+  import { ctrl as vtform_ctrl } from '$gui/shared/vtform/Vtform.svelte'
 
   export const ctrl = {
-    ...writable({ actived: false, panel: 'overview' }),
+    ...writable({ actived: false, sticked: false, panel: 'overview' }),
     hide: () => {
-      ctrl.update(({ panel }) => ({ panel, actived: false }))
+      ctrl.update((x) => ({ ...x, actived: false }))
     },
-    show(panel: string = '') {
-      ctrl.update((x) => ({ panel: panel || x.panel, actived: true }))
+    show(xpanel = '') {
+      ctrl.update(({ sticked, panel }) => ({
+        panel: xpanel || panel,
+        actived: true,
+        sticked,
+      }))
     },
   }
 </script>
@@ -19,27 +24,27 @@
   import Slider from '$gui/molds/Slider.svelte'
   import Footer from '$gui/sects/Footer.svelte'
 
-  import { ctrl as vtform_ctrl } from '$gui/shared/vtform/Vtform.svelte'
-
   import Overview from './Sideline/Overview.svelte'
   import Glossary from './Sideline/Glossary.svelte'
   import Analysis from './Sideline/Analysis.svelte'
 
-  export let rdpage: Rdpage
-  export let rdword: Rdword
+  export let rpage: Rdpage
+  export let rword: Rdword
 
   export let state = 0
   export let l_idx = 0
   export let l_max = 0
+  export let change_focus = (l_idx: number) => {}
 
-  $: rdline = rdpage.lines[l_idx]
+  $: rline = rpage.lines[l_idx]
 
   const node_names = ['X-N', 'X-C', 'X-Z']
 
-  function handle_click({ target }) {
+  function handle_click(event: MouseEvent) {
+    const target = event.target as HTMLElement
     if (!node_names.includes(target.nodeName)) return
 
-    rdword = new Rdword(target)
+    rword = Rdword.from(target)
     if ($ctrl.panel != 'glossary') vtform_ctrl.show(0)
   }
 
@@ -48,7 +53,7 @@
     if (!node_names.includes(target.nodeName)) return
 
     event.preventDefault()
-    rdword = new Rdword(target)
+    rword = Rdword.from(target)
     $ctrl.panel = 'glossary'
   }
 
@@ -60,11 +65,11 @@
   const load_mt_ai_data = async () => {
     stale = false
 
-    if (rdpage.ropts.rmode == 'mt' || rdpage.ropts.qt_rm == 'mt_ai') {
+    if (rpage.ropts.rmode == 'mt' || rpage.ropts.qt_rm == 'mt_ai') {
       state = 1
     } else {
-      rdpage.load_mt_ai(2)
-      rdpage = rdpage
+      rpage.load_mt_ai(2)
+      rpage = rpage
       state = 0
     }
   }
@@ -74,6 +79,7 @@
   class="lookup"
   _sticky={true}
   bind:actived={$ctrl.actived}
+  bind:sticked={$ctrl.sticked}
   --slider-width="30rem">
   <svelte:fragment slot="header-left">
     <div class="-icon"><SIcon name="compass" /></div>
@@ -128,11 +134,11 @@
     on:click={handle_click}
     on:contextmenu={handle_ctxmenu}>
     {#if $ctrl.panel == 'overview'}
-      <Overview bind:rdpage bind:rdline />
+      <Overview bind:rpage bind:rline />
     {:else if $ctrl.panel == 'glossary'}
-      <Glossary {rdpage} {rdline} {viewer} bind:rdword />
+      <Glossary {rline} {viewer} bind:rword />
     {:else}
-      <Analysis {rdpage} {rdline} />
+      <Analysis {rpage} {rline} />
     {/if}
   </section>
 
@@ -144,7 +150,7 @@
         data-kbd="↑"
         data-tip="Chuyển lên dòng trên"
         disabled={l_idx == 0}
-        on:click={() => (l_idx -= 1)}>
+        on:click={() => change_focus(l_idx - 1)}>
         <SIcon name="arrow-up" />
         <span class="-txt">Trên</span>
       </button>
@@ -164,7 +170,7 @@
         class="m-btn _sm"
         data-kbd="↓"
         data-tip="Chuyển xuống dòng dưới"
-        on:click={() => (l_idx += 1)}
+        on:click={() => change_focus(l_idx + 1)}
         disabled={l_idx + 1 == l_max}>
         <SIcon name="arrow-down" />
         <span class="-txt">Dưới</span>

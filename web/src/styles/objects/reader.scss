@@ -53,14 +53,18 @@
     // outline: 1px solid color(primary, 5, 5);
 
     .tm-light & {
+      font-weight: bold;
       @include bgcolor(warning, 2, 2);
     }
+
     .tm-warm & {
       @include bgcolor(warning, 2, 2);
     }
+
     .tm-dark & {
       @include bgcolor(primary, 8, 2);
     }
+
     .tm-oled & {
       @include bgcolor(primary, 8, 2);
     }
@@ -233,6 +237,7 @@ x-n {
 
   // .cdata:hover &,
   .cdata.focus &,
+  .cdata.debug &,
   &.focus,
   &:hover {
     border-bottom: 1px solid var(--border);

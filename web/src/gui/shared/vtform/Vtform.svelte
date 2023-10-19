@@ -1,95 +1,16 @@
 <script lang="ts" context="module">
-  import { get, writable } from 'svelte/store'
-  import type { Rdline } from '$lib/reader'
-
-  import { gen_mt_ai_text, gen_hviet_text } from '$lib/mt_data_2'
-
-  function find_vdata_node(node: CV.Cvtree, lower = 0, upper = 0, icpos = '') {
-    const [cpos, body, from, upto, _vstr, _attr, _dnum] = node
-
-    if (from > lower || upto < upper) return null
-
-    if (from == lower && upto == upper) {
-      if (typeof body == 'string') return node
-      if (icpos && icpos == cpos) return node
-    }
-
-    for (const child of body as Array<CV.Cvtree>) {
-      const [_cpos, _body, from, upto] = child
-
-      if (from <= lower && upto >= upper) {
-        return find_vdata_node(child, lower, upper, icpos)
-      }
-    }
-
-    return from == lower && upto == upper ? node : null
-  }
-
-  function extract_term(input): CV.Viterm {
-    const { zline, vtree, hvarr, zfrom, zupto, icpos } = input
-    const zstr = zline.substring(zfrom, zupto)
-
-    const vnode = find_vdata_node(vtree, zfrom, zupto, icpos)
-    const hviet = gen_hviet_text(hvarr.slice(zfrom, zupto), false)
-
-    if (vnode) {
-      const [cpos, _idx, _len, attr, _zh, _vi, dnum = 5] = vnode
-
-      return {
-        zstr: zstr,
-        vstr: gen_mt_ai_text(vnode, { cap: false, und: true }, true),
-        cpos,
-        attr,
-        plock: Math.floor(dnum / 10),
-        local: dnum % 2 == 1,
-        hviet,
-      }
-    } else {
-      return {
-        zstr: zstr,
-        vstr: hviet,
-        cpos: 'X',
-        attr: '',
-        plock: -1,
-        local: true,
-        hviet,
-      }
-    }
-  }
-
-  // export const data = {
-  //   ...writable<CV.Vtdata>(init_data),
-  //   put(
-  //     zline: string,
-  //     hvarr: Array<[string, string]>,
-  //     vtree: CV.Cvtree,
-  //     zfrom = 0,
-  //     zupto = -1,
-  //     icpos = ''
-  //   ) {
-  //     if (zupto <= zfrom) zupto = hvarr.length
-
-  //     data.set({ zline, hvarr, vtree, zfrom, zupto, icpos })
-  //   },
-  //   get_term(_from = -1, _upto = -1, _cpos = '?') {
-  //     const input = { ...get(data) }
-  //     if (_from >= 0) input.zfrom = _from
-  //     if (_upto >= 0) input.zupto = _upto
-  //     if (_cpos != '') input.icpos = _cpos
-
-  //     return extract_term(input)
-  //   },
-
-  //   get_cpos(zfrom: number, zupto: number) {
-  //     const input = get(data)
-  //     return zfrom == input.zfrom && zupto == input.zupto ? input.icpos : ''
-  //   },
-  // }
+  import { writable } from 'svelte/store'
+  import { Rdword, type Rdline } from '$lib/reader'
+  import { tooltip } from '$lib/actions'
 
   export const ctrl = {
     ...writable({ actived: false, tab: 0 }),
-    show: (tab = 0) => ctrl.set({ actived: true, tab }),
-    hide: () => ctrl.set({ actived: false, tab: 0 }),
+    show: (tab = 0) => {
+      ctrl.set({ actived: true, tab })
+    },
+    hide: () => {
+      ctrl.set({ actived: false, tab: 0 })
+    },
   }
 </script>
 
@@ -98,11 +19,8 @@
   import { get_user } from '$lib/stores'
   const _user = get_user()
 
-  import { Viform } from '$lib/models/viterm'
+  import { Viform, find_last } from './viform'
 
-  import { onDestroy } from 'svelte'
-
-  import { tooltip } from '$lib/actions'
   import cpos_info from '$lib/consts/cpos_info'
   import attr_info from '$lib/consts/attr_info'
 
@@ -118,34 +36,49 @@
   import VstrUtil from './VstrUtil.svelte'
   import FormBtns from './FormBtns.svelte'
   import HelpLink from './HelpLink.svelte'
+  import { gen_mt_ai_text } from '$lib/mt_data_2'
 
   export let rline: Rdline
+  export let rword: Rdword
   export let ropts: CV.Rdopts
+  export let on_close = (changed = false) => console.log(changed)
 
-  export let on_close = (_term?: CV.Viterm) => {}
-  onDestroy(() => on_close(null))
+  $: mlist = rline.get_mt_ai_list(rword.from, rword.upto)
 
-  const cached = new Map<string, Viform>()
+  const cached = new Map<string, any>()
 
-  function make_form(zfrom: number, zupto: number, icpos: string) {
-    const key = `${zfrom}-${zupto}-${icpos}`
+  function make_form({ from, upto, cpos }) {
+    const key = `${from}-${upto}-${cpos}`
 
     const old = cached.get(key)
     if (old) return old
 
-    const term = data.get_term(zfrom, zupto, icpos)
-    const form = new Viform(term, privi)
+    const ztext = rline.get_ztext(from, upto)
+    const hviet = rline.get_hviet(from, upto)
+    const tdata = { vstr: hviet, cpos, attr: '', plock: -1, local: true }
 
-    cached.set(key, form)
-    return form
+    const vnode = find_last<CV.Cvtree>(mlist, (x) => {
+      if (x[2] != from || x[3] != upto) return false
+      return x[0] == cpos || cpos == 'X'
+    })
+
+    if (vnode) {
+      const dnum = vnode[6]
+      tdata.cpos = vnode[0]
+      tdata.vstr = gen_mt_ai_text(vnode, { cap: false, und: true })
+      tdata.attr = vnode[5]
+      tdata.plock = Math.floor(dnum / 10)
+      tdata.local = dnum % 2 == 1
+    }
+
+    const rword = new Rdword(from, upto, tdata.cpos)
+    const tform = new Viform(rword, tdata, ztext, hviet, privi)
+    cached.set(key, tform)
+    return tform
   }
 
   $: privi = $_user.privi
-
-  let { zfrom, zupto, icpos } = $data
-
-  $: tform = make_form(zfrom, zupto, icpos)
-  $: hviet = tform.init.hviet
+  $: tform = make_form(rword)
 
   $: if (tform) refocus()
   $: cpos_data = cpos_info[tform.cpos] || {}
@@ -166,7 +99,7 @@
 
   const submit_action = async () => {
     const headers = { 'Content-type': 'application/json' }
-    const body = tform.to_form_body(ropts, $data.vtree, zfrom)
+    const body = tform.toJSON(ropts, rline.ctree_text, rword.from)
 
     const init = { body: JSON.stringify(body), method, headers }
     const res = await fetch(action, init)
@@ -174,7 +107,7 @@
     if (!res.ok) {
       form_msg = await res.text()
     } else {
-      on_close(tform.term)
+      on_close(true)
       ctrl.hide()
     }
   }
@@ -187,13 +120,7 @@
 </script>
 
 <Dialog actived={$ctrl.actived} on_close={ctrl.hide} class="vtform" _size="lg">
-  <FormHead
-    orig={$data}
-    {hviet}
-    bind:zfrom
-    bind:zupto
-    bind:icpos
-    bind:actived={$ctrl.actived} />
+  <FormHead {rline} bind:rword on_close={ctrl.hide} />
 
   <nav class="tabs">
     <button
@@ -229,6 +156,24 @@
   </nav>
 
   <form class="body" {method} {action} on:submit|preventDefault={submit_action}>
+    <div class="tree">
+      {#each mlist.slice(mlist.length - 4) as [cpos, _body, from, upto], index}
+        {@const cpos_data = cpos_info[cpos]}
+        {#if index > 0}<span class="sep u-fg-mute">/</span>{/if}
+        <button
+          type="button"
+          class="node"
+          class:_active={tform.rword.match(from, upto, cpos)}
+          data-tip={cpos_data.name}
+          on:click={() => {
+            tform = make_form({ from, upto, cpos })
+          }}>
+          <code>{cpos}</code>
+          <span>{from + 1}&ndash;{upto + 1}</span>
+        </button>
+      {/each}
+    </div>
+
     <div class="main">
       <div class="main-head">
         <button
@@ -260,7 +205,7 @@
         </button>
       </div>
 
-      <div class="main-text" class:_fresh={!tform.init.vstr}>
+      <div class="main-text" class:_fresh={!tform.tinit.vstr}>
         <input
           type="text"
           class="vstr"
@@ -282,7 +227,7 @@
     <FormBtns bind:tform {privi} bind:show_log bind:show_dfn />
   </form>
 
-  <HelpLink key={tform.init.zstr} />
+  <HelpLink key={tform.ztext} />
 </Dialog>
 
 {#if pick_cpos}
@@ -294,7 +239,7 @@
 {/if}
 
 {#if show_dfn}
-  <Glossary bind:actived={show_dfn} ztext={$data.zline} {zfrom} {zupto} />
+  <Glossary bind:actived={show_dfn} {rline} {rword} />
 {/if}
 
 <style lang="scss">
@@ -370,9 +315,43 @@
   .body {
     display: block;
     padding: 0.75rem;
-    padding-top: 2rem;
+    padding-top: 0;
 
     @include bgcolor(secd);
+  }
+
+  .tree {
+    @include flex-ca($gap: 0.25rem);
+    padding: 0.25rem 0;
+
+    button {
+      display: inline-flex;
+      gap: 0.125rem;
+      padding: 0;
+      line-height: 1.5rem;
+      background: transparent;
+
+      @include fgcolor(tert);
+
+      &:hover,
+      &._active {
+        @include fgcolor(main);
+      }
+    }
+
+    span {
+      @include ftsize(sm);
+      // @include fgcolor(mute);
+    }
+
+    code {
+      padding: 0;
+      color: inherit;
+    }
+
+    .sep {
+      @include fgcolor(mute);
+    }
   }
 
   .main {

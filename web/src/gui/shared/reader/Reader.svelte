@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   import { Rdpage, Rdword } from '$lib/reader'
-  const rdpages = new Map<string, Rdpage>()
+  const rpages = new Map<string, Rdpage>()
 </script>
 
 <script lang="ts">
@@ -12,7 +12,6 @@
   import Lookup2, { ctrl as lookup_ctrl } from '$gui/parts/Lookup2.svelte'
   import Vtform, { ctrl as vtform_ctrl } from '$gui/shared/vtform/Vtform.svelte'
 
-  import { browser } from '$app/environment'
   import { config } from '$lib/stores'
 
   import Section from '$gui/sects/Section.svelte'
@@ -32,7 +31,7 @@
   // $: ropts.fpath = rdata.fpath
 
   let reader: HTMLDivElement
-  let focused_node: HTMLElement
+  let focus_line: HTMLElement
 
   // states:
   // - 0: no need to reload,
@@ -41,70 +40,80 @@
   // - 3: reload hviet + vtran
 
   let state = 3
-  let l_idx = -1
-  let l_max = 0
 
   afterNavigate(() => {
     l_idx = -1
+    state = 2
   })
 
-  $: l_max = rdata.ztext.length
+  let l_idx = -1
+  $: l_max = rdata.ztext ? rdata.ztext.length : 0
 
-  $: rdpage = init_page(rdata, ropts)
-  let rdword = new Rdword(undefined)
+  $: rpage = init_page(rdata.fpath, rdata.ztext || [], ropts)
+  let rword = new Rdword()
 
-  function init_page(rdata: CV.Chpart, ropts: CV.Rdopts) {
-    let rdpage = rdpages.get(rdata.fpath)
+  function init_page(fpath: string, ztext: string[], ropts: CV.Rdopts) {
+    let rpage = rpages.get(fpath)
+    if (!fpath) return rpage
 
-    if (!rdpage) {
-      rdpage = new Rdpage(rdata.ztext, ropts)
-      rdpages.set(rdata.fpath, rdpage)
+    if (!rpage) {
+      rpage = new Rdpage(ztext, ropts)
+      rpages.set(fpath, rpage)
     } else {
-      if (rdpage.ropts.mt_rm != ropts.mt_rm) {
-        rdpage.state.mt_ai = 0
+      if (rpage.ropts.mt_rm != ropts.mt_rm) {
+        rpage.state.mt_ai = 0
       }
-      rdpage.ropts = ropts
+      rpage.ropts = ropts
       // TODO: invalidate mt_ai data if algorithm changed
     }
 
-    return rdpage
+    return rpage
   }
 
-  const handle_mouse = (event: MouseEvent, panel: string = 'overview') => {
+  const handle_mouse = async (
+    event: MouseEvent,
+    panel: string = 'overview'
+  ) => {
     if ($config.r_mode == 1) return
-    $lookup_ctrl.panel = panel
+    let click_on_node = false
 
     let target = event.target as HTMLElement
-    if (target.nodeName == 'X-N') rdword = new Rdword(target)
+    if (target.nodeName == 'X-N') {
+      rword = Rdword.from(target)
+      click_on_node = panel == 'overview'
+    }
 
     while (target != reader) {
       if (target.classList.contains('cdata')) break
-      target = target.parentElement
+      else target = target.parentElement
     }
 
     if (target == reader) return
-    event.preventDefault()
 
-    l_idx = +target.dataset.line
+    event.preventDefault()
+    const l_idx = +target.dataset.line
+    change_focus(l_idx, click_on_node ? 'upsert' : panel)
   }
 
-  $: if (browser && l_idx >= 0) {
-    const new_focus = document.getElementById('L' + l_idx)
+  const change_focus = async (new_l_idx: number, panel = '') => {
+    l_idx = new_l_idx
 
-    if (new_focus != focused_node) {
-      if (focused_node) focused_node.classList.remove('focus')
-      focused_node = new_focus
-      focused_node.classList.add('focus')
-      focused_node.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+    const new_focus = document.getElementById('L' + l_idx)
+    if (new_focus != focus_line) {
+      if (focus_line) focus_line.classList.remove('focus')
+      focus_line = new_focus
+      focus_line.classList.add('focus')
     }
 
-    console.log(new_focus)
-    active_lookup_panel()
-  }
+    focus_line.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
 
-  const active_lookup_panel = async () => {
-    rdpage = await rdpage.reload({ qt_v1: 1, mt_ai: 1, bt_zv: 1 })
-    lookup_ctrl.show('')
+    await rpage.reload({ qt_v1: 1, mt_ai: 1, bt_zv: 1 })
+
+    if (panel == 'upsert') {
+      vtform_ctrl.show()
+    } else {
+      lookup_ctrl.show(panel)
+    }
   }
 
   const tabs = [
@@ -114,9 +123,9 @@
     // { type: 'cf', icon: 'tool', text: 'Công cụ' },
   ]
 
-  const on_term_change = (term?: CV.Viterm) => {
-    console.log({ term })
-    // todo
+  const on_term_change = async (changed = false) => {
+    if (!changed) return
+    rpage = await rpage.load_mt_ai(2, false)
   }
 </script>
 
@@ -129,14 +138,14 @@
     class="reader _{$config.r_mode}"
     style:--textlh="{$config.textlh}%"
     bind:this={reader}
-    on:click|capture={(e) => handle_mouse(e, 'overview')}
-    on:contextmenu|capture={(e) => handle_mouse(e, 'glossary')}>
+    on:click={(e) => handle_mouse(e, 'overview')}
+    on:contextmenu={(e) => handle_mouse(e, 'glossary')}>
     {#if rdata.error == 414}
       <Notext {cstem} bind:rdata bind:state />
     {:else if rdata.error == 413 || rdata.error == 415}
       <Unlock {cstem} bind:rdata bind:state />
     {:else if ropts.rmode == 'qt' || ropts.rmode == 'mt'}
-      <Qtpage {rdpage} {label} />
+      <Qtpage {rpage} {label} bind:state />
     {:else}
       Chưa hoàn thiện!
     {/if}
@@ -148,21 +157,25 @@
     type="button"
     data-kbd="↑"
     disabled={l_idx == 0}
-    on:click={() => (l_idx -= 1)} />
+    on:click={() => change_focus(l_idx - 1)} />
   <button
     type="button"
     data-kbd="↓"
-    on:click={() => (l_idx += 1)}
-    disabled={l_idx == l_max} />
+    disabled={l_idx == l_max}
+    on:click={() => change_focus(l_idx + 1)} />
 </div>
 
-{#if rdpage && $lookup_ctrl.actived}
-  <Lookup2 bind:rdpage bind:rdword bind:state bind:l_idx {l_max} />
+{#if rpage && $lookup_ctrl.actived}
+  <Lookup2 bind:rpage bind:rword bind:state bind:l_idx {l_max} {change_focus} />
 {/if}
 
-<!-- {#if $vtform_ctrl.actived}
-  <Vtform bind:rdline={rdpage[l_idx]} on_close={on_term_change} />
-{/if} -->
+{#if $vtform_ctrl.actived}
+  <Vtform
+    rline={rpage.lines[l_idx]}
+    {rword}
+    {ropts}
+    on_close={on_term_change} />
+{/if}
 
 <style lang="scss">
   .reader {

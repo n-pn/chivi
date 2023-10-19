@@ -15,17 +15,12 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div
-  class="wrap"
-  on:click={() => on_close(false)}
-  transition:fade|global={{ duration: 100 }}>
+<div class="wrap" on:click={() => on_close(false)}>
   <div
-    class="dialog-main {$$props.class} _{_size}"
-    tabindex="-1"
-    on:click={(e) => e.stopPropagation()}
-    transition:scale|global={{ duration: 100, easing: backInOut }}>
+    class="main {$$props.class} _{_size}"
+    on:click={(e) => e.stopPropagation()}>
     {#if $$slots.header}
-      <header class="dialog-head">
+      <header class="head">
         <slot name="header" />
         <button
           type="button"
@@ -55,7 +50,7 @@
     background: rgba(#000, 0.75);
   }
 
-  .dialog-head {
+  .head {
     @include flex-cx;
 
     height: 2.25rem;
@@ -86,7 +81,7 @@
     xl: 36rem,
   );
 
-  .dialog-main {
+  .main {
     width: 50vw;
     max-width: 100%;
 

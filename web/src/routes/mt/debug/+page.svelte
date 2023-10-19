@@ -5,10 +5,9 @@
     gen_mt_ai_html,
   } from '$lib/mt_data_2'
 
-  import Vtform, {
-    data as vtform_data,
-    ctrl as vtform_ctrl,
-  } from '$gui/shared/vtform/Vtform.svelte'
+  // import Vtform, {
+  //   ctrl as vtform_ctrl,
+  // } from '$gui/shared/vtform/Vtform.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
@@ -60,8 +59,8 @@
 
     const icpos = target.dataset.c || 'X'
 
-    vtform_data.put(ztext, hviet[0], ctree[0], zfrom, zupto, icpos)
-    vtform_ctrl.show(0)
+    // vtform_data.put(ztext, hviet[0], ctree[0], zfrom, zupto, icpos)
+    // vtform_ctrl.show(0)
   }
 </script>
 

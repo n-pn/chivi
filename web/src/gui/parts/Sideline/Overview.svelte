@@ -4,22 +4,20 @@
 </script>
 
 <script lang="ts">
-  import { gen_ztext_html } from '$lib/mt_data_2'
-
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Wpanel from '$gui/molds/Wpanel.svelte'
 
-  export let rdpage: Rdpage
-  export let rdline: Rdline
+  export let rpage: Rdpage
+  export let rline: Rdline
 
   let loading_bzv = false
 
   const load_bt_zv_data = async () => {
     loading_bzv = true
-    await rdpage.load_bt_zv()
-    rdpage = rdpage
+    await rpage.load_bt_zv()
+    rpage = rpage
 
-    rdpage = await rdpage.load_bt_zv(2)
+    rpage = await rpage.load_bt_zv(2)
     loading_bzv = false
   }
 
@@ -27,9 +25,7 @@
 
   const load_c_gpt_data = async () => {
     loading_gpt = true
-    console.log('c_gpt')
-    rdline = await rdline.load_c_gpt()
-
+    rline = await rline.load_c_gpt(2)
     loading_gpt = false
   }
 </script>
@@ -39,8 +35,8 @@
   bind:state={states.ztext}
   class="_zh _lg"
   --lc="2"
-  wdata={rdline.ztext}>
-  {#if rdline.ztext}{@html rdline.ztext_html}{/if}
+  wdata={rline.ztext}>
+  {#if rline.ztext}{@html rline.ztext_html}{/if}
   <p slot="empty">Chưa có tiếng trung!</p>
 </Wpanel>
 
@@ -49,8 +45,8 @@
   bind:state={states.mtran}
   class="cdata"
   --lc="5"
-  wdata={rdline.mt_ai_text}>
-  {#if rdline.mt_ai}{@html rdline.mt_ai_html}{/if}
+  wdata={rline.mt_ai_text}>
+  {#if rline.mt_ai}{@html rline.mt_ai_html}{/if}
   <div slot="empty">Chưa có kết quả dịch máy</div>
 </Wpanel>
 
@@ -59,8 +55,8 @@
   bind:state={states.vtran}
   class="_vi"
   --lc="4"
-  wdata={rdline.vtran}>
-  {#if rdline.vtran} {rdline.vtran} {/if}
+  wdata={rline.vtran}>
+  {#if rline.vtran} {rline.vtran} {/if}
   <div slot="empty">
     <em>Chưa có kết quả dịch sẵn.</em>
     <button class="m-btn _xs _primary">Đóng góp!</button>
@@ -72,8 +68,8 @@
   bind:state={states.bt_zv}
   class="_sm"
   --lc="3"
-  wdata={rdline.bt_zv}>
-  {#if rdline.bt_zv}{rdline.bt_zv}{/if}
+  wdata={rline.bt_zv}>
+  {#if rline.bt_zv}{rline.bt_zv}{/if}
   <div slot="empty">
     <em>Chưa có kết quả dịch sẵn.</em>
     <button class="m-btn _xs _primary" on:click={load_bt_zv_data}>
@@ -88,8 +84,8 @@
   bind:state={states.c_gpt}
   class="_sm"
   --lc="3"
-  wdata={rdline.c_gpt}>
-  {#if rdline.c_gpt}{rdline.c_gpt}{/if}
+  wdata={rline.c_gpt}>
+  {#if rline.c_gpt}{rline.c_gpt}{/if}
   <div slot="empty">
     <em>Chưa có kết quả dịch sẵn.</em>
     <button class="m-btn _xs _primary" on:click={load_c_gpt_data}>
@@ -104,7 +100,7 @@
   bind:state={states.qt_v1}
   class="_sm"
   --lc="3"
-  wdata={rdline.qt_v1}>
-  {#if rdline.qt_v1}{rdline.qt_v1}{/if}
+  wdata={rline.qt_v1}>
+  {#if rline.qt_v1}{rline.qt_v1}{/if}
   <em slot="empty">Chưa có kết quả dịch sẵn.</em>
 </Wpanel>

@@ -254,7 +254,7 @@ export function gen_mt_ai_text(
   _raw = false
 ) {
   if (!node) return ''
-  const [_pos, body, _idx, _len, vstr, attr] = node
+  const [_pos, body, _from, _upto, vstr, attr] = node
   if (attr.includes('Hide')) return _raw ? vstr : ''
 
   let text = ''
@@ -300,3 +300,14 @@ export function gen_mt_ai_text(
 
 //   return null
 // }
+
+export function flatten_tree(node: CV.Cvtree, list: CV.Cvtree[] = []) {
+  list.push(node)
+  const body = node[1]
+
+  if (Array.isArray(body)) {
+    for (const next of body) flatten_tree(next, list)
+  }
+
+  return list
+}

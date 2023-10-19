@@ -7,21 +7,17 @@
 <script lang="ts">
   import { api_call } from '$lib/api_call'
 
-  import { get_user } from '$lib/stores'
-  const _user = get_user()
-
-  import SIcon from '$gui/atoms/SIcon.svelte'
   import Dialog from '$gui/molds/Dialog.svelte'
+  import type { Rdline, Rdword } from '$lib/reader'
 
   export let actived = false
-  export let ztext: string
-  export let zfrom: number
-  export let zupto: number
+  export let rline: Rdline
+  export let rword: Rdword
 
   let entries = []
   let current: Entry[] = []
 
-  $: if (actived && ztext) fetch_terms(ztext, zfrom)
+  $: if (actived && rline.ztext) fetch_terms(rline.ztext, rword.from)
 
   async function fetch_terms(input: string, zfrom: number) {
     entries = fetch_cache[input] ||= []
@@ -54,8 +50,8 @@
 
     current = entries[zfrom] || []
 
-    if (current.length == 0) zupto = zfrom
-    else zupto = zfrom + +current[0][0]
+    if (current.length == 0) rword.upto = zfrom
+    else rword.upto = zfrom + +current[0][0]
   }
 </script>
 
@@ -70,7 +66,8 @@
     {#each current as [size, terms]}
       <div class="entry">
         <h3 class="word" lang="zh">
-          <span class="ztext">{ztext.substring(zfrom, zfrom + size)}</span>
+          <span class="ztext"
+            >{rline.get_ztext(rword.from, rword.from + size)}</span>
           <span class="hviet" />
         </h3>
 
