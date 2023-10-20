@@ -16,7 +16,11 @@ module MT::AiNode
   abstract def last
 
   def tl_whole!(dict : AiDict)
-    dict.get?(@zstr, @epos).try { |term| self.set_term!(term) }
+    unless term = dict.get?(@zstr, @epos)
+      return if self.is_a?(M1Node)
+      term = dict.get_alt?(@zstr) if @epos.can_use_alt?
+    end
+    self.set_term!(term) if term
   end
 
   def find_by_epos(epos : MtEpos)

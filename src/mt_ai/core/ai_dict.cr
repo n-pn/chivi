@@ -56,6 +56,9 @@ class MT::AiDict
       add_temp(zstr, epos, init_cd(zstr), :none)
     when .vv?
       get_alt?(zstr) || add_temp(zstr, epos, init_vv(zstr), :none)
+    when .nt?
+      vstr, attr = init_nt(zstr)
+      add_temp(zstr, epos, vstr, attr)
     when .nr?
       get_alt?(zstr) || add_temp(zstr, epos, init_nr(zstr), :none)
     else
@@ -67,6 +70,35 @@ class MT::AiDict
   def add_temp(zstr : String, epos : MtEpos, vstr : String, attr : MtAttr = :none)
     # TODO: Add to main_dict directly?
     @auto_dict.add(zstr, epos, vstr, attr)
+  end
+
+  NT_RE = /^([\d零〇一二两三四五六七八九十百千]+)(.*)/
+
+  def init_nt(zstr : String)
+    unless match = NT_RE.match(zstr)
+      vstr = get_alt?(zstr).try(&.vstr) || QtCore.tl_hvname(zstr)
+      return {vstr, MtAttr::Ntmp}
+    end
+
+    _, digits, suffix = match
+    numstr = TlUnit.translate(digits)
+
+    at_t = MtAttr[At_t, Ntmp]
+    ntmp = MtAttr::Ntmp
+
+    case suffix
+    when "年"       then {"năm #{numstr}", ntmp}
+    when "月"       then {"tháng #{numstr}", ntmp}
+    when "日"       then {"ngày #{numstr}", ntmp}
+    when "号"       then {"#{digits.size > 1 ? "ngày" : "mồng"} #{numstr}", ntmp}
+    when "点", "时"  then {"#{numstr} giờ", at_t}
+    when "分", "分钟" then {"#{numstr} phút", at_t}
+    when "秒", "秒钟" then {"#{numstr} giây", at_t}
+    when "半"       then {"#{numstr} rưỡi", at_t}
+    else
+      vstr = suffix.empty? ? numstr : "#{numstr} #{get(suffix, :NT).vstr}"
+      {numstr, ntmp}
+    end
   end
 
   def init_nr(zstr : String)
@@ -84,6 +116,7 @@ class MT::AiDict
   end
 
   MAP_PCHAR = {
+    "、" => ", ",
     "､" => ", ",
     "･" => " ",
   }

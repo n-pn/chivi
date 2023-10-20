@@ -12,15 +12,13 @@ class MT::QtTranCtrl < AC::Base
     mcore = QtCore.hv_word
 
     hviet = String.build do |io|
-      RD::Chpart.read_raw(fpath) do |line|
-        io << mcore.to_mtl(line) << '\n'
-      end
+      RD::Chpart.read_raw(fpath) { |line| io << mcore.to_mtl(line) << '\n' }
     end
 
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
     mtime = Time.utc.to_unix
 
-    cache_control 7.days
+    # cache_control 7.days
     add_etag mtime.to_s
 
     response.headers["X-TSPAN"] = tspan.to_s
@@ -38,9 +36,7 @@ class MT::QtTranCtrl < AC::Base
     mcore = QtCore.hv_word
 
     hviet = String.build do |io|
-      _read_body.each_line do |line|
-        io << mcore.to_mtl(line) << '\n'
-      end
+      _read_body.each_line { |line| io << mcore.to_mtl(line) << '\n' }
     end
 
     render text: hviet

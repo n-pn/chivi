@@ -86,4 +86,9 @@ enum MT::MtEpos : Int8
   def is?(epos : self)
     self.value == epos.value
   end
+
+  @[AlwaysInline]
+  def can_use_alt?
+    self.in?(VRD, VNV, VCD, VCP, VSB, VPT, VP, IP)
+  end
 end
