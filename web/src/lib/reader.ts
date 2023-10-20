@@ -7,7 +7,6 @@ import {
   gen_mt_ai_text,
   gen_hviet_text,
   gen_hviet_html,
-  flatten_tree,
 } from '$lib/mt_data_2'
 
 export class Rdword {
@@ -114,14 +113,6 @@ export class Rdline {
   get hviet_html() {
     if (!this.hviet) return ''
     return gen_hviet_html(this.hviet)
-  }
-
-  get_mt_ai_list(from: number, upto: number) {
-    const list = flatten_tree(this.mt_ai)
-
-    return list.filter((node) => {
-      return node[2] <= from && node[3] >= upto
-    })
   }
 }
 

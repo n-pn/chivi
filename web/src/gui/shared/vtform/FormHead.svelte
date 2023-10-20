@@ -235,7 +235,7 @@
     height: 1rem;
 
     line-height: 1rem;
-    font-size: rem(12px);
+    font-size: rem(13px);
 
     @include fgcolor(tert);
 

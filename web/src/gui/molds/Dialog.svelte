@@ -14,11 +14,12 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="wrap" on:click={() => on_close(false)} in:fade={{ duration: 100 }}>
+<div class="wrap" on:click={() => on_close(false)}>
+  <!-- <div class="wrap" on:click={() => on_close(false)} in:fade={{ duration: 100 }}> -->
   <div
     class="main {$$props.class} _{_size}"
-    on:click={(e) => e.stopPropagation()}
-    in:scale={{ duration: 100, easing: backInOut }}>
+    on:click={(e) => e.stopPropagation()}>
+    <!-- in:scale={{ duration: 100, easing: backInOut }}> -->
     {#if $$slots.header}
       <header class="head">
         <slot name="header" />

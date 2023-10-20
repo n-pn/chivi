@@ -2,6 +2,7 @@
   import { writable } from 'svelte/store'
   import { Rdword, type Rdline } from '$lib/reader'
   import { tooltip } from '$lib/actions'
+  import { flatten_tree, gen_mt_ai_text } from '$lib/mt_data_2'
 
   export const ctrl = {
     ...writable({ actived: false, tab: 0 }),
@@ -12,6 +13,8 @@
       ctrl.set({ actived: false, tab: 0 })
     },
   }
+
+  const init_tdata = { vstr: '', cpos: '', attr: '', plock: -1, local: true }
 </script>
 
 <!-- @hmr:keep-all -->
@@ -36,18 +39,53 @@
   import VstrUtil from './VstrUtil.svelte'
   import FormBtns from './FormBtns.svelte'
   import HelpLink from './HelpLink.svelte'
-  import { gen_mt_ai_text } from '$lib/mt_data_2'
 
   export let rline: Rdline
   export let rword: Rdword
   export let ropts: CV.Rdopts
   export let on_close = (changed = false) => console.log(changed)
 
-  $: mlist = rline.get_mt_ai_list(rword.from, rword.upto)
+  let mlist = []
+  let privi = $_user.privi
+  let tform: Viform = new Viform(rword, init_tdata, '', '', privi)
+
+  $: {
+    mlist = gen_mlist(rline.mt_ai, rword.from, rword.upto)
+    tform = make_form(mlist, rword)
+  }
+
+  $: if (tform) refocus()
+  $: cpos_data = cpos_info[tform.cpos] || {}
+  $: attr_list = tform.attr ? tform.attr.split(' ') : []
+
+  let pick_cpos = false
+  let pick_attr = false
+
+  let show_log = false
+  let show_dfn = false
+
+  const gen_mlist = (ctree: CV.Cvtree, from: number, upto: number) => {
+    if (!ctree) return []
+    const input = flatten_tree(ctree)
+
+    let mlist = []
+
+    for (const node of input) {
+      if (node[2] <= from && node[3] >= upto) mlist.push(node)
+    }
+
+    if (mlist.length > 4) mlist = mlist.slice(mlist.length - 4)
+
+    for (const node of input) {
+      if (node[2] >= from && node[3] < upto) mlist.push(node)
+    }
+
+    return mlist.slice(0, 6)
+  }
 
   const cached = new Map<string, any>()
 
-  function make_form({ from, upto, cpos }) {
+  function make_form(mlist: CV.Cvtree[], { from, upto, cpos }) {
     const key = `${from}-${upto}-${cpos}`
 
     const old = cached.get(key)
@@ -55,7 +93,7 @@
 
     const ztext = rline.get_ztext(from, upto)
     const hviet = rline.get_hviet(from, upto)
-    const tdata = { vstr: hviet, cpos, attr: '', plock: -1, local: true }
+    const tdata = { ...init_tdata, cpos, vstr: hviet }
 
     const vnode = find_last<CV.Cvtree>(mlist, (x) => {
       if (x[2] != from || x[3] != upto) return false
@@ -77,13 +115,6 @@
     return tform
   }
 
-  $: privi = $_user.privi
-  $: tform = make_form(rword)
-
-  $: if (tform) refocus()
-  $: cpos_data = cpos_info[tform.cpos] || {}
-  $: attr_list = tform.attr ? tform.attr.split(' ') : []
-
   let field: HTMLInputElement
 
   const refocus = (caret: number = 0) => {
@@ -99,7 +130,7 @@
 
   const submit_action = async () => {
     const headers = { 'Content-type': 'application/json' }
-    const body = tform.toJSON(ropts, rline.ctree_text, rword.from)
+    const body = tform.toJSON(ropts, rline.ctree_text)
 
     const init = { body: JSON.stringify(body), method, headers }
     const res = await fetch(action, init)
@@ -111,12 +142,6 @@
       ctrl.hide()
     }
   }
-
-  let pick_cpos = false
-  let pick_attr = false
-
-  let show_log = false
-  let show_dfn = false
 </script>
 
 <Dialog actived={$ctrl.actived} on_close={ctrl.hide} class="vtform" _size="lg">
@@ -157,18 +182,18 @@
 
   <form class="body" {method} {action} on:submit|preventDefault={submit_action}>
     <div class="tree">
-      {#each mlist.slice(mlist.length - 4) as [cpos, _body, from, upto], index}
+      {#each mlist as [cpos, _body, from, upto], index}
         {@const cpos_data = cpos_info[cpos]}
         {#if index > 0}<span class="sep u-fg-mute">/</span>{/if}
         <button
           type="button"
-          class="node"
+          class="cbtn"
           class:_active={tform.rword.match(from, upto, cpos)}
-          data-tip={cpos_data.name}
-          on:click={() => {
-            tform = make_form({ from, upto, cpos })
-          }}>
+          data-tip="Chọn [{cpos_data.name}] từ ký tự thứ {from + 1} tới {upto +
+            1}"
+          on:click={() => (rword = new Rdword(from, upto, cpos))}>
           <code>{cpos}</code>
+          <!-- <span class="u-fg-mute">{upto - from}</span> -->
           <span>{from + 1}&ndash;{upto + 1}</span>
         </button>
       {/each}
@@ -324,33 +349,37 @@
     @include flex-ca($gap: 0.25rem);
     padding: 0.25rem 0;
 
-    button {
-      display: inline-flex;
-      gap: 0.125rem;
-      padding: 0;
-      line-height: 1.5rem;
-      background: transparent;
+    .sep {
+      @include fgcolor(mute);
+    }
+  }
 
-      @include fgcolor(tert);
+  .cbtn {
+    display: inline-flex;
+    gap: 0.125rem;
+    padding: 0;
+    line-height: 1.5rem;
+    background: transparent;
 
-      &:hover,
-      &._active {
+    &:hover,
+    &._active {
+      > code {
         @include fgcolor(main);
+      }
+
+      > span {
+        @include fgcolor(secd);
       }
     }
 
-    span {
+    > span {
       @include ftsize(sm);
-      // @include fgcolor(mute);
-    }
-
-    code {
-      padding: 0;
-      color: inherit;
-    }
-
-    .sep {
       @include fgcolor(mute);
+    }
+
+    > code {
+      padding: 0;
+      @include fgcolor(tert);
     }
   }
 

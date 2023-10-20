@@ -111,7 +111,7 @@
       await rpage.load_hviet(1)
       vtform_ctrl.show()
     } else {
-      await rpage.reload({ hviet: 1, qt_v1: 1, mt_ai: 1, bt_zv: 1 })
+      await rpage.reload()
       lookup_ctrl.show(panel)
     }
   }
