@@ -216,7 +216,11 @@ export class Rdpage {
 
     const url = `/_sp/btran?fpath=${this.ropts.fpath}&force=${force}`
     const res = await fetch(url, this.gen_rinit(cache))
-    if (!res.ok) return this
+
+    if (!res.ok) {
+      this.bt_zv = []
+      return this
+    }
 
     const { lines, tspan, mtime } = await res.json()
 
@@ -244,7 +248,11 @@ export class Rdpage {
 
     const url = `/_m1/qtran?fpath=${this.ropts.fpath}&wn_id=${this.ropts.wn_id}`
     const res = await fetch(url, this.gen_rinit(cache))
-    if (!res.ok) return this
+
+    if (!res.ok) {
+      this.qt_v1 = []
+      return this
+    }
 
     const { lines, tspan, mtime } = await res.json()
     this.qt_v1 = lines
@@ -278,7 +286,11 @@ export class Rdpage {
     const url = `/_ai/qtran?fpath=${zpath}&pdict=${zdict}&_algo=${mt_rm}&force=${force}`
 
     const res = await globalThis.fetch(url, this.gen_rinit(cache))
-    if (!res.ok) return this
+
+    if (!res.ok) {
+      this.mt_ai = []
+      return this
+    }
 
     const { lines, tspan, mtime } = await res.json()
     this.mt_ai = lines

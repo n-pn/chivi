@@ -1,4 +1,5 @@
 export function map_keypress(evt: KeyboardEvent, on_input = false) {
+  console.log(evt.key)
   switch (evt.key) {
     case 'Escape':
       return 'esc'
@@ -7,19 +8,19 @@ export function map_keypress(evt: KeyboardEvent, on_input = false) {
       return prefix_key(evt, '↵')
 
     case 'ArrowLeft':
-      if (!evt.altKey) return
+      if (on_input && !evt.altKey) return
       return prefix_key(evt, '←')
 
     case 'ArrowRight':
-      if (!evt.altKey) return
+      if (on_input && !evt.altKey) return
       return prefix_key(evt, '→')
 
     case 'ArrowUp':
-      if (!evt.altKey) return
+      if (on_input && !evt.altKey) return
       return prefix_key(evt, '↑')
 
     case 'ArrowDown':
-      if (!evt.altKey) return
+      if (on_input && !evt.altKey) return
       return prefix_key(evt, '↓')
 
     case 'Shift':
@@ -27,7 +28,7 @@ export function map_keypress(evt: KeyboardEvent, on_input = false) {
       return
 
     default:
-      if (on_input && !evt.altKey) return ''
+      if (on_input && !evt.altKey) return
       return prefix_key(evt, evt.key)
   }
 }

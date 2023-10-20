@@ -1,13 +1,14 @@
 import { getContext } from 'svelte'
-import { writable, derived, type Writable } from 'svelte/store'
-
-import { page } from '$app/stores'
+import { writable, type Writable } from 'svelte/store'
 
 export const layers = {
   ...writable(['#svelte']),
   add: (l: string) => layers.update((x) => [l, ...x]),
   remove: (l: string) => layers.update((x) => x.filter((i) => i != l)),
-  toggle: (a: boolean, l: string) => (a ? layers.add(l) : layers.remove(l)),
+  toggle: (a: boolean, l: string) => {
+    if (a) layers.add(l)
+    else layers.remove(l)
+  },
 }
 
 export * from './stores/config_stores'

@@ -3,6 +3,7 @@
   import { toleft, layers } from '$lib/stores'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
+  import { onDestroy } from 'svelte'
 
   export let actived = false
   export let sticked = false
@@ -14,12 +15,14 @@
 
   $: if ($navigating) actived = false
 
-  let klass = $$props.class || 'slider'
+  $: klass = $$props.class || 'slider'
+
   $: layers.toggle(actived, '.' + klass)
 
   const hide_slider = () => {
     actived = false
     $toleft = false
+    layers.remove('.' + klass)
   }
 </script>
 

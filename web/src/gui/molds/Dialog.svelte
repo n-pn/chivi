@@ -9,8 +9,7 @@
   export let on_close = (_?: any) => {}
   export let _size = 'md'
 
-  $: layer = '.' + $$props.class
-  $: actived ? layers.add(layer) : layers.remove(layer)
+  $: layers.toggle(actived, '.' + $$props.class)
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->

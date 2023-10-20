@@ -52,6 +52,7 @@
     const on_input = INPUTS.includes(tag_name)
 
     const kbd = map_keypress(evt, on_input)
+    console.log({ kbd })
     if (!kbd) {
       if (evt.shiftKey && (!on_input || evt.altKey)) kbd_hint = true
       return
