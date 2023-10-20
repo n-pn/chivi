@@ -72,7 +72,10 @@
   {#if rline.bt_zv}{rline.bt_zv}{/if}
   <div slot="empty">
     <em>Chưa có kết quả dịch sẵn.</em>
-    <button class="m-btn _xs _primary" on:click={load_bt_zv_data}>
+    <button
+      class="m-btn _xs _primary"
+      on:click={load_bt_zv_data}
+      data-umami-event="call-bt_zv">
       {#if loading_bzv}<SIcon name="loader-2" spin={true} />{/if}
       <span>Dịch bằng Bing!</span>
     </button>
@@ -88,7 +91,10 @@
   {#if rline.c_gpt}{rline.c_gpt}{/if}
   <div slot="empty">
     <em>Chưa có kết quả dịch sẵn.</em>
-    <button class="m-btn _xs _primary" on:click={load_c_gpt_data}>
+    <button
+      class="m-btn _xs _primary"
+      on:click={load_c_gpt_data}
+      data-umami-event="call-c_gpt">
       {#if loading_gpt}<SIcon name="loader-2" spin={true} />{/if}
       <span>Gọi công cụ!</span>
     </button>

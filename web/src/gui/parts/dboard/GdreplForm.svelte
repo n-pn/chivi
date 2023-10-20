@@ -73,7 +73,8 @@
         <button
           type="submit"
           class="m-btn _primary _fill _sm"
-          disabled={disabled || form.itext.trim().length < 3}>
+          disabled={disabled || form.itext.trim().length < 3}
+          data-umami-event="make-gdrepl">
           <SIcon name="send" />
           <span>Lưu {form.torepl ? 'trả lời' : 'bình luận'}</span>
         </button>

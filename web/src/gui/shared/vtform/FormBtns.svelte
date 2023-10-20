@@ -53,7 +53,8 @@
   <button
     type="button"
     class="m-btn _success"
-    on:click={() => (show_dfn = !show_dfn)}>
+    on:click={() => (show_dfn = !show_dfn)}
+    data-umami-event="vtform-lookup">
     <SIcon name="compass" />
     <span class="-txt u-show-pl">Tra nghĩa</span>
   </button>
@@ -85,7 +86,8 @@
     class="m-btn _lg _fill {btn_style} _send"
     data-kbd="↵"
     type="submit"
-    disabled={privi < tform.req_privi}>
+    disabled={privi < tform.req_privi}
+    data-umami-event="upsert-viterm">
     <span class="text">{tform.vstr ? 'Lưu' : 'Xoá'}</span>
     <SIcon name="privi-{tform.req_privi}" iset="icons" />
   </button>

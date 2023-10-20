@@ -44,7 +44,10 @@
   {/if}
 
   <footer class="form-btns">
-    <button type="submit" class="m-btn _fill _warning">
+    <button
+      type="submit"
+      class="m-btn _fill _warning"
+      data-umami-event="reset-passwd">
       <SIcon name="key" />
       <span class="-txt">Gửi mật khẩu</span>
     </button>

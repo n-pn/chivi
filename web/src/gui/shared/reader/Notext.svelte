@@ -164,7 +164,8 @@
     <button
       class="m-btn _harmful"
       on:click={reload_chap}
-      disabled={$_user.privi < 0 || !rdata.rlink}>
+      disabled={$_user.privi < 0 || !rdata.rlink}
+      data-umami-event="reinit-chap">
       <SIcon name="rotate-rectangle" spin={_loading} />
       <span>Tải lại nguồn</span>
     </button>
@@ -181,7 +182,8 @@
         class="m-btn _success"
         href="https://discord.gg/mdC3KQH"
         target="_blank"
-        rel="noreferrer">
+        rel="noreferrer"
+        data-umami-event="goto-discord">
         <SIcon name="brand-discord" />
         <span>Liên hệ ban quản trị</span>
       </a>

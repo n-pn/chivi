@@ -20,7 +20,7 @@
     '“既然你现在魔道双修，或许可以利用你体内同时存在两套的､本该是水火不容的根基，做一些出人意料的事情。”'
 
   $: rpage = new Rdpage(ztext.split('\n'), ropts)
-  const rinit = { body: ztext, method: 'POST' }
+  $: rinit = { body: ztext, method: 'POST' }
 
   const call_debug = async () => {
     const hdata = await fetch(hv_url, rinit).then((r) => r.text())

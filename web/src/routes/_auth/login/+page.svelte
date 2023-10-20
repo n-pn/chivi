@@ -49,7 +49,10 @@
   {#if error}<div class="form-msg _err">{error}</div>{/if}
 
   <footer class="form-btns">
-    <button type="submit" class="m-btn _fill _lg _primary">
+    <button
+      type="submit"
+      class="m-btn _fill _lg _primary"
+      data-umami-event="user-login">
       <SIcon name="login" />
       <span class="-txt">Đăng nhập</span>
     </button>

@@ -53,6 +53,8 @@
     rmemo.rpath = stem_path
     data.rmemo = await mark_rdchap(rmemo, rdata, ropts)
   })
+
+  $: rtype = ropts.rmode == 'qt' ? ropts.qt_rm : ropts.mt_rm
 </script>
 
 <!-- <nav class="nav-list">
@@ -74,8 +76,10 @@
       href={prev_path}
       class="m-btn navi-item"
       class:_disable={!rdata._prev}
-      data-key="74"
-      data-kbd="←">
+      data-kbd="⌃←"
+      data-umami-event="prev-wnchap"
+      data-umami-event-rmode={ropts.rmode}
+      data-umami-event-rtype={rtype}>
       <SIcon name="chevron-left" />
       <span>Trước</span>
     </a>
@@ -93,7 +97,10 @@
       class="m-btn _fill navi-item"
       class:_primary={rdata._next}
       data-key="75"
-      data-kbd="→">
+      data-kbd="⌃→"
+      data-umami-event="next-wnchap"
+      data-umami-event-rmode={ropts.rmode}
+      data-umami-event-rtype={rtype}>
       <span>Kế tiếp</span>
       <SIcon name="chevron-right" />
     </a>

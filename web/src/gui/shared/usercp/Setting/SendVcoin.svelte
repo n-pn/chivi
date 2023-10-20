@@ -85,7 +85,8 @@
     <button
       type="submit"
       class="m-btn _primary _fill"
-      disabled={$_user.vcoin < xform.amount}>
+      disabled={$_user.vcoin < xform.amount}
+      data-umami-event="send-vcoin">
       <span>Gửi tặng</span>
       <span>{xform.amount}</span>
       <SIcon iset="icons" name="vcoin" />

@@ -8,7 +8,11 @@
 
 <div class="chaps">
   {#each chaps as chinfo}
-    <a href="{bhref}/{chinfo.ch_no}" class="chinfo" rel="nofollow">
+    <a
+      href="{bhref}/{chinfo.ch_no}"
+      class="chinfo"
+      rel="nofollow"
+      data-umami-event="view-upchap">
       <div class="chap-text">
         <span class="title">{chinfo.title}</span>
         <span class="ch_no">{chinfo.ch_no}.</span>

@@ -80,6 +80,7 @@
     <button
       type="submit"
       class="m-btn _fill _{privi_colors[form.privi]}"
+      data-umami-event="upgrade-privi"
       disabled={_onload || cost > $_user.vcoin}>
       <span>Nâng cấp</span>
       <span>{cost}</span>

@@ -51,7 +51,8 @@
       class="chip-link _active"
       href={pager.gen_url({ rm: ropts.rmode, [ropts.rmode]: _mode })}
       data-tip={descs[_mode]}
-      data-tip-loc="bottom">
+      data-tip-loc="bottom"
+      data-umami-event="switch-{_mode}">
       <span>{label}</span>
       {#if rmode == _mode}<SIcon name="check" />{/if}
     </a>

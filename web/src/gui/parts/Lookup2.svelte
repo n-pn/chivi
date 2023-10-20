@@ -94,6 +94,8 @@
       data-kbd="d"
       data-tip="Xem các kết quả dịch"
       data-tip-loc="bottom"
+      data-umami-event="line-overview"
+      data-umami-event-fpath={rpage.ropts.fpath}
       on:click={() => ($ctrl.panel = 'overview')}>
       <SIcon name="world" />
     </button>
@@ -104,6 +106,8 @@
       data-kbd="f"
       data-tip="Xem giải nghĩa từ"
       data-tip-loc="bottom"
+      data-umami-event="line-glossary"
+      data-umami-event-fpath={rpage.ropts.fpath}
       on:click={() => ($ctrl.panel = 'glossary')}>
       <SIcon name="search" />
     </button>
@@ -114,6 +118,8 @@
       data-kbd="g"
       data-tip="Xem cây ngữ pháp"
       data-tip-loc="bottom"
+      data-umami-event="line-analyis"
+      data-umami-event-fpath={rpage.ropts.fpath}
       on:click={() => ($ctrl.panel = 'analyis')}>
       <svg class="m-icon _analyze" viewBox="0 0 24 24">
         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -150,7 +156,9 @@
         data-kbd="↑"
         data-tip="Chuyển lên dòng trên"
         disabled={l_idx == 0}
-        on:click={() => change_focus(l_idx - 1)}>
+        on:click={() => change_focus(l_idx - 1)}
+        data-umami-event="prev-rdline"
+        data-umami-event-fpath={rpage.ropts.fpath}>
         <SIcon name="arrow-up" />
         <span class="-txt">Trên</span>
       </button>
@@ -168,10 +176,12 @@
       <button
         type="button"
         class="m-btn _sm"
+        disabled={l_idx + 1 == l_max}
         data-kbd="↓"
         data-tip="Chuyển xuống dòng dưới"
-        on:click={() => change_focus(l_idx + 1)}
-        disabled={l_idx + 1 == l_max}>
+        data-umami-event="next-rdline"
+        data-umami-event-fpath={rpage.ropts.fpath}
+        on:click={() => change_focus(l_idx + 1)}>
         <SIcon name="arrow-down" />
         <span class="-txt">Dưới</span>
       </button>

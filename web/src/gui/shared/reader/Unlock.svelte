@@ -99,6 +99,7 @@
       type="button"
       class="m-btn _fill _lg _warning"
       class:_disable={$_user.vcoin < vcoin_cost}
+      data-umami-event="unlock-chap"
       on:click={unlock_chap}>
       <SIcon name="lock-open" />
       <span>Mở khóa</span>

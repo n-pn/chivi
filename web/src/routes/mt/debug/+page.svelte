@@ -1,66 +1,54 @@
 <script lang="ts">
-  import {
-    gen_ctree_html,
-    gen_hviet_html,
-    gen_mt_ai_html,
-  } from '$lib/mt_data_2'
+  import { Rdpage, Rdword } from '$lib/reader'
 
-  // import Vtform, {
-  //   ctrl as vtform_ctrl,
-  // } from '$gui/shared/vtform/Vtform.svelte'
+  import Vtform, { ctrl as vtform_ctrl } from '$gui/shared/vtform/Vtform.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
 
   let ztext = data.ztext || ''
-  let m_alg = data.m_alg || 'mtl_2'
-  let pdict = data.pdict || 'combine'
-
-  $: ai_url = `/_ai/debug?pdict=${pdict}&m_alg=${m_alg}`
-  $: hv_url = `/_ai/hviet?pdict=${pdict}&m_alg=${m_alg}`
-
-  // prettier-ignore
-  let ctree : CV.Cvtree[] = []
-
-  // prettier-ignore
-  let hviet : [string,string][][] = []
-
-  const call_debug = async () => {
-    const rinit = { body: ztext, method: 'POST' }
-
-    const hdata = await fetch(hv_url, rinit).then((r) => r.json())
-    hviet = hdata.hviet
-
-    const vdata = await fetch(ai_url, rinit).then((r) => r.json())
-    ctree = vdata.lines
-
-    navigator.clipboard.writeText(vdata.ztree[0])
-  }
-
-  const ropts: CV.Rdopts = {
+  let ropts: CV.Rdopts = {
     fpath: '',
-    pdict,
+    pdict: data.pdict || 'combine',
     rmode: 'mt',
-    mt_rm: m_alg,
+    mt_rm: data.m_alg || 'mtl_2',
     qt_rm: '',
     wn_id: 0,
   }
 
+  $: ai_url = `/_ai/debug?pdict=${ropts.pdict}&m_alg=${ropts.mt_rm}`
+  $: hv_url = `/_ai/hviet?pdict=${ropts.pdict}&m_alg=${ropts.mt_rm}`
+
+  $: rpage = new Rdpage(ztext.split('\n'), ropts)
+  $: rinit = { body: ztext, method: 'POST' }
+
+  const call_debug = async () => {
+    const hdata = await fetch(hv_url, rinit).then((r) => r.text())
+    rpage.hviet = hdata
+      .split('\n')
+      .map((x) => x.match(/[\s\u200b].[^\s\u200b]*/g))
+
+    const vdata = await fetch(ai_url, rinit).then((r) => r.json())
+    rpage.mt_ai = vdata.lines
+
+    navigator.clipboard.writeText(vdata.ztree[0])
+  }
+
   const node_names = ['X-N', 'X-C', 'X-Z']
 
-  let zfrom = 0
-  let zupto = 0
+  let rword = new Rdword()
 
-  function handle_click({ target }) {
+  const handle_click = ({ target }) => {
     if (!node_names.includes(target.nodeName)) return
+    rword = Rdword.from(target)
+    vtform_ctrl.show(0)
+  }
 
-    zfrom = +target.dataset.b
-    zupto = +target.dataset.e
-
-    const icpos = target.dataset.c || 'X'
-
-    // vtform_data.put(ztext, hviet[0], ctree[0], zfrom, zupto, icpos)
-    // vtform_ctrl.show(0)
+  const on_vtform_close = async (changed = false) => {
+    if (changed) {
+      const vdata = await fetch(ai_url, rinit).then((r) => r.json())
+      rpage.mt_ai = vdata.lines
+    }
   }
 </script>
 
@@ -81,12 +69,20 @@
 
       <div class="m-flex">
         <label for="" class="x-label">Thuật toán</label>
-        <input type="text" name="m_alg" class="m-input" bind:value={m_alg} />
+        <input
+          type="text"
+          name="m_alg"
+          class="m-input"
+          bind:value={ropts.mt_rm} />
       </div>
 
       <div class="m-flex">
         <label for="" class="x-label">Từ điển riêng</label>
-        <input type="text" name="pdict" class="m-input" bind:value={pdict} />
+        <input
+          type="text"
+          name="pdict"
+          class="m-input"
+          bind:value={ropts.pdict} />
       </div>
 
       <button class="m-btn _primary _fill" on:click={call_debug}>
@@ -95,22 +91,19 @@
 
       <h3 class="label">Tiếng Việt:</h3>
 
+      <h3 class="label">Tiếng Việt:</h3>
+
       <div class="cdata debug _hv">
-        {#each ctree as cdata}
-          {@html gen_mt_ai_html(cdata, {
-            mode: 2,
-            cap: true,
-            und: true,
-            _qc: 0,
-          })}
+        {#each rpage.lines || [] as rline}
+          {@html rline.mt_ai_html}
         {/each}
       </div>
 
       <h3 class="label">Hán Việt:</h3>
 
       <div class="cdata debug _hv">
-        {#each hviet as hdata}
-          {@html gen_hviet_html(hdata, true)}
+        {#each rpage.lines || [] as rline}
+          {@html rline.hviet_html}
         {/each}
       </div>
     </div>
@@ -119,15 +112,17 @@
       <h3 class="label">Cây ngữ pháp:</h3>
 
       <div class="cdata debug _ct">
-        {#each ctree as cdata}
-          {@html gen_ctree_html(cdata)}
+        {#each rpage.lines as rline}
+          {@html rline.ctree_html}
         {/each}
       </div>
     </div>
   </div>
 </article>
 
-{#if $vtform_ctrl.actived} <Vtform {ropts} /> {/if}
+{#if $vtform_ctrl.actived}
+  <Vtform rline={rpage.lines[0]} {rword} {ropts} on_close={on_vtform_close} />
+{/if}
 
 <style lang="scss">
   .preview {
