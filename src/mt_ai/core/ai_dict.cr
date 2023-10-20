@@ -84,8 +84,8 @@ class MT::AiDict
   end
 
   MAP_PCHAR = {
-    '､' => ", ",
-    '･' => " ",
+    "､" => ", ",
+    "･" => " ",
   }
 
   def init_od(zstr : String)

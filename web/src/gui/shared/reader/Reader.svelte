@@ -107,18 +107,18 @@
 
     focus_line.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
 
-    await rpage.reload({ qt_v1: 1, mt_ai: 1, bt_zv: 1 })
-
     if (panel == 'upsert') {
+      await rpage.load_hviet(1)
       vtform_ctrl.show()
     } else {
+      await rpage.reload({ hviet: 1, qt_v1: 1, mt_ai: 1, bt_zv: 1 })
       lookup_ctrl.show(panel)
     }
   }
 
   const tabs = [
-    { type: 'qt', href: '?rm=qt', icon: 'bolt', text: 'Dịch thô' },
-    { type: 'mt', href: '?rm=mt', icon: 'language', text: 'Dịch máy' },
+    { type: 'qt', href: '?rm=qt', icon: 'language', text: 'Dịch thô' },
+    { type: 'mt', href: '?rm=mt', icon: 'bolt', text: 'Dịch máy ✨' },
     // { type: 'tl', icon: 'ballpen', text: 'Dịch tay' },
     // { type: 'cf', icon: 'tool', text: 'Công cụ' },
   ]

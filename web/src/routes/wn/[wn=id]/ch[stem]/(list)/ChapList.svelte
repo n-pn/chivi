@@ -21,8 +21,7 @@
       href="{sroot}/{chinfo.ch_no}"
       class="chinfo"
       class:_active={chinfo.ch_no == mark_ch_no}
-      rel="nofollow"
-      data-umami-event="view-wnchap">
+      rel="nofollow">
       <div class="chap-text">
         <span class="title">{chinfo.title}</span>
         <span class="ch_no">{chinfo.ch_no}.</span>

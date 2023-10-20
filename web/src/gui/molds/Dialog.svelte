@@ -15,10 +15,11 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="wrap" on:click={() => on_close(false)}>
+<div class="wrap" on:click={() => on_close(false)} in:fade={{ duration: 100 }}>
   <div
     class="main {$$props.class} _{_size}"
-    on:click={(e) => e.stopPropagation()}>
+    on:click={(e) => e.stopPropagation()}
+    in:scale={{ duration: 100, easing: backInOut }}>
     {#if $$slots.header}
       <header class="head">
         <slot name="header" />
@@ -44,8 +45,10 @@
     position: fixed;
     top: 0;
     left: 0;
-    bottom: 0;
     right: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100svh;
     z-index: var(--z-idx, 60);
     background: rgba(#000, 0.75);
   }

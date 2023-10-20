@@ -43,7 +43,25 @@
   $: rmode = ropts.rmode == 'qt' ? ropts.qt_rm : ropts.mt_rm
 </script>
 
-<section class="mdesc">Đang áp dụng: {descs[rmode]}.</section>
+<section class="mdesc">
+  <p>Đang áp dụng: {descs[rmode]}.</p>
+  {#if rmode == 'qt_v1'}
+    <p class="u-warn">
+      Bạn đang đọc kết quả dịch của máy dịch cũ đã ngừng bảo trì, hãy thử các
+      chế độ dịch khác nếu thấy chưa đủ tốt.
+    </p>
+  {:else if rmode == 'bt_zv'}
+    <p class="u-warn">
+      Bạn đang đọc kết quả dịch thô dùng Bing Translator. Đổi sang các kết quả
+      dịch máy nếu thấy còn gặp sạn.
+    </p>
+  {:else if rmode == 'mt_ai' || ropts.rmode == 'mt'}
+    <p class="u-warn">
+      Bạn đang đọc kết quả dịch máy có sử dụng AI để phân tích ngữ pháp, hãy thử
+      đổi sang chế độ khác nếu thấy sai nhiều.
+    </p>
+  {/if}
+</section>
 <section class="modes chip-list">
   <span class="chip-text u-show-pl">Đổi chế độ:</span>
   {#each Object.entries(modes) as [_mode, label]}
@@ -51,8 +69,7 @@
       class="chip-link _active"
       href={pager.gen_url({ rm: ropts.rmode, [ropts.rmode]: _mode })}
       data-tip={descs[_mode]}
-      data-tip-loc="bottom"
-      data-umami-event="switch-{_mode}">
+      data-tip-loc="bottom">
       <span>{label}</span>
       {#if rmode == _mode}<SIcon name="check" />{/if}
     </a>
@@ -61,12 +78,17 @@
 
 <style lang="scss">
   .mdesc {
-    @include flex-ca($gap: 0.25rem);
     @include fgcolor(mute);
     @include ftsize(sm);
     line-height: 1.25rem;
-    margin: 0.25rem 0;
     font-style: italic;
+    padding: 0.25rem 0;
+    padding-bottom: 0.375rem;
+
+    p {
+      margin: 0;
+      text-align: center;
+    }
   }
 
   .modes {

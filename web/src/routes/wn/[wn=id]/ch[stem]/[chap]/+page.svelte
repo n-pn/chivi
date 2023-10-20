@@ -76,10 +76,7 @@
       href={prev_path}
       class="m-btn navi-item"
       class:_disable={!rdata._prev}
-      data-kbd="⌃←"
-      data-umami-event="prev-wnchap"
-      data-umami-event-rmode={ropts.rmode}
-      data-umami-event-rtype={rtype}>
+      data-kbd="⌃←">
       <SIcon name="chevron-left" />
       <span>Trước</span>
     </a>
@@ -97,10 +94,7 @@
       class="m-btn _fill navi-item"
       class:_primary={rdata._next}
       data-key="75"
-      data-kbd="⌃→"
-      data-umami-event="next-wnchap"
-      data-umami-event-rmode={ropts.rmode}
-      data-umami-event-rtype={rtype}>
+      data-kbd="⌃→">
       <span>Kế tiếp</span>
       <SIcon name="chevron-right" />
     </a>
