@@ -75,25 +75,24 @@ class CV::Xvcoin
 
   # GET_VCOIN_SQL = "select vcoin from viusers where id = $1"
 
-  SUB_VCOIN_SQL = <<-SQL
+  SUBTRACT_VCOIN_SQL = <<-SQL
     update viusers set vcoin = vcoin - $1
     where id = $2 and vcoin >= $1
     returning vcoin
     SQL
 
-  ADD_VCOIN_SQL = "update viusers set vcoin = vcoin + $1 where id = $2"
+  INCREASE_VCOIN_SQL = <<-SQL
+    update viusers set vcoin = vcoin + $1
+    returning vcoin
+    SQL
 
-  def self.micro_transact(sender : Int32, target : Int32, amount : Float64)
+  def self.subtract(vu_id : Int32, value : Float64)
     # TODO: convert vcoin to vietnam dong
+    @@db.query_one?(SUBTRACT_VCOIN_SQL, value, vu_id, as: Float64)
+  end
 
-    # avail = @@db.query_one?(GET_VCOIN_SQL, from_vu, as: Float64)
-    # return if !avail || avail < vcoin
-
-    remain = @@db.query_one?(SUB_VCOIN_SQL, amount, sender, as: Float64)
-    return unless remain && remain >= 0
-
-    @@db.exec ADD_VCOIN_SQL, amount, target
-
-    remain
+  def self.increase(vu_id : Int32, value : Float64)
+    # TODO: convert vcoin to vietnam dong
+    @@db.query_one(INCREASE_VCOIN_SQL, value, vu_id, as: Float64)
   end
 end

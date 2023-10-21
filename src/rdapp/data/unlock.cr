@@ -11,40 +11,73 @@ class RD::Unlock
   field vu_id : Int32, pkey: true
   field ulkey : String, pkey: true
 
-  field zsize : Int32 = 0
-  field multp : Int16 = 0
-  field vcoin : Int32 = 0
-
   field owner : Int32 = -1 # target who will receive vcoin
+  field zsize : Int32 = 0
+
+  field user_multp : Int16 = 0
+  field real_multp : Int16 = 0
+
+  field user_lost : Int32 = 0
+  field owner_got : Int32 = 0
+
   field ctime : Int64 = Time.utc.to_unix
 
-  def initialize(@ulkey, @zsize, @vu_id, @multp = 4_i16, @owner = -1)
-    @vcoin = (zsize * multp * 0.01).to_i
+  def initialize(@vu_id, @ulkey,
+                 @owner, @zsize,
+                 @user_multp = 4_i16,
+                 @real_multp = 4_i16)
+    @user_lost = (zsize * user_multp * 0.01).to_i
+    @owner_got = (zsize * real_multp * 0.01).to_i
   end
 
   SAVE_SQL = <<-SQL
-    insert into unlocks(vu_id, ulkey, zsize, multp, vcoin, "owner", ctime)
-    values ($1, $2, $3, $4, $5, $6, $7)
+    insert into unlocks(
+      vu_id, "owner",
+      ulkey, zsize,
+      user_multp, real_multp,
+      user_lost, owner_got,
+      ctime
+      )
+    values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
     on conflict(vu_id, ulkey) do update set
-      "zsize" = excluded.zsize,
-      "multp" = excluded.multp,
-      "vcoin" = excluded.vcoin,
       "owner" = excluded.owner,
+      "zsize" = excluded.zsize,
+      "user_multp" = excluded.user_multp,
+      "real_multp" = excluded.real_multp,
+      "user_lost" = excluded.user_lost,
+      "owner_got" = excluded.owner_got,
       "ctime" = excluded.ctime
     returning *
     SQL
 
-  def unlock!(db = @@db) : Bool
-    return false if @ulkey.empty? || @zsize == 0
+  def save!(db = @@db)
+    db.query_one(
+      SAVE_SQL,
+      @vu_id, @owner,
+      @ulkey, @zsize,
+      @user_multp, @real_multp,
+      @owner_got, @user_lost,
+      @ctime,
+      as: self.class)
+  end
+
+  # Return status code
+  # - 414: empty field
+  # - 415: not enough vcoin
+  # - 0: no error
+  def unlock!(db = @@db) : Int32
+    return 414 if @ulkey.empty? || @zsize == 0
 
     # TODO: convert vcoin to vnd
-    amount = @vcoin / 1000
-    remain = CV::Xvcoin.micro_transact(sender: @vu_id, target: @owner, amount: amount)
+    remain = CV::Xvcoin.subtract(vu_id: @vu_id, value: @user_lost / 1000)
+    return 415 unless remain && remain >= 0
 
-    return false unless remain && remain >= 0
-    db.query_one(SAVE_SQL, @vu_id, @ulkey, @zsize, @multp, @vcoin, @owner, @ctime, as: self.class)
+    CV::Xvcoin.increase(vu_id: @owner, value: @owner_got / 1000)
+    self.save!(db: db)
 
-    true
+    0
+  rescue
+    500
   end
 
   FIND_BY_UKEY_SQL = "select * from unlocks where vu_id = $1 and ulkey = $2 limit 1"

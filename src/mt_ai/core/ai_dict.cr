@@ -155,6 +155,8 @@ class MT::AiDict
       sufx = ""
     end
 
+    return sufx if zstr.empty?
+
     if q_term = get?(zstr[-1].to_s, :M)
       sufx = " #{q_term.vstr}#{sufx}"
       zstr = zstr[0..-2]

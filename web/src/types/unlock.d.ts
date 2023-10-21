@@ -1,12 +1,16 @@
 declare namespace CV {
   interface Unlock {
-    ulkey: string
     vu_id: number
-    owner: number
+    ulkey: string
 
+    owner: number
     zsize: number
-    multp: number
-    vcoin: number
+
+    real_multp: number
+    user_multp: number
+
+    owner_got: number
+    user_lost: number
 
     ctime: number
   }

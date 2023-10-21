@@ -30,12 +30,10 @@
   <table>
     <thead>
       <tr>
-        <th>Người gửi</th>
-        <th>Người nhận</th>
         <th>Nguồn</th>
-        <th>Vcoin</th>
-        <th>Số chữ</th>
-        <th>Hệ số</th>
+        <th>Tiêu phí</th>
+        <th class="show-ts">Chi tiết</th>
+        <th>Người dùng</th>
         <th>Thời gian</th>
       </tr>
     </thead>
@@ -45,6 +43,19 @@
         {@const vuser = props.users[item.vu_id]}
         {@const owner = props.users[item.owner]}
         <tr>
+          <td class="ulkey">
+            {#each split_ulkey(item.ulkey) as [href, text]}
+              /<a
+                class="u-fg-secd u-fz-sm m-link"
+                href={pager.gen_url({ kw: href, pg: 1 })}>{text}</a>
+            {/each}
+          </td>
+
+          <td class="u-warn u-bold"
+            >{item.user_lost / 1000} ({item.owner_got / 1000})</td>
+          <td class="u-fg-tert u-fz-sm show-ts"
+            >{item.user_multp}&ndash;{item.real_multp} [{item.zsize}]</td>
+
           <td class="user">
             <a
               class="cv-user"
@@ -53,8 +64,6 @@
               <SIcon name="privi-{vuser.privi}" iset="icons" />
               <span class="-trim">{vuser.uname}</span>
             </a>
-          </td>
-          <td class="user">
             <a
               class="cv-user"
               href={pager.gen_url({ to: item.owner, pg: 1 })}
@@ -63,19 +72,8 @@
               <span class="-trim">{owner.uname}</span>
             </a>
           </td>
-          <td>
-            <div class="ulkey">
-              {#each split_ulkey(item.ulkey) as [href, text]}
-                /<a
-                  class="u-fg-secd u-fz-sm m-link"
-                  href={pager.gen_url({ kw: href, pg: 1 })}>{text}</a>
-              {/each}
-            </div>
-          </td>
-          <td><span class="x-vcoin">{item.vcoin / 1000}</span> </td>
-          <td>{item.zsize}</td>
-          <td>{item.multp}</td>
-          <td class="ctime">{rel_time(item.ctime)}</td>
+
+          <td class="u-fg-tert u-fz-sm">{rel_time(item.ctime)}</td>
         </tr>
       {/each}
     </tbody>
@@ -95,7 +93,14 @@
       border-left: none;
       border-right: none;
       text-align: center;
+      line-height: 1.25;
+      padding: 0.5rem;
     }
+  }
+
+  table {
+    margin-top: 1rem;
+    @include bgcolor(secd);
   }
 
   footer {
@@ -106,24 +111,23 @@
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
-
     @include ftsize(sm);
+  }
+
+  .ulkey {
+    line-height: 1.125rem;
+  }
+
+  .show-ts {
+    display: none;
+    @include bp-min(ts) {
+      display: table-cell;
+    }
   }
 
   .-trim {
     display: inline-block;
     @include clamp($width: null);
     // max-width: 100%;
-  }
-
-  .ulkey {
-    @include flex-ca;
-    line-height: 1.125rem;
-  }
-
-  .ctime {
-    @include ftsize(sm);
-    @include clamp($width: null);
-    @include fgcolor(tert);
   }
 </style>

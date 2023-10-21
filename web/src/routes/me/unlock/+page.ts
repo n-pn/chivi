@@ -10,9 +10,9 @@ interface UnlockData extends CV.Paginate {
 const _meta = {
   left_nav: [
     home_nav(),
-    nav_link('unlock', 'Lịch sử mở khóa chương', 'lock-open'),
+    nav_link('unlock', 'Mở khóa chương', 'lock-open', { kind: 'title' }),
   ],
-  right_nav: [nav_link('earned', 'Thu phí', 'coin')],
+  right_nav: [nav_link('earned', 'Thu phí', 'coin', { show: 'pl' })],
 }
 
 export const load = (async ({ fetch, url, parent }) => {

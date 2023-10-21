@@ -76,13 +76,33 @@ class RD::ChinfoCtrl < AC::Base
     render 200, json: rdata
   end
 
-  private def show_part(crepo : Chrepo, cinfo : Chinfo, p_idx : Int32 = 1, force : Bool = false)
+  private def show_part(crepo : Chrepo, cinfo : Chinfo, p_idx : Int32,
+                        force : Bool = false)
     vu_id = self._vu_id
-    # plock = chap_plock(cinfo.ch_no)
+    privi = self._privi
+    ch_no = cinfo.ch_no
 
-    multp = crepo.chap_mutlp(cinfo.ch_no, vu_id: vu_id, privi: self._privi)
-    fpath, zsize, error = crepo.grant_chap(cinfo, p_idx, multp, vu_id: vu_id, force: force)
+    user_multp, real_multp = crepo.chap_mutlp(ch_no, vu_id: vu_id, privi: privi)
+
+    fpath = crepo.part_name(cinfo, p_idx)
+    zsize = cinfo.sizes[p_idx]? || 0
+
+    if zsize == 0 || cinfo.cksum.empty?
+      error = 414
+    elsif user_multp < 1 || Unlock.unlocked?(vu_id, fpath)
+      error = 0
+    elsif force
+      error = Unlock.new(
+        vu_id: vu_id, ulkey: fpath,
+        owner: crepo.owner, zsize: zsize,
+        user_multp: user_multp, real_multp: real_multp,
+      ).unlock!
+    else
+      error = 413
+    end
+
     fpath = "" if error > 0
+    ztext = fpath.empty? ? [] of String : Chpart.read_raw(fpath)
 
     {
       ch_no: cinfo.ch_no,
@@ -97,10 +117,10 @@ class RD::ChinfoCtrl < AC::Base
       error: error,
 
       fpath: fpath,
-      ztext: fpath.empty? ? [] of String : Chpart.read_raw(fpath),
+      ztext: ztext,
       zsize: zsize,
 
-      multp: multp,
+      multp: user_multp,
       mtime: cinfo.mtime,
       uname: cinfo.uname,
 

@@ -31,11 +31,7 @@ class MT::AiTranCtrl < AC::Base
     render json: json
   rescue ex
     status = ex.message == "404" ? 404 : 500
-
-    if status == 500
-      Log.error(exception: ex) { [fpath, pdict] }
-    end
-
+    Log.error(exception: ex) { [fpath, pdict] }
     render status, json: {lines: [] of String, error: ex.message}
   end
 

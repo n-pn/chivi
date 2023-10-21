@@ -23,7 +23,7 @@ caption {
   caption-side: bottom;
 }
 
-thead,
+thead tr,
 tr:nth-child(even) {
   background-color: var(--table-bgcolor);
 }

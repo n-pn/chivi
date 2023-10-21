@@ -30,11 +30,10 @@
   <table>
     <thead>
       <tr>
-        <th>Người dùng</th>
-        <th>Nguồn</th>
-        <th>Vcoin</th>
-        <th>Số chữ</th>
-        <th>Hệ số</th>
+        <th>Nguồn chương</th>
+        <th>Thụ hưởng</th>
+        <th class="show-ts">Hệ số</th>
+        <th class="show-pl">Người dùng</th>
         <th>Thời gian</th>
       </tr>
     </thead>
@@ -43,15 +42,6 @@
       {#each props.items as item}
         {@const vuser = props.users[item.vu_id]}
         <tr>
-          <td class="user">
-            <a
-              class="cv-user"
-              href={pager.gen_url({ by: item.vu_id, pg: 1 })}
-              data-privi={vuser.privi}>
-              <SIcon name="privi-{vuser.privi}" iset="icons" />
-              <span class="-trim">{vuser.uname}</span>
-            </a>
-          </td>
           <td>
             <div class="ulkey">
               {#each split_ulkey(item.ulkey) as [href, text]}
@@ -61,10 +51,20 @@
               {/each}
             </div>
           </td>
-          <td><span class="x-vcoin">{item.vcoin / 1000}</span> </td>
-          <td>{item.zsize}</td>
-          <td>{item.multp}</td>
-          <td class="ctime">{rel_time(item.ctime)}</td>
+          <td class="u-warn u-bold">{item.user_lost / 1000}</td>
+          <td class="u-fg-tert u-fz-sm show-ts"
+            >{item.real_multp}/{item.user_multp}</td>
+
+          <td class="user">
+            <a
+              class="cv-user"
+              href={pager.gen_url({ by: item.vu_id, pg: 1 })}
+              data-privi={vuser.privi}>
+              <SIcon name="privi-{vuser.privi}" iset="icons" />
+              <span class="-trim">{vuser.uname}</span>
+            </a>
+          </td>
+          <td class="u-fg-tert u-fz-sm">{rel_time(item.ctime)}</td>
         </tr>
       {/each}
     </tbody>
@@ -84,7 +84,14 @@
       border-left: none;
       border-right: none;
       text-align: center;
+      line-height: 1.25;
+      padding: 0.5rem;
     }
+  }
+
+  table {
+    margin-top: 1rem;
+    @include bgcolor(secd);
   }
 
   footer {
@@ -99,20 +106,21 @@
     @include ftsize(sm);
   }
 
-  .-trim {
-    display: inline-block;
-    @include clamp($width: null);
-    // max-width: 100%;
-  }
-
   .ulkey {
-    @include flex-ca;
     line-height: 1.125rem;
   }
 
-  .ctime {
-    @include ftsize(sm);
-    @include clamp($width: null);
-    @include fgcolor(tert);
+  .show-pl {
+    display: none;
+    @include bp-min(pl) {
+      display: table-cell;
+    }
+  }
+
+  .show-ts {
+    display: none;
+    @include bp-min(ts) {
+      display: table-cell;
+    }
   }
 </style>
