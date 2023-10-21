@@ -57,7 +57,8 @@ class RD::ChinfoCtrl < AC::Base
 
     rstem.crepo.save_raw_from_link!(cinfo, _uname, force: regen) if _privi >= 0
     rdata = show_part(crepo: rstem.crepo, cinfo: cinfo, p_idx: p_idx, force: force)
-    spawn { rstem.inc_view_count! } if rdata[:error] < 300
+
+    spawn { rstem.inc_view_count!(self._privi &+ 2) } if rdata[:error] < 300
 
     render 200, json: rdata
   end
@@ -70,8 +71,8 @@ class RD::ChinfoCtrl < AC::Base
 
     cinfo = get_cinfo(ustem, ch_no)
     rdata = show_part(crepo: ustem.crepo, cinfo: cinfo, p_idx: p_idx, force: force)
-    spawn { ustem.inc_view_count! } if rdata[:error] < 300
 
+    spawn { ustem.inc_view_count!(self._privi &+ 2) } if rdata[:error] < 300
     render 200, json: rdata
   end
 

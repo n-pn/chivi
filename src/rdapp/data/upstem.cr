@@ -76,13 +76,13 @@ class RD::Upstem
   end
 
   INC_VIEW_COUNT_SQL = <<-SQL
-    update upstems set view_count = view_count + 1
-    where id = $1
+    update upstems set view_count = view_count + $1
+    where id = $2
     returning view_count
     SQL
 
-  def inc_view_count!
-    @view_count = @@db.query_one(INC_VIEW_COUNT_SQL, @id, as: Int32)
+  def inc_view_count!(value = 1)
+    @view_count = @@db.query_one(INC_VIEW_COUNT_SQL, value, @id, as: Int32)
   end
 
   #####

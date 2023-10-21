@@ -83,13 +83,13 @@ class RD::Rmstem
   end
 
   INC_VIEW_COUNT_SQL = <<-SQL
-    update rmstems set view_count = view_count + 1
-    where sname = $1 and sn_id = $2
+    update rmstems set view_count = view_count + $1
+    where sname = $2 and sn_id = $3
     returning view_count
     SQL
 
-  def inc_view_count!
-    @view_count = @@db.query_one(INC_VIEW_COUNT_SQL, @sname, @sn_id, as: Int32)
+  def inc_view_count!(value = 1)
+    @view_count = @@db.query_one(INC_VIEW_COUNT_SQL, value, @sname, @sn_id, as: Int32)
   end
 
   UPDATE_FLAG_SQL = "update rmstems set _flag = $1 where sname = $2 and sn_id = $3"
