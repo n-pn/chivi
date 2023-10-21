@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { invalidateAll } from '$app/navigation'
-
   import { get_user } from '$lib/stores'
   const _user = get_user()
 
@@ -31,15 +29,15 @@
     const res = await fetch(url, { method: 'GET' })
 
     if (!res.ok) return alert(await res.text())
+
+    state = 3
     rdata = await res.json()
 
     if (rdata.error == 0) {
       msg_type = 'ok'
       msg_text = 'Mở khoá thành công, trang đang tải lại...'
-
       $_user.vcoin -= vcoin_cost
-      // state = 3
-      invalidateAll()
+      window.location.reload()
     } else if (rdata.error == 415) {
       msg_text = 'Không đủ vcoin để mở khóa chương'
       msg_type = 'err'

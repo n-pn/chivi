@@ -124,7 +124,6 @@
     {#each zlines as input, index (index)}
       {@const elem = index > 0 || $$props.no_title ? 'p' : 'h1'}
       {@const mtlv1 = datav1[index]}
-      {@const mtlv2 = datav2[index]}
       {@const plain = show_txt(
         $config.r_mode,
         zlines.length - 1,

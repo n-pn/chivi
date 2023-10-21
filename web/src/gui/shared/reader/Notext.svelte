@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { invalidateAll } from '$app/navigation'
+  import { Rdpage } from '$lib/reader'
 
   import { get_user } from '$lib/stores'
   const _user = get_user()
 
   import SIcon from '$gui/atoms/SIcon.svelte'
+  import { invalidateAll } from '$app/navigation'
 
   export let cstem: CV.Chstem
   export let rdata: CV.Chpart
@@ -26,10 +27,9 @@
     _loading = false
 
     if (res.ok) {
+      state = 3
       rdata = await res.json()
-      invalidateAll()
-
-      // state = 3
+      window.location.reload()
     } else {
       alert(await res.text())
     }

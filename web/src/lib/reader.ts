@@ -195,7 +195,7 @@ export class Rdpage {
 
   async load_bt_zv(cache = 0, force = false) {
     if (cache < 2 && this.state.bt_zv > 0) return this
-    if (cache == 0) return this
+    if (cache == 0 || this.lines.length == 0) return this
 
     const start = performance.now()
     const bt_zv = await btran_text(this.ztext)
@@ -241,7 +241,12 @@ export class Rdpage {
     if (cache < 2 && this.state.qt_v1 > 0) return this
     if (cache == 0) return this
 
-    const url = `/_m1/qtran?fpath=${this.ropts.fpath}&wn_id=${this.ropts.wn_id}`
+    const { fpath, wn_id } = this.ropts
+
+    if (!fpath) return this
+    const zpath = encodeURIComponent(fpath)
+
+    const url = `/_m1/qtran?fpath=${zpath}&wn_id=${wn_id}`
     const res = await fetch(url, this.gen_rinit(cache))
 
     if (!res.ok) {
@@ -275,6 +280,8 @@ export class Rdpage {
     if (cache == 0 || (cache < 1 && this.state.mt_ai > 0)) return this
 
     const { fpath, pdict, mt_rm } = this.ropts
+    if (!fpath) return this
+
     const zpath = encodeURIComponent(fpath)
     const zdict = encodeURIComponent(pdict)
 
@@ -334,10 +341,10 @@ export class Rdpage {
   }
 
   async reload(rmode: Partial<Rstate> = {}) {
-    this.load_hviet(rmode.hviet || 1)
-    this.load_qt_v1(rmode.qt_v1 || 1)
+    await this.load_hviet(rmode.hviet || 1)
+    await this.load_qt_v1(rmode.qt_v1 || 1)
     this.load_bt_zv(rmode.bt_zv || 1)
-    this.load_mt_ai(rmode.mt_ai || 1)
+    this.load_mt_ai(rmode.mt_ai || 1, false)
     return this
   }
 

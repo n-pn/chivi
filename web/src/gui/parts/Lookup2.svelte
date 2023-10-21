@@ -34,7 +34,7 @@
   export let state = 0
   export let l_idx = 0
   export let l_max = 0
-  export let change_focus = (l_idx: number) => {}
+  export let set_focus_line = (l_idx: number) => {}
 
   $: rline = rpage.lines[l_idx]
 
@@ -156,7 +156,7 @@
         data-kbd="↑"
         data-tip="Chuyển lên dòng trên"
         disabled={l_idx == 0}
-        on:click={() => change_focus(l_idx - 1)}
+        on:click={() => set_focus_line(l_idx - 1)}
         data-umami-event="prev-rdline"
         data-umami-event-fpath={rpage.ropts.fpath}>
         <SIcon name="arrow-up" />
@@ -181,7 +181,7 @@
         data-tip="Chuyển xuống dòng dưới"
         data-umami-event="next-rdline"
         data-umami-event-fpath={rpage.ropts.fpath}
-        on:click={() => change_focus(l_idx + 1)}>
+        on:click={() => set_focus_line(l_idx + 1)}>
         <SIcon name="arrow-down" />
         <span class="-txt">Dưới</span>
       </button>

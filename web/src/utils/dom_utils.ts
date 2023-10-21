@@ -88,8 +88,9 @@ function next_node(node: Node) {
   return null
 }
 
-export function prev_elem(node: Node, skip = false) {
+export function prev_elem(node: Node) {
   if (!node) return
+
   const name = node.nodeName
 
   while (!node.previousSibling) {
@@ -102,11 +103,10 @@ export function prev_elem(node: Node, skip = false) {
     prev = prev.nodeType == 1 ? prev.lastChild : prev.previousSibling
   }
 
-  const d = prev instanceof HTMLElement ? +prev.dataset.d : 0
-  return skip && prev && d == 0 ? prev_elem(prev) : prev
+  return prev
 }
 
-export function next_elem(node: Node, skip = false) {
+export function next_elem(node: Node) {
   if (!node) return
   const name = node.nodeName
 
@@ -120,6 +120,5 @@ export function next_elem(node: Node, skip = false) {
     next = next.nodeType == 1 ? next.firstChild : next.nextSibling
   }
 
-  const d = next instanceof HTMLElement ? +next.dataset.d : 0
-  return skip && next && d == 0 ? next_elem(next) : next
+  return next
 }

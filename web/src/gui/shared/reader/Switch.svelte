@@ -93,5 +93,6 @@
 
   .modes {
     padding-bottom: 0.75rem;
+    @include border(--bd-soft, $loc: bottom);
   }
 </style>

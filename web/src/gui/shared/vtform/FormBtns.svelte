@@ -89,7 +89,7 @@
     type="submit"
     disabled={privi < tform.req_privi}
     data-umami-event="upsert-viterm"
-    data-umami-event-uname={uname}>
+    data-umami-event-uname={uname}
     data-umami-event-privi={privi}>
     <span class="text">{tform.vstr ? 'Lưu' : 'Xoá'}</span>
     <SIcon name="privi-{tform.req_privi}" iset="icons" />

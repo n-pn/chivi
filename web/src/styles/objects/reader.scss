@@ -47,33 +47,12 @@
   .reader._1 & {
     cursor: text;
   }
-
-  &.focus {
-    @include bdradi();
-    // outline: 1px solid color(primary, 5, 5);
-
-    .tm-light & {
-      font-weight: bold;
-      @include bgcolor(warning, 2, 2);
-    }
-
-    .tm-warm & {
-      @include bgcolor(warning, 2, 2);
-    }
-
-    .tm-dark & {
-      @include bgcolor(primary, 8, 2);
-    }
-
-    .tm-oled & {
-      @include bgcolor(primary, 8, 2);
-    }
-  }
 }
 
 .reader {
   display: block;
-  min-height: 40vh;
+  min-height: 60vh;
+  position: relative;
 
   @include fgcolor(secd);
 
@@ -236,8 +215,8 @@ x-n {
   }
 
   // .cdata:hover &,
+  .reader._debug &,
   .cdata.focus &,
-  .cdata.debug &,
   &.focus,
   &:hover {
     border-bottom: 1px solid var(--border);
@@ -248,4 +227,39 @@ x-n {
 x-pad {
   display: block;
   padding-left: 0.5rem;
+}
+
+cv-data {
+  .zdata {
+    @include fgcolor(tert);
+    margin-bottom: 0;
+  }
+
+  .zdata + .cdata {
+    margin-top: 0;
+  }
+}
+
+cv-data.focus {
+  .zdata,
+  .cdata {
+    @include bdradi();
+    // outline: 1px solid color(primary, 5, 5);
+
+    .tm-light & {
+      @include bgcolor(warning, 2, 2);
+    }
+
+    .tm-warm & {
+      @include bgcolor(warning, 2, 2);
+    }
+
+    .tm-dark & {
+      @include bgcolor(primary, 8, 2);
+    }
+
+    .tm-oled & {
+      @include bgcolor(primary, 8, 2);
+    }
+  }
 }
