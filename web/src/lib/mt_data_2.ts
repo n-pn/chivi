@@ -47,7 +47,7 @@ export function gen_ztext_html(ztext: string) {
 }
 
 export function gen_hviet_text(input: string[], cap = false) {
-  const text = input.join('').replace('\u200b', '')
+  const text = input.join('').replace('\u200b', '').trim()
   return cap ? text : text.toLowerCase()
 }
 

@@ -104,7 +104,7 @@ class MT::AiDict
   def init_nr(zstr : String)
     # TODO: call special name translation engine
 
-    fname, pchar, lname = zstr.partition(/[\p{P}]/)
+    fname, pchar, lname = zstr.partition(/\p{P}+/)
     return QtCore.tl_hvname(zstr) if pchar.empty?
 
     fname_vstr = get?(fname, :NR).try(&.vstr) || QtCore.tl_hvname(fname)
@@ -119,6 +119,7 @@ class MT::AiDict
     "、" => ", ",
     "､" => ", ",
     "･" => " ",
+    "‧" => " ",
   }
 
   def init_od(zstr : String)

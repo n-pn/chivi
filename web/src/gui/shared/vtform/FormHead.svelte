@@ -2,10 +2,12 @@
   import { Rdword, type Rdline } from '$lib/reader'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let on_close = () => {}
+  export let actived = true
 
   export let rline: Rdline
   export let rword: Rdword
+
+  const rorig = rword.copy()
 
   $: chars = Array.from(rline.ztext)
   $: zsize = chars.length
@@ -44,7 +46,10 @@
 </script>
 
 <header class="head">
-  <button class="m-btn _text" data-tip="Phục hồi chọn từ">
+  <button
+    class="m-btn _text"
+    data-tip="Phục hồi chọn từ"
+    on:click={() => (rword = rorig)}>
     <svg xmlns="http://www.w3.org/2000/svg" class="m-icon" viewBox="0 0 24 24">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M3.06 13a9 9 0 1 0 .49 -4.087" />
@@ -122,7 +127,11 @@
     <SIcon name="chevron-right" />
   </button>
 
-  <button type="button" class="m-btn _text" data-kbd="esc" on:click={on_close}>
+  <button
+    type="button"
+    class="m-btn _text"
+    data-kbd="esc"
+    on:click={() => (actived = false)}>
     <SIcon name="x" />
   </button>
 </header>

@@ -46,8 +46,7 @@
   export let on_close = (changed = false) => console.log(changed)
 
   let mlist = []
-  let privi = $_user.privi
-  let tform: Viform = new Viform(rword, init_tdata, '', '', privi)
+  let tform: Viform = new Viform(rword, init_tdata, '', '', $_user.privi)
 
   $: {
     mlist = gen_mlist(rline.mt_ai, rword.from, rword.upto)
@@ -110,7 +109,7 @@
     }
 
     const rword = new Rdword(from, upto, tdata.cpos)
-    const tform = new Viform(rword, tdata, ztext, hviet, privi)
+    const tform = new Viform(rword, tdata, ztext, hviet, $_user.privi)
     cached.set(key, tform)
     return tform
   }
@@ -145,7 +144,7 @@
 </script>
 
 <Dialog actived={$ctrl.actived} on_close={ctrl.hide} class="vtform" _size="lg">
-  <FormHead {rline} bind:rword on_close={ctrl.hide} />
+  <FormHead {rline} bind:rword bind:actived={$ctrl.actived} />
 
   <nav class="tabs">
     <button
@@ -249,7 +248,12 @@
       <div class="fmsg">{form_msg}</div>
     {/if}
 
-    <FormBtns bind:tform {privi} bind:show_log bind:show_dfn />
+    <FormBtns
+      privi={$_user.privi}
+      uname={$_user.uname}
+      bind:tform
+      bind:show_log
+      bind:show_dfn />
   </form>
 
   <HelpLink key={tform.ztext} />
@@ -264,7 +268,7 @@
 {/if}
 
 {#if show_dfn}
-  <Glossary bind:actived={show_dfn} {rline} {rword} />
+  <Glossary bind:actived={show_dfn} {rline} rword={rword.copy()} />
 {/if}
 
 <style lang="scss">
@@ -478,22 +482,5 @@
     background: transparent;
     @include fgcolor(main);
     @include ftsize(lg);
-  }
-
-  .fmsg {
-    margin-top: -0.25rem;
-    font-size: rem(13px);
-    line-height: 1rem;
-    padding-bottom: 0.5rem;
-    text-align: center;
-    font-style: italic;
-
-    &._warn {
-      @include fgcolor(warning);
-    }
-
-    &._err {
-      @include fgcolor(harmful);
-    }
   }
 </style>

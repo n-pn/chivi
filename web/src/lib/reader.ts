@@ -25,6 +25,10 @@ export class Rdword {
     return this.cpos == cpos || cpos == 'X'
   }
 
+  copy() {
+    return new Rdword(this.from, this.upto, this.cpos)
+  }
+
   static from(node: HTMLElement) {
     if (!node) return new Rdword()
     const { b, e, c } = node.dataset

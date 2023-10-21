@@ -30,6 +30,7 @@
   // import { type CvtermForm, hint, req_privi } from './_shared'
 
   export let tform: Viform
+  export let uname: string
   export let privi: number
 
   export let show_log = false
@@ -52,7 +53,7 @@
 <section class="actions">
   <button
     type="button"
-    class="m-btn _success"
+    class="m-btn _primary"
     on:click={() => (show_dfn = !show_dfn)}
     data-umami-event="vtform-lookup">
     <SIcon name="compass" />
@@ -87,7 +88,9 @@
     data-kbd="↵"
     type="submit"
     disabled={privi < tform.req_privi}
-    data-umami-event="upsert-viterm">
+    data-umami-event="upsert-viterm"
+    data-umami-event-uname={uname}>
+    data-umami-event-privi={privi}>
     <span class="text">{tform.vstr ? 'Lưu' : 'Xoá'}</span>
     <SIcon name="privi-{tform.req_privi}" iset="icons" />
   </button>

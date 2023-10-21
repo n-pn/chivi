@@ -89,6 +89,6 @@ enum MT::MtEpos : Int8
 
   @[AlwaysInline]
   def can_use_alt?
-    self.in?(VRD, VNV, VCD, VCP, VSB, VPT, VP, IP)
+    self.in?(VRD, VNV, VCD, VCP, VSB, VPT, VP, NP, CP, LCP, IP)
   end
 end

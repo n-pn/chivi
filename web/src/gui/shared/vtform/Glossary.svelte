@@ -8,6 +8,8 @@
   import { api_call } from '$lib/api_call'
 
   import Dialog from '$gui/molds/Dialog.svelte'
+  import FormHead from './FormHead.svelte'
+
   import type { Rdline, Rdword } from '$lib/reader'
 
   export let actived = false
@@ -49,16 +51,11 @@
     }
 
     current = entries[zfrom] || []
-
-    if (current.length == 0) rword.upto = zfrom
-    else rword.upto = zfrom + +current[0][0]
   }
 </script>
 
 <Dialog on_close={() => (actived = false)} class="vtform-lookup">
-  <svelte:fragment slot="header">
-    <span>Tra nghĩa nhanh</span>
-  </svelte:fragment>
+  <FormHead {rline} bind:rword bind:actived />
 
   <section class="choice" />
 
@@ -66,9 +63,9 @@
     {#each current as [size, terms]}
       <div class="entry">
         <h3 class="word" lang="zh">
-          <span class="ztext"
-            >{rline.get_ztext(rword.from, rword.from + size)}</span>
-          <span class="hviet" />
+          <code>{rline.get_ztext(rword.from, rword.from + size)} </code>
+          <span class="u-fg-tert"
+            >{rline.get_hviet(rword.from, rword.from + size)}</span>
         </h3>
 
         {#each Object.entries(terms) as [dict, defn]}
@@ -99,7 +96,7 @@
 
 <style lang="scss">
   .terms {
-    max-height: 60vh;
+    height: 40vh;
     padding: 0.75rem;
     @include scroll();
   }
@@ -113,9 +110,13 @@
 
   .entry {
     @include fgcolor(secd);
-    padding: 0.5rem 0;
+    // padding: 0.5rem 0;
     // padding-top: 0;
-    @include border($loc: bottom);
+    &:not(:first-child) {
+      margin-top: 0.75rem;
+      padding-top: 0.5rem;
+      @include border(--bd-soft, $loc: top);
+    }
   }
 
   .item {
