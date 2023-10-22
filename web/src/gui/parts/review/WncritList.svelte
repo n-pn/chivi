@@ -220,4 +220,8 @@
       margin-right: 0.125rem;
     }
   }
+
+  .pagi {
+    padding-bottom: 1rem;
+  }
 </style>

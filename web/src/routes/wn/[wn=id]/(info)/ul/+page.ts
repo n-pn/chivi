@@ -3,11 +3,11 @@ import { home_nav, book_nav, nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 
-export const load = (async ({ url, fetch, parent, params }) => {
-  const book = parseInt(params.wn, 10)
-  const data = await load_lists(url, fetch, { book })
+export const load = (async ({ url, fetch, parent }) => {
+  const { nvinfo, _user } = await parent()
+  if (_user.privi < 1) url.searchParams.append('from', 'vi')
 
-  const { nvinfo } = await parent()
+  const data = await load_lists(url, fetch, { book: nvinfo.id })
   const _meta: App.PageMeta = build_meta(nvinfo)
 
   return {

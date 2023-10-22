@@ -18,7 +18,7 @@
   function map_tab_from_route(route_id: string) {
     if (route_id.includes('/uc')) return '/uc'
     if (route_id.includes('/ul')) return '/ul'
-    if (route_id.includes('/gd')) return '/gd'
+    // if (route_id.includes('/lk')) return '/lk'
     return ''
   }
 
@@ -28,7 +28,7 @@
     { type: 'fp', href: rpath, icon: 'news', text: 'Tổng quan' },
     { type: 'uc', href: `${rpath}/uc`, icon: 'stars', text: 'Đánh giá' },
     { type: 'ul', href: `${rpath}/ul`, icon: 'bookmarks', text: 'Thư đơn' },
-    { type: 'gd', href: `${rpath}/gd`, icon: 'message', text: 'Thảo luận' },
+    // { type: 'gd', href: `${rpath}/gd`, icon: 'message', text: 'Thảo luận' },
   ]
 </script>
 

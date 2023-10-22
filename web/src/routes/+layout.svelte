@@ -17,6 +17,7 @@
   import Footer from '$gui/global/Footer.svelte'
 
   import { api_get } from '$lib/api_call'
+  import { redirect } from '@sveltejs/kit'
 
   onMount(() => {
     navigator.serviceWorker.register('/service-worker.js', {

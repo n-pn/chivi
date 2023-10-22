@@ -16,6 +16,5 @@ export const load = (async ({ fetch }) => {
   const { books } = await api_get<Wndata>('/_db/books?lm=6', fetch)
   const { items: rstems } = await api_get<Rmdata>('/_rd/rmstems?lm=3', fetch)
   const { items: ustems } = await api_get<Updata>('/_rd/upstems?lm=3', fetch)
-  // const ydata = await fetch('/_ys/front').then((r) => r.json())
   return { books, rstems, ustems, _title, _mdesc, _image, _meta }
 }) satisfies PageLoad

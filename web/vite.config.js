@@ -10,8 +10,6 @@ const dev = process.env['ENV'] == 'dev'
 const env = loadEnv('dev', _cwd)
 
 const proxy = {
-  '/covers': 'https://chivi.app',
-
   '/_db': `http://127.0.0.1:${env.VITE_BE_PORT}`,
   '/_wn': `http://127.0.0.1:${env.VITE_WN_PORT}`,
 

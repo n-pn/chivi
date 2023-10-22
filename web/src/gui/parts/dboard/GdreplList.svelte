@@ -58,7 +58,7 @@
     level={0}
     fluid={$$props.fluid} />
 {:else}
-  <div class="d-empty">Chưa có {_kind}</div>
+  <div class="d-empty-sm">Chưa có {_kind}</div>
 {/if}
 
 <style lang="scss">

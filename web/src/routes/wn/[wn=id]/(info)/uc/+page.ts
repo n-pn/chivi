@@ -1,5 +1,5 @@
 import { load_crits } from '$lib/fetch_data'
-import { home_nav, book_nav, nav_link } from '$utils/header_util'
+import { book_nav, nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 
@@ -7,9 +7,10 @@ export const load = (async ({ url, fetch, params, parent }) => {
   const book = parseInt(params.wn, 10)
   const sort = url.searchParams.get('sort') || 'score'
 
-  const data = await load_crits(url, fetch, { book, sort })
+  const { nvinfo, _user } = await parent()
+  if (_user.privi < 1) url.searchParams.append('from', 'vi')
 
-  const { nvinfo } = await parent()
+  const data = await load_crits(url, fetch, { book, sort })
 
   const _meta = {
     left_nav: [

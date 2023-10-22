@@ -13,5 +13,3 @@ export const load = (async ({ url, fetch }) => {
 
   return { ...data, filter, _meta, _title: 'Thư đơn truyện chữ', ontab: 'home' }
 }) satisfies PageLoad
-
-// /wn/lists?from=vi&user=${user.uname}`

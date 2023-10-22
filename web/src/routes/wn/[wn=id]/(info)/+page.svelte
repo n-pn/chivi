@@ -1,21 +1,13 @@
 <script lang="ts">
-  import {
-    status_types,
-    status_icons,
-    status_names,
-    status_colors,
-  } from '$lib/constants'
-
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import WninfoList from '$gui/parts/wninfo/WninfoList.svelte'
-  import YscritCard from '$gui/parts/review/YscritCard.svelte'
+
+  import Truncate from '$gui/atoms/Truncate.svelte'
+  import GdreplList from '$gui/parts/dboard/GdreplList.svelte'
 
   import type { PageData } from './$types'
-  import Truncate from '$gui/atoms/Truncate.svelte'
   export let data: PageData
 
-  $: ({ nvinfo, bdata, ydata } = data)
-  $: root_path = `/wn/${nvinfo.bslug}`
+  $: ({ gdroot, rplist, nvinfo } = data)
 
   let short_intro = false
   $: dhtml = nvinfo.bintro
@@ -40,65 +32,8 @@
   {/each}
 </div>
 
-<h3 class="sub">
-  <sub-label>Đánh giá nổi bật</sub-label>
-  <a class="sub-link" href="{root_path}/uc">Xem tất cả</a>
-</h3>
-
-<div class="crits">
-  {#each ydata.crits as crit}
-    {@const list = ydata.lists[crit.list_id]}
-    {@const user = ydata.users[crit.user_id]}
-    {@const view_all = crit.vhtml.length < 640}
-    {#key crit.id}
-      <YscritCard
-        {crit}
-        {user}
-        {list}
-        book={null}
-        show_book={false}
-        {view_all} />
-    {/key}
-  {:else}
-    <div class="d-empty-sm">Chưa có đánh giá</div>
-  {/each}
-</div>
-
-<h3 class="sub">
-  <sub-label>Truyện đồng tác giả</sub-label>
-  <a class="sub-link" href="/wn/={nvinfo.vauthor}">Xem tất cả</a>
-</h3>
-
-<WninfoList books={bdata.books} />
-
-<h3 class="sub">
-  <sub-label>Danh sách độc giả</sub-label>
-</h3>
-
-<div class="users">
-  {#each bdata.users as { uname, privi, umark }}
-    {@const status = status_types[umark]}
-    {#if umark > 0}
-      <a
-        class="m-chip _{status_colors[status]}"
-        href="/@{uname}/books/{status}"
-        data-tip="Đánh dấu: {status_names[status]}">
-        <cv-user data-privi={privi}>{uname}</cv-user>
-        <SIcon name={status_icons[status]} />
-      </a>
-    {:else}
-      <a
-        class="m-chip _neutral"
-        href="/@{uname}/books/default"
-        data-tip="Chưa thêm đánh dấu">
-        <cv-user data-privi={privi}>{uname}</cv-user>
-        <SIcon name="eye" />
-      </a>
-    {/if}
-  {:else}
-    <div class="d-empty-sm">Chưa có người đọc</div>
-  {/each}
-</div>
+<h3 class="sub">Thảo luận</h3>
+<GdreplList {gdroot} {rplist} />
 
 <style lang="scss">
   // article {
@@ -127,6 +62,7 @@
   .sub {
     line-height: 2rem;
     height: 2rem;
+    margin-bottom: 0.75rem;
     @include flex($gap: 0.5rem);
     @include border(--bd-main, $loc: bottom);
   }
@@ -140,30 +76,6 @@
     &:hover {
       @include border(primary, 5, $loc: bottom);
     }
-  }
-
-  sub-label {
-    flex: 1;
-  }
-
-  .sub-link {
-    font-style: italic;
-    @include ftsize(md);
-    @include fgcolor(tert);
-
-    &:hover {
-      @include fgcolor(primary, 5);
-    }
-  }
-
-  .m-chip {
-    gap: 0.25rem;
-  }
-
-  .users {
-    display: flex;
-    gap: 0.25rem;
-    flex-wrap: wrap;
   }
 
   h2,
