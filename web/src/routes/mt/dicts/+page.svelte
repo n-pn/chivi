@@ -16,7 +16,7 @@
   ]
 </script>
 
-<article class="article m-article">
+<article class="article m-article island">
   <h1>Từ điển</h1>
 
   <div class="dicts">
@@ -30,11 +30,14 @@
       </a>
     {/each}
   </div>
-</article>
 
-<Footer>
-  <Mpager pager={new Pager($page.url)} pgidx={data.pgidx} pgmax={data.pgmax} />
-</Footer>
+  <Footer>
+    <Mpager
+      pager={new Pager($page.url)}
+      pgidx={data.pgidx}
+      pgmax={data.pgmax} />
+  </Footer>
+</article>
 
 <style lang="scss">
   .dicts {

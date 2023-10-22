@@ -72,7 +72,7 @@ class RD::Chrepo
 
   def chap_mutlp(ch_no : Int32, vu_id : Int32, privi : Int32)
     return {0_i16, 0_i16} if vu_id == @owner || free_chap?(ch_no)
-    {@multp &- privi, @multp}
+    {@multp > privi ? @multp &- privi : 0_i16, @multp}
   end
 
   ####

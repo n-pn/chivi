@@ -60,9 +60,8 @@
           text={$_user.uname}
           icon="user"
           _dot={$_user.unread_notif > 0}
+          opts={{ show: 'pl', kind: 'uname' }}
           data-kbd="u"
-          data-show="tl"
-          data-kind="uname"
           on:click={() => popups.show('usercp')} />
       {:else}
         <Item
@@ -70,9 +69,8 @@
           href="/_auth/login"
           text="Đăng nhập"
           icon="login"
-          data-kbd="u"
-          data-show="tl"
-          data-kind="uname" />
+          opts={{ show: 'pl', kind: 'uname' }}
+          data-kbd="u" />
       {/if}
     </div>
   </nav>

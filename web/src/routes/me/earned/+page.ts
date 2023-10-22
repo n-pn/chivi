@@ -1,4 +1,4 @@
-import { nav_link } from '$utils/header_util'
+import { nav_link, home_nav } from '$utils/header_util'
 import { api_get } from '$lib/api_call'
 import type { PageLoad } from './$types'
 
@@ -9,10 +9,10 @@ interface UnlockData extends CV.Paginate {
 
 const _meta = {
   left_nav: [
-    nav_link('/', 'Trang chủ', 'home', { show: 'pl' }),
-    nav_link('unlock', 'Lịch sử thu phí chương', 'coin'),
+    home_nav('ts'),
+    nav_link('unlock', 'Thu phí chương', 'coin', { kind: 'title' }),
   ],
-  right_nav: [nav_link('unlock', 'Mở khóa', 'lock-open')],
+  right_nav: [nav_link('unlock', 'Mở khóa', 'lock-open', { show: 'pl' })],
 }
 
 export const load = (async ({ fetch, url, parent }) => {

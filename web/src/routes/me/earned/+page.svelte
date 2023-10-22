@@ -32,8 +32,8 @@
       <tr>
         <th>Nguồn chương</th>
         <th>Thụ hưởng</th>
-        <th class="show-ts">Hệ số</th>
-        <th class="show-pl">Người dùng</th>
+        <th class="show-ts">Chi tiết</th>
+        <th class="show-pl">Người gửi</th>
         <th>Thời gian</th>
       </tr>
     </thead>
@@ -51,11 +51,10 @@
               {/each}
             </div>
           </td>
-          <td class="u-warn u-bold">{item.user_lost / 1000}</td>
+          <td class="u-warn u-bold">{item.owner_got}</td>
           <td class="u-fg-tert u-fz-sm show-ts"
-            >{item.real_multp}/{item.user_multp}</td>
-
-          <td class="user">
+            >{item.real_multp}/{item.user_multp} [{item.zsize}]</td>
+          <td class="show-pl">
             <a
               class="cv-user"
               href={pager.gen_url({ by: item.vu_id, pg: 1 })}

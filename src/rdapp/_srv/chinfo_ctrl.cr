@@ -89,9 +89,9 @@ class RD::ChinfoCtrl < AC::Base
 
     if zsize == 0 || cinfo.cksum.empty?
       error = 414
-    elsif user_multp < 1 || Unlock.unlocked?(vu_id, fpath)
+    elsif real_multp < 1 || Unlock.unlocked?(vu_id, fpath)
       error = 0
-    elsif force
+    elsif force || user_multp == 0
       error = Unlock.new(
         vu_id: vu_id, ulkey: fpath,
         owner: crepo.owner, zsize: zsize,

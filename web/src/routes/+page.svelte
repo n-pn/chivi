@@ -11,10 +11,11 @@
   $: ({ books } = data)
 
   const links = [
+    ['/qt', 'bolt', 'Dịch nhanh'],
+    ['/wn/crits', 'stars', 'Đánh giá'],
+    ['/wn/lists', 'bookmarks', 'Thư đơn'],
+    ['/mt/dicts', 'package', 'Từ điển'],
     ['/gd', 'message', 'Diễn đàn'],
-    ['/wn', 'books', 'Truyện chữ'],
-    ['/up', 'album', 'Sưu tầm'],
-    ['/rm', 'world', 'Nhúng ngoài'],
   ]
 </script>
 

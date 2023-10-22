@@ -83,6 +83,7 @@ class CV::Xvcoin
 
   INCREASE_VCOIN_SQL = <<-SQL
     update viusers set vcoin = vcoin + $1
+    where id = $2
     returning vcoin
     SQL
 

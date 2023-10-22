@@ -32,14 +32,16 @@
       <tr>
         <th>Nguồn chương</th>
         <th>Tiêu phí</th>
-        <th class="show-ts">Hệ số</th>
-        <th class="show-pl">Số ký tự</th>
+        <th class="show-ts">Chi tiết</th>
+        <th class="show-pl">Người nhận</th>
         <th>Thời gian</th>
       </tr>
     </thead>
 
     <tbody>
       {#each props.items as item}
+        {@const owner = props.users[item.owner]}
+
         <tr>
           <td class="ulkey">
             {#each split_ulkey(item.ulkey) as [href, text]}
@@ -48,10 +50,18 @@
                 href={pager.gen_url({ kw: href, pg: 1 })}>{text}</a>
             {/each}
           </td>
-          <td class="u-warn u-bold">{item.user_lost / 1000}</td>
+          <td class="u-warn u-bold">{item.user_lost}</td>
           <td class="u-fg-tert u-fz-sm show-ts"
-            >{item.real_multp}/{item.user_multp}</td>
-          <td class="u-fg-tert u-fz-sm show-pl">{item.zsize}</td>
+            >{item.real_multp}/{item.user_multp} [{item.zsize}]</td>
+          <td class="shop-pl">
+            <a
+              class="cv-user"
+              href={pager.gen_url({ by: item.vu_id, pg: 1 })}
+              data-privi={owner.privi}>
+              <SIcon name="privi-{owner.privi}" iset="icons" />
+              <span class="-trim">{owner.uname}</span>
+            </a>
+          </td>
           <td class="u-fg-tert u-fz-sm">{rel_time(item.ctime)}</td>
         </tr>
       {/each}

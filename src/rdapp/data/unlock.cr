@@ -56,7 +56,7 @@ class RD::Unlock
       @vu_id, @owner,
       @ulkey, @zsize,
       @user_multp, @real_multp,
-      @owner_got, @user_lost,
+      @user_lost, @owner_got,
       @ctime,
       as: self.class)
   end
@@ -68,11 +68,16 @@ class RD::Unlock
   def unlock!(db = @@db) : Int32
     return 414 if @ulkey.empty? || @zsize == 0
 
-    # TODO: convert vcoin to vnd
-    remain = CV::Xvcoin.subtract(vu_id: @vu_id, value: @user_lost / 1000)
-    return 415 unless remain && remain >= 0
+    if @user_lost > 0
+      # TODO: convert vcoin to vnd
+      remain = CV::Xvcoin.subtract(vu_id: @vu_id, value: @user_lost / 1000)
+      return 415 unless remain && remain >= 0
+    end
 
-    CV::Xvcoin.increase(vu_id: @owner, value: @owner_got / 1000)
+    if @owner > 0
+      spawn CV::Xvcoin.increase(vu_id: @owner, value: @owner_got / 1000)
+    end
+
     self.save!(db: db)
 
     0
@@ -87,7 +92,7 @@ class RD::Unlock
     @@db.query_one?(FIND_BY_UKEY_SQL, vu_id, ulkey, as: self)
   end
 
-  CHECK_BY_UKEY_SQL = "select vcoin from unlocks where vu_id = $1 and ulkey = $2 limit 1"
+  CHECK_BY_UKEY_SQL = "select owner from unlocks where vu_id = $1 and ulkey = $2 limit 1"
 
   def self.unlocked?(vu_id : Int32, ulkey : String)
     return false if vu_id == 0

@@ -12,8 +12,7 @@ const _meta: App.PageMeta = {
 }
 
 export const load = (async ({ fetch, url }) => {
-  const path = `/_ai/dicts${url.search}`
+  const path = `/_ai/dicts${url.search || '?pg=1'}&lm=30`
   const data = await api_get<JsonData>(path, fetch)
-
   return { ...data, _meta, _title: 'Từ điển' }
 }) satisfies PageLoad

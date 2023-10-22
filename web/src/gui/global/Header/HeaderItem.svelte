@@ -5,9 +5,8 @@
   export let icon: string | null = null
   export let type: string = 'a'
 
-  export let opts = { show: 'ps', kind: 'x' }
-
   export let _dot = false
+  export let opts = { show: 'ps', kind: 'x' }
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->

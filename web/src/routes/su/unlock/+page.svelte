@@ -51,10 +51,9 @@
             {/each}
           </td>
 
-          <td class="u-warn u-bold"
-            >{item.user_lost / 1000} ({item.owner_got / 1000})</td>
+          <td class="u-warn u-bold">{item.user_lost} ({item.owner_got})</td>
           <td class="u-fg-tert u-fz-sm show-ts"
-            >{item.user_multp}&ndash;{item.real_multp} [{item.zsize}]</td>
+            >{item.user_multp} ({item.real_multp}) [{item.zsize}]</td>
 
           <td class="user">
             <a
