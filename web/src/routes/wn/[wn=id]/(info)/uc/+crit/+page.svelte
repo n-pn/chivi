@@ -15,9 +15,9 @@
 
   let error = ''
 
-  $: list_ids = data.crits.map((x) => x.list_id)
+  $: vl_ids = data.crits.map((x) => x.vl_id)
 
-  $: if (list_ids.includes(data.cform.vl_id)) {
+  $: if (vl_ids.includes(data.cform.vl_id)) {
     error = 'Thư đơn bạn chọn đã có đánh giá, mời chọn cái khác!'
   }
 

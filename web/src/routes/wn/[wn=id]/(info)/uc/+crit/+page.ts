@@ -23,7 +23,6 @@ export const load = (async ({ url, fetch, parent }) => {
 
   const _meta = {
     left_nav: [
-      nav_link(book_path, nvinfo.vtitle, 'book', { show: 'tl', kind: 'title' }),
       nav_link(book_path + '/uc', 'Đánh giá', 'stars', { show: 'tm' }),
       nav_link(curr_path, title, 'ballpen', { show: 'pm' }),
     ],

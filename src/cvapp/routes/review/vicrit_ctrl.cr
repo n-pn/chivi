@@ -49,7 +49,9 @@ class CV::VicritCtrl < CV::BaseCtrl
   def upsert_form(wn wn_id : Int32 = 0, id vc_id : Int32 = 0)
     guard_privi 0, "thêm/sửa đánh giá"
 
+    Vilist.load!(-_vu_id) # make sure that user default booklist exists
     lists = VilistCard.all_by_user(_vu_id, _vu_id)
+
     crits = VicritView.fetch_all(self_id: _vu_id, vuser: _uname, wbook: wn_id)
 
     vcrit = crits.find(&.vc_id.== vc_id)
