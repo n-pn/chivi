@@ -82,7 +82,7 @@
         {/each}
       </div>
     {:else}
-      <div class="d-empty">
+      <div class="d-empty-sm">
         <h5>Chưa có giải nghĩa cho cụ từ hiện tại.</h5>
         <p>
           Gợi ý: <em

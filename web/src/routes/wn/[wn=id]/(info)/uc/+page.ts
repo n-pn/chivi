@@ -7,8 +7,7 @@ export const load = (async ({ url, fetch, params, parent }) => {
   const book = parseInt(params.wn, 10)
   const sort = url.searchParams.get('sort') || 'score'
 
-  const { nvinfo, _user } = await parent()
-  if (_user.privi < 1) url.searchParams.append('from', 'vi')
+  const { nvinfo } = await parent()
 
   const data = await load_crits(url, fetch, { book, sort })
 

@@ -11,12 +11,11 @@ class RD::Chrepo
   end
 
   getter sroot : String
-
   property owner : Int32 = -1
-
-  property chmax : Int32 = 9999
   property wn_id : Int32 = 0
+  property chmax : Int32 = 9999
 
+  property plock : Int32 = 0
   property gifts : Int16 = 1
   property multp : Int16 = 4
 

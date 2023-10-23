@@ -192,7 +192,18 @@
     style:--textlh="{$config.textlh}%"
     bind:this={reader}
     on:click={handle_click}>
-    {#if rdata.error == 414}
+    {#if rdata.error == 403}
+      <div class="d-empty">
+        <h1 class="u-warn">
+          Lỗi: Bạn cần thiết quyền hạn tối thiểu là {rdata.plock} để xem nội dung
+          chương!
+        </h1>
+        <p>
+          Đọc thêm về hướng dẫn nâng cấp tài khoản <a
+            href="/hd/nang-cap-quyen-han">tại đây.</a>
+        </p>
+      </div>
+    {:else if rdata.error == 414}
       <Notext {cstem} bind:rdata bind:state />
     {:else if rdata.error == 413 || rdata.error == 415}
       <Unlock {cstem} bind:rdata bind:state />

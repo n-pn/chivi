@@ -46,11 +46,11 @@ struct RD::Chpart
   def read_con(m_alg : String = "mtl_1", force = false)
     case
     when m_alg == "mtl_3"
-      con_path = self.file_path("hmeg.con")
+      con_path = self.file_path("mtl_3.con")
     when m_alg == "mtl_2"
-      con_path = self.file_path("hmeb.con")
+      con_path = self.file_path("mtl_2.con")
     else
-      con_path = self.file_path("hmes.con")
+      con_path = self.file_path("mtl_1.con")
       m_alg = "mtl_1"
     end
 

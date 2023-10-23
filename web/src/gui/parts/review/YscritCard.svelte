@@ -8,7 +8,6 @@
   import Truncate from '$gui/atoms/Truncate.svelte'
 
   import YscritBook from './YscritBook.svelte'
-  import Gmenu from '$gui/molds/Gmenu.svelte'
 
   export let crit: CV.Yscrit
   export let user: CV.Ysuser = { id: 0, uslug: '', uname: '', avatar: '' }
@@ -89,15 +88,15 @@
   </div>
 
   <section class="body" class:big_text>
-    {#if _onload}
+    {#if $_user.privi < 1}
+      <p class="u-fg-mute u-fz-sm">
+        <em>(Bạn cần thiết quyền hạn tối thiểu là 1 để xem bình luận.)</em>
+      </p>
+    {:else if _onload}
       <div class="loading">
         <SIcon name="loader-2" spin={_onload} />
         <span>Đang tải dữ liệu</span>
       </div>
-    {:else if content == '<p>$$$</p>'}
-      <p class="mute">
-        <em>(Nội dung đánh giá đã bị ẩn trên Ưu Thư Võng, đợi phục hồi)</em>
-      </p>
     {:else}
       <Truncate html={content} bind:view_all />
     {/if}
@@ -108,23 +107,6 @@
       <SIcon name="link" />
       <span>Liên kết</span>
     </a>
-
-    <Gmenu dir="left" loc="bottom">
-      <button class="m-meta" slot="trigger">
-        <SIcon name="language" />
-        <span>{body_types[body_type][0]}</span>
-      </button>
-      <svelte:fragment slot="content">
-        {#each Object.entries(body_types) as [value, [label, privi]]}
-          <button
-            class="gmenu-item"
-            disabled={$_user.privi < privi}
-            on:click={() => (body_type = value)}>
-            <span>{label}</span>
-          </button>
-        {/each}
-      </svelte:fragment>
-    </Gmenu>
 
     <div class="right">
       <span class="m-meta">

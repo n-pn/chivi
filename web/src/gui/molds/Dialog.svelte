@@ -1,7 +1,4 @@
 <script lang="ts">
-  import { scale, fade } from 'svelte/transition'
-  import { backInOut } from 'svelte/easing'
-
   import { layers } from '$lib/stores'
   import SIcon from '$gui/atoms/SIcon.svelte'
 

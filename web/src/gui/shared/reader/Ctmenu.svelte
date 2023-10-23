@@ -125,7 +125,7 @@
     @include bdradi();
     @include shadow();
 
-    transition: all 0.05s ease-in-out;
+    // transition: all 0.05s ease-in-out;
     // prettier-ignore
     // @include tm-dark { --bgc: #{color(primary, 4)}; }
 

@@ -80,10 +80,10 @@
     z-index: 50;
 
     background-color: rgba(#000, 0.5);
-    transition: background-color 0.5s ease-in-out;
+    // transition: background-color 0.5s ease-in-out;
 
     // prettier-ignore
-    @media (prefers-reduced-motion) { transition: none; }
+    // @media (prefers-reduced-motion) { transition: none; }
 
     visibility: hidden;
     // prettier-ignore
@@ -111,7 +111,7 @@
 
     background: var(--bg-secd);
     @include shadow(2);
-    @include transition();
+    // @include transition();
 
     &._left {
       right: 100%;

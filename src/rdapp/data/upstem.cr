@@ -44,6 +44,7 @@ class RD::Upstem
       repo.wn_id = @wn_id || 0
       repo.chmax = @chap_count
 
+      repo.plock = @guard
       repo.gifts = @gifts
       repo.multp = @multp
 
@@ -130,7 +131,7 @@ class RD::Upstem
       if liked
         args << liked
         sql << <<-SQL
-          and id in (
+            and id in (
             select sn_id::int from rdmemos
             where vu_id = $#{args.size} and sname like 'up%' and recomm > 0
           )

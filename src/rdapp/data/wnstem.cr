@@ -3,7 +3,6 @@ require "crorm"
 require "../../_data/_data"
 
 require "./chrepo"
-require "./wnchap"
 require "./rmstem"
 
 class RD::Wnstem
@@ -41,6 +40,7 @@ class RD::Wnstem
       repo.chmax = @chap_total
       repo.wn_id = @wn_id
 
+      repo.plock = 0
       repo.gifts = 1
       repo.multp = @multp
     end

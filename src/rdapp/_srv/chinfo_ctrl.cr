@@ -58,7 +58,7 @@ class RD::ChinfoCtrl < AC::Base
     rstem.crepo.save_raw_from_link!(cinfo, _uname, force: regen) if _privi >= 0
     rdata = show_part(crepo: rstem.crepo, cinfo: cinfo, p_idx: p_idx, force: force)
 
-    spawn { rstem.inc_view_count!(self._privi &+ 2) } if rdata[:error] < 300
+    spawn { rstem.inc_view_count!(self._privi &+ 1) } if rdata[:error] < 300
 
     render 200, json: rdata
   end
@@ -87,7 +87,9 @@ class RD::ChinfoCtrl < AC::Base
     fpath = crepo.part_name(cinfo, p_idx)
     zsize = cinfo.sizes[p_idx]? || 0
 
-    if zsize == 0 || cinfo.cksum.empty?
+    if privi < crepo.plock
+      error = 403
+    elsif zsize == 0 || cinfo.cksum.empty?
       error = 414
     elsif real_multp < 1 || Unlock.unlocked?(vu_id, fpath)
       error = 0
@@ -114,7 +116,9 @@ class RD::ChinfoCtrl < AC::Base
 
       title: cinfo.vtitle.empty? ? cinfo.ztitle : cinfo.vtitle,
       chdiv: cinfo.vchdiv.empty? ? cinfo.zchdiv : cinfo.vchdiv,
+
       error: error,
+      plock: crepo.plock,
 
       fpath: fpath,
       ztext: ztext,

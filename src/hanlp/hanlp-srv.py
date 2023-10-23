@@ -7,12 +7,54 @@ os.environ["HANLP_HOME"] = "/2tb/var.hanlp/.hanlp"
 
 import hanlp, torch
 from flask import Flask, request
+from hanlp_trie import DictInterface, TrieDict
 
-CACHE = {}
+COMBINE_FILE = '/2tb/var.hanlp/dict-combine.tsv'
+DICT_COMBINE = TrieDict()
+
+FORCE_FILE = '/2tb/var.hanlp/dict-force.tsv'
+DICT_FORCE = TrieDict()
+
+SAVED_TERMS = set()
+TASKS_CACHE = {}
+
+def read_txt_file(inp_path, encoding='utf-8'):
+    with open(inp_path, 'r', encoding='UTF-8') as inp_file:
+        return inp_file.read().split('\n')
+
+def read_combine_dict():
+    lines = read_txt_file(COMBINE_FILE)
+
+    for line in lines:
+        if line.isspace() or line == '':
+            continue
+
+        SAVED_TERMS.add(line)
+        DICT_COMBINE[line] = line
+
+def read_force_dict():
+    lines = read_txt_file(FORCE_FILE)
+
+    for line in lines:
+        rows = line.split('\t')
+
+        if line.isspace() or len(rows) < 2:
+            continue
+
+        add_force_term(rows[0], rows[1])
+
+def add_force_term(key, val):
+    val_arr = val.split(' | ')
+
+    if len(val_arr) > 1:
+        val = val_arr
+
+    DICT_FORCE[key] = val
+    return val
 
 def load_task(kind):
-    if kind in CACHE:
-        return CACHE[kind]
+    if kind in TASKS_CACHE:
+        return TASKS_CACHE[kind]
 
     if kind == 'mtl_1':
         mtl_task = hanlp.load(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_SMALL_ZH)
@@ -31,25 +73,33 @@ def load_task(kind):
     del mtl_task['pos/863']
     del mtl_task['tok/coarse']
 
-    mtl_task['tok/fine'].dict_combine = {}
+    mtl_task['tok/fine'].dict_force = DICT_FORCE
+    mtl_task['tok/fine'].dict_combine = DICT_COMBINE
 
-    CACHE[kind] = mtl_task
+    TASKS_CACHE[kind] = mtl_task
     return mtl_task
 
-def add_names_to_task(tok_task, mtl_line):
+def add_names_to_task(mtl_line):
     msra_line = mtl_line['ner/msra']
-    onto_line = mtl_line['ner/ontonotes']
+    onto_line = set(mtl_line['ner/ontonotes'])
 
     for item in msra_line:
+        word = item[0]
+
+        if word in SAVED_TERMS:
+            continue
+
         if not item in onto_line:
             continue
 
-        word = item[0]
-        tok_task.dict_combine[word] = word
+        SAVED_TERMS.add(word)
+        DICT_COMBINE[word] = word
+
+        with open(COMBINE_FILE, 'a', encoding='UTF-8') as out_file:
+            out_file.write(word + '\n')
 
 def call_mtl_task(mtl_task, inp_lines):
     mtl_data = mtl_task([inp_lines[0]])
-    tok_task = mtl_task['tok/fine']
 
     for line in inp_lines[1:]:
         mtl_line = mtl_task(line)
@@ -57,7 +107,7 @@ def call_mtl_task(mtl_task, inp_lines):
         for key in mtl_line:
             mtl_data[key].append(mtl_line[key])
 
-        add_names_to_task(tok_task, mtl_line)
+        add_names_to_task(mtl_line)
 
     torch.cuda.empty_cache()
     gc.collect()
@@ -73,11 +123,9 @@ def render_con_data(con_data):
 
     return output
 
-def read_txt_file(inp_path, encoding='utf-8'):
-    with open(inp_path, 'r') as inp_file:
-        return inp_file.read().split('\n')
 
 app = Flask(__name__)
+# app.config['JSON_AS_ASCII'] = False
 
 @app.route("/mtl_file/<kind>", methods=['GET'])
 def mtl_from_file(kind):
@@ -98,13 +146,31 @@ def mtl_from_text(kind):
     inp_data = request.get_data(as_text=True).split('\n')
     mtl_data = call_mtl_task(load_task(kind), inp_data)
 
-    con_text = render_con_data(mtl_data['con'])
-    return con_text
+    return mtl_data.to_json()
+
+@app.route("/force_term", methods=['GET'])
+def force_term(key, val):
+    with open(FORCE_FILE, 'a', encoding='UTF-8') as out_file:
+        out_file.write(key + '\t' + val + '\n')
+
+    return add_force_term(key, val)
+
+@app.route("/combine_term", methods=['GET'])
+def combine_term(word):
+    with open(CONBINE_FILE, 'a', encoding='UTF-8') as out_file:
+        out_file.write(word + '\n')
+
+    SAVED_TERMS.add(word)
+    DICT_COMBINE[word] = word
+
+    return word
 
 ## start app
-
 if __name__ == '__main__':
-    # app.run(debug=True, port=5556)
+    read_force_dict()
+    read_combine_dict()
+
+    # app.run(debug=True, port=5555)
 
     from waitress import serve
     serve(app, port=5555)

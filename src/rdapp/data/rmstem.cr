@@ -61,6 +61,7 @@ class RD::Rmstem
       repo.chmax = @chap_count
       repo.wn_id = @wn_id
 
+      repo.plock = 1
       repo.gifts = 1
       repo.multp = @multp
     end
