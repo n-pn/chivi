@@ -173,7 +173,7 @@ class MT::AiDict
   }
 
   def tl_unit(zstr : String)
-    return CharUtil.to_halfwidth(zstr) if zstr =~ /^[０-９．，－：～％]$/
+    return CharUtil.to_halfwidth(zstr) if zstr.matches?(/^[／-～]+$/)
     real_part, sep_char, fract_part = zstr.partition(/[点．／]/)
 
     real_vstr = TlUnit.translate(real_part)

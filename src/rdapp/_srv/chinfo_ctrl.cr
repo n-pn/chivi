@@ -105,6 +105,7 @@ class RD::ChinfoCtrl < AC::Base
 
     fpath = "" if error > 0
     ztext = fpath.empty? ? [] of String : Chpart.read_raw(fpath)
+    ztext.map!(&.gsub('　', ""))
 
     {
       ch_no: cinfo.ch_no,

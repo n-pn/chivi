@@ -12,7 +12,9 @@ class MT::QtTranCtrl < AC::Base
     mcore = QtCore.hv_word
 
     hviet = String.build do |io|
-      RD::Chpart.read_raw(fpath) { |line| io << mcore.to_mtl(line) << '\n' }
+      RD::Chpart.read_raw(fpath) do |line|
+        io << mcore.to_mtl(line.gsub('　', "")) << '\n'
+      end
     end
 
     tspan = (Time.monotonic - start).total_milliseconds.round(2)

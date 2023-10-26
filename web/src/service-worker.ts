@@ -63,7 +63,7 @@ worker.addEventListener('fetch', (event) => {
 
       return new Response('Có lỗi tải tài nguyên. Thử tắt trang và mở lại.', {
         status: 408,
-        headers: { 'Content-Type': 'text/html' },
+        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
       })
     }
   }
