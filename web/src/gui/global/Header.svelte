@@ -58,7 +58,8 @@
         <Item
           type="button"
           text={$_user.uname}
-          icon="user"
+          icon="privi-{$_user.privi}"
+          iset="icons"
           _dot={$_user.unread_notif > 0}
           opts={{ show: 'pl', kind: 'uname' }}
           data-kbd="u"

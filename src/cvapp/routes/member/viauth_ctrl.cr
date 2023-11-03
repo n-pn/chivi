@@ -9,12 +9,22 @@ class CV::SigninCtrl < CV::BaseCtrl
     render text: Viuser.load!(uname).privi
   end
 
-  record SignupForm, email : String, uname : String, upass : String do
+  struct SignupForm
     include JSON::Serializable
+
+    getter email : String
+    getter uname : String
+    getter upass : String
+
+    getter rcode : String
   end
 
   @[AC::Route::POST("/signup", body: :form)]
   def signup(form : SignupForm)
+    if form.rcode != "BEmfTj"
+      raise BadRequest.new("Sai thông tin vé mời")
+    end
+
     viuser = Viuser.create!(form.email.strip, form.uname.strip, form.upass.strip)
 
     data = {email: viuser.email, uname: viuser.uname, cpass: viuser.cpass}

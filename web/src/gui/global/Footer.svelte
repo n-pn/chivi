@@ -4,18 +4,15 @@
     ['Github', 'https://github.com/np-nam/chivi'],
     ['Facebook', 'https://www.facebook.com/chivi.fb/'],
   ]
-
-  const tools = [
-    ['Dịch nhanh', '/sp/qtran'],
-    ['Phồn -> Giản', '/sp/opencc'],
-  ]
 </script>
 
 <footer class="foot">
   <div class="main">
-    <a href="/hd/donation" class="foot-link">Ủng hộ trang</a>
-
+    <a href="/hd/faq" class="foot-link">Câu hỏi thường gặp</a>
     <span class="sep" />
+    <a href="/hd/donation" class="foot-link">Hướng dẫn nạp vcoin</a>
+  </div>
+  <div class="secd">
     <strong>Liên kết: </strong>
     {#each links as [text, href], index}
       {#if index > 0} <span class="sep" />{/if}
@@ -37,11 +34,11 @@
     // @include bgcolor(tert);
   }
 
-  // .secd {
-  //   margin-top: 0.25rem;
-  // }
+  .secd {
+    margin-top: 0.25rem;
+  }
 
-  // .secd,
+  .secd,
   .main {
     @include flex-cx;
     flex-wrap: wrap;

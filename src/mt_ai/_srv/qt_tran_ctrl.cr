@@ -34,7 +34,6 @@ class MT::QtTranCtrl < AC::Base
 
   @[AC::Route::POST("/hviet")]
   def hviet_text
-    start = Time.monotonic
     mcore = QtCore.hv_word
 
     hviet = String.build do |io|

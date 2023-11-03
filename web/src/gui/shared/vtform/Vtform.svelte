@@ -152,7 +152,6 @@
       class:_active={$ctrl.tab == 0}
       data-kbd="⌃`"
       on:click={() => ctrl.show(0)}>
-      <SIcon name="package" />
       <span>Thêm sửa từ</span>
     </button>
 
@@ -163,7 +162,6 @@
       data-kbd="⌃1"
       on:click={() => ctrl.show(1)}
       disabled>
-      <SIcon name="divide " />
       <span>Nghĩa cặp từ</span>
     </button>
 
@@ -174,8 +172,7 @@
       data-kbd="⌃2"
       on:click={() => ctrl.show(2)}
       disabled>
-      <SIcon name="cut" />
-      <span>Gộp tách từ</span>
+      <span>Tách ghép từ</span>
     </button>
   </nav>
 
@@ -295,7 +292,7 @@
     cursor: pointer;
     @include flex($center: vert);
     // text-transform: capitalize;
-    padding: 0 0.375rem;
+    padding: 0 0.5rem;
     flex-shrink: 0;
     height: $tab-height;
     line-height: $tab-height;

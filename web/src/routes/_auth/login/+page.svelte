@@ -58,13 +58,3 @@
     </button>
   </footer>
 </form>
-
-<div class="form-more">
-  <a href="/_auth/signup?email={email}" class="m-btn _text _success">
-    <span class="-txt">Tài khoản mới</span>
-  </a>
-
-  <a href="/_auth/passwd?email={email}" class="m-btn _text">
-    <span class="-txt">Quên mật khẩu</span>
-  </a>
-</div>

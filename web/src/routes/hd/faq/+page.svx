@@ -1,0 +1,38 @@
+---
+title: Câu hỏi thường gặp
+---
+
+## Chivi là gì
+
+Chivi là trang web cung cấp các tiện liên quan tới dịch thuật từ tiếng Trung sang tiếng Việt. Trong đó tính năng đáng chú ý nhất là máy dịch hoàn toàn mới có sử dụng công nghệ AI để phân tích cấu trúc ngữ pháp, từ đó đưa ra các kết quả dịch sát nghĩa hơn công cụ truyền thống là QuickTranslator.
+
+## Máy dịch Chivi có gì đặc biệt
+
+So với QuickTranslator và các công cụ tương tự, máy dịch mới của Chivi có thể tự nhận dạng được tên riêng, ngày tháng, số lượng, tiết kiệm thời gian các bạn thêm từ thủ công cho từ điển.
+
+So với Bing/Google, các bạn có thể tự do thêm nghĩa mới, sửa nghĩa cũ của các từ. Đặc biệt không bị hạn chế như các dịch vụ dịch trên mạng, từ điển của Chivi nó hỗ trợ thêm nghĩa theo từ loại, thêm nghĩa cho cả cụm từ mà không làm vỡ nghĩa.
+
+## Vcoin là gì
+
+Vcoin là đơn vị tiền tệ được dùng để mở khóa các tính năng cao cấp tốn tài nguyên hệ thống. Chức năng chính của Vcoin là dùng để nâng cấp quyền hạn, mở khóa các tính năng ưu tiên. Ngoài ra các bạn có thể dùng Vcoin để mở khóa đọc nội dung các chương tiết hoặc tải xuống nội dung. Các cách dùng mới của Vcoin sẽ được cập nhật dần theo thời gian.
+
+## Làm sao để có được Vcoin
+
+Các bạn có thể ủng hộ trang bằng tiền mặt qua hướng dẫn: [Ủng hộ Chivi](/hd/donation)
+
+Ngoài ra nếu các bạn có quyền hạn từ 1 trở lên, hãy thử tính năng [Sưu tầm các nhân], ở đây các bạn có thể tự đăng tải các bộ truyện (hoặc có thể script game, lời bài hát) các bạn tự sưu tầm được, để chia sẻ cho mọi người trong trang. Khi người dùng khác đọc chương tiết của sưu tâm, các bạn sẽ được thưởng số lượng vcoin tương ứng.
+
+## Quyền hạn là gì và tại sao tôi cần nâng cấp quyền hạn
+
+Chivi không sống bằng quảng cáo, cho nên tiền các bạn ủng hộ là đầu vào duy nhất của trang. Để các bạn thêm lý do ủng hộ trang thì Chivi sẽ thêm vài cái hạn chế về quyền hạn, ưu ái các bạn ủng hộ nhiều. Một số tính năng của Chivi (đặc biệt là dịch máy) rất tốn tài nguyên, nên chỉ có thể mở ra cho một vài bạn.
+
+Hướng dẫn nâng cấp quyền hạn: [Ủng hộ Chivi](/hd/nang-cap-quyen-han)
+
+# Tại sao cần thiết quyền hạn 1 để xem bình luận từ yousuu.
+
+Tính năng xem bình luận của yousuu trước để mở vì trang muốn mọi người mở rộng tầm nhìn, biết được ngoài tu chân huyền ảo tiểu bạch văn ra thì truyện Tàu còn có vô vàng các truyện khác
+hay ho hấp dẫn hơn. Hơn nữa thì đây cũng là một cách để trang thu hút người dùng, các bạn thấy hay, mang nó đi chia sẻ cho người khác thì trang sẽ hút thêm người dùng mới.
+
+Đáng tiếc, đây chỉ là mơ mộng viển vông. Các bạn vẫn chỉ chủ yếu xem huyền huyễn, cũng chưa bao giờ đi quảng bá đống booklist này cho các diễn đàn đọc truyện truyền thống.
+
+Mà tính năng này thực tế là rất tốn công sức và tài nguyên để bảo trì. Cho nên rất tiếc, từ giờ nó sẽ bị khóa lại, chỉ phục vụ cho một vài bạn hảo tâm.

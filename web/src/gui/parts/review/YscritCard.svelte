@@ -90,7 +90,10 @@
   <section class="body" class:big_text>
     {#if $_user.privi < 1}
       <p class="u-fg-mute u-fz-sm">
-        <em>(Bạn cần thiết quyền hạn tối thiểu là 1 để xem bình luận.)</em>
+        <em
+          >(Bạn cần thiết quyền hạn tối thiểu là 1 để xem bình luận. <a
+            href="/hd/faq">Tham khảo lý do</a
+          >)</em>
       </p>
     {:else if _onload}
       <div class="loading">
@@ -258,10 +261,5 @@
     @include hover {
       @include fgcolor(primary, 5);
     }
-  }
-
-  .mute {
-    @include fgcolor(secd);
-    font-size: em(15, 16);
   }
 </style>

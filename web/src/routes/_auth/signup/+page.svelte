@@ -9,6 +9,7 @@
 
   let uname = ''
   let upass = ''
+  let rcode = ''
   let error = ''
 
   const action = '/_db/_user/signup'
@@ -17,7 +18,7 @@
     evt.preventDefault()
 
     error = ''
-    error = await post_form(action, { email, uname, upass })
+    error = await post_form(action, { email, uname, upass, rcode })
     if (!error) return_back()
   }
 </script>
@@ -59,6 +60,18 @@
       bind:value={upass} />
   </div>
 
+  <div class="form-inp">
+    <label class="form-lbl" for="rcode">Mã vé mời</label>
+    <input
+      class="m-input"
+      type="text"
+      id="rcode"
+      name="rcode"
+      placeholder="Vé mời của người dùng Chivi đưa cho bạn"
+      required
+      bind:value={rcode} />
+  </div>
+
   {#if error}<div class="form-msg _err">{error}</div> {/if}
 
   <footer class="form-btns">
@@ -71,9 +84,3 @@
     </button>
   </footer>
 </form>
-
-<div class="form-more">
-  <a href="/_auth/login?email={email}" class="m-btn _text">
-    <span class="-text">Đăng nhập</span>
-  </a>
-</div>

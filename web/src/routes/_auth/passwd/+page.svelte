@@ -23,7 +23,7 @@
 
 <form {action} method="POST" on:submit={submit}>
   <div class="form-inp">
-    <label class="form-lbl" for="email">Hòm thư</label>
+    <label class="form-lbl" for="email">Địa chỉ hòm thư</label>
     <input
       type="email"
       class="m-input _lg"
@@ -53,13 +53,3 @@
     </button>
   </footer>
 </form>
-
-<div class="form-more">
-  <a href="/_auth/login?email={email}" class="m-btn _text">
-    <span class="-text">Đăng nhập</span>
-  </a>
-
-  <a href="/_auth/signup?email={email}" class="m-btn _text _success">
-    <span class="-txt">Tài khoản mới</span>
-  </a>
-</div>

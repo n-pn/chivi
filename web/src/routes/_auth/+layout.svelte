@@ -35,18 +35,25 @@
   ]
 </script>
 
-<header class="brand">
-  <img class="blogo" src="/icons/chivi.svg" alt="logo" />
-  <span class="btext">Chivi</span>
-</header>
-
 <Section {tabs}>
+  <header class="brand">
+    <img class="blogo" src="/icons/chivi.svg" alt="logo" />
+    <span class="btext">Chivi</span>
+  </header>
+
   <section class="wrap">
     <article class=" island">
       <slot />
     </article>
   </section>
 </Section>
+
+<div class="form-msg u-warn">
+  <strong>
+    Chức năng đăng ký tạm thời đóng cho tới khi có thông báo mới. Bạn nào muốn
+    đăng ký hãy thử liên hệ ban quản trị theo liên kết cuối trang.
+  </strong>
+</div>
 
 <style lang="scss">
   .wrap {
@@ -68,22 +75,24 @@
 
   .brand {
     @include flex-ca;
-    @include ftsize(x4);
+    @include ftsize(x5);
 
-    // font-weight: 300;
-    line-height: 2.5rem;
-    margin-top: 2rem;
+    margin-top: 3rem;
     margin-bottom: 1.5rem;
     padding-right: 0.75rem;
   }
 
   .blogo {
-    height: 2.5rem;
+    height: 3rem;
   }
 
   .btext {
     margin-left: 0.5rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
+  }
+
+  .form-msg {
+    text-align: center;
   }
 </style>

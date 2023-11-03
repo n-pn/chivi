@@ -3,6 +3,8 @@
 
   export let text: string | null = null
   export let icon: string | null = null
+  export let iset = 'tabler'
+
   export let type: string = 'a'
 
   export let _dot = false
@@ -16,7 +18,7 @@
   class:_dot
   on:click
   {...$$restProps}>
-  {#if icon}<SIcon name={icon} />{/if}
+  {#if icon}<SIcon name={icon} {iset} />{/if}
   {#if text}<span class="appbar-text u-show-{opts.show || 'ps'}">{text}</span
     >{/if}
 </svelte:element>
