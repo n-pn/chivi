@@ -60,8 +60,7 @@ class RD::Rmstem
     Chrepo.load(sroot: "rm#{@sname}/#{@sn_id}").tap do |repo|
       repo.chmax = @chap_count
       repo.wn_id = @wn_id
-
-      repo.plock = 1
+      repo.plock = 0
       repo.gifts = 1
       repo.multp = @multp
     end

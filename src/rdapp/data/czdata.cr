@@ -3,7 +3,7 @@ require "../../_util/chap_util"
 
 class RD::Czdata
   class_getter init_sql = <<-SQL
-    CREATE TABLE IF NOT EXISTS czdata(
+    CREATE TABLE IF NOT EXISTS czinfos(
       ch_no int not null,
       cksum bigint NOT NULL,
       --
@@ -25,13 +25,13 @@ class RD::Czdata
 
   @[AlwaysInline]
   def self.db_path(dname : String)
-    "#{CZ_DIR}/#{dname}-ztext.db3"
+    "#{CZ_DIR}/#{dname}-zdata.db3"
   end
 
   ###
 
   include Crorm::Model
-  schema "czdata", :sqlite, multi: true
+  schema "czinfos", :sqlite, multi: true
 
   field ch_no : Int32 = 0, pkey: true
   field cksum : Int64 = 0_i64, pkey: true
@@ -44,7 +44,7 @@ class RD::Czdata
   field mtime : Int64 = 0_i64
 
   field parts : String = ""
-  field sizes : String = ""
+  field sizes : String = "0"
 
   def initialize(@ch_no, cbody : String, title : String = "", chdiv : String = "",
                  @uname = "", @zorig = "", @mtime = Time.utc.to_unix)
@@ -63,11 +63,14 @@ class RD::Czdata
     self.set_czdata(cbody)
   end
 
+  @[AlwaysInline]
   def set_labels(title : String, chdiv : String, cleaned : Bool = false)
     @title, @chdiv = ChapUtil.split_ztitle(title, chdiv: chdiv, cleaned: cleaned)
   end
 
+  @[AlwaysInline]
   def set_czdata(cbody : Array(String))
+    return if cbody.empty?
     @parts, @sizes, @cksum = ChapUtil.split_cztext(cbody)
   end
 

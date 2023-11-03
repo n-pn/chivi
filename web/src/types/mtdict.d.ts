@@ -17,4 +17,18 @@ declare namespace CV {
     total: number
     mtime: number
   }
+
+  interface Zvpair {
+    dname: string
+    a_key: string
+    b_key: string
+
+    a_vstr: string
+    a_attr: string
+    b_vstr: string
+    b_attr: string
+
+    uname: string
+    mtime: number
+  }
 }

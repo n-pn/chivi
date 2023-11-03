@@ -1,4 +1,5 @@
 require "./mt_attr"
+require "./zv_pair"
 
 class MT::MtPair
   struct Pair
@@ -6,36 +7,36 @@ class MT::MtPair
     getter a_attr : MtAttr?
 
     getter b_vstr : String?
-    getter b_attr : MtAttr
+    getter b_attr : MtAttr = MtAttr::None
 
-    def initialize(@a_vstr, @a_attr, @b_vstr, @b_attr = MtAttr::None)
-    end
-
-    def initialize(cols : Array(String))
-      @a_vstr = cols[0]
-      @a_attr = cols[1]?.try { |x| MtAttr.parse_list(x) }
-      @b_vstr = cols[2]?.try { |x| x.empty? ? nil : x }
-      @b_attr = cols[3]?.try { |x| MtAttr.parse_list(x) } || MtAttr::None
+    def initialize(@a_vstr, a_attr : String?, @b_vstr = nil, b_attr : String? = nil)
+      @a_attr = MtAttr.parse_list(a_attr) if a_attr
+      @b_attr = MtAttr.parse_list(b_attr) if b_attr
     end
   end
+
+  getter hash = {} of String => Hash(String, Pair)
 
   def initialize(@dname : String)
-    @hash = {} of String => Hash(String, Pair)
   end
 
-  DIR = "var/mtdic/mt_ai"
+  def add!(data : ZvPair)
+    hash = @hash[data.a_key] ||= {} of String => Pair
+    hash[data.b_key] = Pair.new(data.a_vstr, data.a_attr, data.b_vstr, data.b_attr)
+  end
+
+  def load_db3!(dname = @dname)
+    ZvPair.fetch_all(dname).each { |zv_pair| add!(zv_pair) }
+    self
+  end
 
   def load_tsv!(dname : String = @dname)
-    db_path = "#{DIR}/#{dname}.tsv"
+    db_path = "var/mtdic/mt_ai/#{dname}.tsv"
     return self unless File.file?(db_path)
 
     File.each_line(db_path) do |line|
       cols = line.split('\t')
-      next if cols.size < 3
-      a_zstr, b_zstr, *cols = cols
-
-      hash = @hash[a_zstr] ||= {} of String => Pair
-      hash[b_zstr] = Pair.new(cols)
+      add!(ZvPair.new(cols)) if cols.size > 2
     end
 
     self
@@ -93,18 +94,21 @@ class MT::MtPair
     {b_zstr, a_zstr, @hash[a_zstr]["*"]}
   end
 
-  def add_more(pair : Pair)
-  end
-
   ###
 
-  class_getter m_n_pair : self { new("m_n_pair").load_tsv! }
-  class_getter m_v_pair : self { new("m_v_pair").load_tsv! }
+  CACHE = {} of String => self
 
-  class_getter p_v_pair : self { new("p_v_pair").load_tsv! }
-  class_getter d_v_pair : self { new("d_v_pair").load_tsv! }
+  def self.load!(dname : String)
+    CACHE[dname] ||= new(dname).load_db3!
+  end
 
-  class_getter v_v_pair : self { new("v_v_pair").load_tsv! }
-  class_getter v_n_pair : self { new("v_n_pair").load_tsv! }
-  class_getter v_c_pair : self { new("v_c_pair").load_tsv! }
+  class_getter m_n_pair : self { load!("m_n") }
+  class_getter m_v_pair : self { load!("m_v") }
+
+  class_getter p_v_pair : self { load!("p_v") }
+  class_getter d_v_pair : self { load!("d_v") }
+
+  class_getter v_v_pair : self { load!("v_v") }
+  class_getter v_n_pair : self { load!("v_n") }
+  class_getter v_c_pair : self { load!("v_c") }
 end

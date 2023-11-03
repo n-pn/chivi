@@ -57,7 +57,7 @@ class MT::ViTermForm
     ViTerm.find(dict: @dname, zstr: @zstr, cpos: @old_cpos)
   end
 
-  def save_to_disk!(uname : String, mtime = ViTerm.mtime, on_create : Bool = true) : Nil
+  def save_to_disk!(uname : String, mtime = ZvUtil.mtime, on_create : Bool = true) : Nil
     spawn do
       vidict = ViDict.load(@dname)
 

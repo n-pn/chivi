@@ -25,11 +25,9 @@
 
   const action = '/_db/_self/upgrade-privi'
 
-  async function submit(evt: Event) {
-    evt.preventDefault()
-
-    error = ''
+  async function submit() {
     _onload = true
+    error = ''
 
     try {
       $_user = await api_call(action, form, 'PUT')
@@ -43,7 +41,7 @@
   const privi_colors = ['neutral', 'success', 'primary', 'warning', 'harmful']
 </script>
 
-<form {action} method="PUT" class="form" on:submit={submit}>
+<form {action} method="PUT" class="form" on:submit|preventDefault={submit}>
   <div class="form-field">
     <label class="form-label" for="privi">Chọn quyền hạn:</label>
     <div class="radio-group">

@@ -2,7 +2,9 @@ require "crorm"
 
 require "../../_util/char_util"
 require "../../_util/viet_util"
+
 require "./mt_term"
+require "./zv_util"
 
 class MT::ViTerm
   class_getter init_sql = <<-SQL
@@ -105,7 +107,7 @@ class MT::ViTerm
       jb.field "attr", @attr
 
       jb.field "uname", @uname
-      jb.field "mtime", self.class.utime(@mtime)
+      jb.field "mtime", ZvUtil.utime(@mtime)
 
       jb.field "plock", @plock
     end
@@ -129,16 +131,6 @@ class MT::ViTerm
   end
 
   ###
-
-  EPOCH = Time.utc(2020, 1, 1, 0, 0, 0).to_unix
-
-  def self.mtime(rtime : Time = Time.utc)
-    ((rtime.to_unix &- EPOCH) // 60).to_i
-  end
-
-  def self.utime(mtime : Int32)
-    mtime > 0 ? EPOCH &+ mtime &* 60 : 0
-  end
 
   def self.find(dict : String, zstr : String, cpos : String)
     self.find(dict, zstr, ipos: MtEpos.parse(cpos).to_i)
