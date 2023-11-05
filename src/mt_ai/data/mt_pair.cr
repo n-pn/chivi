@@ -26,7 +26,7 @@ class MT::MtPair
   end
 
   def load_db3!(dname = @dname)
-    ZvPair.fetch_all(dname).each { |zv_pair| add!(zv_pair) }
+    ZvPair.fetch_each(dname) { |zv_pair| add!(zv_pair) }
     self
   end
 

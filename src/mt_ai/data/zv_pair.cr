@@ -67,8 +67,12 @@ struct MT::ZvPair
     select * from zvpairs where dname = $1 and _flag >= 0
     SQL
 
-  def self.fetch_all(dname : String)
-    ZvPair.db.open_ro(&.query_all(FETCH_SQL, dname, as: self))
+  def self.fetch_each(dname : String, &)
+    ZvPair.db.open_ro do |db|
+      db.query_each(FETCH_SQL, dname) do |rs|
+        yield rs.read(self)
+      end
+    end
   end
 
   def self.fetch_page(dname : String? = nil,
