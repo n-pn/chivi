@@ -53,11 +53,15 @@
     }
   }
 
-  const gen_format_hints = (input: string) => {
+  const gen_format_hints = (input: string, is_hv = false) => {
     const output = []
 
-    output.push(input.toLowerCase())
-    output.push(titleize(input, 999))
+    if (is_hv) {
+      output.push(input.toLowerCase())
+      output.push(titleize(input, 999))
+    } else if (input.match(/^[a-z0-9]+$/i)) {
+      output.push(input.toUpperCase())
+    }
 
     let length = input.split(' ').length
     if (length > 3) length = 3
@@ -82,7 +86,17 @@
     }
   }
 
-  $: no_cap = tform.cpos != 'NR' && tform.cpos != 'NP' && tform.cpos != 'NN'
+  $: keep_caps = tform.cpos[0] == 'N'
+
+  $: all_lower = tform.vstr.toLowerCase()
+  $: all_title = titleize(tform.vstr, 99)
+
+  const call_mt_v1 = async (ztext: string) => {
+    const url = `/_m1/qtran/suggest?input=${ztext}&w_cap=false`
+    const res = await fetch(url)
+    if (res.ok) return await res.text()
+    return res.status
+  }
 </script>
 
 <div class="util">
@@ -127,12 +141,34 @@
     <button
       type="button"
       class="btn _right"
+      data-kbd="0"
+      class:_same={tform.vstr == all_lower}
+      on:click={() => (tform.vstr = all_lower)}
+      use:tooltip={'Viết thường tất cả'}
+      data-anchor=".vtform">
+      <SIcon name="letter-case-lower" />
+    </button>
+
+    <button
+      type="button"
+      class="btn"
+      data-kbd="9"
+      class:_same={tform.vstr == all_title}
+      on:click={() => (tform.vstr = all_title)}
+      use:tooltip={'Viết hoa chữ đầu tất cả'}
+      data-anchor=".vtform">
+      <SIcon name="letter-case-upper" />
+    </button>
+
+    <button
+      type="button"
+      class="btn"
       data-kbd="f"
       class:_same={more_type == 'cases'}
       on:click={() => trigger_more('cases')}
       use:tooltip={'Chuyển nhanh viết hoa viết thường'}
       data-anchor=".vtform">
-      <span>Viết hoa</span>
+      <SIcon name="letter-case-toggle" />
       <SIcon name="caret-down" />
     </button>
   </div>
@@ -142,20 +178,20 @@
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="util-more" on:click={handle_click}>
       {#if more_type == 'hviet'}
-        {#each gen_format_hints(tform.hviet) as vstr}
+        {#each gen_format_hints(tform.hviet, true) as vstr}
           <span class="txt" class:_same={tform.vstr == vstr} data-vstr={vstr}>
             {vstr}
           </span>
         {/each}
       {:else if more_type == 'cases'}
-        {#each gen_format_hints(tform.vstr) as vstr}
+        {#each gen_format_hints(tform.vstr, false) as vstr}
           <span class="txt" class:_same={tform.vstr == vstr} data-vstr={vstr}>
             {vstr}
           </span>
         {/each}
       {:else if more_type == 'trans'}
         <SIcon name="brand-google" />
-        {#await gtran_word(tform.ztext, 'vi', no_cap)}
+        {#await gtran_word(tform.ztext, 'vi', keep_caps)}
           <SIcon name="loader-2" spin={true} />
         {:then vstr_list}
           {#each vstr_list as vstr}
@@ -167,7 +203,7 @@
 
         <SIcon name="brand-bing" />
 
-        {#await btran_word(tform.ztext, 'auto', no_cap)}
+        {#await btran_word(tform.ztext, 'auto', keep_caps)}
           <SIcon name="loader-2" spin={true} />
         {:then vstr_list}
           {#each vstr_list as vstr}
@@ -175,6 +211,16 @@
               {vstr}
             </span>
           {/each}
+        {/await}
+
+        <img class="sep" src="/icons/chivi.svg" alt="chivi" />
+
+        {#await call_mt_v1(tform.ztext)}
+          <SIcon name="loader-2" spin={true} />
+        {:then vstr}
+          <span class="txt" class:_same={tform.vstr == vstr} data-vstr={vstr}>
+            {vstr}
+          </span>
         {/await}
 
         <img class="sep" src="/icons/deepl.svg" alt="deepl" />
@@ -252,9 +298,9 @@
     position: absolute;
     z-index: 9999;
     top: 100%;
-    margin-top: -4px;
+    margin-top: -3px;
     padding: 0.375rem 0.75rem;
-    line-height: 1.25rem;
+    line-height: 1.375rem;
 
     left: 0;
     right: 0;

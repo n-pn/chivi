@@ -31,7 +31,7 @@
       type="email"
       id="email"
       name="email"
-      placeholder="Hòm thư"
+      placeholder="Địa chỉ email của bạn"
       required
       bind:value={email} />
   </div>
@@ -43,7 +43,7 @@
       type="text"
       id="cname"
       name="cname"
-      placeholder="Tên người dùng"
+      placeholder="Tên hiển thị của bạn"
       required
       bind:value={uname} />
   </div>
@@ -55,19 +55,19 @@
       type="password"
       id="upass"
       name="upass"
-      placeholder="Mật khẩu"
+      placeholder="Mật khẩu cần ít nhất 8 ký tự"
       required
       bind:value={upass} />
   </div>
 
   <div class="form-inp">
-    <label class="form-lbl" for="rcode">Mã vé mời</label>
+    <label class="form-lbl" for="rcode">Mã giới thiệu</label>
     <input
       class="m-input"
       type="text"
       id="rcode"
       name="rcode"
-      placeholder="Vé mời của người dùng Chivi đưa cho bạn"
+      placeholder="Mã giới thiệu của người dùng Chivi đưa cho bạn"
       required
       bind:value={rcode} />
   </div>

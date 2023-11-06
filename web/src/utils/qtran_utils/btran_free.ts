@@ -44,7 +44,7 @@ async function call_btran_word(text: string, sl = 'auto') {
 
 const cached = new Map<string, string[]>()
 
-export async function btran_word(text: string, sl = 'auto', no_cap = true) {
+export async function btran_word(text: string, sl = 'auto', keep_caps = false) {
   const key = `${text}-${sl}`
   let res = cached.get(key)
 
@@ -53,7 +53,10 @@ export async function btran_word(text: string, sl = 'auto', no_cap = true) {
     if (res.length > 0) cached.set(key, res)
   }
 
-  if (no_cap) res = res.map((x: string) => detitlize(x))
+  const res2 = res.map((x: string) => detitlize(x))
+  if (!keep_caps) res = res2
+  else res = res.concat(res2)
+
   return [...new Set(res)]
 }
 

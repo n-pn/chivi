@@ -49,33 +49,41 @@ class M1::TranCtrl < AC::Base
     render json: {cvmtl: cvmtl, ztext: qtran.input, wn_id: wn_id}
   end
 
-  @[AC::Route::GET("/wntext")]
-  def qtran_wntext(cpath : String)
-    vtext = String.build do |io|
-      txt_path = TranData.wntext_path(cpath)
+  # @[AC::Route::GET("/wntext")]
+  # def qtran_wntext(cpath : String)
+  #   guard_privi 0, "dùng máy dịch v1"
 
-      mt_v1 = MtCore.init(cpath.split('/').first.to_i)
-      first = true
+  #   vtext = String.build do |io|
+  #     txt_path = TranData.wntext_path(cpath)
 
-      File.each_line(txt_path) do |line|
-        io << '\n' unless first
-        data = first ? mt_v1.cv_title(line) : mt_v1.cv_plain(line)
-        data.to_txt(io)
-        first = false
-      end
-    end
+  #     mt_v1 = MtCore.init(cpath.split('/').first.to_i)
+  #     first = true
 
-    render text: vtext
-  end
+  #     File.each_line(txt_path) do |line|
+  #       io << '\n' unless first
+  #       data = first ? mt_v1.cv_title(line) : mt_v1.cv_plain(line)
+  #       data.to_txt(io)
+  #       first = false
+  #     end
+  #   end
+
+  #   render text: vtext
+  # end
 
   @[AC::Route::GET("/tl_btitle")]
   def tl_btitle(btitle : String, wn_id : Int32 = 0)
-    render text: TlUtil.tl_btitle(btitle, wn_id)
+    guard_privi 0, "dùng máy dịch v1"
+
+    btitle_vi = TlUtil.tl_btitle(btitle, wn_id)
+    render text: btitle_vi
   end
 
   @[AC::Route::GET("/tl_author")]
   def tl_author(author : String)
-    render text: TlUtil.tl_author(author)
+    guard_privi 0, "dùng máy dịch v1"
+
+    author_vi = TlUtil.tl_author(author)
+    render text: author_vi
   end
 
   record WninfoForm, btitle : String, author : String, bintro : String do
@@ -84,6 +92,8 @@ class M1::TranCtrl < AC::Base
 
   @[AC::Route::POST("/tl_wnovel", body: :form)]
   def tl_wnovel(form : WninfoForm, wn_id : Int32 = 0)
+    guard_privi 0, "dùng máy dịch v1"
+
     cv_mt = MtCore.init(wn_id, user: _uname)
 
     intro = String.build do |io|
@@ -118,24 +128,20 @@ class M1::TranCtrl < AC::Base
     render text: pname
   end
 
-  @[AC::Route::PUT("/debug")]
-  def debug(wn_id : Int32, w_cap : Bool = false)
+  @[AC::Route::GET("/suggest")]
+  def suggest(input : String, wn_id : Int32 = 0, w_cap : Bool = false)
+    guard_privi 0, "dùng máy dịch v1"
+
     cv_mt = MtCore.init(wn_id, user: _uname)
-    input = request.body.try(&.gets_to_end) || ""
-
-    output = String.build do |io|
-      cv_mt.cv_plain(input, w_cap).to_txt(io)
-      io << '\n'
-      io << MT::QtCore.tl_hvword(input, cap: w_cap)
-    end
-
-    render text: output
+    otext = cv_mt.cv_plain(input, w_cap).to_txt
+    render text: otext
   end
 
   @[AC::Route::POST("/cv_chap")]
   def cv_chap(wn_id : Int32 = 0, w_title : Bool = true, label : String? = nil)
-    input = request.body.try(&.gets_to_end) || ""
+    guard_privi 0, "dùng máy dịch v1"
 
+    input = request.body.try(&.gets_to_end) || ""
     qtran = TranData.new(input, wn_id, format: "mtl")
 
     cvmtl = qtran.cv_wrap do |io, engine|

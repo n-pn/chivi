@@ -3,11 +3,13 @@ require "crorm"
 struct MT::Wsterm
   DIR = "var/mt_db"
 
-  class_getter db_path = "#{DIR}/wsterms.db3"
+  def self.db_path(type : String = "global")
+    "#{DIR}/#{type}-wseg.db3"
+  end
 
   class_getter init_sql : String = <<-SQL
     CREATE TABLE IF NOT EXISTS wsterms (
-      d_id text NOT NULL,
+      d_id int NOT NULL,
       zstr text NOT NULL,
       --
       wprio int not null default 2,
@@ -27,30 +29,20 @@ struct MT::Wsterm
   ###
 
   include Crorm::Model
-  schema "wsterms", :sqlite
+  schema "wsterms", :sqlite, multi: true
 
-  field dname : String, pkey: true
-  field a_key : String, pkey: true
-  field b_key : String, pkey: true
+  field d_id : Int32, pkey: true
+  field zstr : String, pkey: true
 
-  field a_vstr : String
-  field a_attr : String? = nil
+  field wprio : Int32 = 2
+  field ntype : String? = nil
 
-  field b_vstr : String? = nil
-  field b_attr : String? = nil
+  field z_out : String? = nil
+  field v_out : String? = nil
 
-  def initialize(@dname, @a_key, @b_key, @a_vstr, @a_attr, @b_vstr, @b_attr)
-  end
+  field uname : String = ""
+  field mtime : Int32 = 0
 
-  def self.new(dname : String, cols : Array(String))
-    new(
-      dname: dname,
-      a_key: cols[0],
-      b_key: cols[1],
-      a_vstr: cols[2],
-      a_attr: cols[3]?.try { |x| x.empty? ? nil : x },
-      b_vstr: cols[4]?.try { |x| x.empty? ? nil : x },
-      b_attr: cols[5]?.try { |x| x.empty? ? nil : x },
-    )
+  def initialize(@d_id, @zstr, @wprio, @ntype, @z_out, @v_out)
   end
 end
