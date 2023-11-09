@@ -92,6 +92,7 @@ struct CV::VicritView
     wbook : Int32? = nil,
     vlist : Int32? = nil,
     btags : String? = nil,
+    umemo : String? = nil,
     s_min : Int32? = nil,
     s_max : Int32? = nil,
     limit : Int32 = 10,
@@ -109,6 +110,8 @@ struct CV::VicritView
       idx = where_btags(sql, idx) if btags
       idx = where_s_min(sql, idx) if s_min
       idx = where_s_max(sql, idx) if s_max
+
+      sql << " and m.liked_at > 0" if umemo == "liked"
 
       case order
       when "ctime" then sql << " order by t.vc_id desc"
@@ -128,6 +131,7 @@ struct CV::VicritView
     wbook : Int32? = nil,
     vlist : Int32? = nil,
     btags : String? = nil,
+    umemo : String? = nil,
     s_min : Int32? = nil,
     s_max : Int32? = nil
   )

@@ -25,8 +25,7 @@ export const load_crits = async (url: URL, fetch: CV.Fetch, opts = {}) => {
   opts['lm'] ||= 10
 
   const search = merge_query(url.searchParams, opts)
-
-  const from = url.searchParams.get('from') || ''
+  const from = opts['from'] || url.searchParams.get('from') || ''
 
   let vi: CV.VicritList = empty_crits
   let ys: CV.YscritList = empty_crits

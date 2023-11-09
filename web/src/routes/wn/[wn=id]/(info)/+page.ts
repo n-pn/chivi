@@ -13,12 +13,19 @@ export interface BookFront {
 }
 
 export const load = async ({ url, fetch, params }: LoadEvent) => {
-  const gdroot = `wn:${parseInt(params.wn, 10)}`
+  const wn = parseInt(params.wn, 10)
+  const gdroot = `wn:${wn}`
 
-  const sort = url.searchParams.get('sort') || '-id'
-  const path = `/_db/droots/show/${gdroot}?sort=${sort}&lm=9999`
+  const rppath = `/_db/droots/show/${gdroot}?lm=10`
+  const { rplist } = await api_get<CV.GdrootPage>(rppath, fetch)
 
-  const { rplist } = await api_get<CV.GdrootPage>(path, fetch)
+  const bdata = await api_get<BookFront>(`/_db/books/${wn}/front`, fetch)
+  const ydata = await load_ycrits(wn, fetch)
 
-  return { rplist, gdroot, sort, ontab: 'fp' }
+  return { rplist, gdroot, bdata, ydata, ontab: 'fp' }
+}
+
+const load_ycrits = async (wn: number, fetch = globalThis.fetch) => {
+  const path = `/_ys/crits?book=${wn}&sort=score&lm=3`
+  return await api_get<CV.YscritList>(path, fetch)
 }

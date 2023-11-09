@@ -110,7 +110,7 @@ class CV::Ubmemo
         on u.id = m.viuser_id
       where m.nvinfo_id = $1
         and u.privi >= 0
-        and (m.status > 0 or m.lr_chidx > 0)
+        and (m.status > 0)
       order by m.status desc, m.utime desc
     SQL
   end

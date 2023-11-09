@@ -66,6 +66,27 @@ class RD::Rmstem
     end
   end
 
+  def translate!
+    hv_mt = MT::QtCore.hv_name
+
+    @btitle_vi = hv_mt.translate @btitle_zh, true
+    @author_vi = hv_mt.translate @author_zh, true
+    @genre_vi = @genre_zh.split('\t').map! { |x| hv_mt.translate(x, true) }.join('\t')
+    @intro_vi = HTTP::Client.post(CV_ENV.m1_host + "/_m1/qtran?format=txt", body: @intro_zh, &.body_io.gets_to_end)
+  rescue ex
+    Log.error(exception: ex) { ex }
+  end
+
+  # TODO: call from wninfo moel
+  GET_WN_ID_SQL = <<-SQL
+    select coalesce(id, 0) from wninfos where author_zh = $1 and btitle_zh = $2 limit 1
+    SQL
+
+  def fix_wn_id!
+    author_zh, btitle_zh = BookUtil.fix_names(@author_zh, @btitle_zh)
+    @wn_id = self.class.db.query_one GET_WN_ID_SQL, author_zh, btitle_zh, as: Int32
+  end
+
   @[AlwaysInline]
   def alive?
     @rtype == 0 && @_flag >= 0

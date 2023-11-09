@@ -8,20 +8,22 @@ class CV::VicritCtrl < CV::BaseCtrl
             smin : Int32 = 1, smax : Int32 = 5,
             from : String = "vi", user : String? = nil,
             book : Int32? = nil, list : Int32? = nil,
-            vtag : String? = nil)
+            vtag : String? = nil, memo : String? = nil)
     pg_no, limit, offset = _paginate(min: 1, max: 24)
 
     crits = VicritView.fetch_all(
       self_id: _vu_id, order: sort,
       vuser: from == "me" ? _uname : user,
-      wbook: book, vlist: list, btags: vtag,
+      wbook: book, vlist: list,
+      btags: vtag, umemo: memo,
       s_min: smin, s_max: smax,
       limit: limit, offset: offset,
     )
 
     total = VicritView.count_all(
       vuser: from == "me" ? _uname : user,
-      wbook: book, vlist: list, btags: vtag,
+      wbook: book, vlist: list,
+      btags: vtag, umemo: memo,
       s_min: smin, s_max: smax,
     )
 

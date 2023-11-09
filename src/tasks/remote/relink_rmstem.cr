@@ -16,8 +16,8 @@ struct Input
   getter sn_id : String
 end
 
-inputs = PGDB.query_all "select sname, sn_id from rmstems where rlink = ''", as: Input
-inputs = inputs.group_by { |x| x.sname }
+inputs = PGDB.query_all "select sname, sn_id from rmstems where sname = '!piaotia.com'", as: Input
+inputs = inputs.group_by(&.sname)
 
 update_sql = "update rmstems set rlink = $1 where sname = $2 and sn_id = $3"
 inputs.each do |sname, rstems|

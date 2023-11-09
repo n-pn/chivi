@@ -65,8 +65,42 @@ class RD::RmstemCtrl < AC::Base
   @[AC::Route::GET("/:sname/:sn_id")]
   def show(sname : String, sn_id : String, crawl : Int32 = 0, regen : Bool = false)
     rstem = get_rstem(sname, sn_id)
+
+    if regen
+      rstem.fix_wn_id!
+      rstem.translate!
+    end
+
     rstem.update!(crawl, regen) if crawl > 0 || regen
+
     render json: rstem
+  end
+
+  @[AC::Route::POST("/")]
+  def upsert!(rlink : String)
+    guard_privi 1, "thêm nguồn nhúng mới"
+
+    rhost = Rmhost.from_link!(rlink)
+    sn_id = rhost.extract_bid(rlink)
+    bfile = rhost.book_file(sn_id)
+
+    bhtml = rhost.load_page(rlink, bfile)
+
+    rstem = Rmstem.from_html(bhtml, rhost.seedname, sn_id, force: true)
+    raise BadRequest.new("Nguồn truyện không hợp lệ") unless rstem
+
+    rstem.rlink = rlink
+    rstem.rtime = File.info(bfile).modification_time.to_unix
+
+    rstem.fix_wn_id!
+    rstem.translate!
+
+    rstem.upsert!
+
+    render json: rstem
+  rescue ex
+    Log.error(exception: ex) { ex }
+    render text: ex.message || "500"
   end
 
   # @[AC::Route::POST("/:up_id", body: form)]

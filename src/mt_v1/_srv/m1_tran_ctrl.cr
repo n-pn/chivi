@@ -49,27 +49,6 @@ class M1::TranCtrl < AC::Base
     render json: {cvmtl: cvmtl, ztext: qtran.input, wn_id: wn_id}
   end
 
-  # @[AC::Route::GET("/wntext")]
-  # def qtran_wntext(cpath : String)
-  #   guard_privi 0, "dùng máy dịch v1"
-
-  #   vtext = String.build do |io|
-  #     txt_path = TranData.wntext_path(cpath)
-
-  #     mt_v1 = MtCore.init(cpath.split('/').first.to_i)
-  #     first = true
-
-  #     File.each_line(txt_path) do |line|
-  #       io << '\n' unless first
-  #       data = first ? mt_v1.cv_title(line) : mt_v1.cv_plain(line)
-  #       data.to_txt(io)
-  #       first = false
-  #     end
-  #   end
-
-  #   render text: vtext
-  # end
-
   @[AC::Route::GET("/tl_btitle")]
   def tl_btitle(btitle : String, wn_id : Int32 = 0)
     guard_privi 0, "dùng máy dịch v1"
