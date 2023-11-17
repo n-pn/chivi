@@ -18,7 +18,7 @@
   <meta property="og:article" content="novel" />
   <meta property="og:description" content={ylist.vdesc} />
   <meta property="og:url" content="//chivi.app/yl/y{ylist.id}{ylist.vslug}" />
-  <meta property="og:image" content="//cnd.chivi.app/covers/{cover}" />
+  <meta property="og:image" content={cover} />
 </svelte:head>
 
 <section class="content">

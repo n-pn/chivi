@@ -22,7 +22,7 @@
 
   let body_type = 'vhtml'
 
-  let content = crit.vhtml
+  $: content = crit.vhtml
   $: swap_content(body_type)
 
   let cached = {}

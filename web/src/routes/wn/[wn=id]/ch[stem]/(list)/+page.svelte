@@ -90,6 +90,7 @@
       Chương từ <strong class="u-warn">{free_chaps + 1}</strong> cần
       <strong class="u-warn">thanh toán vcoin</strong> để mở khoá.
     </span>
+    <span>Hệ số nhân: <strong class="u-warn">{wstem.multp || 3}</strong></span>
   </div>
 
   <chap-list>

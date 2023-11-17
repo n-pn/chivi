@@ -1,5 +1,5 @@
 import { api_get } from '$lib/api_call'
-import { home_nav, book_nav, quick_read_v2 } from '$utils/header_util'
+import { home_nav, book_nav } from '$utils/header_util'
 
 import type { LayoutData } from './$types'
 
@@ -14,8 +14,7 @@ export const load = (async ({ params, fetch }) => {
   const xname = `wn~avail/${wn_id}`
   const rmemo = await api_get<CV.Rdmemo>(`/_rd/rdmemos/${xname}`, fetch)
 
-  let _image = nvinfo.bcover
-  if (!_image.startsWith('/')) _image = '/covers/_blank.webp'
+  const _image = nvinfo.bcover || '//cdn.chivi.app/covers/_blank.webp'
 
   const _mdesc = nvinfo.bintro.substring(0, 300)
   const _board = `wn:${wn_id}`

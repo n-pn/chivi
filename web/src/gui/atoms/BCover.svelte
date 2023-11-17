@@ -3,7 +3,7 @@
   export let _class = 'round'
 
   $: src = srcset.startsWith('/covers')
-    ? `https://cdn.chivi.app/${srcset}`
+    ? `https://cdn.chivi.app${srcset}`
     : srcset
 
   const on_error = (e: Event) => {

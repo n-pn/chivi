@@ -7,7 +7,7 @@ class YS::CritCtrl < AC::Base
   # list revies
   @[AC::Route::GET("/crits")]
   def query(sort : String = "utime",
-            smin : Int32 = 1, smax : Int32 = 5,
+            smin : Int32 = 3, smax : Int32 = 5,
             from : String = "ys", user : String? = nil,
             book : Int32? = nil, list : Int32? = nil,
             vtag : String? = nil)

@@ -75,6 +75,8 @@ class MT::AiDict
   NT_RE = /^([\d零〇一二两三四五六七八九十百千]+)(.*)/
 
   def init_nt(zstr : String)
+    return {CharUtil.normalize(zstr), MtAttr::Ntmp} unless zstr.matches?(/\p{Han}/)
+
     unless match = NT_RE.match(zstr)
       vstr = get_alt?(zstr).try(&.vstr) || QtCore.tl_hvname(zstr)
       return {vstr, MtAttr::Ntmp}
@@ -148,7 +150,11 @@ class MT::AiDict
       return qnode
     end
 
-    if zstr.starts_with?("分之")
+    case zstr
+    when .starts_with?("百分之")
+      sufx = " phần trăm"
+      zstr = zstr[3..]
+    when .starts_with?("分之")
       sufx = " phần"
       zstr = zstr[2..]
     else

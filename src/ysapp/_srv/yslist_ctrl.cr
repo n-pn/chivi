@@ -43,7 +43,7 @@ class YS::ListCtrl < AC::Base
   def entry(id : Int32, sort : String = "utime",
             smin : Int32 = 0, smax : Int32 = 6,
             lb : String? = nil)
-    pg_no, limit, offset = _paginate(max: 20)
+    pg_no, limit, offset = _paginate(min: 10, max: 20)
 
     ylist = Yslist.find!({id: id})
     yuser = Ysuser.find!({id: ylist.ysuser_id})

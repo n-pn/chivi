@@ -32,5 +32,3 @@
 <Section {tabs}>
   <slot />
 </Section>
-
-<slot />

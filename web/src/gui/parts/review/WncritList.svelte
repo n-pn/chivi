@@ -38,7 +38,7 @@
   export let show_list = true
   export let view_head = true
 
-  $: pager = new Pager($page.url, { sort: _sort, smin: 1, smax: 5, pg: 1 })
+  $: pager = new Pager($page.url, { sort: _sort, smin: 0, smax: 6, pg: 1 })
 
   $: opts = {
     from: $page.url.searchParams.get('from') || '',

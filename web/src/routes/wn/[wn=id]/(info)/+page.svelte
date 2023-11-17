@@ -57,14 +57,16 @@
 <section>
   <h3 class="sub">
     <sub-label>Đánh giá nổi bật</sub-label>
-    <a class="sub-link" href="wn/{nvinfo.bslug}/uc">Xem tất cả</a>
+    <a class="sub-link" href="/wn/{nvinfo.bslug}/uc">Xem tất cả</a>
   </h3>
 
   <div class="crits">
     {#each ydata.crits as crit}
       {@const list = ydata.lists[crit.list_id]}
       {@const user = ydata.users[crit.user_id]}
-      <YscritCard {crit} {user} {list} book={null} show_book={false} />
+      {#key crit.id}
+        <YscritCard {crit} {user} {list} book={null} show_book={false} />
+      {/key}
     {:else}
       <div class="d-empty-xs">Chưa có đánh giá</div>
     {/each}

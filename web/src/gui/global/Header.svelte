@@ -27,7 +27,7 @@
 
   <meta property="og:title" content={title} />
   <meta property="og:description" content={mdesc} />
-  <meta property="og:image" content="https://cdn.chivi.app{image}" />
+  <meta property="og:image" content={image} />
 </svelte:head>
 
 <header class="app-header" class:clear={$scroll > 0}>

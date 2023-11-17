@@ -48,17 +48,6 @@
   </div>
 
   <div class="field">
-    <label class="form-label" for="target">Phương thức ủng hộ</label>
-
-    {#each reasons as reason}
-      <label class="radio" class:_active={reason == dform.reason}>
-        <input type="radio" bind:group={dform.reason} value={reason} />
-        {reason}
-      </label>
-    {/each}
-  </div>
-
-  <div class="field">
     <label class="form-label" for="amount">Số tiền ủng hộ bằng Vcoin</label>
 
     <radio-group>
@@ -77,6 +66,17 @@
         type="number"
         bind:value={dform.amount} />
     </radio-group>
+  </div>
+
+  <div class="field">
+    <label class="form-label" for="target">Phương thức ủng hộ</label>
+
+    {#each reasons as reason}
+      <label class="radio" class:_active={reason == dform.reason}>
+        <input type="radio" bind:group={dform.reason} value={reason} />
+        {reason}
+      </label>
+    {/each}
   </div>
 
   {#if res_text}<div class="form-msg _{res_type}">{res_text}</div>{/if}

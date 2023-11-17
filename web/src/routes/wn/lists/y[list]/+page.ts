@@ -20,7 +20,7 @@ export const load = (async ({ url, fetch, params }) => {
 
   const _meta: App.PageMeta = {
     left_nav: [
-      home_nav('tm', ''),
+      home_nav('tm'),
       nav_link('/wn/lists', 'Thư đơn', 'bookmarks', { show: 'tm' }),
       nav_link(`/wn/lists/y${id}${vslug}`, vname, null, { kind: 'title' }),
     ],
