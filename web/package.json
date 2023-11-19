@@ -14,7 +14,7 @@
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^5.0.0",
     "@sveltejs/adapter-node": "^1.3.1",
-    "@sveltejs/kit": "^1.25.2",
+    "@sveltejs/kit": "^1.27.6",
     "autoprefixer": "^10.4.16",
     "cssnano": "^6.0.1",
     "fast-diff": "^1.3.0",
@@ -22,13 +22,13 @@
     "postcss": "^8.4.31",
     "postcss-load-config": "^4.0.1",
     "remark-breaks": "^4.0.0",
-    "sass": "^1.69.2",
-    "svelte": "^4.2.1",
-    "svelte-check": "^3.5.2",
-    "svelte-preprocess": "^5.0.4",
+    "sass": "^1.69.5",
+    "svelte": "^4.2.5",
+    "svelte-check": "^3.6.0",
+    "svelte-preprocess": "^5.1.0",
     "tslib": "^2.6.2",
     "typescript": "^5.2.2",
-    "vite": "^4.4.11"
+    "vite": "^5.0.0"
   },
   "browserslist": [
     "> 1%",
