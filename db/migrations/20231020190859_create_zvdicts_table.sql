@@ -14,9 +14,9 @@ CREATE TABLE IF NOT EXISTS zvdicts(
   _flag integer NOT NULL DEFAULT 0
 );
 
-CREATE INDEX IF NOT EXISTS zvdicts_dtype_idx ON dicts(dtype);
+CREATE INDEX IF NOT EXISTS zvdicts_dtype_idx ON zvdicts(dtype);
 
-CREATE INDEX IF NOT EXISTS zvdicts_mtime_idx ON dicts(mtime);
+CREATE INDEX IF NOT EXISTS zvdicts_mtime_idx ON zvdicts(mtime);
 
 -- +micrate Down
 -- SQL section 'Down' is executed when this migration is rolled back

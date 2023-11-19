@@ -11,12 +11,18 @@ CREATE TABLE zvterms(
   attr varchar NOT NULL DEFAULT '',
   lock smallint NOT NULL DEFAULT 1,
   --
-  vu_id int NOT NULL DEFAULT REFERENCES viusers(id) ON UPDATE CASCADE ON DELETE IGNORE,
+  vu_id int REFERENCES viusers(id) ON UPDATE CASCADE ON DELETE SET NULL,
   mtime integer NOT NULL DEFAULT 0,
   --
   _meta jsonb NOT NULL DEFAULT '{}',
   _flag smallint NOT NULL DEFAULT 0
 );
+
+CREATE INDEX IF NOT EXISTS zvterms_dict_idx ON zvterms(dict);
+
+CREATE INDEX IF NOT EXISTS zvterms_zstr_idx ON zvterms(zstr);
+
+CREATE INDEX IF NOT EXISTS zvterms_cpos_idx ON zvterms(cpos);
 
 -- +micrate Down
 -- SQL section 'Down' is executed when this migration is rolled back
