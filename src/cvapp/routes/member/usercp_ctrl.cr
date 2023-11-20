@@ -1,5 +1,4 @@
 require "../_ctrl_base"
-require "./ugprivi_form"
 
 class CV::UsercpCtrl < CV::BaseCtrl
   base "/_db/_self"
@@ -30,20 +29,6 @@ class CV::UsercpCtrl < CV::BaseCtrl
       total: total,
       pgmax: _pgidx(total, limit),
     }
-  end
-
-  @[AC::Route::PUT("/upgrade-privi", body: :form)]
-  def upgrade_privi(form : UgpriviForm)
-    guard_privi 0, "nâng cấp quyền hạn"
-
-    form.do_upgrade!(_viuser)
-    save_current_user!(_viuser)
-    _log_action("ug-privi", form)
-
-    render json: ViuserView.new(_viuser, true)
-  rescue ex
-    Log.error(exception: ex) { ex }
-    render 400, text: "Bạn chưa đủ số vcoin tối thiểu để tăng quyền hạn!"
   end
 
   ##################

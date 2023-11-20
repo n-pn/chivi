@@ -99,8 +99,9 @@
             <strong>{avail_until($_user.until)}</strong>
           </div>
         {/if}
-        <button class="m-btn _xs _primary" on:click={() => usercp.change_tab(3)}
-          >{privi < 1 ? 'Nâng cấp' : 'Gia hạn'}</button>
+        <a class="m-btn _xs _primary" href="/me/privi">
+          {privi < 1 ? 'Nâng cấp' : 'Gia hạn'}
+        </a>
       </div>
 
       <div class="info">

@@ -13,7 +13,7 @@ abstract class CV::BaseCtrl < AC::Base
   #   response.headers["X-Request-ID"] = request_id
   # end
 
-  getter _viuser : Viuser { Viuser.load!(_uname) }
+  getter _viuser : Viuser { Viuser.load!(_vu_id) }
 
   private def get_nvinfo(b_id : Int64) : Wninfo
     Wninfo.load!(b_id) || raise NotFound.new("Quyển sách không tồn tại")
@@ -23,6 +23,6 @@ abstract class CV::BaseCtrl < AC::Base
     session["vu_id"] = user.id.to_i64
     session["uname"] = user.uname
     session["privi"] = user.privi.to_i64
-    session["until"] = user.current_privi_until
+    session["until"] = user.p_exp
   end
 end

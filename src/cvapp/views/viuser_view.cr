@@ -16,7 +16,7 @@ struct CV::ViuserView
 
       if @full
         jb.field "vcoin", @data.vcoin.round(3)
-        jb.field "until", @data.current_privi_until
+        jb.field "until", @data.p_exp
 
         jb.field "unread_notif", Unotif.count_unread(@data.id)
       end

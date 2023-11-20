@@ -1,6 +1,7 @@
 require "crypto/bcrypt/password"
 require "../../_util/ram_cache"
 require "../_base"
+require "./uprivi"
 
 class CV::Viuser
   include Clear::Model
@@ -27,7 +28,7 @@ class CV::Viuser
   column level : Int16 = 0
 
   column privi : Int32 = 0
-  column privi_until : Array(Int64) = [0_i64, 0_i64, 0_i64]
+  column p_exp : Int64 = 0
 
   column vcoin : Float64 = 0
 
@@ -65,66 +66,22 @@ class CV::Viuser
     self.save!
   end
 
-  PRIVI_DAYS = {14, 30, 60, 90}
-  PRIVI_COST = {
-    {20, 40, 75, 100},   # privi 1
-    {40, 80, 150, 210},  # privi 2
-    {80, 160, 300, 420}, # privi 3
-  }
-
-  def current_privi_until(privi = self.privi)
-    self.privi_until[privi &- 1]? || Time.utc.to_unix &+ 86400 &* 360
+  def spend_vcoin!(value : Float64 | Int32)
+    query = "update viusers set vcoin = vcoin - $1 where vcoin >= $1 and id = $2 returning vcoin"
+    return nil unless vcoin = PGDB.query_one query, value, self.id, as: Int32
+    @vcoin = vcoin
   end
 
-  def upgrade_privi!(new_privi : Int32, range : Int32, persist : Bool = true)
-    req_vcoin = PRIVI_COST[new_privi &- 1][range]
-    raise "Lượng vcoin không đủ!" if req_vcoin > self.vcoin
+  def check_privi!
+    return unless self.privi.in?(0..3)
+    return if self.p_exp > Time.utc.to_unix
 
-    self.vcoin -= req_vcoin
-    self.privi = new_privi if self.privi < new_privi
+    uprivi = Uprivi.load!(self.id)
+    uprivi.fix_privi!
+    uprivi.upsert!
 
-    pdays = PRIVI_DAYS[range]
-    tspan = pdays &* 86400
-    t_now = Time.utc.to_unix
-
-    if new_privi > 0
-      extend_privi_until(0, tspan, t_now)
-    end
-
-    if new_privi > 1
-      extend_privi_until(1, tspan, t_now)
-      self.privi_until[0] &+= new_privi == 2 ? tspan // 2 : tspan // 4
-    end
-
-    if new_privi > 2
-      extend_privi_until(2, tspan, t_now)
-      self.privi_until[1] &+= tspan // 2
-    end
-
-    self.privi_until_column.dirty! # make clear update this column
-
-    self.save! if persist
-    {req_vcoin, pdays}
-  end
-
-  private def extend_privi_until(index : Int32, tspan : Int32, t_now = Time.utc.to_unix)
-    self.privi_until[index] = t_now if self.privi_until[index] < t_now
-    self.privi_until[index] &+= tspan
-  end
-
-  def downgrade_privi! : Nil
-    t_now = Time.utc.to_unix
-
-    {3, 2, 1}.each do |privi|
-      next unless self.privi == privi
-      return if t_now <= self.privi_until[privi &- 1]
-      self.privi = privi &- 1
-    end
-  end
-
-  def check_privi! : Nil
-    self.downgrade_privi!
-    self.last_loggedin_at = Time.utc
+    self.privi = uprivi.p_now
+    self.p_exp = uprivi.p_exp
 
     self.save!
   end
