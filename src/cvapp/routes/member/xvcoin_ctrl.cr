@@ -43,7 +43,7 @@ class CV::XvcoinCtrl < CV::BaseCtrl
       raise BadRequest.new("Người bạn muốn tặng vcoin không tồn tại")
     end
 
-    if _viuser.vcoin >= xform.amount
+    if _viuser.vcoin < xform.amount
       raise BadRequest.new("Số vcoin khả dụng của bạn ít hơn số vcoin bạn muốn tặng")
     end
 
@@ -55,9 +55,15 @@ class CV::XvcoinCtrl < CV::BaseCtrl
 
   @[AC::Route::POST("/donate", body: :xform)]
   def log_donate(xform : XvcoinForm)
+    guard_privi 4, "thêm donation"
+
     unless target = xform.find_target
       raise BadRequest.new("Tên người dùng không đúng")
     end
+
+    target_uprivi = Uprivi.load!(target.id)
+    target_uprivi.extend_privi!(0_i16, 30 + xform.amount.to_i // 2, persist: true)
+    target.fix_privi!(target_uprivi, persist: true)
 
     xform.exchange!(sender: Viuser.system, target: target, xvkind: 60)
 

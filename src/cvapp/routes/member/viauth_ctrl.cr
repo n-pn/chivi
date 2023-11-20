@@ -45,7 +45,7 @@ class CV::SigninCtrl < CV::BaseCtrl
       raise BadRequest.new("Thông tin đăng nhập không chính xác!")
     end
 
-    user.check_privi!
+    user.check_privi!(persist: true)
     render_user!(user)
   end
 

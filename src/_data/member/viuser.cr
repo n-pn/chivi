@@ -72,18 +72,19 @@ class CV::Viuser
     @vcoin = vcoin
   end
 
-  def check_privi!
-    return unless self.privi.in?(0..3)
-    return if self.p_exp > Time.utc.to_unix
+  def check_privi!(persist : Bool = true)
+    return if !self.privi.in?(0..3) || self.p_exp > Time.utc.to_unix
 
     uprivi = Uprivi.load!(self.id)
-    uprivi.fix_privi!
-    uprivi.upsert!
+    uprivi.fix_privi!(persist: true)
 
+    self.fix_privi!(uprivi, persist: persist)
+  end
+
+  def fix_privi!(uprivi : Uprivi, persist : Bool = false)
     self.privi = uprivi.p_now
     self.p_exp = uprivi.p_exp
-
-    self.save!
+    self.save! if persist
   end
 
   ##############################################

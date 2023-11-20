@@ -13,7 +13,7 @@ abstract class CV::BaseCtrl < AC::Base
   #   response.headers["X-Request-ID"] = request_id
   # end
 
-  getter _viuser : Viuser { Viuser.load!(_vu_id) }
+  getter _viuser : Viuser { Viuser.load!(_uname) }
 
   private def get_nvinfo(b_id : Int64) : Wninfo
     Wninfo.load!(b_id) || raise NotFound.new("Quyển sách không tồn tại")

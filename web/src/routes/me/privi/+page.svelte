@@ -18,7 +18,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let p_now = $_user.privi
-  let pform = { privi: p_now < 1 ? 1 : p_now > 3 ? 3 : p_now, pdura: 1 }
+  let pform = { privi: p_now < 0 ? 0 : p_now > 3 ? 3 : p_now, pdura: 1 }
 
   let error = ''
   let state = 0
@@ -52,11 +52,11 @@
     <div class="form-field">
       <label class="form-label" for="privi">Chọn quyền hạn:</label>
       <div class="radio-group">
-        {#each [1, 2, 3] as value}
+        {#each [0, 1, 2, 3] as value}
           <label class="m-label _{value}" class:_active={value == pform.privi}>
             <input type="radio" bind:group={pform.privi} {value} />
             <span class="icon"><SIcon name="privi-{value}" iset="icons" /></span
-            >Quyền hạn {value}
+            >Q. hạn {value}
           </label>
         {/each}
       </div>

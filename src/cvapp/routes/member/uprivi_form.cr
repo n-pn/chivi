@@ -37,8 +37,7 @@ struct CV::UpriviForm
     raise "Lượng vcoin không đủ!" if vcoin_req > viuser.vcoin
 
     uprivi = Uprivi.load!(vu_id)
-    uprivi.extend_privi!(@privi.to_i16, dura_days)
-    uprivi.upsert!
+    uprivi.extend_privi!(@privi.to_i16, dura_days, persist: true)
 
     viuser.vcoin -= vcoin_req
     viuser.privi = uprivi.p_now

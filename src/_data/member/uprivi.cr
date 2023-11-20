@@ -24,7 +24,7 @@ class CV::Uprivi
     162000, # * 1.875
   }
 
-  def extend_privi!(p_new : Int16, days : Int32)
+  def extend_privi!(p_new : Int16, days : Int32, persist : Bool = true)
     t_now = Time.utc.to_unix
 
     p_new.downto(0) do |privi|
@@ -32,12 +32,15 @@ class CV::Uprivi
       @exp_a[privi] = exp_x + TSPAN[p_new &- privi] * days
     end
 
-    return if p_new < @p_now
-    @p_now = p_new
-    @p_exp = @exp_a[p_new]
+    if p_new >= @p_now
+      @p_now = p_new
+      @p_exp = @exp_a[p_new]
+    end
+
+    self.upsert! if persist
   end
 
-  def fix_privi! : Nil
+  def fix_privi!(persist : Bool = true) : Nil
     return unless @p_now.in?(0..3)
     @mtime = Time.utc.to_unix
 
@@ -47,6 +50,7 @@ class CV::Uprivi
     end
 
     @p_exp = @p_now >= 0 ? @exp_a[@p_now] : 0_i64
+    self.upsert! if persist
   end
 
   ###
