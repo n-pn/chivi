@@ -4,32 +4,20 @@ require "../../../_util/mail_util"
 class CV::SigninCtrl < CV::BaseCtrl
   base "/_db/_user"
 
-  @[AC::Route::GET("privi/:uname")]
-  def privi(uname : String)
-    render text: Viuser.load!(uname).privi
-  end
-
   struct SignupForm
     include JSON::Serializable
 
     getter email : String
     getter uname : String
     getter upass : String
-
-    getter rcode : String
+    getter rcode : String? = nil
   end
 
   @[AC::Route::POST("/signup", body: :form)]
   def signup(form : SignupForm)
-    if form.rcode != "BEmfTj"
-      raise BadRequest.new("Sai thông tin vé mời")
-    end
+    _log_action("user-signup", form, form.uname)
 
     viuser = Viuser.create!(form.email.strip, form.uname.strip, form.upass.strip)
-
-    data = {email: viuser.email, uname: viuser.uname, cpass: viuser.cpass}
-    _log_action("user-signup", data, viuser.uname)
-
     render_user!(viuser)
   rescue err
     raise BadRequest.new(err.message)

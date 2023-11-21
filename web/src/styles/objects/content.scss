@@ -112,20 +112,24 @@ cv-user,
   font-weight: 500;
   color: var(--color, #{color(neutral, 5)});
 
-  &[data-privi='-1'] {
+  &[data-privi='-2'] {
     text-decoration: line-through;
   }
 
-  &[data-privi='0'] {
+  &[data-privi='-1'] {
     --color: #{color(neutral, 5)};
   }
 
-  &[data-privi='1'] {
+  &[data-privi='0'] {
     --color: #{color(success, 5)};
   }
 
-  &[data-privi='2'] {
+  &[data-privi='1'] {
     --color: #{color(primary, 5)};
+  }
+
+  &[data-privi='2'] {
+    --color: #{color(purple, 5)};
   }
 
   &[data-privi='3'] {
@@ -137,7 +141,7 @@ cv-user,
   }
 
   &[data-privi='5'] {
-    --color: #{color(purple, 5)};
+    --color: #{color(yellow, 5)};
   }
 }
 

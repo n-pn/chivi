@@ -27,7 +27,7 @@ class CV::Viuser
 
   column level : Int16 = 0
 
-  column privi : Int32 = 0
+  column privi : Int32 = -1
   column p_exp : Int64 = 0
 
   column vcoin : Float64 = 0
@@ -93,7 +93,7 @@ class CV::Viuser
     ids.empty? ? [] of self : self.query.where { id.in? ids.to_a }
   end
 
-  def self.create!(email : String, uname : String, upass : String) : self
+  def self.create!(email : String, uname : String, upass : String, privi : Int32 = -1) : self
     raise "Địa chỉ hòm thư quá ngắn" if email.size < 3
     raise "Địa chỉ hòm thư không hợp lệ" if email !~ /@/
     raise "Tên người dùng quá ngắn (cần ít nhất 5 ký tự)" if uname.size < 5
@@ -101,7 +101,7 @@ class CV::Viuser
     raise "Mật khẩu quá ngắn (cần ít nhất 7 ký tự)" if upass.size < 7
 
     begin
-      user = new({email: email, uname: uname})
+      user = new({email: email, uname: uname, privi: privi})
       user.passwd = upass
       user.tap(&.save!)
     rescue err

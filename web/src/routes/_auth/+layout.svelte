@@ -50,8 +50,7 @@
 
 <div class="form-msg u-warn">
   <strong>
-    Chức năng đăng ký tạm thời đóng cho tới khi có thông báo mới. Bạn nào muốn
-    đăng ký hãy thử liên hệ ban quản trị theo liên kết cuối trang.
+    Lưu ý: Bạn cần thiết ủng hộ trang bằng tiền mặt để kích hoạt tài khoản.
   </strong>
 </div>
 
