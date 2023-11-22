@@ -101,4 +101,19 @@ struct RD::Chpart
   def self.read_raw(spath : String, &)
     new(spath).read_raw { |line| yield line }
   end
+
+  def self.read_raw(spath : String, cksum : String, psize : Int32)
+    return "" if cksum.empty?
+
+    String.build do |io|
+      1.upto(psize) do |p_idx|
+        fpath = "#{TEXT_DIR}/#{spath}-#{cksum}-#{p_idx}.raw.txt"
+        lines = File.read_lines(fpath, chomp: true)
+        lines.shift if p_idx > 1
+        lines.each { |line| io << line << '\n' }
+      end
+    end
+  rescue
+    ""
+  end
 end

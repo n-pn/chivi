@@ -79,6 +79,8 @@ class RD::Czdata
   def filename
     "#{@ch_no}-#{ChapUtil.cksum_to_s(@cksum)}.json"
   end
+
+  ###
 end
 
 # Dir.glob("/www/chivi/xyz/seeds/zxcs.me/split/13442/*.txt").each do |file|

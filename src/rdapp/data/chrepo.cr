@@ -19,7 +19,7 @@ class RD::Chrepo
   property gifts : Int16 = 1
   property multp : Int16 = 4
 
-  def initialize(@sroot)
+  def initialize(@sroot, reinit : Bool = false)
     @info_db = Chinfo.db(sroot)
     @text_db = Czdata.db(sroot)
 
@@ -28,6 +28,31 @@ class RD::Chrepo
 
     @txt_dir = "var/texts/#{sroot}"
     Dir.mkdir_p(@txt_dir)
+
+    init_text_db! if reinit
+  end
+
+  def init_text_db!(uname = "")
+    ignore = @text_db.open_ro(&.query_all("select ch_no from czinfos where cksum <> 0", as: Int32).to_set)
+
+    cinfos = self.get_all(limit: 99999)
+    zdatas = cinfos.compact_map do |cinfo|
+      next if cinfo.cksum.empty? && cinfo.ch_no.in?(ignore)
+      cbody = load_raw!(cinfo) rescue ""
+
+      Czdata.new(
+        ch_no: cinfo.ch_no,
+        cbody: cbody,
+        title: cinfo.ztitle,
+        chdiv: cinfo.zchdiv,
+        uname: uname.empty? ? cinfo.uname : uname,
+        zorig: cinfo.spath,
+        mtime: cinfo.mtime
+      )
+    end
+
+    @text_db.open_tx { |db| zdatas.each(&.upsert!(db: db)) }
+    zdatas.size
   end
 
   def chmax=(@chmax : Int32)
