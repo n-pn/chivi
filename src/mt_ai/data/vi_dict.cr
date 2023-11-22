@@ -78,6 +78,8 @@ class MT::ViDict
     @dtype = dtype.to_i
   end
 
+  # def set_term!(Vi)
+
   def update_stats!(@mtime : Int32, change : Int32 = 1)
     self.class.bump_stats!(dname: @dname, mtime: mtime, change: change)
     @total = total

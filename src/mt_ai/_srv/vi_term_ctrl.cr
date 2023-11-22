@@ -97,6 +97,8 @@ class MT::ViTermCtrl < AC::Base
 
   @[AC::Route::PUT("/once", body: :form)]
   def upsert_once(form : ViTermForm)
+    _log_action("once", form, ldir: LOG_DIR)
+
     prev_term = form.prev_term
 
     min_plock = prev_term ? prev_term.plock : 0
@@ -111,7 +113,6 @@ class MT::ViTermCtrl < AC::Base
     end
 
     spawn form.save_to_disk!(_uname, on_create: prev_term.nil?)
-    _log_action("once", form, ldir: LOG_DIR)
 
     form.sync_with_dict!
     render text: "ok"

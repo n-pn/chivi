@@ -1,45 +1,69 @@
 ENV["CV_ENV"] ||= "production"
+ENV["MT_DIR"] ||= "var/mt_db"
+
 require "../../src/_data/_data"
-require "../../src/mt_ai/data/vi_dict"
+require "../../src/mt_ai/data/zv_dict"
 
 CORE = {
-  {"regular", MT::ViDict::Dtype::Core, "Thông Dụng", "Từ điển chung cho tất cả các bộ truyện"},
-  {"suggest", MT::ViDict::Dtype::Core, "Gợi Ý", "Tổng hợp nghĩa cho từ gộp từ tất cả các nguồn"},
-  {"combine", MT::ViDict::Dtype::Core, "Tổng Hợp", "Từ điển tổng hợp dùng cho dịch nhanh"},
-  {"essence", MT::ViDict::Dtype::Core, "Nền Tảng", "Lưu thông tin ngữ pháp cần thiết cho nhiều chế đọ dịch"},
-  {"hv_word", MT::ViDict::Dtype::Core, "Hán Việt", "Từ điển phiên âm Hán Việt"},
-  {"hv_name", MT::ViDict::Dtype::Core, "Tên Riêng HV", "Phiên âm tên riêng Hán Việt"},
-  {"pin_yin", MT::ViDict::Dtype::Core, "Bính Âm", "Từ điển bính âm (pinyin)"},
+  {"essence", 0, 0, "Nền Tảng", "Các từ áp dụng cho tất cả các chế độ dịch như dấu câu, chữ latin, emoji..."},
+  {"word_hv", 0, 1, "Hán Việt", "Phiên âm Hán Việt dùng cho dịch nghĩa Hán Việt hoặc dịch từ mới"},
+  {"pin_yin", 0, 2, "Phanh Âm", "Sử dụng chữ cái Latinh để thể hiện cách phát âm các chữ Hán trong"},
+
+  {"noun_vi", 0, 11, "Dịch Danh", "Các từ dùng để dịch danh từ mới"},
+  {"verb_vi", 0, 12, "Dịch Động", "Các từ dùng để dịch động từ mới"},
+  {"adjt_vi", 0, 13, "Dịch Tính", "Các từ dùng để dịch tính từ mời"},
+
+  {"name_hv", 0, 21, "Tên Trung", "Dịch họ tên tiếng Trung bằng Hán Việt"},
+  {"name_ja", 0, 22, "Tên Nhật", "Dịch tên riêng từ Trung sang Nhật"},
+  {"name_en", 0, 23, "Tên Tây", "Dịch tên riêng từ Trung sang tên Tây"},
+
+  {"regular", 1, 0, "Thông Dụng", "Từ điển nghĩa Trung Việt áp dụng chung cho các nguồn"},
+  {"combine", 1, 1, "Trộn Chung", "Từ điển áp dụng khi nguồn truyện không có từ điển riêng"},
+  {"suggest", 1, 2, "Gợi Ý Thêm", "Từ điển bổ sung nghĩa cho các cụm từ hiếm gặp"},
 }
 
-MT::ViDict.db.open_tx do |db|
-  CORE.each { |core| MT::ViDict.new(*core).upsert!(db: db) }
+def add_fixtures
+  MT::ZvDict.db.open_tx do |db|
+    CORE.each { |core| MT::ZvDict.new(*core).upsert!(db: db) }
+  end
 end
 
-inputs = DB.open(CV_ENV.database_url) do |db|
-  query = <<-SQL
+def add_wn_dicts
+  inputs = DB.open(CV_ENV.database_url) do |db|
+    query = <<-SQL
     select id as wn_id, btitle_vi as vname
     from wninfos where id > 0 order by id asc
     SQL
-  db.query_all(query, as: {Int32, String})
-end
+    db.query_all(query, as: {Int32, String})
+  end
 
-MT::ViDict.db.open_tx do |db|
-  inputs.each do |wn_id, bname|
-    MT::ViDict.init_book_dict!(wn_id, bname, db: db)
+  puts "wn dicts: #{inputs.size}"
+
+  MT::ZvDict.db.open_tx do |db|
+    inputs.each do |wn_id, bname|
+      MT::ZvDict.init_wn_dict!(wn_id, bname, db: db)
+    end
   end
 end
 
-inputs = DB.open(CV_ENV.database_url) do |db|
-  query = <<-SQL
+def add_up_dicts
+  inputs = DB.open(CV_ENV.database_url) do |db|
+    query = <<-SQL
     select id as up_id, vname
     from upstems order by id asc
     SQL
-  db.query_all(query, as: {Int32, String})
-end
+    db.query_all(query, as: {Int32, String})
+  end
 
-MT::ViDict.db.open_tx do |db|
-  inputs.each do |up_db, bname|
-    MT::ViDict.init_up_dict!(up_db, bname, db: db)
+  puts "up dicts: #{inputs.size}"
+
+  MT::ZvDict.db.open_tx do |db|
+    inputs.each do |up_db, bname|
+      MT::ZvDict.init_up_dict!(up_db, bname, db: db)
+    end
   end
 end
+
+add_fixtures
+add_up_dicts
+add_wn_dicts

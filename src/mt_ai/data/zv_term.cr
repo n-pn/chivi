@@ -28,10 +28,10 @@ class MT::ZvTerm
     ) strict, without rowid;
     SQL
 
-  DIR = ENV["MT_DIR"]? || "var/mt_db"
+  DIR = ENV.fetch("MT_DIR", "var/mt_db")
 
   def self.db_path(name : String, type : String = "db3")
-    "#{DIR}/#{name}.#{type}"
+    "#{DIR}/#{name}-zvt.#{type}"
   end
 
   ###
@@ -103,6 +103,7 @@ class MT::ZvTerm
 
   def to_json(jb : JSON::Builder)
     jb.object do
+      jb.field "d_id", @d_id
       jb.field "zstr", @zstr
       jb.field "cpos", @cpos
 
@@ -135,23 +136,30 @@ class MT::ZvTerm
 
   ###
 
-  def self.find(dict : String, zstr : String, cpos : String)
-    self.find(dict, zstr, ipos: MtEpos.parse(cpos).to_i)
+  def self.find(dict : String, d_id : Int32, zstr : String, cpos : String)
+    self.find(dict, d_id, zstr, ipos: MtEpos.parse(cpos).to_i)
   end
 
-  def self.find(dict : String, zstr : String, ipos : Int32)
+  def self.find(dict : String, d_id : Int32, zstr : String, ipos : Int32)
     query = @@schema.select_by_pkey + " limit 1"
-    self.db(dict).query_one?(query, zstr, ipos, as: self)
+    self.db(dict).query_one?(query, d_id, zstr, ipos, as: self)
   end
 
-  def self.delete(dict : String, zstr : String, cpos : String)
-    self.delete(dict, zstr, ipos: MtEpos.parse(cpos).to_i)
+  def self.delete(dict : String, d_id : Int32, zstr : String, cpos : String)
+    self.delete(dict, d_id, zstr, ipos: MtEpos.parse(cpos).to_i)
   end
 
-  def self.delete(dict : String, zstr : String, ipos : Int32)
+  def self.delete(dict : String, d_id : Int32, zstr : String, ipos : Int32)
     self.db(dict).open_rw do |db|
-      query = "delete from #{@@schema.table} where zstr = $1, ipos = $2"
-      db.exec query, zstr, ipos
+      query = "delete from #{@@schema.table} where d_id = $1 and zstr = $2 and ipos = $3"
+      db.exec query, d_id, zstr, ipos
     end
+  end
+
+  DB_NAMES = {"system", "common", "wn_all", "up_all", "qt_all", "pd_all"}
+  DB_CACHE = {} of Int32 => Crorm::SQ3
+
+  def self.load_db(type : Int32)
+    DB_CACHE[type] ||= self.db(DB_NAMES[type])
   end
 end

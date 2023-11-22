@@ -1,4 +1,6 @@
 require "../../src/mt_ai/data/vi_dict"
+ENV["MT_DIR"] ||= "var/mt_db"
+
 require "../../src/mt_ai/data/vi_term"
 
 update_query = <<-SQL

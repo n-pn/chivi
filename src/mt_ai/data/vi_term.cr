@@ -147,7 +147,7 @@ class MT::ViTerm
 
   def self.delete(dict : String, zstr : String, ipos : Int32)
     self.db(dict).open_rw do |db|
-      query = "delete from #{@@schema.table} where zstr = $1, ipos = $2"
+      query = "delete from #{@@schema.table} where zstr = $1 and ipos = $2"
       db.exec query, zstr, ipos
     end
   end
