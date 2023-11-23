@@ -26,24 +26,7 @@
 </script>
 
 <script lang="ts">
-  import type { Writable } from 'svelte/store'
-
   import SIcon from '$gui/atoms/SIcon.svelte'
-
-  let elem: HTMLElement
-  $: if (elem) elem.focus()
-
-  export let _user: Writable<App.CurrentUser>
-
-  async function update_wtheme(wtheme: string) {
-    if ($_user.privi < 0) return
-
-    await fetch('/_db/_self/config', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ wtheme }),
-    })
-  }
 </script>
 
 <details open>
@@ -53,12 +36,7 @@
     <field-input>
       {#each wthemes as value}
         <label class="wtheme _{value}" class:_active={value == $data.wtheme}>
-          <input
-            type="radio"
-            name="wtheme"
-            {value}
-            bind:group={$data.wtheme}
-            on:change={() => update_wtheme(value)} />
+          <input type="radio" name="wtheme" {value} bind:group={$data.wtheme} />
         </label>
       {/each}
     </field-input>
@@ -127,7 +105,8 @@
     </field-input>
   </div>
 </details>
-<details open>
+
+<details>
   <summary>Cài đặt đọc truyện</summary>
 
   <div class="config">

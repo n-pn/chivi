@@ -11,9 +11,10 @@
   import type { Writable } from 'svelte/store'
 
   import { status_names, status_icons } from '$lib/constants'
-  import { chap_path, _pgidx } from '$lib/kit_path'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
+
+  import { chap_path, _pgidx } from '$lib/kit_path'
   import { get_rtime } from '$gui/atoms/RTime.svelte'
 
   export let _user: Writable<App.CurrentUser>

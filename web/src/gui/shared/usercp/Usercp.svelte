@@ -1,6 +1,7 @@
 <script context="module" lang="ts">
   import { writable } from 'svelte/store'
   import { browser } from '$app/environment'
+  import { get_dmy } from '$utils/time_utils'
 
   export const usercp = {
     ...writable(0),
@@ -28,18 +29,16 @@
 
 <script lang="ts">
   import { get_user } from '$lib/stores'
-  import { get_dmy } from '$utils/time_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Slider from '$gui/molds/Slider.svelte'
 
-  import Config from './Config.svelte'
-  import Reading from './Reading.svelte'
+  import Homecp from './Homecp.svelte'
+  import Notifs from './Notifs.svelte'
   import Spending from './Spending.svelte'
   import Setting from './Setting.svelte'
-  import Notifs from './Notifs.svelte'
 
-  const components = [Config, Reading, Notifs, Spending, Setting]
+  const components = [Homecp, Notifs, Spending, Setting]
 
   export let actived = true
   const _user = get_user()
@@ -52,14 +51,13 @@
   }
 
   const tabs = [
-    { icon: 'adjustments-alt', btip: 'Giao diện' },
-    { icon: 'history', btip: 'Lịch sử' },
+    { icon: 'user', btip: 'Giao diện' },
     { icon: 'bell', btip: 'Thông báo' },
     { icon: 'wallet', btip: 'Giao dịch' },
     { icon: 'settings', btip: 'Cài đặt' },
   ]
 
-  $: privi = $_user.privi || 0
+  $: privi = $_user.privi || -1
 </script>
 
 <Slider class="usercp" bind:actived --slider-width="26rem">
@@ -72,7 +70,7 @@
 
   <svelte:fragment slot="header-right">
     {#each tabs as { icon, btip }, tab}
-      {@const _hl = tab == 2 && $_user.unread_notif > 0}
+      {@const _hl = tab == 1 && $_user.unread_notif > 0}
       <button
         class="-btn"
         class:_active={tab == $usercp}
@@ -86,35 +84,33 @@
     {/each}
   </svelte:fragment>
 
-  {#if $usercp == 0}
-    <section class="infos">
-      <div class="info">
+  <section class="infos">
+    <div class="info">
+      <div>
+        <span class="lbl">Quyền hạn:</span>
+        <SIcon name="privi-{privi}" iset="icons" />
+      </div>
+      {#if privi >= 0 && privi < 4}
         <div>
-          <span class="lbl">Quyền hạn:</span>
-          <SIcon name="privi-{privi}" iset="icons" />
+          <span class="lbl">Hết hạn:</span>
+          <strong>{avail_until($_user.until)}</strong>
         </div>
-        {#if privi > 0 && privi < 4}
-          <div>
-            <span class="lbl">Hết hạn:</span>
-            <strong>{avail_until($_user.until)}</strong>
-          </div>
-        {/if}
-        <a class="m-btn _xs _primary" href="/me/privi">
-          {privi < 1 ? 'Nâng cấp' : 'Gia hạn'}
-        </a>
+      {/if}
+      <a class="m-btn _xs _primary" href="/me/privi">
+        {privi < 0 ? 'Nâng cấp' : 'Gia hạn'}
+      </a>
+    </div>
+
+    <div class="info">
+      <div>
+        <span class="lbl">Số lượng vcoin hiện có:</span>
+        <strong>{Math.round($_user.vcoin * 1000) / 1000}</strong>
+        <SIcon iset="icons" name="vcoin" />
       </div>
 
-      <div class="info">
-        <div>
-          <span class="lbl">Số lượng vcoin hiện có:</span>
-          <strong>{Math.round($_user.vcoin * 1000) / 1000}</strong>
-          <SIcon iset="icons" name="vcoin" />
-        </div>
-
-        <a href="/hd/tat-ca-ve-vcoin" class="m-btn _xs">Giải thích</a>
-      </div>
-    </section>
-  {/if}
+      <a href="/hd/tat-ca-ve-vcoin" class="m-btn _xs">Giải thích</a>
+    </div>
+  </section>
 
   <section class="body">
     {#if actived && browser}
