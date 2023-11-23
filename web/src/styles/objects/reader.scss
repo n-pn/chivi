@@ -1,27 +1,47 @@
 @use '../essence' as *;
 
-.app-fs-1 {
+.rd-ff-1 {
+  --rd-ff: var(--font-sans, sans-serif);
+}
+
+.rd-ff-2 {
+  --rd-ff: var(--font-serif, serif);
+}
+
+.rd-ff-3 {
+  --rd-ff: Nunito Sans, var(--font-sans, sans-serif);
+}
+
+.rd-ff-4 {
+  --rd-ff: Lora, var(--font-serif, serif);
+}
+
+.rd-ff-5 {
+  --rd-ff: Roboto Slab, var(--font-serif, serif);
+}
+
+.rd-fs-1 {
   // prettier-ignore
   @include bps( --head-fs, rem(21px), rem(22px), rem(23px), rem(25px), rem(27px) );
   // prettier-ignore
   @include bps( --para-fs, rem(15px), rem(16px), rem(17px), rem(18px), rem(19px) );
 }
 
-.app-fs-2 {
+.rd-fs-2 {
   // prettier-ignore
   @include bps( --head-fs, rem(22px), rem(23px), rem(24px), rem(26px), rem(28px) );
   // prettier-ignore
   @include bps( --para-fs, rem(16px), rem(17px), rem(18px), rem(19px), rem(20px) );
 }
 
-.app-fs-3 {
+.rd-fs-3 {
   // prettier-ignore
   @include bps( --head-fs, rem(23px), rem(24px), rem(25px), rem(27px), rem(29px) );
   // prettier-ignore
   @include bps( --para-fs, rem(17px), rem(18px), rem(19px), rem(20px), rem(21px) );
 }
 
-.app-fs-4 {
+.rd-fs-4 {
   // prettier-ignore
   @include bps( --head-fs, rem(23px), rem(24px), rem(26px), rem(28px), rem(30px) );
 
@@ -29,7 +49,7 @@
   @include bps( --para-fs, rem(19px), rem(20px), rem(21px), rem(22px), rem(23px) );
 }
 
-.app-fs-5 {
+.rd-fs-5 {
   // prettier-ignore
   @include bps( --head-fs, rem(24px), rem(26px), rem(28px), rem(30px), rem(32px) );
 
@@ -53,6 +73,7 @@
   display: block;
   min-height: 60vh;
   position: relative;
+  font-family: var(--rd-ff);
 
   @include fgcolor(secd);
 

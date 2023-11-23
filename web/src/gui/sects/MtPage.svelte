@@ -81,7 +81,7 @@
 </script>
 
 <article
-  class="article island reader app-fs-{$config.ftsize} app-ff-{$config.ftface}"
+  class="article island reader"
   style:--textlh="{$config.textlh}%"
   bind:this={article}>
   <header>

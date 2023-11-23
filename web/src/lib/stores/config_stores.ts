@@ -1,37 +1,71 @@
 import { writable } from 'svelte/store'
-import { dialog_store } from '$utils/store_utils'
+import { browser } from '$app/environment'
+import type { Cookies } from '@sveltejs/kit'
 
-const storage_key = '_pref'
+// const parse_cookie = (cookie: string) => {
+//   const cookies = new Map<string, string>()
 
-class ConfigData {
-  wtheme = ''
+//   for (const entry of cookie.split(';')) {
+//     const [key, val] = entry.trim().split('=')
+//     cookies.set(decodeURIComponent(key), decodeURIComponent(val))
+//   }
 
-  ftsize = 3
-  ftface = 1
-  textlh = 150
+//   return cookies
+// }
 
-  r_mode = 0
-  show_z = false
+interface ConfigData {
+  wtheme: string // global theme
+  wfface: number // global font face
 
-  auto_u = false
+  rfface: number // reader font face
+  rfsize: number // reader font size
+
+  textlh: number // reader line height
+  r_mode: number
+
+  show_z: boolean
+  auto_u: boolean
 }
 
-function load_config(): ConfigData {
-  if (globalThis.localStorage) {
-    const stored = localStorage.getItem(storage_key)
-    if (stored) return JSON.parse(stored)
+export const read_confg = (
+  cookies?: Cookies | Map<string, string>
+): ConfigData => {
+  cookies ||= new Map<string, string>()
+
+  return {
+    wtheme: cookies.get('wtheme') || 'light',
+    wfface: +cookies.get('wfface') || 1,
+
+    rfsize: +cookies.get('rfsize') || 3,
+    rfface: +cookies.get('rfface') || 1,
+    textlh: +cookies.get('textlh') || 150,
+
+    r_mode: +cookies.get('r_mode') || 0,
+    show_z: cookies.get('show_z') == 't',
+
+    auto_u: cookies.get('auto_u') == 't',
   }
-  return new ConfigData()
+}
+
+const write_cookie = (key: string, value: string) => {
+  document.cookie = `${key}=${value}; max-age=31536000; path=/; SameSite=Lax`
 }
 
 function save_config(data: ConfigData) {
-  if (globalThis.localStorage) {
-    localStorage.setItem(storage_key, JSON.stringify(data))
-  }
+  write_cookie('wtheme', data.wtheme)
+  write_cookie('wfface', `${data.wfface}`)
+
+  write_cookie('rfsize', `${data.rfsize}`)
+  write_cookie('rfface', `${data.rfface}`)
+  write_cookie('textlh', `${data.textlh}`)
+
+  write_cookie('r_mode', `${data.r_mode}`)
+  write_cookie('show_z', data.show_z ? 't' : 'f')
+  write_cookie('auto_u', data.auto_u ? 't' : 'f')
 }
 
 export const config = {
-  ...writable(load_config()),
+  ...writable(read_confg()),
   put(key: string, val: any) {
     config.update((x: ConfigData) => ({ ...x, [key]: val }))
   },
@@ -46,6 +80,6 @@ export const config = {
   },
 }
 
-config.subscribe((data: ConfigData) => save_config(data))
-
-export const config_ctrl = dialog_store()
+if (browser) {
+  config.subscribe((data: ConfigData) => save_config(data))
+}

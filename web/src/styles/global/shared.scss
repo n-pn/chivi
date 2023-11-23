@@ -75,3 +75,14 @@
   line-height: 1.25em;
   margin: 0.25em 0;
 }
+
+summary {
+  font-weight: 500;
+  padding: 0.25rem 0;
+  margin-bottom: 0.75rem;
+  @include ftsize(lg);
+
+  &:hover {
+    @include fgcolor(primary, 5);
+  }
+}
