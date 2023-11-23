@@ -1,5 +1,5 @@
 INP = "/2tb/app.chivi/var/mt_db/mt_ai"
-ENV["MT_DIR"] = "/2tb/app.chivi/var/mt_db"
+ENV["MT_DIR"] ||= "/2tb/app.chivi/var/mt_db"
 
 require "../../src/mt_ai/data/vi_term"
 require "../../src/mt_ai/data/zv_dict"

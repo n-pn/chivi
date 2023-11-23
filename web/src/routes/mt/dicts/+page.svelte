@@ -6,26 +6,38 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  const types = [
-    'Không rõ',
-    'Hệ thống',
-    'Truyện chữ',
-    'Sưu tầm',
-    'Ngẫu nhiên',
-    'Đặc biệt',
+  import Section from '$gui/sects/Section.svelte'
+  import { rel_time_vp } from '$utils/time_utils'
+
+  const tabs = [
+    { type: 'cv', href: `/mt/dicts`, icon: 'world', text: 'Dùng chung' },
+    {
+      type: 'wn',
+      href: `/mt/dicts?kind=wn`,
+      icon: 'books',
+      text: 'Truyện chữ',
+    },
+    { type: 'up', href: `/mt/dicts?kind=up`, icon: 'folder', text: 'Sưu tầm' },
   ]
 </script>
 
-<article class="article m-article island">
-  <h1>Từ điển</h1>
+<Section {tabs} _now={data._ontab}>
+  <h2>Danh sách từ điển <em>({data.total})</em></h2>
 
   <div class="dicts">
-    {#each data.dicts as { dname, dtype, label, total }}
-      <a class="-dict" href="/mt/dicts/{dname}">
+    {#each data.dicts as { name, label, brief, mtime, total }}
+      <a class="-dict" href="/mt/dicts/{name}">
         <div class="-name">{label}</div>
+        <div class="-desc">{brief}</div>
         <div class="-meta">
-          <div class="-type">{types[dtype]}</div>
-          <div class="-size">Số từ: {total}</div>
+          <div class="-size">
+            <em>Số từ:</em>
+            <strong>{total}</strong>
+          </div>
+          <div class="-time">
+            <em>Cập nhật: </em>
+            <strong>{rel_time_vp(mtime)}</strong>
+          </div>
         </div>
       </a>
     {/each}
@@ -37,11 +49,15 @@
       pgidx={data.pgidx}
       pgmax={data.pgmax} />
   </Footer>
-</article>
+</Section>
 
 <style lang="scss">
   .dicts {
     @include grid(minmax(12.5rem, 1fr), $gap: var(--gutter-pl));
+  }
+
+  h2 {
+    margin: 1rem 0;
   }
 
   .-dict {
@@ -65,25 +81,37 @@
   .-name {
     font-weight: 500;
     // text-transform: capitalize;
-    font-size: rem(14px);
     line-height: 1.5rem;
     @include clamp($width: null);
     @include fgcolor(secd);
+  }
+
+  .-desc {
+    @include clamp(2);
+    @include ftsize(sm);
+    line-height: 1.25rem;
+    font-style: italic;
+    @include fgcolor(tert);
+    margin: 0.25rem 0;
   }
 
   .-meta {
     // margin-top: 0.25rem;
     display: flex;
     font-size: rem(14px);
-    font-style: italic;
-    @include fgcolor(tert);
+    // font-style: italic;
+    @include fgcolor(mute);
+
+    strong {
+      @include fgcolor(tert);
+    }
   }
 
   .-type {
     margin-right: 0.5rem;
   }
 
-  .-size {
+  .-time {
     margin-left: auto;
   }
 </style>

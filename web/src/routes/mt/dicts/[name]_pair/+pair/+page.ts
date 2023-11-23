@@ -2,9 +2,10 @@ import { nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 
-export const load = (async ({ fetch, url }) => {
+export const load = (async ({ fetch, url, params }) => {
+  const dname = params.name
   const zform = init_form(url.searchParams)
-  const { dname, a_key, b_key } = zform
+  const { a_key, b_key } = zform
 
   if (dname && a_key && b_key) {
     const url = `/_ai/terms/find?dname=${dname}&a_key=${a_key}&b_key=${b_key}`
@@ -30,7 +31,6 @@ export const load = (async ({ fetch, url }) => {
 
 function init_form(params: URLSearchParams): Partial<CV.Zvpair> {
   return {
-    dname: params.get('dname') || '',
     a_key: params.get('a_key') || '',
     b_key: params.get('b_key') || '',
     a_vstr: '',

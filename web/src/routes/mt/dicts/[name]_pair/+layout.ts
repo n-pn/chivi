@@ -8,7 +8,6 @@ export interface DictData {
   // terms: CV.Viterm[]
 }
 
-export const load = (async ({ fetch, params: { dname } }) => {
-  const { dinfo, users } = await api_get<DictData>(`/_ai/dicts/${dname}`, fetch)
-  return { dname, dinfo, users }
+export const load = (async ({ fetch, params: { name } }) => {
+  return await api_get<DictData>(`/_ai/dicts/${name}_pair`, fetch)
 }) satisfies LayoutLoad

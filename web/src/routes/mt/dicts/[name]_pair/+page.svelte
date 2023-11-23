@@ -24,36 +24,40 @@
     for (let key in query) query[key] = ''
     query = query
   }
+
+  $: [a_name, b_name] = data.dinfo.label.split(' + ')
 </script>
 
-<article class="article m-article">
+<article class="article m-article island">
   <header>
-    <h1 class="h2">Nghĩa cặp từ</h1>
+    <h1 class="h2">Nghĩa cặp từ [{data.dinfo.label}]</h1>
+    <p class="u-fg-tert brief"><em>{data.dinfo.brief}</em></p>
+    <p class="u-fg-tert">
+      <em>Số lượng từ:</em> <strong>{data.dinfo.total}</strong>
+      <em>Cập nhật lúc:</em> <strong>{rel_time_vp(data.dinfo.mtime)}</strong>
+    </p>
   </header>
 
   <div class="body">
     <table>
       <thead>
         <tr class="thead">
-          <th class="dname">Loại</th>
-          <th class="a_key">Gốc A</th>
-          <th class="b_key">Gốc B</th>
-          <th class="a_vstr">Nghĩa A</th>
-          <th class="a_attr">Từ tính A</th>
-          <th class="b_vstr">Nghĩa B</th>
-          <th class="b_attr">Từ tính B</th>
+          <th class="a_key">{a_name} gốc</th>
+          <th class="b_key">{b_name} gốc</th>
+          <th class="a_vstr">Nghĩa {a_name}</th>
+          <th class="a_attr">Từ tính {a_name}</th>
+          <th class="b_vstr">Nghĩa {b_name}</th>
+          <th class="b_attr">Từ tính {b_name}</th>
           <th class="uname">Người dùng</th>
           <th>Cập nhật</th>
         </tr>
 
         <tr class="tquery">
-          <td><SIcon name="search" /></td>
-          <td
-            ><input type="text" placeholder="-" bind:value={query.dname} /></td>
           <td
             ><input type="text" placeholder="-" bind:value={query.a_key} /></td>
           <td
             ><input type="text" placeholder="-" bind:value={query.b_key} /></td>
+          <td><input type="text" placeholder="-" disabled /></td>
           <td><input type="text" placeholder="-" disabled /></td>
           <td><input type="text" placeholder="-" disabled /></td>
           <td><input type="text" placeholder="-" disabled /></td>
@@ -80,10 +84,6 @@
           {@const b_attrs = b_attr ? b_attr.split(' ') : []}
 
           <tr class="term">
-            <td class="dname">
-              <a href="?dname={dname}">{dnames[dname] || dname}</a>
-            </td>
-
             <td class="a_key">
               <a href="?a_key={a_key}">{a_key}</a>
             </td>
@@ -129,14 +129,14 @@
 </article>
 
 <style lang="scss">
+  h1 {
+    margin-bottom: 0.5rem;
+  }
+
   .brief {
     font-style: italic;
     margin-top: 1rem;
     @include fgcolor(tert);
-  }
-
-  .h3 {
-    margin-top: 1rem;
   }
 
   .body {
@@ -183,32 +183,9 @@
     }
   }
 
-  .hover {
-    position: absolute;
-    right: 0;
-    top: 0;
-    padding: 0.325rem;
-
-    visibility: hidden;
-    z-index: 99;
-    // prettier-ignore
-    td:hover > & { visibility: visible; }
-  }
-
   .mtime,
   .uname {
     @include fgcolor(tert);
-  }
-
-  .attr {
-    width: 3rem;
-
-    a {
-      @include fgcolor(tert);
-      &:hover {
-        @include fgcolor(primary, 5);
-      }
-    }
   }
 
   .uname {
@@ -217,33 +194,6 @@
 
     &._self {
       font-style: italic;
-    }
-  }
-
-  .scope {
-    width: 4rem;
-    @include ftsize(xs);
-
-    &._1 {
-      @include fgcolor(success);
-    }
-
-    &._2 {
-      @include fgcolor(neutral);
-    }
-
-    &._3 {
-      @include fgcolor(private);
-    }
-  }
-
-  .-val {
-    font-size: rem(14px);
-    max-width: 12rem;
-
-    &._del {
-      font-style: italic;
-      @include fgcolor(mute);
     }
   }
 
@@ -268,36 +218,11 @@
     }
   }
 
-  .term._mute {
-    @include bgcolor(neutral, 5, 3);
-    text-decoration: line-through;
-    font-style: italic;
-  }
-
-  .term._temp {
-    @include fgcolor(tert);
-    font-style: italic;
-  }
-
   thead .m-btn {
     background: transparent;
 
     &:hover {
       @include bgcolor(main);
-    }
-  }
-
-  .plock {
-    &._0 {
-      @include fgcolor(success);
-    }
-
-    &._1 {
-      @include fgcolor(primary);
-    }
-
-    &._2 {
-      @include fgcolor(warning);
     }
   }
 </style>

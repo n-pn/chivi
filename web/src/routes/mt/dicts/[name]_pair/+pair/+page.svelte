@@ -1,7 +1,7 @@
 <script lang="ts">
   import { dnames } from '$lib/consts/pair_dicts'
 
-  import { get_user, zfrom } from '$lib/stores'
+  import { get_user } from '$lib/stores'
   const _user = get_user()
 
   import attr_info from '$lib/consts/attr_info'
@@ -12,6 +12,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
+  let dname = data.dname
   let zform = data.zform
 
   let form_stt = ''
@@ -25,7 +26,9 @@
 
   const headers = { 'Content-type': 'application/json' }
 
-  const submit_term = async () => {
+  const submit_term = async (evt: SubmitEvent) => {
+    evt.preventDefault()
+
     const init = { body: JSON.stringify(zform), method, headers }
     const res = await fetch(action, init)
 
@@ -40,46 +43,33 @@
     }
   }
 
+  $: [a_name, b_name] = data.dinfo.label.split(' + ')
+
   $: a_attrs = zform.a_attr ? zform.a_attr.split(' ') : []
   $: b_attrs = zform.b_attr ? zform.b_attr.split(' ') : []
 </script>
 
 <article class="article m-article">
   <header>
-    <h1 class="h2">Thêm sửa nghĩa cặp từ</h1>
+    <h1 class="h2">Thêm sửa nghĩa cặp từ [{data.dinfo.label}]</h1>
   </header>
 
-  <div class="body">
-    <div class="form-field">
-      <label for="dname" class="form-label">Cặp từ:</label>
-
-      {#each Object.entries(dnames) as [value, label]}
-        {@const _active = value == zform.dname}
-        <button
-          type="button"
-          class="m-chip _primary"
-          class:_active
-          on:click={() => (zform.dname = value)}>
-          <span>{label}</span>
-          {#if _active}<SIcon name="check" />{/if}
-        </button>
-      {/each}
-    </div>
-
+  <form class="body" {action} {method} on:submit={submit_term}>
     <div class="form-group">
       <div class="form-field">
-        <label for="a_key" class="form-label">Trung A:</label>
+        <label for="a_key" class="form-label">{a_name} tiếng Trung:</label>
         <input
           class="m-input"
           type="text"
           name="a_key"
           lang="zh"
           placeholder="Tiếng Trung"
+          required
           bind:value={zform.a_key} />
       </div>
 
       <div class="form-field">
-        <label for="vstr" class="form-label">Nghĩa A:</label>
+        <label for="vstr" class="form-label">Nghĩa của {a_name}:</label>
         <input
           class="m-input"
           type="text"
@@ -91,7 +81,7 @@
       </div>
 
       <div class="form-field">
-        <label for="attr" class="form-label">Từ tính A:</label>
+        <label for="attr" class="form-label">Từ tính:</label>
         <button
           type="button"
           class="m-input _attr"
@@ -108,17 +98,18 @@
 
     <div class="form-group">
       <div class="form-field">
-        <label for="b_key" class="form-label">Trung B:</label>
+        <label for="b_key" class="form-label">{b_name} tiếng Trung:</label>
         <input
           class="m-input"
           type="text"
           name="b_key"
           lang="zh"
           placeholder="Tiếng Trung"
+          required
           bind:value={zform.b_key} />
       </div>
       <div class="form-field">
-        <label for="vstr" class="form-label">Nghĩa B:</label>
+        <label for="vstr" class="form-label">Nghĩa của {b_name}:</label>
         <input
           class="m-input"
           type="text"
@@ -129,7 +120,7 @@
       </div>
 
       <div class="form-field">
-        <label for="attr" class="form-label">Từ tính B:</label>
+        <label for="attr" class="form-label">Từ tính:</label>
         <button
           type="button"
           class="m-input _attr"
@@ -143,18 +134,18 @@
         </button>
       </div>
     </div>
-  </div>
 
-  {#if form_msg}
-    <div class="form-msg _{form_stt}">{form_msg}</div>
-  {/if}
+    {#if form_msg}
+      <div class="form-msg _{form_stt}">{form_msg}</div>
+    {/if}
 
-  <footer class="foot">
-    <button type="submit" class="m-btn _primary _fill _lg">
-      <SIcon name="send" />
-      <span>Lưu cặp từ</span>
-    </button>
-  </footer>
+    <footer class="foot">
+      <button type="submit" class="m-btn _primary _fill _lg">
+        <SIcon name="send" />
+        <span>Lưu cặp từ</span>
+      </button>
+    </footer>
+  </form>
 </article>
 
 {#if select_a_attr}
@@ -212,6 +203,7 @@
   }
 
   .foot {
+    margin-top: 1.5rem;
     display: flex;
     gap: 0.5rem;
   }

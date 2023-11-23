@@ -76,7 +76,7 @@ class MT::ZvDict
       jb.field "brief", @brief
 
       jb.field "total", @total
-      jb.field "mtime", @mtime
+      jb.field "mtime", ZvUtil.utime(@mtime)
       # jb.field "users", @users.split(',')
     end
   end
@@ -105,14 +105,18 @@ class MT::ZvDict
     self.get!(name, db: db, &.<< " where name = $1")
   end
 
-  COUNT_SQL = "select colasce(count(*), 0) from zvdicts "
+  COUNT_SQL = "select coalesce(count(*), 0) from zdinfos "
 
   def self.count(kind : String) : Int32
     case kind
     when "wn"
-      query = "#{COUNT_SQL} where kind = 2 and total > 0"
+      query = "#{COUNT_SQL} where kind = 2"
     when "up"
-      query = "#{COUNT_SQL} where kind = 3 and total > 0"
+      query = "#{COUNT_SQL} where kind = 3"
+    when "qt"
+      query = "#{COUNT_SQL} where kind = 4"
+    when "pd"
+      query = "#{COUNT_SQL} where kind = 5"
     else
       query = "#{COUNT_SQL} where kind < 2"
     end
@@ -136,25 +140,25 @@ class MT::ZvDict
 
   def self.get_all(kind : Int32, limit = 50, offset = 0)
     self.get_all kind, limit, offset do |sql|
-      sql << " where kind = $1 and total > 0 order by mtime desc limit $2 offset $3"
+      sql << " where kind = $1 order by mtime desc, total desc limit $2 offset $3"
     end
   end
 
   def self.get_core
-    self.get_all(&.<< " where kind < 2 order by mtime desc")
+    self.get_all(&.<< " where kind < 2 order by d_id asc")
   end
 
   def self.init_wn_dict!(wn_id : Int32, bname : String, db = self.db)
     dict = self.load!("wn#{wn_id}", db: db)
-    dict.label = "Truyện chữ: #{bname}"
-    dict.brief = "Từ điển riêng cho bộ truyện [#{bname}]"
+    dict.label = bname
+    dict.brief = "Từ điển riêng cho bộ truyện chữ [#{bname}]"
     dict.upsert!(db: db)
     dict
   end
 
   def self.init_up_dict!(up_id : Int32, bname : String, db = self.db)
     dict = self.load!("up#{up_id}", db: db)
-    dict.label = "Sưu tầm: #{bname}"
+    dict.label = bname
     dict.brief = "Từ điển riêng cho sưu tầm cá nhân [#{bname}]"
     dict.upsert!(db: db)
     dict

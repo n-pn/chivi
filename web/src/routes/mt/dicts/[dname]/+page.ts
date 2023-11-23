@@ -4,7 +4,7 @@ import { merge_query, api_get } from '$lib/api_call'
 import type { PageLoad } from './$types'
 
 export interface DictData {
-  dinfo: CV.Vidict
+  dinfo: CV.Zvdict
   users: string[]
   // terms: CV.Viterm[]
 }
@@ -16,7 +16,8 @@ export interface TermsData extends CV.Paginate {
 }
 
 export const load = (async ({ fetch, url, params: { dname }, parent }) => {
-  const { dinfo, users } = await parent()
+  const { dinfo } = await parent()
+  dname = dname.replace(/^wn/, 'books:').replace(/^up/, 'up:')
 
   const search = merge_query(url.searchParams, { dname, lm: 50 })
   const terms = await api_get<TermsData>(`/_ai/terms?${search}`, fetch)
@@ -24,7 +25,7 @@ export const load = (async ({ fetch, url, params: { dname }, parent }) => {
   const _meta = {
     left_nav: [
       nav_link('/mt/dicts', 'Từ điển', 'package', { show: 'ts' }),
-      nav_link(dinfo.dname, dinfo.label, '', { kind: 'title' }),
+      nav_link(dinfo.name, dinfo.label, '', { kind: 'title' }),
     ],
   }
 

@@ -7,15 +7,18 @@ declare namespace CV {
     dslug: string
   }
 
-  interface Vidict {
-    dname: string
-    dtype: number
+  interface Zvdict {
+    name: string
+    kind: number
+    d_id: number
 
+    p_min: numbrt
     label: string
-    descs: string
+    brief: string
 
     total: number
     mtime: number
+    users: string[]
   }
 
   interface Zvpair {
