@@ -43,7 +43,7 @@
   button {
     @include flex-ca;
     height: 1.5rem;
-    width: 2rem;
+    width: 1.75rem;
 
     background: inherit;
     @include ftsize(lg);

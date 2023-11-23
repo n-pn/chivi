@@ -401,7 +401,7 @@
     @include flex();
 
     justify-content: space-between;
-    padding: 0.25rem 0.5rem;
+    padding: 0.25rem 0.625rem;
     height: 2rem;
 
     code {

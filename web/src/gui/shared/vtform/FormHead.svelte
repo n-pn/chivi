@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Rdword, type Rdline } from '$lib/reader'
   import SIcon from '$gui/atoms/SIcon.svelte'
+  import { copy_to_clipboard } from '$utils/btn_utils'
 
   export let actived = true
 
@@ -48,18 +49,14 @@
 <header class="head">
   <button
     class="m-btn _text"
-    data-tip="Phục hồi chọn từ"
-    on:click={() => (rword = rorig)}>
-    <svg xmlns="http://www.w3.org/2000/svg" class="m-icon" viewBox="0 0 24 24">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-      <path d="M3.06 13a9 9 0 1 0 .49 -4.087" />
-      <path d="M3 4.001v5h5" />
-      <path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
-    </svg>
+    data-kbd="⌃c"
+    disabled={out_chars.length == 0}
+    on:click={() => copy_to_clipboard(out_chars.join(''))}>
+    <SIcon name="copy" />
   </button>
 
   <button
-    class="btn _left _hide"
+    class="btn _left"
     data-kbd="←"
     disabled={rword.from == 0}
     on:click={() => shift_lower(-1)}>
@@ -120,7 +117,7 @@
   </button>
 
   <button
-    class="btn _right _hide"
+    class="btn _right"
     data-kbd="→"
     disabled={rword.upto == zsize}
     on:click={(e) => shift_upper(1)}>
@@ -138,6 +135,7 @@
 
 <style lang="scss">
   $height: 2.25rem;
+  $mwidth: 1.875rem;
 
   .head {
     position: relative;
@@ -157,10 +155,12 @@
 
   .btn {
     background: transparent;
-    padding: 0 0.5rem;
     margin: 0;
     line-height: 1em;
-    max-width: 65vw;
+
+    width: $mwidth;
+    @include flex-ca;
+    // max-width: 65vw;
 
     @include ftsize(lg);
     @include fgcolor(secd);

@@ -13,7 +13,6 @@
   export let viewer: HTMLElement
   export let rline: Rdline
   export let rword: Rdword
-
   let entries = []
   let current: Entry[] = []
 

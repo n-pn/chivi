@@ -24,6 +24,8 @@
 
     return res.join(' ')
   }
+
+  const v1_cache = new Map<string, string>()
 </script>
 
 <script lang="ts">
@@ -92,10 +94,15 @@
   $: all_title = titleize(tform.vstr, 99)
 
   const call_mt_v1 = async (ztext: string) => {
+    let cached = v1_cache.get(ztext)
+    if (cached) return cached
+
     const url = `/_m1/qtran/suggest?input=${ztext}&w_cap=false`
     const res = await fetch(url)
-    if (res.ok) return await res.text()
-    return res.status
+    if (!res.ok) return res.status
+    cached = await res.text()
+    v1_cache.set(ztext, cached)
+    return cached
   }
 </script>
 
@@ -177,6 +184,16 @@
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="util-more" on:click={handle_click}>
+      <img src="/icons/chivi.svg" alt="chivi" />
+
+      {#await call_mt_v1(tform.ztext)}
+        <SIcon name="loader-2" spin={true} />
+      {:then vstr}
+        <span class="txt" class:_same={tform.vstr == vstr} data-vstr={vstr}>
+          {vstr}
+        </span>
+      {/await}
+
       {#if more_type == 'hviet'}
         {#each gen_format_hints(tform.hviet, true) as vstr}
           <span class="txt" class:_same={tform.vstr == vstr} data-vstr={vstr}>
@@ -203,7 +220,7 @@
 
         <SIcon name="brand-bing" />
 
-        {#await btran_word(tform.ztext, 'auto', keep_caps)}
+        {#await btran_word(tform.ztext, 'zh', keep_caps)}
           <SIcon name="loader-2" spin={true} />
         {:then vstr_list}
           {#each vstr_list as vstr}
@@ -213,17 +230,7 @@
           {/each}
         {/await}
 
-        <img class="sep" src="/icons/chivi.svg" alt="chivi" />
-
-        {#await call_mt_v1(tform.ztext)}
-          <SIcon name="loader-2" spin={true} />
-        {:then vstr}
-          <span class="txt" class:_same={tform.vstr == vstr} data-vstr={vstr}>
-            {vstr}
-          </span>
-        {/await}
-
-        <img class="sep" src="/icons/deepl.svg" alt="deepl" />
+        <img src="/icons/deepl.svg" alt="deepl" />
 
         {#await deepl(tform.ztext, 0)}
           <SIcon name="loader-2" spin={true} />
@@ -247,8 +254,8 @@
   .util-main {
     @include flex-cy;
     position: relative;
-    padding-left: 0.5rem;
-    padding-right: 0.125rem;
+    padding-left: 0.375rem;
+    padding-right: 0.25rem;
     height: $height;
 
     @include bps(font-size, rem(12px), $pm: rem(13px), $ts: rem(14px));
@@ -299,7 +306,7 @@
     z-index: 9999;
     top: 100%;
     margin-top: -3px;
-    padding: 0.375rem 0.75rem;
+    padding: 0.375rem 0.5rem;
     line-height: 1.375rem;
 
     left: 0;
