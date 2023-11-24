@@ -184,16 +184,6 @@
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="util-more" on:click={handle_click}>
-      <img src="/icons/chivi.svg" alt="chivi" />
-
-      {#await call_mt_v1(tform.ztext)}
-        <SIcon name="loader-2" spin={true} />
-      {:then vstr}
-        <span class="txt" class:_same={tform.vstr == vstr} data-vstr={vstr}>
-          {vstr}
-        </span>
-      {/await}
-
       {#if more_type == 'hviet'}
         {#each gen_format_hints(tform.hviet, true) as vstr}
           <span class="txt" class:_same={tform.vstr == vstr} data-vstr={vstr}>
@@ -207,6 +197,15 @@
           </span>
         {/each}
       {:else if more_type == 'trans'}
+        <img src="/icons/chivi.svg" alt="chivi" />
+        {#await call_mt_v1(tform.ztext)}
+          <SIcon name="loader-2" spin={true} />
+        {:then vstr}
+          <span class="txt" class:_same={tform.vstr == vstr} data-vstr={vstr}>
+            {vstr}
+          </span>
+        {/await}
+
         <SIcon name="brand-google" />
         {#await gtran_word(tform.ztext, 'vi', keep_caps)}
           <SIcon name="loader-2" spin={true} />
@@ -219,7 +218,6 @@
         {/await}
 
         <SIcon name="brand-bing" />
-
         {#await btran_word(tform.ztext, 'zh', keep_caps)}
           <SIcon name="loader-2" spin={true} />
         {:then vstr_list}
@@ -231,7 +229,6 @@
         {/await}
 
         <img src="/icons/deepl.svg" alt="deepl" />
-
         {#await deepl(tform.ztext, 0)}
           <SIcon name="loader-2" spin={true} />
         {:then vstr}
