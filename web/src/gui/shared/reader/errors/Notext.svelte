@@ -1,27 +1,23 @@
 <script lang="ts">
-  import { Rdpage } from '$lib/reader'
-
   import { get_user } from '$lib/stores'
   const _user = get_user()
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import { invalidateAll } from '$app/navigation'
 
-  export let cstem: CV.Chstem
+  export let crepo: CV.Chrepo
   export let rdata: CV.Chpart
   export let state = 0
 
-  $: search = cstem.zname ? `${cstem.zname} ${rdata.zname}` : ''
+  $: search = crepo.zname ? `${crepo.zname} ${rdata.zname}` : ''
 
   let _loading = false
 
   const reload_chap = async () => {
     _loading = true
 
-    const { stype, sname, sn_id } = cstem
     const { ch_no, p_idx } = rdata
 
-    const url = `/_rd/chaps/${stype}/${sname}/${sn_id}/${ch_no}/${p_idx}?regen=true`
+    const url = `/_rd/chaps/${crepo.sroot}/${ch_no}/${p_idx}?regen=true`
     const res = await fetch(url, { cache: 'no-cache' })
 
     _loading = false
@@ -46,12 +42,12 @@
     </p>
   {/if}
 
-  {#if cstem.stype == 'up'}
+  {#if crepo.stype == 1}
     <p>
       Bạn đang đọc nội dung do người dùng Chivi tự quản lý. Thử liên hệ với chủ
       sở hữu của dự án để họ tìm cách khắc phục.
     </p>
-  {:else if cstem.stype == 'rm'}
+  {:else if crepo.stype == 2}
     <p>
       Bạn đang xem chương tiết được liên kết với nguồn ngoài. Khả năng cao là do
       nguồn ngoài đã chết nên text gốc không tải xuống được.
@@ -84,7 +80,7 @@
   {/if}
 
   <h2 class="u-warn">Tự thêm text gốc cho chương:</h2>
-  {#if $_user.privi >= cstem.plock}
+  {#if $_user.privi >= crepo.plock}
     <p>
       Bạn có đủ quyền hạn để thêm text gốc cho bộ truyện, bấm vào nút
       <a href="up?start={rdata.ch_no}">Thêm text gốc</a>
@@ -108,7 +104,7 @@
         </em>
       </p>
     {/if}
-  {:else if cstem.stype == 'wn'}
+  {:else if crepo.stype < 1}
     <p>
       Các danh sách chương tiết <x-sname>Tổng hợp</x-sname>,
       <x-sname>Tạm thời</x-sname> và <x-sname>Chính thức</x-sname> của truyện chữ
@@ -135,11 +131,8 @@
         target="_blank">Hướng dẫn nâng cấp quyền hạn</a
       >.
     </p>
-  {:else if cstem.stype == 'up'}
-    <p>
-      Chương tiết do <x-sname>{cstem.sname}</x-sname> quản lý. Hãy liên hệ với {cstem.sname}
-      nếu muốn đóng góp text gốc.
-    </p>
+  {:else if crepo.stype == 2}
+    <p>Chương tiết do chủ sưu tầm quản lý.</p>
   {:else}
     <p>
       Text từ nguồn nhúng ngoài thường được tải tự động, nhưng bạn có thể tự sửa
@@ -172,22 +165,15 @@
   </div>
 
   <div class="actions">
-    {#if cstem.stype == 'up'}
-      <a class="m-btn _success" href="/{cstem.sname}" target="_blank">
-        <SIcon name="at" />
-        <span>Liên hệ chủ dự án</span>
-      </a>
-    {:else}
-      <a
-        class="m-btn _success"
-        href="https://discord.gg/mdC3KQH"
-        target="_blank"
-        rel="noreferrer"
-        data-umami-event="goto-discord">
-        <SIcon name="brand-discord" />
-        <span>Liên hệ ban quản trị</span>
-      </a>
-    {/if}
+    <a
+      class="m-btn _success"
+      href="https://discord.gg/mdC3KQH"
+      target="_blank"
+      rel="noreferrer"
+      data-umami-event="goto-discord">
+      <SIcon name="brand-discord" />
+      <span>Liên hệ ban quản trị</span>
+    </a>
   </div>
 </section>
 

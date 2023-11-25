@@ -3,25 +3,10 @@ require "./_ctrl_base"
 class RD::ChinfoCtrl < AC::Base
   base "/_rd/chaps"
 
-  @[AC::Route::GET("/wn/:sname/:sn_id")]
-  def wn_clist(sname : String, sn_id : Int32, _last : Bool = false)
-    wstem = get_wstem(sname, sn_id)
-    get_chaps(wstem.crepo, _last: _last)
-  end
+  @[AC::Route::GET("/:sname/:sn_id")]
+  def index(sname : String, sn_id : Int32, _last : Bool = false)
+    crepo = Chrepo.load!("#{sname}/#{sn_id}")
 
-  @[AC::Route::GET("/rm/:sname/:sn_id")]
-  def rm_clist(sname : String, sn_id : String, _last : Bool = false)
-    rstem = get_rstem(sname, sn_id)
-    get_chaps(rstem.crepo, _last: _last)
-  end
-
-  @[AC::Route::GET("/up/:sname/:sn_id")]
-  def up_clist(sname : String, sn_id : Int32, _last : Bool = false)
-    ustem = get_ustem(sn_id, sname)
-    get_chaps(ustem.crepo, _last: _last)
-  end
-
-  private def get_chaps(crepo : Chrepo, _last : Bool = false)
     _pg_no, limit, offset = _paginate(min: 32, max: 64)
 
     if _last
@@ -35,45 +20,28 @@ class RD::ChinfoCtrl < AC::Base
 
   ###########
 
-  @[AC::Route::GET("/wn/:sname/:sn_id/:ch_no/:p_idx")]
-  def wn_cpart(sname : String, sn_id : Int32,
-               ch_no : Int32, p_idx : Int32,
-               force : Bool = false, regen : Bool = false)
-    crepo = get_wstem(sname, sn_id).crepo
+  @[AC::Route::GET("/:sname/:sn_id/:ch_no/:p_idx")]
+  def show_path(sname : String, sn_id : String, ch_no : Int32, p_idx : Int32,
+                force : Bool = false, regen : Bool = false)
+    crepo = Chrepo.load!("#{sname}/#{sn_id}")
     cinfo = get_cinfo(crepo, ch_no)
 
     crepo.save_raw_from_link!(cinfo, _uname, force: regen) if _privi >= 0
     rdata = show_part(crepo: crepo, cinfo: cinfo, p_idx: p_idx, force: force)
+    spawn inc_view_count!(crepo, sname[2..]) if rdata[:error] < 300
 
     render 200, json: rdata
   end
 
-  @[AC::Route::GET("/rm/:sname/:sn_id/:ch_no/:p_idx")]
-  def rm_cpart(sname : String, sn_id : String,
-               ch_no : Int32, p_idx : Int32,
-               force : Bool = false, regen : Bool = false)
-    rstem = get_rstem(sname, sn_id)
-    cinfo = get_cinfo(rstem, ch_no)
-
-    rstem.crepo.save_raw_from_link!(cinfo, _uname, force: regen) if _privi >= 0
-    rdata = show_part(crepo: rstem.crepo, cinfo: cinfo, p_idx: p_idx, force: force)
-
-    spawn { rstem.inc_view_count!(self._privi &+ 1) } if rdata[:error] < 300
-
-    render 200, json: rdata
-  end
-
-  @[AC::Route::GET("/up/:sname/:sn_id/:ch_no/:p_idx")]
-  def up_cpart(sname : String, sn_id : Int32,
-               ch_no : Int32, p_idx : Int32,
-               force : Bool = false, regen : Bool = false)
-    ustem = get_ustem(sn_id, sname)
-
-    cinfo = get_cinfo(ustem, ch_no)
-    rdata = show_part(crepo: ustem.crepo, cinfo: cinfo, p_idx: p_idx, force: force)
-
-    spawn { ustem.inc_view_count!(self._privi &+ 2) } if rdata[:error] < 300
-    render 200, json: rdata
+  private def inc_view_count!(crepo : Chrepo, sname : String)
+    value = (self._privi &+ 2)
+    crepo.inc_view_count!(value)
+    case crepo.stype
+    when 1
+      get_ustem(crepo.sn_id, sname).inc_view_count!(value)
+    when 2
+      get_rstem(sname, crepo.sn_id.to_s).inc_view_count!(value)
+    end
   end
 
   private def show_part(crepo : Chrepo, cinfo : Chinfo, p_idx : Int32,

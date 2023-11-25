@@ -16,6 +16,12 @@ class RD::WnstemCtrl < AC::Base
   def show(sname : String, sn_id : Int32, crawl : Int32 = 0, regen : Bool = false)
     wstem = get_wstem(sname, sn_id)
     wstem.update!(crawl, regen) if crawl > 0 || regen
-    render json: wstem
+    rmemo = Rdmemo.load!(vu_id: self._vu_id, sname: "wn#{sname}", sn_id: sn_id.to_s)
+
+    render json: {
+      wstem: wstem,
+      crepo: wstem.crepo,
+      rmemo: rmemo,
+    }
   end
 end

@@ -67,7 +67,14 @@ class RD::UpstemCtrl < AC::Base
   def show(up_id : Int32, regen : Bool = false)
     ustem = get_ustem(up_id)
     # TODO: retranslate here
-    render json: ustem
+
+    rmemo = Rdmemo.load!(vu_id: self._vu_id, sname: "up#{ustem.sname}", sn_id: up_id.to_s)
+
+    render json: {
+      ustem: ustem,
+      crepo: ustem.crepo,
+      rmemo: rmemo,
+    }
   end
 
   @[AC::Route::POST("/:up_id", body: uform)]

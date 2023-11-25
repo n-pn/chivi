@@ -10,7 +10,7 @@ export const load = (async ({ parent, params, fetch }) => {
   const [ch_no, p_idx = 1] = params.chap.split('_').map((x) => parseInt(x))
   const force = _conf.auto_u
 
-  const rdurl = `/_rd/chaps/up/${params.sn}/${params.id}/${ch_no}/${p_idx}?force=${force}`
+  const rdurl = `/_rd/chaps/up${params.sn}/${params.id}/${ch_no}/${p_idx}?force=${force}`
   const rdata = await api_get<CV.Chpart>(rdurl, fetch)
 
   const _title = `${rdata.title} - ${ustem.vname}`

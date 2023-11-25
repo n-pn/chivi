@@ -2,20 +2,27 @@ export const mark_rdchap = async (
   rmemo: CV.Rdmemo,
   rdata: CV.Chpart,
   ropts: CV.Rdopts,
-  force: boolean = false
+  mtype = -1
 ) => {
-  const cinfo: CV.Rdchap = {
-    title: rdata.title,
-    p_idx: rdata.p_idx,
-    rmode: ropts.rmode,
-    qt_rm: ropts.qt_rm,
-    mt_rm: ropts.mt_rm,
+  rmemo.rmode = ropts.rmode
+  rmemo.qt_rm = ropts.qt_rm
+  rmemo.mt_rm = ropts.mt_rm
+
+  if (is_new_chmark(mtype, rmemo, rdata)) {
+    if (mtype >= 0) rmemo.lc_mtype = mtype
+
+    rmemo.lc_ch_no = rdata.ch_no
+    rmemo.lc_p_idx = rdata.p_idx
+    rmemo.lc_title = rdata.title
   }
 
-  rmemo.last_ch_no = rdata.ch_no
-  rmemo.last_cinfo = cinfo
+  return await upsert_memo(rmemo, 'chmark')
+}
 
-  return await upsert_memo(rmemo, force ? 'chmark' : 'chlast')
+function is_new_chmark(mtype: number, rmemo: CV.Rdmemo, rdata: CV.Chpart) {
+  if (rmemo.lc_mtype < 1) return true
+  if (rmemo.lc_mtype > 1) return mtype >= 0
+  return rdata.ch_no == rmemo.lc_ch_no || rdata.ch_no == rmemo.lc_ch_no + 1
 }
 
 export const upsert_memo = async (rmemo: CV.Rdmemo, action: string) => {

@@ -1,5 +1,5 @@
 require "../../src/mt_ai/data/vi_dict"
-ENV["MT_DIR"] ||= "var/mt_db"
+# ENV["MT_DIR"] ||= "/2tb/app.chivi/var/mt_db"
 
 require "../../src/mt_ai/data/vi_term"
 

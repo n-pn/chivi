@@ -75,4 +75,47 @@ declare namespace CV {
     mtime?: number
     error?: string
   }
+
+  interface Chrepo {
+    sroot: string
+    owner: number
+
+    stype: number
+    sn_id: number
+
+    vname: string
+    zname: string
+    wn_id: number
+
+    chmax: number
+    avail: number
+
+    plock: number
+    gifts: number
+    multp: number
+
+    mtime: Int64
+    rtime: Int64
+
+    view_count: number
+    like_count: number
+    star_count: number
+  }
+
+  // interface Chstem {
+  //   sroot: string
+  //   stype: string
+
+  //   sname: string
+  //   sn_id: string
+
+  //   chmax: number // chap_count
+  //   utime?: number // updated_at
+
+  //   plock: number
+  //   multp: number
+
+  //   zname: string
+  //   gifts: number = 2
+  // }
 }

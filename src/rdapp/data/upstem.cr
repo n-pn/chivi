@@ -12,9 +12,9 @@ class RD::Upstem
   schema "upstems", :postgres, strict: false
 
   field id : Int32, pkey: true, auto: true
+  field owner : Int32 = -1
 
   field sname : String = "@Chivi"
-  field owner : Int32 = -1
 
   field zname : String = ""
   field vname : String = ""
@@ -39,17 +39,25 @@ class RD::Upstem
   @[DB::Field(ignore: true, auto: true)]
   @[JSON::Field(ignore: true)]
   getter crepo : Chrepo do
-    Chrepo.load("up#{@sname}/#{@id}").tap do |repo|
+    crepo = Chrepo.load!(sroot = "up#{@sname}/#{@id}") do |repo|
       repo.owner = @owner
+      repo.sname = @sname
       repo.wn_id = @wn_id || 0
       repo.chmax = @chap_count
 
       repo.plock = @guard
       repo.gifts = @gifts
       repo.multp = @multp
-
-      repo.update_vinfos!
     end
+
+    if crepo._flag == 0
+      crepo.init_text_db!(uname: @sname)
+      crepo.update_vinfos!
+      crepo._flag = 1
+      crepo.upsert!
+    end
+
+    crepo
   end
 
   def initialize(@owner, @sname, @zname, @vname = "", @labels = [] of String)
@@ -69,8 +77,14 @@ class RD::Upstem
   def update_stats!(chmax : Int32, mtime : Int64 = Time.utc.to_unix)
     @mtime = mtime if @mtime < mtime
 
-    @chap_count = chmax if @chap_count < chmax
-    self.crepo.chmax = @chap_count
+    if @chap_count < chmax
+      @chap_count = chmax
+
+      self.crepo.tap do |crepo|
+        crepo.chmax = @chap_count
+        crepo.upsert!
+      end
+    end
 
     query = @@schema.update_stmt(%w{chap_count mtime})
     @@db.exec(query, @chap_count, @mtime, @id)

@@ -1,34 +1,5 @@
 require "../../_data/_data"
 
-struct RD::Rdchap
-  include JSON::Serializable
-
-  getter title : String = ""
-  getter p_idx : Int32 = 1
-  getter rmode : String = "qt"
-  getter qt_rm : String = "qt_v1"
-  getter mt_rm : String = "mtl_1"
-
-  def initialize
-  end
-
-  def to_db
-    self.to_json
-  end
-
-  def self.to_db(val : self)
-    val.to_json
-  end
-
-  def self.to_db(val : Nil)
-    "{}"
-  end
-
-  def self.from_rs(rs : DB::ResultSet)
-    new(rs.read(JSON::PullParser))
-  end
-end
-
 class RD::Rdmemo
   ############
 
@@ -48,21 +19,29 @@ class RD::Rdmemo
   field rating : Int16 = 0
   field recomm : Int16 = 0
 
+  field rmode : String = "qt"
+  field qt_rm : String = "qt_v1"
+  field mt_rm : String = "mtl_1"
+
+  field lc_mtype : Int16 = 0 # last chap mark type
+
+  field lc_title : String = "" # last chap title
+  field lc_ch_no : Int32 = 0   # last chap index
+  field lc_p_idx : Int16 = 0   # last chap part no
+
   field view_count : Int32 = 0
   field coin_spent : Int32 = 0
 
-  field last_ch_no : Int32 = 0
-  field last_cinfo : Rdchap? = nil, converter: RD::Rdchap
+  # field last_ch_no : Int32 = 0
+  # field last_cinfo : Rdchap? = nil, converter: RD::Rdchap
 
-  field mark_ch_no : Int32 = 0
-  field mark_cinfo : Rdchap? = nil, converter: RD::Rdchap
+  # field mark_ch_no : Int32 = 0
+  # field mark_cinfo : Rdchap? = nil, converter: RD::Rdchap
 
   field atime : Int64 = 0
   field rtime : Int64 = 0
 
   def initialize(@vu_id, @sname, @sn_id)
-    @last_cinfo = Rdchap.new
-    @mark_cinfo = Rdchap.new
   end
 
   def inherit(mform : self, action : String = "")
@@ -73,19 +52,20 @@ class RD::Rdmemo
       @rating = mform.rating
     when "recomm"
       @recomm = mform.recomm
-    when "chmark", "chlast"
+    when "chmark"
       @rtime = Time.utc.to_unix
 
       @vname = mform.vname
       @rpath = mform.rpath
 
-      @last_ch_no = mform.last_ch_no
-      @last_cinfo = mform.last_cinfo
+      @lc_mtype = mform.lc_mtype
+      @lc_title = mform.lc_title
+      @lc_ch_no = mform.lc_ch_no
+      @lc_p_idx = mform.lc_p_idx
 
-      if action == "chmark" || self.sequence_read?(mform.last_ch_no)
-        @mark_ch_no = mform.mark_ch_no
-        @mark_cinfo = mform.mark_cinfo
-      end
+      @rmode = mform.rmode
+      @qt_rm = mform.qt_rm
+      @mt_rm = mform.mt_rm
     end
 
     self
@@ -112,8 +92,9 @@ class RD::Rdmemo
     end
   end
 
-  def self.load(vu_id : Int32, sname : String, sn_id : String)
-    self.find(vu_id, sname, sn_id) || new(vu_id, sname, sn_id)
+  def self.load!(vu_id : Int32, sname : String, sn_id : String)
+    rmemo = self.find(vu_id, sname, sn_id) || new(vu_id, sname, sn_id)
+    rmemo.tap(&.update_atime!)
   end
 
   def self.get_all(vu_id : Int32, sname : Nil, rtype : String = "", limit : Int32 = 20, offset : Int32 = 0)
@@ -121,7 +102,7 @@ class RD::Rdmemo
       sql << " where vu_id = $1"
       case rtype
       when "liked" then sql << " and recomm > 0"
-      when "rdlog" then sql << " and last_ch_no > 0"
+      when "rdlog" then sql << " and lc_ch_no > 0"
       end
       sql << " order by rtime desc limit $2 offset $3"
     end

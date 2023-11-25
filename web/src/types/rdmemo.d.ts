@@ -20,11 +20,14 @@ declare namespace CV {
     rating: number
     recomm: number
 
-    last_ch_no: number
-    last_cinfo: Rdchap
+    rmode: string
+    qt_rm: string
+    mt_rm: string
 
-    mark_ch_no: number
-    mark_cinfo: Rdchap
+    lc_mtype: number
+    lc_ch_no: number
+    lc_p_idx: number
+    lc_title: string
 
     atime: number
     rtime: number

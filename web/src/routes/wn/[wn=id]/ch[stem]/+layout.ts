@@ -3,15 +3,22 @@ import { redirect } from '@sveltejs/kit'
 import { book_nav, seed_nav, quick_read_v2 } from '$utils/header_util'
 
 import type { LayoutLoad } from './$types'
+import { writable } from 'svelte/store'
 
 export interface StemList {
-  wstems: CV.Chstem[]
-  rstems: CV.Chstem[]
-  ustems: CV.Chstem[]
+  wstems: CV.Chrepo[]
+  rstems: CV.Chrepo[]
+  ustems: CV.Chrepo[]
+}
+
+interface WnstemShow {
+  wstem: CV.Wnstem
+  crepo: CV.Chrepo
+  rmemo: CV.Rdmemo
 }
 
 export const load = (async ({ url, fetch, params: { stem = '' }, parent }) => {
-  const { nvinfo, ubmemo } = await parent()
+  const { nvinfo } = await parent()
   const wn_id = nvinfo.id
 
   if (!stem.match(/^[~@!+$]/)) {
@@ -23,7 +30,7 @@ export const load = (async ({ url, fetch, params: { stem = '' }, parent }) => {
   const bstems = await api_get<StemList>(rd_url, fetch)
 
   const wnurl = `/_rd/wnstems/${stem}/${wn_id}`
-  const wstem = await api_get<CV.Wnstem>(wnurl, fetch)
+  const { wstem, rmemo, crepo } = await api_get<WnstemShow>(wnurl, fetch)
 
   const _meta = {
     left_nav: [
@@ -32,5 +39,8 @@ export const load = (async ({ url, fetch, params: { stem = '' }, parent }) => {
     ],
   }
 
-  return { bstems, wstem, _meta }
+  rmemo.vname = nvinfo.vtitle
+  rmemo.rpath = `/wn/${nvinfo.bslug}/ch${stem}`
+
+  return { bstems, wstem, rmemo: writable(rmemo), crepo, _meta }
 }) satisfies LayoutLoad

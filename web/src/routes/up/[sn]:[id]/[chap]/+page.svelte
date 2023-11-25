@@ -1,25 +1,13 @@
 <script lang="ts">
-  import { afterNavigate } from '$app/navigation'
-  import { mark_rdchap } from '$lib/common/rdmemo'
-
-  import { chap_path, _pgidx } from '$lib/kit_path'
-
-  import SIcon from '$gui/atoms/SIcon.svelte'
   import { crumbs } from '$gui/global/Bcrumb.svelte'
-  import Footer from '$gui/sects/Footer.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ ustem, rdata, ropts, sroot, rmemo } = data)
-
-  $: ch_no = rdata.ch_no
-  // $: total = ustem.chmax || ustem.chap_count
-
-  $: prev_path = rdata._prev ? chap_path(sroot, rdata._prev, ropts) : sroot
-  $: next_path = rdata._next ? chap_path(sroot, rdata._next, ropts) : sroot
+  $: ({ ustem, crepo, rdata, ropts, sroot, rmemo } = data)
 
   import Reader from '$gui/shared/reader/Reader.svelte'
+  import Rdfoot from '$gui/shared/reader/Rdfoot.svelte'
 
   $: $crumbs = [
     { text: 'Sưu tầm cá nhân', href: `/up` },
@@ -27,77 +15,7 @@
     { text: rdata.chdiv || 'Chính văn' },
     { text: rdata.title },
   ]
-
-  $: cstem = {
-    stype: 'up',
-    sroot,
-
-    sname: ustem.sname,
-    sn_id: ustem.id.toString(),
-
-    chmax: ustem.chap_count,
-
-    plock: 5,
-    multp: ustem.multp,
-
-    gifts: ustem.gifts,
-    zname: ustem.zname,
-  }
-
-  afterNavigate(async () => {
-    rmemo.vname = ustem.vname
-    rmemo.rpath = sroot
-    data.rmemo = await mark_rdchap(rmemo, rdata, ropts)
-  })
-
-  $: rtype = ropts.rmode == 'qt' ? ropts.qt_rm : ropts.mt_rm
 </script>
 
-<!-- <nav class="nav-list">
-  {#each links as [mode, text, dtip]}
-    <a
-      href="{paths.curr}{mode}"
-      class="nav-link"
-      class:_active={mode == $page.data.rmode}
-      data-tip={dtip}>
-      <span>{text}</span>
-    </a>
-  {/each}
-</nav> -->
-<Reader {cstem} {ropts} {rdata} />
-
-<Footer>
-  <div class="navi">
-    <a
-      href={prev_path}
-      class="m-btn navi-item"
-      class:_disable={!rdata._prev}
-      data-kbd="⌃←">
-      <SIcon name="chevron-left" />
-      <span>Trước</span>
-    </a>
-
-    <a
-      href="{sroot}{ch_no > 32 ? `?pg=${_pgidx(ch_no)}` : ''}"
-      class="m-btn _success"
-      data-kbd="h">
-      <SIcon name="list" />
-      <span class="u-show-tm">Mục lục</span>
-    </a>
-
-    <a
-      href={next_path}
-      class="m-btn _fill navi-item"
-      class:_primary={rdata._next}
-      data-kbd="⌃→">
-      <span>Kế tiếp</span>
-      <SIcon name="chevron-right" />
-    </a>
-  </div>
-</Footer>
-
-<style lang="scss">
-  .navi {
-    @include flex($center: horz, $gap: 0.5rem);
-  }
-</style>
+<Reader {crepo} {ropts} {rdata} />
+<Rdfoot {crepo} {ropts} {rdata} {rmemo} />

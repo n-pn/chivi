@@ -4,11 +4,10 @@
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let cstem: CV.Chstem
+  export let crepo: CV.Chrepo
   export let rdata: CV.Chpart
   export let state = 0
 
-  $: ({ stype, sname, sn_id } = cstem)
   $: ({ ch_no, p_idx } = rdata)
 
   $: vcoin_cost = Math.round(rdata.multp * rdata.zsize * 0.01) / 1000
@@ -25,7 +24,7 @@
     msg_text = 'Đang mở khoá chương...'
     msg_type = ''
 
-    const url = `/_rd/chaps/${stype}/${sname}/${sn_id}/${ch_no}/${p_idx}?force=true`
+    const url = `/_rd/chaps/${crepo.sroot}/${ch_no}/${p_idx}?force=true`
     const res = await fetch(url, { method: 'GET' })
 
     if (!res.ok) return alert(await res.text())
@@ -75,11 +74,11 @@
     <code>[Số ký tự] / 100_000 * [Hệ số nhân] = [Số vcoin cần thiết]</code>
     <br />
     Hệ số nhân hiện tại của chương:
-    <strong class="u-warn">{cstem.multp}</strong>.
+    <strong class="u-warn">{crepo.multp}</strong>.
   </p>
   <p class="u-fg-tert">
     <em>
-      {#if cstem.stype == 'up'}
+      {#if crepo.stype == 'up'}
         Gợi ý: Hệ số nhân của nguồn sưu tầm cá nhân do người dùng tự thiết đặt.
         Thử liên hệ với chủ sở hữu dự án nếu thấy chưa phù hợp!
       {:else}

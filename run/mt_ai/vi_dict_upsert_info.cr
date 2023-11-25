@@ -9,13 +9,19 @@ CORE = {
   {"word_hv", 0, 1, "Hán Việt", "Phiên âm Hán Việt dùng cho dịch nghĩa Hán Việt hoặc dịch từ mới"},
   {"pin_yin", 0, 2, "Phanh Âm", "Sử dụng chữ cái Latinh để thể hiện cách phát âm các chữ Hán trong"},
 
-  {"noun_vi", 0, 11, "Dịch Danh", "Các từ dùng để dịch danh từ mới"},
-  {"verb_vi", 0, 12, "Dịch Động", "Các từ dùng để dịch động từ mới"},
-  {"adjt_vi", 0, 13, "Dịch Tính", "Các từ dùng để dịch tính từ mời"},
+  {"noun_vi", 0, 11, "Nghĩa Danh", "Các từ dùng để dịch danh từ mới"},
+  {"verb_vi", 0, 12, "Nghĩa Động", "Các từ dùng để dịch động từ mới"},
+  {"adjt_vi", 0, 13, "Nghĩa Tính", "Các từ dùng để dịch tính từ mới"},
+
+  {"time_vi", 0, 15, "Thời Gian", "Các từ dùng để dịch cụm thời gian"},
+  {"nqnt_vi", 0, 16, "Định Lượng", "Các từ dùng để dịch cụm số lượng"},
 
   {"name_hv", 0, 21, "Tên Trung", "Dịch họ tên tiếng Trung bằng Hán Việt"},
   {"name_ja", 0, 22, "Tên Nhật", "Dịch tên riêng từ Trung sang Nhật"},
   {"name_en", 0, 23, "Tên Tây", "Dịch tên riêng từ Trung sang tên Tây"},
+
+  {"b_title", 0, 41, "Tên Truyện", "Áp dụng riêng khi dịch tên bộ truyện, tên tác phẩm"},
+  {"c_title", 0, 42, "Tên Chương", "Áp dụng riêng khi dịch tên chương tiết, tập truyện"},
 
   {"m_n_pair", 0, 101, "Lượng + Danh", "Dịch song song lượng từ + danh từ"},
   {"m_v_pair", 0, 102, "Lượng + Động", "Dịch song song lượng từ + động từ"},

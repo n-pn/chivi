@@ -57,7 +57,7 @@ class RD::Rmstem
   @[DB::Field(ignore: true, auto: true)]
   @[JSON::Field(ignore: true)]
   getter crepo : Chrepo do
-    Chrepo.load(sroot: "rm#{@sname}/#{@sn_id}").tap do |repo|
+    Chrepo.load!(sroot: "rm#{@sname}/#{@sn_id}") do |repo|
       repo.chmax = @chap_count
       repo.wn_id = @wn_id
       repo.plock = 0
@@ -166,6 +166,8 @@ class RD::Rmstem
       else
         @_flag = 0
       end
+
+      crepo.upsert!
     end
 
     if raw_stem.update_str.empty?

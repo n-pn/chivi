@@ -1,5 +1,12 @@
 import { api_get } from '$lib/api_call'
+import { writable } from 'svelte/store'
 import type { LayoutLoad } from './$types'
+
+interface UpstemShow {
+  ustem: CV.Upstem
+  crepo: CV.Chrepo
+  rmemo: CV.Rdmemo
+}
 
 export const load = (async ({ fetch, params, depends }) => {
   const sname = params.sn
@@ -8,10 +15,8 @@ export const load = (async ({ fetch, params, depends }) => {
   const sroot = `/up/${sname}:${up_id}`
   depends(sroot)
 
-  const ustem = await api_get<CV.Upstem>(`/_rd/upstems/${up_id}`, fetch)
-
-  const xname = `up${sname}/${up_id}`
-  const rmemo = await api_get<CV.Rdmemo>(`/_rd/rdmemos/${xname}`, fetch)
+  const rdurl = `/_rd/upstems/${up_id}`
+  const { ustem, rmemo, crepo } = await api_get<UpstemShow>(rdurl, fetch)
 
   let binfo: CV.Wninfo
 
@@ -20,5 +25,8 @@ export const load = (async ({ fetch, params, depends }) => {
     binfo = await api_get<CV.Wninfo>(bpath, fetch)
   }
 
-  return { ustem, rmemo, binfo, sname, up_id, sroot }
+  rmemo.vname = ustem.vname
+  rmemo.rpath = sroot
+
+  return { ustem, crepo, rmemo: writable(rmemo), binfo, sname, up_id, sroot }
 }) satisfies LayoutLoad

@@ -15,10 +15,7 @@
   class:_active={active}
   on:blur={deactive}
   on:mouseleave={deactive}>
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <div class="trigger" on:click={deactive}>
-    <slot name="trigger" {trigger} />
-  </div>
+  <div class="trigger"><slot name="trigger" {trigger} /></div>
 
   <div class="gmenu-body {loc} {dir}">
     <div class="content">

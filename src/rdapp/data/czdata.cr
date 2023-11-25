@@ -81,6 +81,18 @@ class RD::Czdata
   end
 
   ###
+
+  def self.from_info(cinfo : Chinfo, cbody : String = "", uname : String = "")
+    self.new(
+      ch_no: cinfo.ch_no,
+      cbody: cbody,
+      title: cinfo.ztitle,
+      chdiv: cinfo.zchdiv,
+      uname: uname.empty? ? cinfo.uname : uname,
+      zorig: cinfo.spath,
+      mtime: cinfo.mtime
+    )
+  end
 end
 
 # Dir.glob("/www/chivi/xyz/seeds/zxcs.me/split/13442/*.txt").each do |file|

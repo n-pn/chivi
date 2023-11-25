@@ -36,13 +36,20 @@ class RD::Wnstem
   @[DB::Field(ignore: true, auto: true)]
   @[JSON::Field(ignore: true)]
   getter crepo : Chrepo do
-    Chrepo.load("wn#{@sname}/#{@wn_id}").tap do |repo|
-      repo.chmax = @chap_total
-      repo.wn_id = @wn_id
+    Chrepo.load!("wn#{@sname}/#{@wn_id}") do |r|
+      r.owner = -1
+      r.stype = 0_i16
 
-      repo.plock = 0
-      repo.gifts = 1
-      repo.multp = @multp
+      r.sn_id = @wn_id
+      r.wn_id = @wn_id
+
+      r.chmax = @chap_total
+
+      r.plock = 0
+      r.gifts = 1_i16
+      r.multp = @multp
+
+      r.mtime = @mtime
     end
   end
 
@@ -106,7 +113,10 @@ class RD::Wnstem
     end
 
     if umode > 0 && @chap_total > 0
+      self.crepo.chmax = @chap_total
       self.crepo.update_vinfos!
+      self.crepo.upsert!
+
       @_flag == 1_i16 if @_flag == 0
     else
       @_flag = 0

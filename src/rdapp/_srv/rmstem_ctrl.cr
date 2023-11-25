@@ -72,8 +72,13 @@ class RD::RmstemCtrl < AC::Base
     end
 
     rstem.update!(crawl, regen) if crawl > 0 || regen
+    rmemo = Rdmemo.load!(vu_id: self._vu_id, sname: "rm#{sname}", sn_id: sn_id)
 
-    render json: rstem
+    render json: {
+      rstem: rstem,
+      crepo: rstem.crepo,
+      rmemo: rmemo,
+    }
   end
 
   @[AC::Route::POST("/")]
@@ -102,59 +107,4 @@ class RD::RmstemCtrl < AC::Base
     Log.error(exception: ex) { ex }
     render text: ex.message || "500"
   end
-
-  # @[AC::Route::POST("/:up_id", body: form)]
-  # def update(up_id : Int32, form : Rmstem)
-  #   guard_privi 1, "sửa dự án cá nhân"
-
-  #   unless term = Rmstem.finrdd(up_id, _privi < 4 ? _uname : nil)
-  #     render 404, "Dự án không tồn tại hoặc bạn không đủ quyền hạn"
-  #     return
-  #   end
-
-  #   term.zname = form.zname unless form.zname.empty?
-  #   term.vname = form.vname unless form.vname.empty?
-
-  #   term.wninfo_id = form.wninfo_id
-
-  #   term.vintro = form.vintro
-  #   term.labels = form.labels
-
-  #   term.updated_at = Time.utc
-
-  #   saved = term.update!
-  #   render json: saved
-  # end
-
-  # @[AC::Route::PATCH("/:up_id", body: form)]
-  # def config(up_id : Int32, form : Rmstem)
-  #   guard_privi 1, "sửa dự án cá nhân"
-
-  #   unless term = Rmstem.find(up_id, _privi < 4 ? _uname : nil)
-  #     render 404, "Dự án không tồn tại hoặc bạn không đủ quyền hạn"
-  #     return
-  #   end
-
-  #   term.guard = form.guard
-  #   term.wndic = form.wndic
-  #   term.gifts = form.gifts
-  #   term.multp = form.multp
-  #   term.updated_at = Time.utc
-
-  #   saved = term.update!
-  #   render json: saved
-  # end
-
-  # @[AC::Route::DELETE("/:up_id")]
-  # def delete(up_id : Int32)
-  #   guard_privi 1, "xóa dự án cá nhân"
-  #   uname = _privi < 4 ? _uname : nil
-
-  #   unless term = Rmstem.find(up_id, uname)
-  #     raise BadRequest.new("Dự án không tồn tại hoặc bạn không đủ quyền hạn")
-  #   end
-
-  #   Rmstem.db.exec("delete from upstems where id = $1", term.id)
-  #   render text: "ok"
-  # end
 end

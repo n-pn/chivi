@@ -6,8 +6,8 @@ CREATE TABLE upstems(
   sname varchar NOT NULL DEFAULT '',
   mtime bigint NOT NULL DEFAULT 0,
   -- linking
-  viuser_id integer NOT NULL REFERENCES viusers(id) ON UPDATE CASCADE ON DELETE CASCADE,
-  wninfo_id integer REFERENCES wninfos(id) ON UPDATE CASCADE ON DELETE SET NULL,
+  owner integer NOT NULL REFERENCES viusers(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  wn_id integer REFERENCES wninfos(id) ON UPDATE CASCADE ON DELETE SET NULL,
   -- heading
   zname citext NOT NULL DEFAULT '',
   vname citext NOT NULL DEFAULT '',

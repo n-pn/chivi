@@ -71,6 +71,7 @@ class SP::Zcache
   def self.upsert!(raw : String, obj : String, val : String, mtime = Time.utc.to_unix, noted = "")
     self.load_db(raw[0]).open_rw do |db|
       fnv = HashUtil.fnv_1a_64(raw).unsafe_as(Int64)
+      new(fnv, "zh", raw, mtime: 0, noted: 0).upsert!(db: db)
       new(fnv, obj, val, mtime: mtime, noted: noted).upsert!(db: db)
     end
   end
