@@ -2,18 +2,10 @@
   import type { Writable } from 'svelte/store'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import AddDonation from './Setting/AddDonation.svelte'
   import SendVcoin from './Setting/SendVcoin.svelte'
 
   export let _user: Writable<App.CurrentUser>
 </script>
-
-{#if $_user.privi > 3}
-  <details open>
-    <summary>Ghi nhận ủng hộ</summary>
-    <AddDonation {_user} />
-  </details>
-{/if}
 
 <details>
   <summary>Trao tặng vcoin</summary>

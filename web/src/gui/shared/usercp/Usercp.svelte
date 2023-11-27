@@ -1,29 +1,10 @@
 <script context="module" lang="ts">
   import { writable } from 'svelte/store'
   import { browser } from '$app/environment'
-  import { get_dmy } from '$utils/time_utils'
 
   export const usercp = {
     ...writable(0),
     change_tab: (tab: number) => usercp.set(tab),
-  }
-
-  const hour_span = 3600
-  const day_span = 3600 * 24
-  const month_span = day_span * 30
-
-  function avail_until(time: number) {
-    const diff = time - new Date().getTime() / 1000
-
-    if (diff < hour_span) return '< 1 tiếng'
-    if (diff < day_span) return `${round(diff, hour_span)} tiếng`
-    if (diff < month_span) return `${round(diff, day_span)} ngày`
-
-    return get_dmy(new Date(time * 1000))
-  }
-
-  function round(input: number, unit: number) {
-    return input <= unit ? 1 : Math.floor(input / unit)
   }
 </script>
 
@@ -33,12 +14,10 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Slider from '$gui/molds/Slider.svelte'
 
-  import Homecp from './Homecp.svelte'
+  import Homecp from './Config.svelte'
   import Notifs from './Notifs.svelte'
-  import Spending from './Spending.svelte'
-  import Setting from './Setting.svelte'
 
-  const components = [Homecp, Notifs, Spending, Setting]
+  const components = [Homecp, Notifs]
 
   export let actived = true
   const _user = get_user()
@@ -53,11 +32,15 @@
   const tabs = [
     { icon: 'user', btip: 'Giao diện' },
     { icon: 'bell', btip: 'Thông báo' },
-    { icon: 'wallet', btip: 'Giao dịch' },
-    { icon: 'settings', btip: 'Cài đặt' },
   ]
 
   $: privi = $_user.privi || -1
+
+  async function logout() {
+    const res = await fetch('/_db/_user/logout', { method: 'DELETE' })
+    if (!res.ok) return
+    window.location.reload()
+  }
 </script>
 
 <Slider class="usercp" bind:actived --slider-width="26rem">
@@ -82,35 +65,14 @@
         {#if _hl}{$_user.unread_notif}{/if}
       </button>
     {/each}
+    <button
+      class="-btn"
+      on:click={logout}
+      data-tip="Đăng xuất"
+      data-tip-loc="bottom">
+      <SIcon name="logout" />
+    </button>
   </svelte:fragment>
-
-  <section class="infos">
-    <div class="info">
-      <div>
-        <span class="lbl">Quyền hạn:</span>
-        <SIcon name="privi-{privi}" iset="icons" />
-      </div>
-      {#if privi >= 0 && privi < 4}
-        <div>
-          <span class="lbl">Hết hạn:</span>
-          <strong>{avail_until($_user.until)}</strong>
-        </div>
-      {/if}
-      <a class="m-btn _xs _primary" href="/me/privi">
-        {privi < 0 ? 'Nâng cấp' : 'Gia hạn'}
-      </a>
-    </div>
-
-    <div class="info">
-      <div>
-        <span class="lbl">Số lượng vcoin hiện có:</span>
-        <strong>{Math.round($_user.vcoin * 1000) / 1000}</strong>
-        <SIcon iset="icons" name="vcoin" />
-      </div>
-
-      <a href="/hd/tat-ca-ve-vcoin" class="m-btn _xs">Giải thích</a>
-    </div>
-  </section>
 
   <section class="body">
     {#if actived && browser}
@@ -142,44 +104,7 @@
     @include fgcolor(primary, 5);
   }
 
-  .infos {
-    // padding: 0.75rem;
-    margin: 0 0.75rem;
-    padding: 0.5rem 0;
-    @include border($loc: bottom);
-  }
-
-  .info {
-    @include flex-cy;
-
-    & + & {
-      margin-top: 0.25rem;
-    }
-
-    > div {
-      margin-right: 0.5rem;
-      @include ftsize(sm);
-      @include fgcolor(secd);
-    }
-
-    .lbl {
-      @include fgcolor(tert);
-    }
-
-    > button,
-    a {
-      margin-left: auto;
-    }
-
-    :global(svg) {
-      height: 1rem;
-      width: 1rem;
-      margin-bottom: 0.125rem;
-      margin-right: 0.075rem;
-    }
-  }
-
   .body {
-    padding: 0.75rem;
+    padding: 0.5rem 0.75rem;
   }
 </style>

@@ -1,9 +1,9 @@
 <script lang="ts">
-  import type { Writable } from 'svelte/store'
   import { api_call } from '$lib/api_call'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let _user: Writable<App.CurrentUser>
+  import { get_user } from '$lib/stores'
+  const _user = get_user()
 
   let dform = { target: '', reason: '', amount: 10 }
 
@@ -94,6 +94,10 @@
 </form>
 
 <style lang="scss">
+  form {
+    max-width: 30rem;
+  }
+
   .field {
     margin-top: 0.75rem;
     .m-input {
