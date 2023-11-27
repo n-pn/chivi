@@ -1,4 +1,5 @@
 import { detitlize } from './qtran_util'
+import { send_vcache } from './shared'
 
 const api =
   'https://translate.googleapis.com/translate_a/single?client=gtx&dt=at'
@@ -6,8 +7,12 @@ const api =
 async function call_gtran_word(text: string, tl = 'vi') {
   const url = `${api}&sl=auto&tl=${tl}&q=${text}`
   const res = await fetch(url)
+
   const data = JSON.parse(await res.text())[5][0][2]
-  return data.map((x) => x[0]) as string[]
+  const tran = data.map(([x]) => x) as string[]
+
+  send_vcache('gtran-line', { tl, text, tran })
+  return tran
 }
 
 const cached = new Map<string, string[]>()

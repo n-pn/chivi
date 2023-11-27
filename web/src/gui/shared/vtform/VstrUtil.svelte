@@ -37,6 +37,7 @@
   import { deepl } from '$utils/qtran_utils'
   import { btran_word } from '$utils/qtran_utils/btran_free'
   import { gtran_word } from '$utils/qtran_utils/gtran_free'
+  import { baidu_word } from '$utils/qtran_utils/baidu_free'
 
   export let tform: Viform
   export let field: HTMLInputElement
@@ -208,6 +209,17 @@
 
         <SIcon name="brand-google" />
         {#await gtran_word(tform.ztext, 'vi', keep_caps)}
+          <SIcon name="loader-2" spin={true} />
+        {:then vstr_list}
+          {#each vstr_list as vstr}
+            <span class="txt" class:_same={tform.vstr == vstr} data-vstr={vstr}>
+              {vstr}
+            </span>
+          {/each}
+        {/await}
+
+        <SIcon name="brand-baidu" iset="extra" />
+        {#await baidu_word(tform.ztext, 'vie', keep_caps)}
           <SIcon name="loader-2" spin={true} />
         {:then vstr_list}
           {#each vstr_list as vstr}

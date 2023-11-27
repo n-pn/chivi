@@ -119,11 +119,6 @@
     <span>Tủ truyện</span>
   </a>
 
-  <a class="m-btn _xs _success" href="/me/unlock">
-    <SIcon name="lock-open" />
-    <span class="-txt">Mở khóa</span>
-  </a>
-
   <a class="m-btn _xs _warning" href="/me/earned">
     <SIcon name="coin" />
     <span class="-txt">Thu phí</span>

@@ -4,8 +4,8 @@
   const all_descs: Mode = {
     qt: {
       qt_v1: 'Dịch thô bằng máy dịch phiên bản cũ',
+      baidu: 'Dịch thô bằng công cụ Baidu Fanyi',
       bt_zv: 'Dịch thô bằng công cụ Bing Translator',
-      mt_ai: 'Dịch thô bằng máy dịch mới (dữ liệu Electra Small)',
     },
 
     mt: {
@@ -18,8 +18,8 @@
   const all_modes: Mode = {
     qt: {
       qt_v1: 'Dịch máy cũ',
+      baidu: 'Dịch bằng Baidu',
       bt_zv: 'Dịch bằng Bing',
-      mt_ai: 'Dịch máy mới',
     },
 
     mt: {
@@ -55,7 +55,7 @@
       Bạn đang đọc kết quả dịch thô dùng Bing Translator. Đổi sang các kết quả
       dịch máy nếu thấy còn gặp sạn.
     </p>
-  {:else if rmode == 'mt_ai' || ropts.rmode == 'mt'}
+  {:else if ropts.rmode == 'mt'}
     <p class="u-warn">
       Bạn đang đọc kết quả dịch máy có sử dụng AI để phân tích ngữ pháp, hãy thử
       đổi sang chế độ khác nếu thấy sai nhiều.

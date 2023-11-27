@@ -10,20 +10,22 @@ class MT::ZvTerm
   class_getter init_sql = <<-SQL
     create table zvterms(
       d_id int not null default 0,
-
-      cpos text not null default 'X',
       ipos int not null default 0,
-
       zstr text not null,
+      --
+      cpos text not null default 'X',
       vstr text not null default '',
-
       attr text not null default '',
-      iatt int not null default 0,
-
+      --
+      segs text not null default '',
+      ners text not null default '',
+      tokr int not null default 2,
+      posr int not null default 2,
+      --
       uname text not null default '',
       mtime int not null default 0,
       plock int not null default 1,
-
+      --
       primary key (d_id, ipos, zstr)
     ) strict, without rowid;
     SQL
@@ -31,23 +33,28 @@ class MT::ZvTerm
   DIR = ENV.fetch("MT_DIR", "var/mt_db")
 
   def self.db_path(name : String, type : String = "db3")
-    "#{DIR}/#{name}-zvt.#{type}"
+    "#{DIR}/#{name}-term.#{type}"
   end
 
   ###
 
   include Crorm::Model
-  schema "zvterms", :sqlite, multi: true
+  schema "zvterms", :sqlite, multi: true, strict: false
 
   field d_id : Int32 = 0, pkey: true
-  field ipos : Int32 = 0, pkey: true
   field zstr : String, pkey: true
 
+  field ipos : Int32 = 0, pkey: true
   field cpos : String = "X"
-  field vstr : String = ""
 
+  field vstr : String = ""
   field attr : String = ""
-  field iatt : Int32 = 0
+
+  field segs : String = ""
+  field ners : String = ""
+
+  field tokr : Int32 = 2
+  field posr : Int32 = 2
 
   field uname : String = ""
   field mtime : Int32 = 0
@@ -68,20 +75,24 @@ class MT::ZvTerm
     new(zstr: zstr, d_id: d_id, cpos: cpos, vstr: vstr, attr: attr.to_str)
   end
 
-  def initialize(@zstr, @d_id = 0, @cpos = "X", @vstr = "", @attr = "",
-                 @uname = "", @mtime = 0, @plock = 1)
+  def initialize(@d_id, @zstr, @cpos,
+                 @vstr = "", @attr = "",
+                 @segs = "", @ners = "",
+                 @tokr = 2, @posr = 2,
+                 @uname = "", @mtime = 0,
+                 @plock = 1)
     @ipos = MtEpos.parse(cpos).to_i
-    @iatt = MtAttr.parse_list(attr).to_i
+    @segs = zstr.size.to_s if @segs.empty?
   end
 
-  def ipos=(cpos : MtEpos)
-    @cpos = cpos.to_s
-    @ipos = cpos.to_i
-  end
+  # def ipos=(cpos : MtEpos)
+  #   @cpos = cpos.to_s
+  #   @ipos = cpos.to_i
+  # end
 
-  def ipos=(@cpos : String)
-    @ipos = MtEpos.parse(cpos).to_i
-  end
+  # def ipos=(@cpos : String)
+  #   @ipos = MtEpos.parse(cpos).to_i
+  # end
 
   def cpos=(cpos : MtEpos)
     @cpos = cpos.to_s
@@ -94,11 +105,6 @@ class MT::ZvTerm
 
   def attr=(attr : MtAttr)
     @attr = attr.to_str
-    @iatt = attr.to_i
-  end
-
-  def attr=(@attr : String)
-    @iatt = MtAttr.parse_list(attr).to_i
   end
 
   def to_json(jb : JSON::Builder)
@@ -110,9 +116,14 @@ class MT::ZvTerm
       jb.field "vstr", @vstr
       jb.field "attr", @attr
 
+      jb.field "segs", @segs
+      jb.field "ners", @ners
+
+      jb.field "tokr", @tokr
+      jb.field "posr", @posr
+
       jb.field "uname", @uname
       jb.field "mtime", ZvUtil.utime(@mtime)
-
       jb.field "plock", @plock
     end
   end

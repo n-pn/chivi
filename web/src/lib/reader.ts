@@ -1,4 +1,6 @@
 import { btran_text } from '$utils/qtran_utils/btran_free'
+import { call_baidu } from '$utils/qtran_utils/baidu_free'
+
 import {
   gen_ctree_html,
   gen_ctree_text,
@@ -41,7 +43,10 @@ export class Rdline {
   hviet: string[]
 
   mt_ai: CV.Cvtree
+
   qt_v1: string
+  baidu: string
+
   bt_zv: string
   c_gpt: string
   vtran: string
@@ -50,6 +55,8 @@ export class Rdline {
     this.ztext = ztext
     this.hviet = []
     this.mt_ai = undefined
+
+    this.baidu = ''
     this.qt_v1 = ''
     this.bt_zv = ''
     this.c_gpt = ''
@@ -124,9 +131,20 @@ interface Rstate {
   hviet: number
   mt_ai: number
   qt_v1: number
+  baidu: number
   bt_zv: number
   c_gpt: number
   vtran: number
+}
+
+const init_data = {
+  hviet: 0,
+  mt_ai: 0,
+  baidu: 0,
+  qt_v1: 0,
+  bt_zv: 0,
+  c_gpt: 0,
+  vtran: 0,
 }
 
 export class Rdpage {
@@ -139,9 +157,10 @@ export class Rdpage {
   constructor(ztext: string[], ropts: CV.Rdopts) {
     this.lines = ztext.map((x) => new Rdline(x))
     this.ropts = ropts
-    this.state = { hviet: 0, mt_ai: 0, qt_v1: 0, bt_zv: 0, c_gpt: 0, vtran: 0 }
-    this.tspan = { hviet: 0, mt_ai: 0, qt_v1: 0, bt_zv: 0, c_gpt: 0, vtran: 0 }
-    this.mtime = { hviet: 0, mt_ai: 0, qt_v1: 0, bt_zv: 0, c_gpt: 0, vtran: 0 }
+
+    this.state = { ...init_data }
+    this.tspan = { ...init_data }
+    this.mtime = { ...init_data }
   }
 
   get ztext() {
@@ -179,6 +198,35 @@ export class Rdpage {
 
     this.hviet = hviet || []
     return this
+  }
+
+  get baidu() {
+    return this.lines.map((x) => x.baidu)
+  }
+
+  set baidu(input: string[]) {
+    for (let i = 0; i < this.lines.length; i++) {
+      this.lines[i].baidu = input[i]
+    }
+
+    this.state.baidu = 1
+  }
+
+  async load_baidu(cache = 0, force = false) {
+    if (cache < 2 && this.state.baidu > 0) return this
+    if (cache == 0 || this.lines.length == 0) return this
+
+    const start = performance.now()
+    const baidu = await call_baidu(this.ztext.join('\n'))
+
+    if (baidu.length == this.lines.length) {
+      this.baidu = baidu
+
+      this.tspan.baidu = performance.now() - start
+      this.mtime.baidu = new Date().getTime() / 1000
+
+      return this
+    }
   }
 
   get bt_zv() {
@@ -352,6 +400,8 @@ export class Rdpage {
     const { rmode, qt_rm } = this.ropts
     if (rmode == 'mt' || qt_rm == 'mt_ai') {
       return this.mt_ai
+    } else if (qt_rm == 'baidu') {
+      return this.baidu
     } else if (qt_rm == 'bt_zv') {
       return this.bt_zv
     } else if (qt_rm == 'qt_v1') {
@@ -368,6 +418,9 @@ export class Rdpage {
       // const rmode = mt_rm != this.ropts.mt_rm ? 2 : 1
       await this.load_mt_ai(cache, force)
       return this.mt_ai
+    } else if (qt_rm == 'baidu') {
+      await this.load_baidu(cache, force)
+      return this.baidu
     } else if (qt_rm == 'bt_zv') {
       await this.load_bt_zv(cache, force)
       return this.bt_zv

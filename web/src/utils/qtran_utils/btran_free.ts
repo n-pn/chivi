@@ -1,4 +1,5 @@
 import { detitlize } from './qtran_util'
+import { send_vcache } from './shared'
 
 async function get_free_api_key() {
   const res = await fetch('https://edge.microsoft.com/translate/auth')
@@ -25,17 +26,20 @@ const api_url = 'https://api.cognitive.microsofttranslator.com'
 const tl_root = `${api_url}/translate?api-version=3.0&textType=plain`
 
 async function call_btran_word(text: string, sl = 'auto') {
-  let url = `${tl_root}&to=vi&to=en`
-  if (sl == 'zh') sl = 'zh-Hans'
-  if (sl != 'auto') url += '&from=' + sl
-
   const body = JSON.stringify([{ text }])
   const headers = await gen_headers()
 
   try {
+    let url = `${tl_root}&to=vi&to=en`
+    if (sl == 'zh') sl = 'zh-Hans'
+    if (sl != 'auto') url += '&from=' + sl
     const res = await fetch(url, { method: 'POST', body, headers })
+
     const [{ translations: data }] = await res.json()
-    return data.map((x) => x.text) as string[]
+    const tran = data.map(({ text }) => text) as string[]
+
+    send_vcache('btran-line', { lang: 've', text, tran })
+    return tran
   } catch (ex) {
     console.log(ex)
     return []
@@ -70,7 +74,11 @@ export async function btran_text(lines: string[]) {
     if (!res.ok) return []
 
     const data = await res.json()
-    return data.map((x) => x.translations[0].text) as string[]
+    const trans = data.map(({ translations: [{ text }] }) => text) as string[]
+
+    send_vcache('btran-chap', { lang: 'v', lines, trans })
+
+    return trans
   } catch (ex) {
     console.log(ex)
     return []

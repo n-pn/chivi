@@ -4,7 +4,6 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  import { deepl } from '$utils/qtran_utils'
   import { btran_word } from '$utils/qtran_utils/btran_free'
   import { gtran_word } from '$utils/qtran_utils/gtran_free'
 </script>

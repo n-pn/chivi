@@ -14,12 +14,6 @@ CREATE TABLE rdmemos(
   view_count int NOT NULL DEFAULT 0, -- only when reading chapters
   coin_spent int NOT NULL DEFAULT 0, -- when unlock chapters
   --
-  last_ch_no int NOT NULL DEFAULT 0, -- last read chap
-  last_cinfo jsonb NOT NULL DEFAULT '{}', -- metadata to display
-  --
-  mark_ch_no int NOT NULL DEFAULT 0, -- reading chapter in sequential
-  mark_cinfo jsonb NOT NULL DEFAULT '{}', -- metadata to display
-  --
   prefs jsonb NOT NULL DEFAULT '{}', -- custom prerefernces
   atime bigint NOT NULL DEFAULT 0, -- last view time
   rtime bigint NOT NULL DEFAULT 0, -- last read time

@@ -1,8 +1,6 @@
 <script context="module" lang="ts">
-  import { page } from '$app/stores'
   import { browser } from '$app/environment'
   import { afterNavigate } from '$app/navigation'
-  import { Pager } from '$lib/pager'
   import { config } from '$lib/stores'
   import { init_page } from './_store'
   import { gen_mt_ai_html } from '$lib/mt_data_2'

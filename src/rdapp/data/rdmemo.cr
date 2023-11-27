@@ -113,7 +113,7 @@ class RD::Rdmemo
       sql << " where vu_id = $1 and sname like $2 || '%'"
       case rtype
       when "liked" then sql << " and recomm > 0"
-      when "rdlog" then sql << " and last_ch_no > 0"
+      when "rdlog" then sql << " and lc_ch_no > 0"
       end
       sql << " order by rtime desc limit $3 offset $4"
     end
