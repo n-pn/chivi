@@ -54,10 +54,17 @@ class RD::Rmstem
   field stime : Int64 = 0 # last synced_at
   field _flag : Int16 = 0 # multi purposes, if < 0 then the stem is inactive
 
-  @[DB::Field(ignore: true, auto: true)]
-  @[JSON::Field(ignore: true)]
-  getter crepo : Chrepo do
+  def initialize(@sname, @sn_id, @rlink = "")
+  end
+
+  ####
+
+  def crepo : Chrepo
     Chrepo.load!(sroot: "rm#{@sname}/#{@sn_id}") do |repo|
+      repo.owner = -1
+      repo.stype = 1_i16
+      repo.sname = @sname
+
       repo.chmax = @chap_count
       repo.wn_id = @wn_id
       repo.plock = 0
@@ -96,13 +103,6 @@ class RD::Rmstem
     Rmrank.index(@sname)
   end
 
-  def chap_count=(@chap_count : Int32)
-    self.crepo.chmax = chap_count
-  end
-
-  def initialize(@sname, @sn_id, @rlink = "")
-  end
-
   INC_VIEW_COUNT_SQL = <<-SQL
     update rmstems set view_count = view_count + $1
     where sname = $2 and sn_id = $3
@@ -120,9 +120,14 @@ class RD::Rmstem
     self
   end
 
-  def reload_chaps_vinfo!
-    self.crepo.update_vinfos! if @chap_count > 0
-    self.update_flags!(1_i16) if @_flag == 0
+  def update_stats!(chmax : Int32, mtime : Int64 = Time.utc.to_unix, persist : Bool = false)
+    @stime = mtime if @stime < mtime
+    @chap_count = chmax if @chap_count < chmax
+
+    return unless persist
+
+    query = @@schema.update_stmt(%w{chap_count stime})
+    @@db.exec(query, @chap_count, @stime, @sname, @sn_id)
   end
 
   private def load_raw_stem!(crawl : Int32 = 1)
@@ -142,7 +147,7 @@ class RD::Rmstem
 
   def update!(crawl : Int32 = 1, regen : Bool = false, umode : Int32 = 1) : self | Nil
     unless raw_stem = load_raw_stem!(crawl: crawl)
-      return self.tap { |x| x.reload_chaps_vinfo! if umode > 0 }
+      return self.tap { |x| x.crepo.update_vinfos! if umode > 0 }
     end
 
     # verify content changed by checking the latest chapter
@@ -162,7 +167,8 @@ class RD::Rmstem
       crepo.upsert_zinfos!(clist)
 
       if umode > 0
-        self.reload_chaps_vinfo!
+        spawn crepo.update_vinfos!
+        @_flag = 1
       else
         @_flag = 0
       end
@@ -197,34 +203,6 @@ class RD::Rmstem
     else        10.years                                 # keep forever
     end
   end
-
-  # def prefetch_chap_htms!(w_size : Int32 = 6) : Int32
-  #   query = "select rlink, spath from chinfos where cksum = ''"
-  #   input = self.crepo.query_all(query, as: {String, String})
-  #   return 0 if input.empty?
-
-  #   keep_dir = "var/.keep/rmchap/#{@sname}/#{@sn_id}"
-  #   input.map! { |rlink, spath| {rlink, "#{keep_dir}/#{File.basename(spath)}.htm"} }
-
-  #   if File.directory?(keep_dir)
-  #     input.reject! { |_, spath| File.file?(spath) }
-  #     return 0 if input.empty?
-  #   else
-  #     Dir.mkdir_p(keep_dir)
-  #   end
-
-  #   queue = input.map_with_index(1) { |rlink, spath, idx| {rlink, spath, idx} }
-  #   host = Rmhost.from_name!(@sname)
-  #   host.get_all!(queue, w_size)
-  # end
-
-  # def update_avail_count!
-  #   select_query = "select count(*) form chinfos where cksum <> ''"
-  #   @chap_avail = self.crepo.query_one(select_query, as: Int32)
-
-  #   update_query = @@schema.update_stmt(update_fields: ["chap_avail"])
-  #   @@db.exec(update_query, @chap_avail, @sname, @sn_id)
-  # end
 
   ###
 

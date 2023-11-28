@@ -106,7 +106,7 @@ abstract class AC::Base
 
   private def guard_owner(owner : Int32, min min_privi : Int32,
                           action : String = "thực hiện hoạt động")
-    return if _privi > 3 || (_privi >= min_privi && owner == _vu_id)
+    return if self._privi > 3 || (self._privi >= min_privi && owner == self._vu_id)
     raise Unauthorized.new(privi_rejected(action, min_privi))
   end
 

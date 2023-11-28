@@ -43,8 +43,8 @@
   $: ({ intab = 'rd', ontab = 'ch' } = $page.data)
 
   const trigger_liked = async () => {
-    rmemo.recomm = rmemo.recomm < 1 ? data._user.privi + 1 : 0
-    data.rmemo = await upsert_memo(rmemo, 'recomm')
+    $rmemo.recomm = $rmemo.recomm < 1 ? data._user.privi + 1 : 0
+    $rmemo = await upsert_memo($rmemo, 'recomm')
   }
 </script>
 
@@ -58,10 +58,10 @@
 
   <button
     class="m-btn _harmful"
-    class:_fill={rmemo.recomm == 0}
+    class:_fill={$rmemo.recomm == 0}
     disabled={$_user.privi < 0}
     on:click={trigger_liked}>
-    <SIcon name={rmemo.recomm > 0 ? 'heart-off' : 'heart'} />
+    <SIcon name={$rmemo.recomm > 0 ? 'heart-off' : 'heart'} />
     <span class="-txt">Ưa thích</span>
   </button>
 

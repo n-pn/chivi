@@ -36,12 +36,12 @@ class RD::Upstem
 
   timestamps
 
-  @[DB::Field(ignore: true, auto: true)]
-  @[JSON::Field(ignore: true)]
-  getter crepo : Chrepo do
-    crepo = Chrepo.load!(sroot = "up#{@sname}/#{@id}") do |repo|
+  def crepo
+    Chrepo.load!("up#{@sname}/#{@id}") do |repo|
+      repo.stype = 1_i16
       repo.owner = @owner
       repo.sname = @sname
+
       repo.wn_id = @wn_id || 0
       repo.chmax = @chap_count
 
@@ -49,15 +49,6 @@ class RD::Upstem
       repo.gifts = @gifts
       repo.multp = @multp
     end
-
-    if crepo._flag == 0
-      crepo.init_text_db!(uname: @sname)
-      crepo.update_vinfos!
-      crepo._flag = 1
-      crepo.upsert!
-    end
-
-    crepo
   end
 
   def initialize(@owner, @sname, @zname, @vname = "", @labels = [] of String)
@@ -70,21 +61,13 @@ class RD::Upstem
     @labels.reject!(&.blank?).uniq!
   end
 
-  # def tl_chap_info!(start : Int32 = 1, limit : Int32 = @chap_count)
-  #   self.crepo.update_vinfos!(start: start, limit: limit)
-  # end
-
-  def update_stats!(chmax : Int32, mtime : Int64 = Time.utc.to_unix)
+  def update_stats!(chmax : Int32, mtime : Int64 = Time.utc.to_unix, persist : Bool = false)
     @mtime = mtime if @mtime < mtime
 
-    if @chap_count < chmax
-      @chap_count = chmax
+    @chap_count = chmax if @chap_count < chmax
+    self.crepo.chmax = @chap_count
 
-      self.crepo.tap do |crepo|
-        crepo.chmax = @chap_count
-        crepo.upsert!
-      end
-    end
+    return unless persist
 
     query = @@schema.update_stmt(%w{chap_count mtime})
     @@db.exec(query, @chap_count, @mtime, @id)

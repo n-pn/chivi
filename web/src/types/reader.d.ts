@@ -1,7 +1,6 @@
 declare namespace CV {
   interface Wnchap {
     ch_no: number
-    uslug: string
 
     title: string
     chdiv: string
@@ -10,6 +9,7 @@ declare namespace CV {
     mtime: number
 
     flags: string
+    rlink: string
   }
 
   interface Chpart {
@@ -80,6 +80,7 @@ declare namespace CV {
     sroot: string
     owner: number
 
+    sname: string
     stype: number
     sn_id: number
 

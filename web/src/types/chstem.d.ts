@@ -21,6 +21,7 @@ declare namespace CV {
 
     sname: string
     mtime: number
+    rlink: string
 
     zname: string
     vname: string
@@ -29,7 +30,6 @@ declare namespace CV {
     vintro: string
     labels: string[]
 
-    guard: number
     gifts: number
     multp: number
     wndic: boolean

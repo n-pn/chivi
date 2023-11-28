@@ -115,6 +115,10 @@ module HashUtil
     hash
   end
 
+  def fnv_1a_64(str_list : Enumerable(String)) : UInt64
+    str_list.reduce(BASIS_64) { |hash, str| fnv_1a_64(str, hash) }
+  end
+
   def fnv_1a(*strs : String) : UInt32
     hash = BASIS_32
 

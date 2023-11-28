@@ -47,6 +47,23 @@ class RD::Chrepo
   def initialize(@sroot)
   end
 
+  def mkdirs!
+    Dir.mkdir_p("var/stems/#{sname}")
+    Dir.mkdir_p("var/texts/#{sroot}")
+  end
+
+  SET_CHMAX_SQL = "update chrepos set chmax = $1 where sroot = $2"
+
+  def set_chmax(chmax : Int32, force : Bool = false, persist : Bool = false)
+    return unless force || chmax > @chmax
+
+    @chmax = chmax
+    @mtime = Time.utc.to_unix
+
+    return unless persist
+    @@db.query(SET_CHMAX_SQL, chmax, @sroot) rescue self.upsert!
+  end
+
   def get_sname
     return @sname unless @sname.empty?
     @sroot.split('/')[3..]
@@ -69,7 +86,7 @@ class RD::Chrepo
   def free_until : Int32
     return @chmax if @gifts == 0
     auto_free = @chmax * @gifts // 4
-    auto_free > 120 ? auto_free : 120
+    auto_free < 120 ? auto_free : 120
   end
 
   @[AlwaysInline]

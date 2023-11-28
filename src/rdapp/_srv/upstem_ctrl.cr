@@ -59,7 +59,7 @@ class RD::UpstemCtrl < AC::Base
     ustem = uform.insert!
     Dir.mkdir_p("var/stems/up#{uform.sname}")
 
-    USTEMS[ustem.id!] = ustem
+    # USTEMS[ustem.id!] = ustem
     render json: ustem
   end
 

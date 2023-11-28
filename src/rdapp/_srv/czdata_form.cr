@@ -1,8 +1,8 @@
 require "json"
-require "../../../_util/text_util"
-require "../../data/czdata"
+require "../../_util/text_util"
+require "../data/czdata"
 
-struct RD::ZtextForm
+struct RD::ZcdataForm
   include JSON::Serializable
 
   getter ch_no : Int32
@@ -11,8 +11,8 @@ struct RD::ZtextForm
   getter chdiv : String = ""
 
   def after_initialize
-    raise "Nội dung quá dài!" if @ztext.size > 100_000
     raise "Vị trí chương không hợp lệ!" if @ch_no < 1
+    raise "Nội dung quá dài!" if @ztext.size > 100_000
 
     @title = TextUtil.canon_clean(@title)
     @chdiv = TextUtil.canon_clean(@chdiv)

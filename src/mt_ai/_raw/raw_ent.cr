@@ -1,6 +1,6 @@
 require "json"
 
-struct ZR::RawEntity
+struct MT::RawEnt
   include JSON::Serializable
 
   getter zstr : String

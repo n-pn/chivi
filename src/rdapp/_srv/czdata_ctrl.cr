@@ -1,117 +1,65 @@
 require "./_ctrl_base"
+require "./czdata_form"
 
 class RD::CzdataCtrl < AC::Base
-  base "/_rd/zdata"
+  base "/_rd/czdatas"
 
-  @[AC::Route::GET("/wn/:sname/:sn_id/:ch_no")]
-  def wn_text(sname : String, sn_id : Int32, ch_no : Int32)
-    wstem = get_wstem(sname, sn_id)
-    # TODO: check if also unlocked
-    guard_privi 1, "truy cập text gốc của chương"
+  @[AC::Route::GET("/:sname/:sn_id/:ch_no")]
+  def get_ztext(sname : String, sn_id : Int32, ch_no : Int32)
+    crepo = Chrepo.load!("#{sname}/#{sn_id}")
 
-    output = get_text(wstem.crepo, ch_no)
-    render json: output
-  end
+    owner = crepo.owner >= 0 ? crepo.owner : self._vu_id
+    guard_owner owner, crepo.plock, "truy cập text gốc của chương"
 
-  @[AC::Route::GET("/rm/:sname/:sn_id/:ch_no")]
-  def rm_text(sname : String, sn_id : String, ch_no : Int32)
-    rstem = get_rstem(sname, sn_id)
-    # TODO: check if also unlocked
-    guard_privi 1, "truy cập text gốc của chương"
-
-    output = get_text(rstem.crepo, ch_no)
-    render json: output
-  end
-
-  @[AC::Route::GET("/up/:sname/:sn_id/:ch_no")]
-  def up_text(sname : String, up_id : Int32, ch_no : Int32)
-    ustem = get_ustem(up_id, sname)
-    # TODO: check if also unlocked
-    guard_owner ustem.owner, 1, "truy cập text gốc của chương"
-
-    output = get_text(ustem.crepo, ch_no)
-    render json: output
-  end
-
-  private def get_text(crepo : Chrepo, ch_no : Int32)
     if cinfo = crepo.find(ch_no)
-      {ztext: crepo.load_raw!(cinfo), title: cinfo.ztitle, chdiv: cinfo.zchdiv}
+      json = {ztext: crepo.load_raw!(cinfo), title: cinfo.ztitle, chdiv: cinfo.zchdiv}
     else
-      {ztext: "", title: "", chdiv: crepo.get_chdiv(ch_no)}
-    end
-  end
-
-  # @[AC::Route::GET("/:ch_no/for_mtl")]
-  # def for_mtl(up_id : Int32, ch_no : Int32)
-  #   ustem = get_ustem(up_id)
-  #   # TODO: checl permission
-  #   cinfo = get_cinfo(ustem, ch_no)
-
-  #   parts = [] of String
-  #   mtl_1 = [] of Bool
-  #   mtl_3 = [] of Bool
-  #   mtl_2 = [] of Bool
-
-  #   0.upto(cinfo.psize) do |p_idx|
-  #     parts << cinfo.load_part!(p_idx, ftype: "raw.txt").join('\n')
-  #     mtl_1 << File.file?(cinfo.file_path(p_idx, ftype: "mtl_1.con"))
-  #     mtl_2 << File.file?(cinfo.file_path(p_idx, ftype: "mtl_2.con"))
-  #     mtl_3 << File.file?(cinfo.file_path(p_idx, ftype: "mtl_3.con"))
-  #   end
-
-  #   json = {cksum: cinfo.cksum, parts: parts, mtl_1: mtl_1, mtl_3: mtl_3, mtl_2: mtl_2}
-  #   render json: json
-  # end
-
-  @[AC::Route::POST("/wn/:sname/:sn_id", body: :clist)]
-  def wn_bulk(sname : String, sn_id : Int32, clist : Array(ZtextForm))
-    wstem = get_wstem(sname, sn_id)
-    guard_privi 2, "thêm text gốc cho bộ truyện"
-
-    save_bulk!(wstem.crepo, clist)
-    wstem.update_stats!(chmax: clist.last.ch_no, atomic: true)
-
-    render json: {pg_no: _pgidx(clist.first.ch_no, 32)}
-  end
-
-  @[AC::Route::POST("/up/:sname/:sn_id", body: :clist)]
-  def up_bulk(sname : String, sn_id : Int32, clist : Array(ZtextForm))
-    ustem = get_ustem(sn_id, sname)
-    guard_owner ustem.owner, 1, "thêm text gốc cho sưu tầm cá nhân"
-
-    save_bulk!(ustem.crepo, clist)
-    ustem.update_stats!(chmax: clist.last.ch_no, mtime: Time.utc.to_unix)
-
-    render json: {pg_no: _pgidx(clist.first.ch_no, 32)}
-  end
-
-  private def save_bulk!(crepo : Chrepo, clist : Array(ZtextForm))
-    if clist.size > 32
-      raise "Bạn chỉ được upload nhiều nhất 32 chương một lúc!"
+      json = {ztext: "", title: "", chdiv: crepo.get_chdiv(ch_no)}
     end
 
-    clist.each(&.save!(crepo: crepo, uname: _uname))
-    chmin = clist.first.ch_no
-    chmax = clist.last.ch_no
-    crepo.update_vinfos!(chmin &- 5, chmax &- chmin + 10)
+    render json: json
   end
 
-  @[AC::Route::PUT("/up/:sname/:sn_id", body: :cform)]
-  def up_once(sn_id : Int32, cform : ZtextForm)
-    ustem = get_ustem(sn_id)
-    guard_owner ustem.owner, 1, "thêm text gốc cho sưu tầm cá nhân "
+  @[AC::Route::POST("/:sname/:sn_id", body: :clist)]
+  def upsert(sname : String, sn_id : Int32, clist : Array(ZcdataForm))
+    raise "Bạn chỉ được đăng tải nhiều nhất 64 chương một lúc!" if clist.size > 64
 
-    cinfo = cform.save!(crepo: ustem.crepo, uname: _uname)
+    crepo = Chrepo.load!("#{sname}/#{sn_id}")
+    owner = crepo.owner >= 0 ? crepo.owner : self._vu_id
+    guard_owner owner, crepo.plock, "thêm text gốc cho nguồn truyện"
 
-    ustem.crepo.update_vinfos!(start: cinfo.ch_no &- 5, limit: 10)
-    ustem.update_stats!(chmax: cinfo.ch_no, mtime: Time.utc.to_unix)
+    crepo.mkdirs!
+    clist.each(&.save!(crepo: crepo, uname: self._uname))
 
-    render json: cinfo
+    chmin, chmax = clist.minmax_of(&.ch_no)
+    spawn update_stats!(crepo, sname, chmax: chmax)
+
+    crepo.set_chmax(chmax: chmax, force: false, persist: true)
+    crepo.update_vinfos!(start: chmin, limit: chmax &- chmin &+ 1)
+
+    render json: {ch_no: chmin, pg_no: _pgidx(chmin, 32)}
+  end
+
+  private def update_stats!(crepo : Chrepo, sname : String, chmax : Int32)
+    # puts "#{crepo.chmax}/#{chmax}/#{crepo.stype}"
+    case crepo.stype
+    when 0_i16
+      wstem = get_wstem(sname, crepo.sn_id)
+      wstem.update_stats!(chmax: chmax, persist: true)
+    when 1_i16
+      ustem = get_ustem(crepo.sn_id, sname)
+      ustem.update_stats!(chmax: chmax, persist: true)
+    when 2_i16
+      rstem = get_rstem(sname, crepo.sn_id.to_s)
+      rstem.update_stats!(chmax: chmax, persist: true)
+    else
+      raise "invalid type: #{sname}"
+    end
   end
 
   # @[AC::Route::PATCH("/:ch_no", body: :form)]
   # def update_line(form : ZtextForm, up_id : Int32, sname : String, ch_no : Int32)
-  #   guard_edit_privi up_id: up_id, sname: sname
+  #   guard_edit_privi up_id: up_id, sname:rege sname
 
   #   ustem = get_ustem(up_id, sname)
   #   cinfo = get_cinfo(ustem, ch_no)

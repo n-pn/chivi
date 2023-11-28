@@ -33,12 +33,11 @@ class RD::Wnstem
   field created_at : Time = Time.utc
   field updated_at : Time = Time.utc
 
-  @[DB::Field(ignore: true, auto: true)]
-  @[JSON::Field(ignore: true)]
-  getter crepo : Chrepo do
+  def crepo : Chrepo
     Chrepo.load!("wn#{@sname}/#{@wn_id}") do |r|
       r.owner = -1
       r.stype = 0_i16
+      r.sname = @sname
 
       r.sn_id = @wn_id
       r.wn_id = @wn_id
@@ -109,7 +108,7 @@ class RD::Wnstem
       start = chmax
 
       mtime = rstem.update_int
-      self.update_stats!(chmax, mtime, atomic: false)
+      self.update_stats!(chmax, mtime, persist: false)
     end
 
     if umode > 0 && @chap_total > 0
@@ -126,21 +125,18 @@ class RD::Wnstem
     self.upsert!(db: @@db)
   end
 
-  def update_stats!(chmax : Int32, mtime : Int64 = Time.utc.to_unix, atomic : Bool = false)
+  def update_stats!(chmax : Int32, mtime : Int64 = Time.utc.to_unix, persist : Bool = false)
     @mtime = mtime if @mtime < mtime
 
-    @chap_total = chmax if @chap_total < chmax
-    self.crepo.chmax = @chap_total
+    if @chap_total < chmax
+      @chap_total = chmax
+      self.crepo.chmax = chmax
+    end
 
-    return unless atomic
+    return unless persist
 
     query = @@schema.update_stmt(%w{chap_total mtime})
     @@db.exec(query, @chap_total, @mtime, @wn_id, @sname)
-  end
-
-  def reload_chaps_vinfo!
-    self.crepo.update_vinfos! if @chap_total > 0
-    self.update_flags!(1_i16)
   end
 
   UPDATE_FIELD_SQL = "update #{@@schema.table} set %s = $1 where sname = $2 and wn_id = $3"

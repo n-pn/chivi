@@ -9,13 +9,14 @@ def regen_wnstems
     crepo = RD::Chrepo.new("wn~avail/#{wstem.wn_id}")
     crepo.owner = -1
     crepo.stype = 0_i16
+    crepo.sname = "wn~avail"
 
     crepo.sn_id = wstem.wn_id
     crepo.wn_id = wstem.wn_id
 
     crepo.chmax = wstem.chap_total
 
-    crepo.plock = 0
+    crepo.plock = 1
     crepo.gifts = 1_i16
     crepo.multp = wstem.multp
 
@@ -39,9 +40,10 @@ def regen_upstems
 
   chrepos = upstems.map do |ustem|
     crepo = RD::Chrepo.new("up#{ustem.sname}/#{ustem.id!}")
-
     crepo.owner = ustem.owner
+
     crepo.stype = 1_i16
+    crepo.sname = ustem.sname
 
     crepo.sn_id = ustem.id!
     crepo.wn_id = ustem.wn_id || 0
@@ -51,7 +53,7 @@ def regen_upstems
 
     crepo.chmax = ustem.chap_count
 
-    crepo.plock = 0
+    crepo.plock = 1
     crepo.gifts = 1_i16
     crepo.multp = ustem.multp
 
@@ -75,6 +77,8 @@ def regen_rmstems
   chrepos = rmstems.map do |rstem|
     crepo = RD::Chrepo.new("rm#{rstem.sname}/#{rstem.sn_id}")
     crepo.owner = -1
+
+    crepo.sname = rstem.sname
     crepo.stype = 2_i16
 
     crepo.sn_id = rstem.sn_id.to_i
@@ -86,7 +90,7 @@ def regen_rmstems
     crepo.chmax = rstem.chap_count
     crepo.avail = rstem.chap_avail
 
-    crepo.plock = 0
+    crepo.plock = 2
     crepo.gifts = 1_i16
     crepo.multp = rstem.multp
 
@@ -107,6 +111,6 @@ def regen_rmstems
   end
 end
 
-regen_wnstems()
 regen_upstems()
+regen_wnstems()
 regen_rmstems()

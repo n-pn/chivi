@@ -12,7 +12,7 @@
 
   $: dhtml = ustem.vintro
     .split('\n')
-    .map((x) => `<p>${x}</p>`)
+    .map((x) => `<p>${x.replace(/</g, '&lt;')}</p>`)
     .join('\n')
 
   $: $crumbs = [

@@ -1,8 +1,13 @@
 <div class="app-vessel">
   <div class="pledge u-warn">
-    Trang đã mở lại, nhưng lần này chỉ phục vụ các bạn hảo tâm ủng hộ trang. Các
-    bạn đã nâng cấp quyền hạn muốn bù lại thời gian 1 tuần bị mất hãy liên hệ
-    ban quản trị.
+    Trang đang phát triển. Nếu gặp lỗi hãy liên hệ qua kênh <a
+      href="https://discord.gg/mdC3KQH"
+      class="m-link"
+      target="_blank">Discord</a>
+    hoặc trang
+    <a href="https://www.facebook.com/chivi.fb/" class="m-link" target="_blank"
+      >Facebook</a
+    >.
   </div>
 </div>
 

@@ -24,7 +24,7 @@ export async function call_baidu(text: string, tl = 'vie') {
   const json = extract_tran(data)
   const tran = json.data.list.map(({ dst }) => dst)
 
-  send_vcache(`baidu-${tran.length > 0 ? 'chap' : 'line'}`, { tl, text, tran })
+  send_vcache(`baidu-${tran.length > 1 ? 'chap' : 'line'}`, { tl, text, tran })
   return tran
 }
 

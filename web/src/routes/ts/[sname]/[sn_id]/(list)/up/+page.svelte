@@ -14,13 +14,14 @@
   import { get_encoding } from './get_encoding'
 
   import type { PageData } from './$types'
-  import { stem_path, _pgidx } from '$lib/kit_path'
+  import { seed_path, _pgidx } from '$lib/kit_path'
 
   import SplitOpts, { Opts } from './SplitOpts.svelte'
   import ChapsView from './ChapsView.svelte'
 
   export let data: PageData
-  $: ({ ustem } = data)
+  $: ({ nvinfo, wstem } = data)
+  $: min_privi = 1
 
   let chdiv = data.chdiv || ''
   let start = data.start
@@ -35,7 +36,6 @@
   let err_msg = ''
 
   $: if (input) {
-    console.log(`parsing input: ${input.length}`)
     chaps = []
     err_msg = ''
 
@@ -48,12 +48,10 @@
   }
 
   $: if (start) {
-    console.log(`update start offset: ${start}`)
     for (let i = 0; i < chaps.length; i++) chaps[i].ch_no = start + i
   }
 
   $: if (chdiv) {
-    console.log(`update initial division: ${chdiv}`)
     for (const chap of chaps) chap.chdiv ||= chdiv
   }
 
@@ -116,12 +114,12 @@
       alert(err_msg)
     } else {
       await invalidateAll()
-      await goto(stem_path(data.sroot, _pgidx(start)))
+      await goto(seed_path(nvinfo.bslug, wstem.sname, _pgidx(start)))
     }
   }
 
   async function submit_part(chaps: Zchap[]) {
-    const url = `/_rd/czdatas/up${data.sname}/${data.up_id}`
+    const url = `/_rd/zdata/wn/${wstem.sname}/${nvinfo.id}`
     const headers = { 'Content-type': 'application/json' }
     const body = JSON.stringify(chaps)
     const res = await fetch(url, { headers, method: 'POST', body })
@@ -143,7 +141,7 @@
   <section class="input">
     <div class="label">
       <span>Nội dung:</span>
-      <em data-tip="Tổng số ký tự">{input.length} ký tự</em>
+      <em data-tip="Tổng số ký tự">{input.length}</em>
     </div>
 
     <textarea
@@ -164,57 +162,59 @@
 
 {#if err_msg}<div class="form-msg _err">{err_msg}</div>{/if}
 
-<footer class="footer">
-  <div class="left">
-    <div class="file-prompt">
-      <label
-        class="m-btn _primary"
-        data-tip="Đăng tải nội dung chương tiết từ máy tính"
-        data-tip-pos="left">
-        <SIcon name="upload" />
-        <span class="m-show-tm">Chọn tệp tin</span>
-        <input type="file" bind:files accept=".txt" />
-      </label>
+<Footer>
+  <footer class="footer">
+    <div class="left">
+      <div class="file-prompt">
+        <label
+          class="m-btn _primary"
+          data-tip="Đăng tải nội dung chương tiết từ máy tính"
+          data-tip-pos="left">
+          <SIcon name="upload" />
+          <span class="m-show-tm">Chọn tệp tin</span>
+          <input type="file" bind:files accept=".txt" />
+        </label>
+      </div>
+
+      <button
+        type="button"
+        class="m-btn _line"
+        data-tip="Chuyển đổi từ phồn thể sang giản thể"
+        on:click={trad2sim}>
+        <SIcon name="language" />
+        <span class="m-show-tl">Phồn 🠖 Giản</span>
+      </button>
+
+      <button
+        type="button"
+        class="m-btn _line"
+        data-tip="Gộp các dòng bị vỡ thành các câu văn hoàn chỉnh."
+        on:click={() => (input = fix_breaks(input))}>
+        <SIcon name="bandage" />
+        <span class="m-show-tl">Sửa vỡ dòng</span>
+      </button>
     </div>
 
-    <button
-      type="button"
-      class="m-btn _line"
-      data-tip="Chuyển đổi từ phồn thể sang giản thể"
-      on:click={trad2sim}>
-      <SIcon name="language" />
-      <span class="m-show-tl">Phồn 🠖 Giản</span>
-    </button>
+    <div class="right">
+      <label class="label">
+        <span data-tip="Vị trí bắt đầu ghi đè">Chương bắt đầu</span>
+        <input class="m-input" type="number" name="start" bind:value={start} />
+      </label>
 
-    <button
-      type="button"
-      class="m-btn _line"
-      data-tip="Gộp các dòng bị vỡ thành các câu văn hoàn chỉnh."
-      on:click={() => (input = fix_breaks(input))}>
-      <SIcon name="bandage" />
-      <span class="m-show-tl">Sửa vỡ dòng</span>
-    </button>
-  </div>
-
-  <div class="right">
-    <label class="label">
-      <span data-tip="Vị trí bắt đầu ghi đè">Chương bắt đầu</span>
-      <input class="m-input" type="number" name="start" bind:value={start} />
-    </label>
-
-    <button
-      type="button"
-      class="m-btn _primary _fill"
-      disabled={_onload || $_user.privi < 1}
-      data-tip="Bạn cần quyền hạn tối thiểu là {1} để thêm chương"
-      data-tip-pos="right"
-      on:click={submit}>
-      <SIcon name={_onload ? 'loader-2' : 'send'} spin={_onload} />
-      <span class="m-show-ts -text">Đăng tải</span>
-      <SIcon name="privi-{1}" iset="icons" />
-    </button>
-  </div>
-</footer>
+      <button
+        type="button"
+        class="m-btn _primary _fill"
+        disabled={_onload || $_user.privi < min_privi}
+        data-tip="Bạn cần quyền hạn tối thiểu là {min_privi} để thêm chương"
+        data-tip-pos="right"
+        on:click={submit}>
+        <SIcon name={_onload ? 'loader-2' : 'send'} spin={_onload} />
+        <span class="m-show-ts -text">Đăng tải</span>
+        <SIcon name="privi-{min_privi}" iset="icons" />
+      </button>
+    </div>
+  </footer>
+</Footer>
 
 <style lang="scss">
   h2 {
@@ -226,7 +226,7 @@
   textarea {
     display: block;
     width: 100%;
-    min-height: 15rem;
+    min-height: 20rem;
     flex: 1;
     @include ftsize(sm);
   }
