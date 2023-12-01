@@ -4,10 +4,6 @@ require "../data/*"
 class MT::AiCore
   getter dict : AiDict
 
-  def self.for_book(wn_id : Int32)
-    new("book/#{wn_id}")
-  end
-
   def initialize(pdict : String)
     @dict = AiDict.load(pdict)
   end

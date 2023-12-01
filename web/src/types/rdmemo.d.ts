@@ -16,9 +16,9 @@ declare namespace CV {
     vname: string
     rpath: string
 
-    rstate: number
-    rating: number
-    recomm: number
+    rd_state: number
+    rd_stars: number
+    rd_track: number
 
     rmode: string
     qt_rm: string

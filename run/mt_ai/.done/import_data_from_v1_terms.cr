@@ -173,7 +173,7 @@ inputs.keys.sort!.each do |d_id|
   entries.uniq! { |x| {x.key, x.ptag} }.reject!(&.rank.== 0)
   entries.sort_by!(&.mtime)
 
-  MT::ViTerm.db("book/#{d_id}").open_tx do |db|
+  MT::ViTerm.db("wn/#{d_id}").open_tx do |db|
     entries.each(&.to_term.upsert!(db: db))
   end
 

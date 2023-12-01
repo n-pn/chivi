@@ -58,25 +58,11 @@ def merge_essence
     db.query_all "select #{dict.d_id} as d_id, * from terms", as: MT::ZvTerm
   end
 
+  DB.open("sqlite3:#{INP}/hv_word.db3?immutable=1") do |db|
+    terms.concat db.query_all "select #{dict.d_id} as d_id, * from terms", as: MT::ZvTerm
+  end
+
   puts "essence: #{terms.size} entries"
-
-  dict.term_db.open_tx do |db|
-    terms.each(&.upsert!(db: db))
-  end
-
-  dict.total = terms.size
-  dict.mtime = terms.max_of(&.mtime)
-  dict.users = terms.map(&.uname).uniq!.join(',')
-end
-
-def merge_word_hv
-  dict = MT::ZvDict.load!("word_hv")
-
-  terms = DB.open("sqlite3:#{INP}/hv_word.db3?immutable=1") do |db|
-    db.query_all "select #{dict.d_id} as d_id, * from terms", as: MT::ZvTerm
-  end
-
-  puts "word_hv: #{terms.size} entries"
 
   dict.term_db.open_tx do |db|
     terms.each(&.upsert!(db: db))
@@ -141,17 +127,13 @@ def merge_combine
   dict.users = terms.map(&.uname).uniq!.join(',')
 end
 
-def merge_core
-  merge_essence
-  merge_word_hv
-  merge_name_hv
-  merge_regular
-  merge_combine
-end
+merge_essence
+merge_regular
+merge_combine
+# merge_name_hv
 
-merge_core
 Dir.glob("#{INP}/up/*.db3").each { |file| merge_up_a(file) }
-Dir.glob("#{INP}/book/*.db3").each { |file| merge_wn_a(file) }
+Dir.glob("#{INP}/wn/*.db3").each { |file| merge_wn_a(file) }
 
 MT::ZvDict.db.open_tx do |db|
   MT::ZvDict::DB_CACHE.each_value(&.upsert!(db: db))

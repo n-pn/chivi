@@ -107,9 +107,14 @@
       height: 1.25rem;
     }
 
-    > :global(.-right) {
+    :global(.u-right) {
       margin-left: auto;
     }
+  }
+
+  :global(.gmenu-item._active) {
+    // @include bgcolor(primary, 5, 2);
+    @include fgcolor(primary, 5);
   }
 
   .trigger {

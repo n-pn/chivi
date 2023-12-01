@@ -7,11 +7,12 @@
   import { crumbs } from '$gui/global/Bcrumb.svelte'
 
   import Section from '$gui/sects/Section.svelte'
+  import UserMemo from '$gui/shared/wnovel/UserMemo.svelte'
 
   import type { LayoutData } from './$types'
   export let data: LayoutData
 
-  $: ({ crepo } = data)
+  $: ({ crepo, rmemo } = data)
 
   $: $crumbs = [
     { text: `[${crepo.vname || crepo.sroot}]`, href: data.sroot },
@@ -28,6 +29,8 @@
     },
   ]
 </script>
+
+<UserMemo {crepo} {rmemo} />
 
 <Section {tabs} _now={$page.data.ontab}>
   <slot />

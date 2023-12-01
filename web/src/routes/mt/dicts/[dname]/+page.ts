@@ -17,7 +17,7 @@ export interface TermsData extends CV.Paginate {
 
 export const load = (async ({ fetch, url, params: { dname }, parent }) => {
   const { dinfo } = await parent()
-  dname = dname.replace(/^wn/, 'books:').replace(/^up/, 'up:')
+  dname = dname.replace(/^wn/, 'wn/').replace(/^up/, 'up/')
 
   const search = merge_query(url.searchParams, { dname, lm: 50 })
   const terms = await api_get<TermsData>(`/_ai/terms?${search}`, fetch)

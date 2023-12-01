@@ -1,20 +1,29 @@
 require "./_ctrl_base"
+require "./tsmemo_view"
 
 class RD::RdmemoCtrl < AC::Base
   base "/_rd/rdmemos"
 
   @[AC::Route::GET("/")]
-  def index(sname : String? = nil, rtype : String = "")
-    sname = nil if sname && sname.blank?
-    pg_no, limit, offset = _paginate(min: 5, max: 50)
+  def index(stype : Int32 = -1, state : Int32 = -1,
+            rtype : String = "", order : String = "rtime")
+    pg_no, limit, offset = self._paginate(min: 1, max: 50)
 
-    items = Rdmemo.get_all(self._vu_id, sname, rtype, limit, offset)
+    items = TsmemoView.get_all(
+      self._vu_id,
+      stype: stype,
+      state: state,
+      rtype: rtype,
+      order: order,
+      limit: limit == 24 ? 25 : limit,
+      offset: offset
+    )
     total = offset
 
     if items.size < limit
       total &+= items.size
     else
-      total &+= Rdmemo.get_all(self._vu_id, sname, rtype, limit * 3, offset).size
+      total &+= TsmemoView.get_all(self._vu_id, stype, state, rtype, limit: limit * 3, offset: offset).size
     end
 
     json = {items: items, pgidx: pg_no, pgmax: _pgidx(total, limit)}
@@ -36,7 +45,7 @@ class RD::RdmemoCtrl < AC::Base
   end
 
   @[AC::Route::GET("/:sname/:sn_id")]
-  def show(sname : String, sn_id : String)
+  def show(sname : String, sn_id : Int32)
     rmemo = Rdmemo.load!(vu_id: self._vu_id, sname: sname, sn_id: sn_id)
     render json: rmemo
   end

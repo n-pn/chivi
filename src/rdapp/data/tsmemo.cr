@@ -9,15 +9,15 @@ class RD::Rdmemo
   schema "rdmemos", :postgres, strict: false
 
   field vu_id : Int32 = 0, pkey: true
-  field sname : String = "", pkey: String
-  field sn_id : String = "", pkey: true
+  field sname : String, pkey: true
+  field sn_id : Int32, pkey: true
 
   field vname : String = ""
   field rpath : String = ""
 
-  field rstate : Int16 = 0
-  field rating : Int16 = 0
-  field recomm : Int16 = 0
+  field rd_track : Int16 = 0
+  field rd_state : Int16 = 0
+  field rd_stars : Int16 = 0
 
   field rmode : String = "qt"
   field qt_rm : String = "qt_v1"
@@ -32,12 +32,6 @@ class RD::Rdmemo
   field view_count : Int32 = 0
   field coin_spent : Int32 = 0
 
-  # field last_ch_no : Int32 = 0
-  # field last_cinfo : Rdchap? = nil, converter: RD::Rdchap
-
-  # field mark_ch_no : Int32 = 0
-  # field mark_cinfo : Rdchap? = nil, converter: RD::Rdchap
-
   field atime : Int64 = 0
   field rtime : Int64 = 0
 
@@ -47,11 +41,11 @@ class RD::Rdmemo
   def inherit(mform : self, action : String = "")
     case action
     when "rstate"
-      @rstate = mform.rstate
+      @rd_state = mform.rd_state
     when "rating"
-      @rating = mform.rating
-    when "recomm"
-      @recomm = mform.recomm
+      @rd_stars = mform.rd_stars
+    when "follow"
+      @rd_track = mform.rd_track
     when "chmark"
       @rtime = Time.utc.to_unix
 
@@ -85,14 +79,14 @@ class RD::Rdmemo
 
   ###
 
-  def self.find(vu_id : Int32, sname : String, sn_id : String)
+  def self.find(vu_id : Int32, sname : String, sn_id : Int32)
     return nil if vu_id < 1
     self.get(vu_id, sname, sn_id, db: @@db) do |sql|
       sql << " where vu_id = $1 and sname = $2 and sn_id = $3"
     end
   end
 
-  def self.load!(vu_id : Int32, sname : String, sn_id : String)
+  def self.load!(vu_id : Int32, sname : String, sn_id : Int32)
     rmemo = self.find(vu_id, sname, sn_id) || new(vu_id, sname, sn_id)
     rmemo.tap(&.update_atime!)
   end
@@ -101,7 +95,7 @@ class RD::Rdmemo
     self.get_all(vu_id, limit, offset) do |sql|
       sql << " where vu_id = $1"
       case rtype
-      when "liked" then sql << " and recomm > 0"
+      when "liked" then sql << " and rd_track > 0"
       when "rdlog" then sql << " and lc_ch_no > 0"
       end
       sql << " order by rtime desc limit $2 offset $3"
@@ -112,7 +106,7 @@ class RD::Rdmemo
     self.get_all(vu_id, sname, limit, offset) do |sql|
       sql << " where vu_id = $1 and sname like $2 || '%'"
       case rtype
-      when "liked" then sql << " and recomm > 0"
+      when "liked" then sql << " and rd_track > 0"
       when "rdlog" then sql << " and lc_ch_no > 0"
       end
       sql << " order by rtime desc limit $3 offset $4"

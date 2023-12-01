@@ -157,7 +157,7 @@ class MT::ViDict
     query = @@schema.upsert_stmt(keep_fields: %w(label descs))
 
     self.new(
-      dname: "book/#{wn_id}",
+      dname: "wn/#{wn_id}",
       dtype: Dtype::Book,
       label: "Truyện: #{bname}",
       descs: "Từ điển riêng cho bộ truyện [#{bname}]",

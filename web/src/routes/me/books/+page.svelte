@@ -1,34 +1,23 @@
 <script lang="ts">
-  import { page } from '$app/stores'
-  import { status_types, status_names } from '$lib/constants'
+  import { rstate_labels } from '$lib/consts/rd_states'
+  import TsrepoList from '$gui/shared/tsrepo/TsrepoList.svelte'
 
-  import WninfoList from '$gui/parts/wninfo/WninfoList.svelte'
-  import Footer from '$gui/sects/Footer.svelte'
-  import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
-
-  import type { PageData } from './$types'
+  import type { PageData } from './[[state]]/$types'
   export let data: PageData
-
-  $: ({ books, pgidx, pgmax, bmark } = data)
-
-  $: pager = new Pager($page.url)
 </script>
 
 <div class="tabs">
-  {#each status_types as status}
-    <a href="/me/books/{status}" class="tab" class:_active={status == bmark}>
-      {status_names[status]}
+  {#each rstate_labels as label, value}
+    <a
+      href="/me/books?state={value}"
+      class="tab"
+      class:_active={value == data.state}>
+      {label}
     </a>
   {/each}
 </div>
 
-<WninfoList {books} nvtab="ch" />
-
-<Footer>
-  <div class="pagi">
-    <Mpager {pager} {pgidx} {pgmax} />
-  </div>
-</Footer>
+<TsrepoList {...data.table} />
 
 <style lang="scss">
   .tabs {
@@ -65,9 +54,5 @@
         @include fgcolor(primary, 4);
       }
     }
-  }
-
-  .pagi {
-    @include flex($center: horz, $gap: 0.375rem);
   }
 </style>

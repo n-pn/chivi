@@ -128,7 +128,7 @@ class RD::Upstem
         sql << <<-SQL
             and id in (
             select sn_id::int from rdmemos
-            where vu_id = $#{args.size} and sname like 'up%' and recomm > 0
+            where vu_id = $#{args.size} and sname like 'up%' and rd_track > 0
           )
           SQL
       end

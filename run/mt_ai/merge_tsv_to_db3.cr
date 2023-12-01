@@ -76,6 +76,6 @@ end
 INP = "/2tb/app.chivi/var/mt_db/mt_ai/"
 # merge_to_db "#{INP}regular.tsv"
 
-Dir.glob("#{INP}*.tsv").each { |file| merge_to_db(file) }
-Dir.glob("#{INP}_old/*.tsv").each { |file| merge_to_db(file) }
-Dir.glob("#{INP}book/*.tsv").each { |file| merge_to_db(file) }
+# Dir.glob("#{INP}*.tsv").each { |file| merge_to_db(file) }
+# Dir.glob("#{INP}_old/*.tsv").each { |file| merge_to_db(file) }
+Dir.glob("#{INP}wn/*.tsv").each { |file| merge_to_db(file) }

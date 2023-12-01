@@ -5,8 +5,8 @@ require "../../src/_data/_data"
 require "../../src/mt_ai/data/zv_dict"
 
 CORE = {
-  {"essence", 0, 0, "Nền Tảng", "Các từ áp dụng cho tất cả các chế độ dịch như dấu câu, chữ latin, emoji..."},
-  {"word_hv", 0, 1, "Hán Việt", "Phiên âm Hán Việt dùng cho dịch nghĩa Hán Việt hoặc dịch từ mới"},
+  {"essence", 0, 0, "Nền Tảng", "Các từ cơ bản như dấu câu, chữ latin, emoji, phiên âm hán việt..."},
+  # {"word_hv", 0, 1, "Hán Việt", "Phiên âm Hán Việt dùng cho dịch nghĩa Hán Việt hoặc dịch từ mới"},
   {"pin_yin", 0, 2, "Phanh Âm", "Sử dụng chữ cái Latinh để thể hiện cách phát âm các chữ Hán trong"},
 
   {"noun_vi", 0, 11, "Nghĩa Danh", "Các từ dùng để dịch danh từ mới"},

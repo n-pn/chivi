@@ -10,7 +10,10 @@ class MT::AiDict
   @@cache = {} of String => self
 
   def self.load(pdict : String)
-    @@cache[pdict] ||= new(pdict)
+    @@cache[pdict] ||= begin
+      pdict = pdict.sub("book/", "wn/")
+      new(pdict)
+    end
   end
 
   def initialize(@pdict : String = "combined")

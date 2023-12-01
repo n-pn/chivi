@@ -30,11 +30,11 @@ export const fix_sname = (sname: string) => {
 }
 
 export function chap_path(
-  rpath: string,
+  sroot: string,
   ch_no: number | string,
   { p_idx = 1, rmode = 'qt', qt_rm = 'qt_v1', mt_rm = 'mtl_1' } = {}
 ) {
-  const cpath = p_idx > 1 ? `${rpath}/${ch_no}_${p_idx}` : `${rpath}/${ch_no}`
+  const cpath = p_idx > 1 ? `${sroot}/${ch_no}_${p_idx}` : `${sroot}/${ch_no}`
 
   const params = new URLSearchParams()
   if (rmode != 'qt') params.append('rm', rmode)

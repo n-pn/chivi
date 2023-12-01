@@ -3,12 +3,6 @@ import { api_get } from '$lib/api_call'
 import { seed_nav, nav_link } from '$utils/header_util'
 import type { PageLoad } from './$types'
 
-const gen_pdict = ({ stype, wn_id, sn_id }) => {
-  if (wn_id > 0) return `book/${wn_id}`
-  if (stype == 1) return `up/${sn_id}`
-  return 'combine'
-}
-
 const parse_chid = ({ chap }) => chap.split('_').map((x) => parseInt(x))
 
 export const load = (async ({ params, parent, fetch }) => {

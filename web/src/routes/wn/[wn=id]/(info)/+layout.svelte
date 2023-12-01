@@ -7,20 +7,10 @@
   import { map_status } from '$utils/nvinfo_utils'
 
   import RTime from '$gui/atoms/RTime.svelte'
-  import UserAction from './UserAction.svelte'
   import Section from '$gui/sects/Section.svelte'
+  import UserMemo from '$gui/shared/wnovel/UserMemo.svelte'
 
   $: nvinfo = $page.data.nvinfo
-  $: ubmemo = $page.data.ubmemo
-
-  $: _curr = map_tab_from_route($page.route.id || '')
-
-  function map_tab_from_route(route_id: string) {
-    if (route_id.includes('/uc')) return '/uc'
-    if (route_id.includes('/ul')) return '/ul'
-    // if (route_id.includes('/lk')) return '/lk'
-    return ''
-  }
 
   $: rpath = `/wn/${nvinfo.bslug}`
 
@@ -115,7 +105,7 @@
     </div>
   </div>
 
-  <UserAction {nvinfo} {ubmemo} />
+  <UserMemo crepo={$page.data.crepo} rmemo={$page.data.rmemo} />
 </div>
 
 <Section {tabs}>
