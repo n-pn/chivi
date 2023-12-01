@@ -6,27 +6,31 @@ class RD::CzdataCtrl < AC::Base
 
   @[AC::Route::GET("/:sname/:sn_id/:ch_no")]
   def get_ztext(sname : String, sn_id : Int32, ch_no : Int32)
-    crepo = Chrepo.load!("#{sname}/#{sn_id}")
+    crepo = Tsrepo.load!("#{sname}/#{sn_id}")
 
-    owner = crepo.owner >= 0 ? crepo.owner : self._vu_id
-    guard_owner owner, crepo.plock, "truy cập text gốc của chương"
+    owner, privi = crepo.edit_privi(self._vu_id)
+    guard_owner owner, privi, "truy cập text gốc của chương"
 
-    if cinfo = crepo.find(ch_no)
-      json = {ztext: crepo.load_raw!(cinfo), title: cinfo.ztitle, chdiv: cinfo.zchdiv}
+    ch_no = crepo.chmax &+ 1 if ch_no < 1
+
+    if ch_no.in?(1..crepo.chmax) && (cinfo = crepo.find(ch_no))
+      ztext = "/// #{cinfo.zchdiv}\n#{crepo.load_raw!(cinfo)}"
     else
-      json = {ztext: "", title: "", chdiv: crepo.get_chdiv(ch_no)}
+      chdiv = crepo.get_chdiv(ch_no)
+      ztext = chdiv.empty? ? chdiv : "/// #{chdiv}"
     end
 
-    render json: json
+    render json: {ch_no: ch_no, ztext: ztext}
   end
 
   @[AC::Route::POST("/:sname/:sn_id", body: :clist)]
   def upsert(sname : String, sn_id : Int32, clist : Array(ZcdataForm))
     raise "Bạn chỉ được đăng tải nhiều nhất 64 chương một lúc!" if clist.size > 64
 
-    crepo = Chrepo.load!("#{sname}/#{sn_id}")
-    owner = crepo.owner >= 0 ? crepo.owner : self._vu_id
-    guard_owner owner, crepo.plock, "thêm text gốc cho nguồn truyện"
+    crepo = Tsrepo.load!("#{sname}/#{sn_id}")
+
+    owner, privi = crepo.edit_privi(self._vu_id)
+    guard_owner owner, privi, "thêm text gốc cho nguồn truyện"
 
     crepo.mkdirs!
     clist.each(&.save!(crepo: crepo, uname: self._uname))
@@ -40,12 +44,12 @@ class RD::CzdataCtrl < AC::Base
     render json: {ch_no: chmin, pg_no: _pgidx(chmin, 32)}
   end
 
-  private def update_stats!(crepo : Chrepo, sname : String, chmax : Int32)
+  private def update_stats!(crepo : Tsrepo, sname : String, chmax : Int32)
     # puts "#{crepo.chmax}/#{chmax}/#{crepo.stype}"
     case crepo.stype
     when 0_i16
-      wstem = get_wstem(sname, crepo.sn_id)
-      wstem.update_stats!(chmax: chmax, persist: true)
+      wbook = get_wbook(crepo.sn_id)
+      wbook.update_stats!(chmax: chmax, persist: true)
     when 1_i16
       ustem = get_ustem(crepo.sn_id, sname)
       ustem.update_stats!(chmax: chmax, persist: true)

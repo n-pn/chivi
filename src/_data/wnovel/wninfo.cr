@@ -84,8 +84,8 @@ class CV::Wninfo
   column vvoters : Int32 = 0
   column vrating : Int32 = 0
 
-  column chap_count : Int32 = 0 # chap views count
-  column word_count : Int32 = 0 # chap views count
+  column chap_count : Int32 = 0 #
+  column word_count : Int32 = 0 #
 
   column mark_count : Int32 = 0 # discuss topic count
   column view_count : Int32 = 0 # user tracking count

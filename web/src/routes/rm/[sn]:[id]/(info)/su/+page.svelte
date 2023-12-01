@@ -1,4 +1,6 @@
-<script lang="ts" context="module">
+-->
+
+<!-- <script lang="ts" context="module">
   const guard_locks = [
     [-1, 'Không hạn chế'],
     [0, 'Cần đăng nhập'],
@@ -16,14 +18,6 @@
     3: 'Quyền hạn tối thiểu là 3 có thể thấy thông tin dự án',
     4: 'Ẩn thông tin dự án, chỉ có những người có liên kết mới xem được',
   }
-
-  const gifts_types = [
-    [0, 'Không mở miễn phí'],
-    [1, '1/4 chương đầu'],
-    [2, '1/2 chương đầu'],
-    [3, '3/4 chương đầu'],
-    [4, 'Tất cả các chương'],
-  ]
 </script>
 
 <script lang="ts">

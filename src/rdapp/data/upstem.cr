@@ -1,7 +1,7 @@
 require "../../mt_ai/core/qt_core"
 require "../../_data/_data"
 
-require "./chrepo"
+require "./tsrepo"
 
 class RD::Upstem
   class_getter db : DB::Database = PGDB
@@ -22,7 +22,6 @@ class RD::Upstem
   field vintro : String = ""
   field labels : Array(String) = [] of String
 
-  field gifts : Int16 = 2
   field multp : Int16 = 4
   field guard : Int16 = 0
 
@@ -37,7 +36,7 @@ class RD::Upstem
   timestamps
 
   def crepo
-    Chrepo.load!("up#{@sname}/#{@id}") do |repo|
+    Tsrepo.load!("up#{@sname}/#{@id}") do |repo|
       repo.stype = 1_i16
       repo.owner = @owner
       repo.sname = @sname
@@ -46,7 +45,6 @@ class RD::Upstem
       repo.chmax = @chap_count
 
       repo.plock = @guard
-      repo.gifts = @gifts
       repo.multp = @multp
     end
   end

@@ -22,7 +22,7 @@
   {/each}
 </div>
 
-<WninfoList {books} nvtab="chaps" />
+<WninfoList {books} nvtab="ch" />
 
 <Footer>
   <div class="pagi">

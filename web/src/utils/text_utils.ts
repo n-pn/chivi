@@ -29,6 +29,11 @@ export function fix_breaks(input: string, min_invalid = 15) {
   return output
 }
 
+export function trim_spaces(input: string) {
+  const lines = input.split(/\r\n?|\n/)
+  return lines.filter(Boolean).join('\n')
+}
+
 const full_line_re_1 = /^[\s 　]*第/
 const full_line_re_2 = /[。？！”」#＊）】…\.\p{Pe}\p{Pf}]\s*$/u
 

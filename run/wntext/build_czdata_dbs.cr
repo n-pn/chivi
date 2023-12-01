@@ -1,10 +1,10 @@
-require "../../src/rdapp/data/chrepo"
+require "../../src/rdapp/data/tsrepo"
 
 STEM_DIR = "/2tb/var.chivi/stems"
 TEXT_DIR = "/2tb/var.chivi/texts"
 
 def import(sname : String, sn_id : String, uname : String)
-  count = RD::Chrepo.new("#{sname}/#{sn_id}").init_text_db!(uname)
+  count = RD::Tsrepo.new("#{sname}/#{sn_id}").init_text_db!(uname)
   puts "#{sname}/#{sn_id}: #{count} entries saved!"
 end
 

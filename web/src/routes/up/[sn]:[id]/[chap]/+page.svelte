@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import { crumbs } from '$gui/global/Bcrumb.svelte'
 
   import type { PageData } from './$types'
@@ -18,4 +18,4 @@
 </script>
 
 <Reader {crepo} {ropts} {rdata} />
-<Rdfoot {crepo} {ropts} {rdata} {rmemo} />
+<Rdfoot {crepo} {ropts} {rdata} {rmemo} /> -->

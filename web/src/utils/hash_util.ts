@@ -6,9 +6,7 @@ const BASIS_64 = 0xcbf29ce484222325n
 const PRIME_64 = 1099511628211n
 const MASK_64 = 18446744073709551615n
 
-export function fnv_1a_32(inp: string) {
-  let hash = BASIS_32
-
+export function fnv_1a_32(inp: string, hash = BASIS_32) {
   for (const byte of Buffer.from(inp)) {
     hash = hash ^ BigInt(byte)
     hash = hash * PRIME_32
@@ -18,14 +16,11 @@ export function fnv_1a_32(inp: string) {
   return hash
 }
 
-export function fnv_1a_64(inp: string) {
-  let hash = BASIS_64
-
+export function fnv_1a_64(inp: string, hash = BASIS_64) {
   for (const byte of Buffer.from(inp)) {
     hash = hash ^ BigInt(byte)
     hash = hash * PRIME_64
     hash = hash & MASK_64
   }
-
   return hash
 }

@@ -4,7 +4,7 @@
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let crepo: CV.Chrepo
+  export let crepo: CV.Tsrepo
   export let rdata: CV.Chpart
   export let state = 0
 

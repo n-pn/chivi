@@ -16,6 +16,7 @@
 
 <style lang="scss">
   footer {
+    @include flex-cx;
     position: sticky;
     padding: 0.5rem 0;
 

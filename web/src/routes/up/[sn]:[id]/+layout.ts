@@ -3,8 +3,8 @@ import { writable } from 'svelte/store'
 import type { LayoutLoad } from './$types'
 
 interface UpstemShow {
-  ustem: CV.Upstem
-  crepo: CV.Chrepo
+  xstem: CV.Upstem
+  crepo: CV.Tsrepo
   rmemo: CV.Rdmemo
 }
 
@@ -15,8 +15,8 @@ export const load = (async ({ fetch, params, depends }) => {
   const sroot = `/up/${sname}:${up_id}`
   depends(sroot)
 
-  const rdurl = `/_rd/upstems/${up_id}`
-  const { ustem, rmemo, crepo } = await api_get<UpstemShow>(rdurl, fetch)
+  const rdurl = `/_rd/tsrepos/up${sname}/${up_id}`
+  const { xstem: ustem, rmemo, crepo } = await api_get<UpstemShow>(rdurl, fetch)
 
   let binfo: CV.Wninfo
 

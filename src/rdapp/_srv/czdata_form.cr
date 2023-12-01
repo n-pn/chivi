@@ -18,7 +18,7 @@ struct RD::ZcdataForm
     @chdiv = TextUtil.canon_clean(@chdiv)
   end
 
-  def save!(crepo : Chrepo, uname : String = "")
+  def save!(crepo : Tsrepo, uname : String = "")
     zdata = Czdata.new(
       ch_no: @ch_no, cbody: @ztext,
       title: @title, chdiv: @chdiv,

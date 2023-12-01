@@ -4,7 +4,7 @@
   import { get_rtime } from '$gui/atoms/RTime.svelte'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let crepo: CV.Chrepo
+  export let crepo: CV.Tsrepo
   export let rmemo: CV.Rdmemo
   export let chaps: CV.Wnchap[]
 

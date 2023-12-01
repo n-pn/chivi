@@ -20,8 +20,8 @@ class CV::Uprivi
   TSPAN = {
     86400,  # one day in seconds
     129600, # * 1.5,
-    151200, # * 1.75,
-    162000, # * 1.875
+    172800, # * 2,
+    216000, # * 2.5
   }
 
   def extend_privi!(p_new : Int16, days : Int32, persist : Bool = true)

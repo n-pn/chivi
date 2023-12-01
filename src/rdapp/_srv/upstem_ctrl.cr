@@ -63,19 +63,19 @@ class RD::UpstemCtrl < AC::Base
     render json: ustem
   end
 
-  @[AC::Route::GET("/:up_id")]
-  def show(up_id : Int32, regen : Bool = false)
-    ustem = get_ustem(up_id)
-    # TODO: retranslate here
+  # @[AC::Route::GET("/:up_id")]
+  # def show(up_id : Int32, regen : Bool = false)
+  #   ustem = get_ustem(up_id)
+  #   # TODO: retranslate here
 
-    rmemo = Rdmemo.load!(vu_id: self._vu_id, sname: "up#{ustem.sname}", sn_id: up_id.to_s)
+  #   rmemo = Rdmemo.load!(vu_id: self._vu_id, sname: "up#{ustem.sname}", sn_id: up_id.to_s)
 
-    render json: {
-      ustem: ustem,
-      crepo: ustem.crepo,
-      rmemo: rmemo,
-    }
-  end
+  #   render json: {
+  #     ustem: ustem,
+  #     crepo: ustem.crepo,
+  #     rmemo: rmemo,
+  #   }
+  # end
 
   @[AC::Route::POST("/:up_id", body: uform)]
   def update(up_id : Int32, uform : Upstem)
@@ -103,7 +103,6 @@ class RD::UpstemCtrl < AC::Base
 
     ustem.guard = uform.guard
     ustem.wndic = uform.wndic
-    ustem.gifts = uform.gifts
     ustem.multp = uform.multp
     ustem.updated_at = Time.utc
 

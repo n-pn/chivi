@@ -13,7 +13,7 @@
   import Gmenu from '$gui/molds/Gmenu.svelte'
   import Footer from '$gui/sects/Footer.svelte'
 
-  export let crepo: CV.Chrepo
+  export let crepo: CV.Tsrepo
   export let rdata: CV.Chpart
   export let ropts: CV.Rdopts
   export let rmemo: Writable<CV.Rdmemo>

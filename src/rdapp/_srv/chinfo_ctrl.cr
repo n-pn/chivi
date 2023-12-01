@@ -5,8 +5,7 @@ class RD::ChinfoCtrl < AC::Base
 
   @[AC::Route::GET("/:sname/:sn_id")]
   def index(sname : String, sn_id : Int32, _last : Bool = false)
-    crepo = Chrepo.load!("#{sname}/#{sn_id}")
-
+    crepo = Tsrepo.load!("#{sname}/#{sn_id}")
     _pg_no, limit, offset = _paginate(min: 32, max: 64)
 
     if _last
@@ -23,7 +22,7 @@ class RD::ChinfoCtrl < AC::Base
   @[AC::Route::GET("/:sname/:sn_id/:ch_no/:p_idx")]
   def show_path(sname : String, sn_id : String, ch_no : Int32, p_idx : Int32,
                 force : Bool = false, regen : Bool = false)
-    crepo = Chrepo.load!("#{sname}/#{sn_id}")
+    crepo = Tsrepo.load!("#{sname}/#{sn_id}")
     cinfo = get_cinfo(crepo, ch_no)
 
     crepo.save_raw_from_link!(cinfo, _uname, force: regen) if _privi >= 0
@@ -33,7 +32,7 @@ class RD::ChinfoCtrl < AC::Base
     render 200, json: rdata
   end
 
-  private def inc_view_count!(crepo : Chrepo, sname : String)
+  private def inc_view_count!(crepo : Tsrepo, sname : String)
     value = (self._privi &+ 2)
     crepo.inc_view_count!(value)
     case crepo.stype
@@ -44,7 +43,7 @@ class RD::ChinfoCtrl < AC::Base
     end
   end
 
-  private def show_part(crepo : Chrepo, cinfo : Chinfo, p_idx : Int32,
+  private def show_part(crepo : Tsrepo, cinfo : Chinfo, p_idx : Int32,
                         force : Bool = false)
     vu_id = self._vu_id
     privi = self._privi
@@ -55,7 +54,7 @@ class RD::ChinfoCtrl < AC::Base
     fpath = crepo.part_name(cinfo, p_idx)
     zsize = cinfo.sizes[p_idx]? || 0
 
-    if privi < crepo.plock
+    if privi < crepo.read_privi
       error = 403
     elsif zsize == 0 || cinfo.cksum.empty?
       error = 414

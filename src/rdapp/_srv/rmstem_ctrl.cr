@@ -62,24 +62,24 @@ class RD::RmstemCtrl < AC::Base
   #   render json: saved
   # end
 
-  @[AC::Route::GET("/:sname/:sn_id")]
-  def show(sname : String, sn_id : String, crawl : Int32 = 0, regen : Bool = false)
-    rstem = get_rstem(sname, sn_id)
+  # @[AC::Route::GET("/:sname/:sn_id")]
+  # def show(sname : String, sn_id : String, crawl : Int32 = 0, regen : Bool = false)
+  #   rstem = get_rstem(sname, sn_id)
 
-    if regen
-      rstem.fix_wn_id!
-      rstem.translate!
-    end
+  #   if regen
+  #     rstem.fix_wn_id!
+  #     rstem.translate!
+  #   end
 
-    rstem.update!(crawl, regen) if crawl > 0 || regen
-    rmemo = Rdmemo.load!(vu_id: self._vu_id, sname: "rm#{sname}", sn_id: sn_id)
+  #   rstem.update!(crawl, regen) if crawl > 0 || regen
+  #   rmemo = Rdmemo.load!(vu_id: self._vu_id, sname: "rm#{sname}", sn_id: sn_id)
 
-    render json: {
-      rstem: rstem,
-      crepo: rstem.crepo,
-      rmemo: rmemo,
-    }
-  end
+  #   render json: {
+  #     rstem: rstem,
+  #     crepo: rstem.crepo,
+  #     rmemo: rmemo,
+  #   }
+  # end
 
   @[AC::Route::POST("/")]
   def upsert!(rlink : String)

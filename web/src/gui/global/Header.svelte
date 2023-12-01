@@ -67,7 +67,7 @@
       {:else}
         <Item
           type="a"
-          href="/_auth/login"
+          href="/_u/login"
           text="Đăng nhập"
           icon="login"
           opts={{ show: 'pl', kind: 'uname' }}

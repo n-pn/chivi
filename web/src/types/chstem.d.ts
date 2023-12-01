@@ -10,7 +10,6 @@ declare namespace CV {
     utime: number
 
     multp: number
-    gifts: number
   }
 
   interface Upstem {
@@ -30,7 +29,6 @@ declare namespace CV {
     vintro: string
     labels: string[]
 
-    gifts: number
     multp: number
     wndic: boolean
 
@@ -68,7 +66,6 @@ declare namespace CV {
     chap_count: number
     view_count: number
 
-    gifts: number
     multp: number
   }
 }

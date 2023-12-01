@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import { crumbs } from '$gui/global/Bcrumb.svelte'
 
   import type { PageData } from './$types'
@@ -15,7 +15,4 @@
     { text: rdata.chdiv || 'Chính văn' },
     { text: rdata.title },
   ]
-</script>
-
-<Reader {crepo} {ropts} {rdata} />
-<Rdfoot {crepo} {ropts} {rdata} {rmemo} />
+</script> -->

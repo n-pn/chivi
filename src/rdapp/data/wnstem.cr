@@ -2,7 +2,7 @@ require "crorm"
 
 require "../../_data/_data"
 
-require "./chrepo"
+require "./tsrepo"
 require "./rmstem"
 
 class RD::Wnstem
@@ -33,8 +33,8 @@ class RD::Wnstem
   field created_at : Time = Time.utc
   field updated_at : Time = Time.utc
 
-  def crepo : Chrepo
-    Chrepo.load!("wn#{@sname}/#{@wn_id}") do |r|
+  def crepo : Tsrepo
+    Tsrepo.load!("wn#{@sname}/#{@wn_id}") do |r|
       r.owner = -1
       r.stype = 0_i16
       r.sname = @sname
@@ -45,7 +45,6 @@ class RD::Wnstem
       r.chmax = @chap_total
 
       r.plock = 0
-      r.gifts = 1_i16
       r.multp = @multp
 
       r.mtime = @mtime
@@ -68,7 +67,6 @@ class RD::Wnstem
 
       jb.field "multp", @multp
       jb.field "privi", @privi
-      jb.field "gifts", 2
 
       jb.field "rlink", @rlink
       jb.field "rtime", @rtime

@@ -76,7 +76,7 @@ declare namespace CV {
     error?: string
   }
 
-  interface Chrepo {
+  interface Tsrepo {
     sroot: string
     owner: number
 
@@ -86,16 +86,19 @@ declare namespace CV {
 
     vname: string
     zname: string
+    cover: string
+
     wn_id: number
+    pdict: string
 
     chmax: number
-    avail: number
+    mtime: Int64
 
     plock: number
-    gifts: number
+
     multp: number
 
-    mtime: Int64
+    rlink: string
     rtime: Int64
 
     view_count: number

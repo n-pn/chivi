@@ -150,7 +150,7 @@ class RD::Chinfo
     sizes.sum(&.split(' ').sum(&.to_i))
   end
 
-  @@get_chdiv_sql = "select chdiv from chinfos where ch_no <= $1 order by ch_no desc limit 1"
+  @@get_chdiv_sql = "select zchdiv from chinfos where ch_no <= $1 order by ch_no desc limit 1"
 
   def self.get_chdiv(db, ch_no : Int32)
     db.query_one?(@@get_chdiv_sql, ch_no, as: String) || ""

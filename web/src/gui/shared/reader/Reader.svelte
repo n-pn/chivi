@@ -10,7 +10,7 @@
   import Rerror from './Rerror.svelte'
   import Rdpage from './Rdpage.svelte'
 
-  export let crepo: CV.Chrepo
+  export let crepo: CV.Tsrepo
   export let rdata: CV.Chpart
   export let ropts: CV.Rdopts
 

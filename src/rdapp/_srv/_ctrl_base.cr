@@ -1,27 +1,16 @@
 require "../../cv_srv"
 require "../data/*"
-require "../view/*"
-require "./forms/*"
 
 abstract class AC::Base
-  WSTEMS = {} of String => RD::Wnstem
-  RSTEMS = {} of String => RD::Rmstem
+  WBOOKS = {} of Int32 => RD::Wnbook
   USTEMS = {} of Int32 => RD::Upstem
+  RSTEMS = {} of String => RD::Rmstem
 
-  private def get_wstem(sname : String, wn_id : Int32)
-    WSTEMS["#{wn_id}/#{sname}"] ||= begin
-      if wstem = RD::Wnstem.load(wn_id, sname)
-        if wstem._flag == 0
-          spawn wstem.crepo.update_vinfos!
-          wstem._flag == 1
-        end
-      else
-        raise NotFound.new("Nguồn truyện không tồn tại") unless sname == "~avail"
-        Dir.mkdir_p("var/texts/wn~avail/#{wn_id}")
-        wstem = RD::Wnstem.new(wn_id, sname, wn_id.to_s).upsert!
-      end
-
-      wstem
+  private def get_wbook(wn_id : Int32)
+    WBOOKS[wn_id] ||= begin
+      wbook = RD::Wnbook.find(wn_id) || raise "Nguồn truyện không tồn tại"
+      spawn wbook.crepo.update_vinfos!
+      wbook
     end
   end
 
@@ -56,10 +45,10 @@ abstract class AC::Base
     end
   end
 
-  private def get_xstem(crepo : RD::Chrepo)
+  private def get_xstem(crepo : RD::Tsrepo)
     case crepo.stype
     when 0_i16
-      get_wstem(crepo.sname, crepo.sn_id)
+      get_wbook(crepo.sn_id)
     when 1_i16
       get_ustem(crepo.sn_id, crepo.sname)
     when 2_i16
@@ -85,7 +74,7 @@ abstract class AC::Base
   end
 
   @[AlwaysInline]
-  private def get_cinfo(crepo : RD::Chrepo, ch_no : Int32)
+  private def get_cinfo(crepo : RD::Tsrepo, ch_no : Int32)
     crepo.find(ch_no) || raise NotFound.new("Chương tiết không tồn tại")
   end
 end

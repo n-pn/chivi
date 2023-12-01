@@ -74,7 +74,7 @@
 
 .u-warn {
   @include fgcolor(warning, 5);
-  margin-bottom: 1.5rem;
+  // margin-bottom: 1.5rem;
 
   code {
     @include fgcolor(success, 6);
@@ -156,32 +156,6 @@ x-vcoin,
   @include fgcolor(mute);
 }
 
-.x-label {
-  @include flex-cy($gap: 0.25em);
-
-  font-weight: 500;
-  line-height: 1.75rem;
-  // text-transform: uppercase;
-  @include fgcolor(secd);
-
-  &._sm {
-    line-height: 1.5rem;
-    @include ftsize(sm);
-  }
-}
-
-.x-field {
-  &._flex {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  input[type='text'] {
-    display: block;
-    width: 100%;
-  }
-}
-
 .m-flex {
   display: flex;
 
@@ -225,4 +199,61 @@ x-vcoin,
     $ts: rem(17px),
     $tm: rem(18px)
   );
+}
+
+.u-right {
+  margin-left: auto;
+}
+
+.d-label {
+  @include flex-cy;
+  font-weight: 500;
+  padding: 0.25rem 0;
+  @include ftsize(sm);
+  @include fgcolor(tert);
+}
+
+.x-label {
+  @include flex-cy($gap: 0.25em);
+
+  font-weight: 500;
+  line-height: 1.75rem;
+  // text-transform: uppercase;
+  @include fgcolor(secd);
+
+  &._sm {
+    line-height: 1.5rem;
+    @include ftsize(sm);
+  }
+}
+
+.x-field {
+  &._flex {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  input[type='text'] {
+    display: block;
+    width: 100%;
+  }
+}
+
+.v-label {
+  font-weight: 500;
+  @include ftsize(sm);
+  @include fgcolor(tert);
+}
+
+.v-field {
+  font-style: italic;
+  @include ftsize(sm);
+  @include fgcolor(secd);
+}
+
+.m-ruler {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  // padding-top: 0.75rem;
+  @include border($loc: top);
 }

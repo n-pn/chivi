@@ -27,7 +27,7 @@
     _onload = true
     err_msg = ''
 
-    const url = `/_rd/chrepos/${crepo.sroot}/reload?crawl=1&regen=1`
+    const url = `/_rd/tsrepos/${crepo.sroot}/reload?crawl=1&regen=1`
     const res = await fetch(url)
     _onload = false
 
@@ -40,10 +40,9 @@
 
   $: free_chaps = calc_free_chaps(crepo)
 
-  function calc_free_chaps({ gifts, chmax }) {
-    if (gifts == 0) return chmax
-    const frees = Math.floor((chmax * gifts) / 4)
-    return frees < 120 ? frees : 120
+  function calc_free_chaps({ chmax }) {
+    const free_until = (chmax / 4) | 0
+    return free_until < 120 ? free_until : 120
   }
 </script>
 

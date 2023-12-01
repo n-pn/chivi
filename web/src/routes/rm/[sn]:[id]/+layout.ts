@@ -3,8 +3,8 @@ import { writable } from 'svelte/store'
 import type { LayoutLoad } from './$types'
 
 interface RmstemShow {
-  rstem: CV.Rmstem
-  crepo: CV.Chrepo
+  xstem: CV.Rmstem
+  crepo: CV.Tsrepo
   rmemo: CV.Rdmemo
 }
 
@@ -15,8 +15,8 @@ export const load = (async ({ fetch, params, depends }) => {
   const sroot = `/rm/${sname}:${sn_id}`
   depends(sroot)
 
-  const rdurl = `/_rd/rmstems/${sname}/${sn_id}`
-  const { rstem, crepo, rmemo } = await api_get<RmstemShow>(rdurl, fetch)
+  const rdurl = `/_rd/tsrepos/rm${sname}/${sn_id}`
+  const { xstem: rstem, crepo, rmemo } = await api_get<RmstemShow>(rdurl, fetch)
 
   let binfo: CV.Wninfo
 

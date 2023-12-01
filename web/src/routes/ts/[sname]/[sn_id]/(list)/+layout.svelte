@@ -6,7 +6,6 @@
 
   import { crumbs } from '$gui/global/Bcrumb.svelte'
 
-  import SeedList from './SeedList.svelte'
   import Section from '$gui/sects/Section.svelte'
 
   import type { LayoutData } from './$types'
@@ -14,27 +13,19 @@
 
   $: ({ crepo } = data)
 
-  $: sroot = `/rd/${data.crepo.sroot}`
-
-  $: tabs = [
-    { type: 'ch', href: sroot, icon: 'list', text: 'Chương tiết' },
-    {
-      type: 'ul',
-      href: `${sroot}/ul`,
-      icon: 'upload',
-      text: 'Đăng tải',
-    },
-    {
-      type: 'cf',
-      href: `${sroot}/cf`,
-      icon: 'tools',
-      text: 'Quản lý',
-    },
+  $: $crumbs = [
+    { text: `[${crepo.vname || crepo.sroot}]`, href: data.sroot },
+    { text: 'Chương tiết mục lục' },
   ]
 
-  $: $crumbs = [
-    { text: `[${crepo.vname || crepo.sroot}]`, href: `/ts/${crepo.sroot}` },
-    { text: 'Chương tiết mục lục' },
+  $: tabs = [
+    { type: 'ch', href: data.sroot, icon: 'list', text: 'Chương tiết' },
+    {
+      type: 'ul',
+      href: `${data.sroot}/+text`,
+      icon: 'upload',
+      text: 'Thêm text',
+    },
   ]
 </script>
 
