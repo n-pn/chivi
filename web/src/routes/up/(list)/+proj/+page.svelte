@@ -38,8 +38,8 @@
     const body = { ...uform, labels: labels.split(',') }
 
     try {
-      const { sname, id } = await api_call(action, body, 'POST')
-      await goto(`/up/${sname}:${id}`)
+      const { ustem } = await api_call(action, body, 'POST')
+      await goto(`/up/${ustem.sname}:${ustem.id}`)
     } catch (ex) {
       err_text = ex.body.message
     }

@@ -86,7 +86,7 @@ class RD::ChinfoCtrl < AC::Base
       chdiv: cinfo.vchdiv.empty? ? cinfo.zchdiv : cinfo.vchdiv,
 
       error: error,
-      plock: crepo.plock,
+      plock: crepo.read_privi,
 
       fpath: fpath,
       ztext: ztext,

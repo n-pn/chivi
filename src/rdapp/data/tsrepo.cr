@@ -24,14 +24,15 @@ class RD::Tsrepo
   field pdict : String = ""
 
   field chmax : Int32 = 0
-  field avail : Int32 = 0
+
   field mtime : Int64 = 0_i64
 
   field plock : Int16 = 0_i16
   field multp : Int16 = 4_i16
 
-  field rlink : String = ""
-  field rtime : Int64 = 0_i64
+  field rm_stime : Int64 = 0_i64
+  field rm_slink : String = ""
+  field rm_chmin : Int32 = 0
 
   field _flag : Int16 = 0_i16
 
@@ -84,8 +85,8 @@ class RD::Tsrepo
   end
 
   def mkdirs!
-    Dir.mkdir_p("var/stems/#{sname}")
-    Dir.mkdir_p("var/texts/#{sroot}")
+    Dir.mkdir_p("var/texts/#{@sroot}")
+    Dir.mkdir_p(File.dirname("var/stems/#{@sroot}"))
   end
 
   SET_CHMAX_SQL = "update tsrepos set chmax = $1 where sroot = $2"
@@ -128,6 +129,41 @@ class RD::Tsrepo
   def free_chap?(ch_no : Int32)
     ch_no < self.free_until
   end
+
+  ###
+
+  def update_from_link!(cmode : Int32 = 1, persist : Bool = true)
+    return false if @rm_slink.empty?
+
+    @rm_stime = Time.utc.to_unix
+
+    origin = RawRmstem.from_link(@rm_slink, stale: Time.utc - reload_tspan(cmode))
+    chlist = origin.extract_clist!
+
+    return false if chlist.size <= @rm_chmin
+    @chmax = chlist.size if @chmax < chlist.size
+
+    self.upsert_zinfos!(chlist[@rm_chmin..])
+
+    if origin.update_str.empty?
+      @mtime = @rm_stime
+    else
+      @mtime = {origin.update_int, @mtime}.max
+    end
+
+    self.upsert! if persist
+    true
+  end
+
+  private def reload_tspan(cmode : Int32 = 1)
+    case cmode
+    when 2 then 3.minutes  # force crawl
+    when 1 then 30.minutes # normal crawl
+    else        10.years   # keep forever
+    end
+  end
+
+  ###
 
   @[AlwaysInline]
   def get_all(start : Int32 = 1, limit : Int32 = 32)

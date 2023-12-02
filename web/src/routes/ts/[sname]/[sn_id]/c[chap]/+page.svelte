@@ -33,11 +33,11 @@
   $: memo_path = pg_no < 2 ? base_path : base_path + '?pg=' + pg_no
 
   $: prev_path = rdata._prev
-    ? chap_path(base_path, 'c' + rdata._prev, ropts)
+    ? chap_path(base_path, rdata._prev, ropts)
     : memo_path
 
   $: next_path = rdata._next
-    ? chap_path(base_path, 'c' + rdata._next, ropts)
+    ? chap_path(base_path, rdata._next, ropts)
     : memo_path
 
   afterNavigate(async () => await save_rmchap())

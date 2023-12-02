@@ -14,12 +14,12 @@
   import { get_rtime } from '$gui/atoms/RTime.svelte'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  export let items: CV.Rdmemo[]
+  export let items: CV.Tsrepo[]
 </script>
 
 <div class="chaps">
   {#each items as rmemo}
-    <a class="cmemo" href={chap_path(rmemo.rpath, rmemo.lc_ch_no, rmemo)}>
+    <a class="cmemo" href="/ts/{chap_path(rmemo.sroot, rmemo.lc_ch_no, rmemo)}">
       <div class="chead">
         <div class="title">{rmemo.lc_title}</div>
         <div class="ch_no">{rmemo.lc_ch_no}.</div>

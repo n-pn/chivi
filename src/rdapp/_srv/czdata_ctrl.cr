@@ -38,6 +38,7 @@ class RD::CzdataCtrl < AC::Base
     chmin, chmax = clist.minmax_of(&.ch_no)
     spawn update_stats!(crepo, sname, chmax: chmax)
 
+    crepo.rm_chmin = chmax if crepo.rm_chmin < chmax
     crepo.set_chmax(chmax: chmax, force: false, persist: true)
     crepo.update_vinfos!(start: chmin, limit: chmax &- chmin &+ 1)
 

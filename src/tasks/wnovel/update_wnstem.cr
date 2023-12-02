@@ -1,11 +1,10 @@
-require "pg"
 require "sqlite3"
 require "option_parser"
 
 ENV["CV_ENV"] ||= "production"
 Log.setup_from_env
 
-require "../../rdapp/data/wnstem"
+require "../../rdapp/data/tsrepo"
 
 crawl = 0
 regen = false
@@ -19,13 +18,13 @@ QUERY = "select id from wninfos order by id desc"
 wn_ids = PGDB.query_all QUERY, as: Int32
 puts "total: #{wn_ids.size}"
 
-wstems = PGDB.query_all "select * from wnseeds where sname = '~avail'", as: RD::Wnstem
+wstems = PGDB.query_all "select * from tsrepos where sname = '~avail'", as: RD::Tsrepo
 wstems = wstems.to_h { |x| {x.wn_id, x} }
 
 FRESH = (Time.utc - 1.day).to_unix
 
 wn_ids.each do |wn_id|
-  wstem = wstems[wn_id]? || RD::Wnstem.new(wn_id, "~avail")
+  wstem = wstems[wn_id]? || RD::Trsrepo.new(wn_id, "~avail")
   next if wstem.rtime > FRESH && wstem.chap_total > 0
   prev_total = wstem.chap_total
 

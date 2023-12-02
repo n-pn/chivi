@@ -57,43 +57,51 @@ class RD::UpstemCtrl < AC::Base
     uform.wn_id = nil if uform.wn_id.try(&.< 1)
 
     ustem = uform.insert!
-    Dir.mkdir_p("var/stems/up#{uform.sname}")
+    crepo = ustem.crepo
+
+    crepo.mkdirs!
 
     # USTEMS[ustem.id!] = ustem
-    render json: ustem
+    render json: {
+      ustem: ustem,
+      crepo: crepo,
+    }
   end
-
-  # @[AC::Route::GET("/:up_id")]
-  # def show(up_id : Int32, regen : Bool = false)
-  #   ustem = get_ustem(up_id)
-  #   # TODO: retranslate here
-
-  #   rmemo = Rdmemo.load!(vu_id: self._vu_id, sname: "up#{ustem.sname}", sn_id: up_id.to_s)
-
-  #   render json: {
-  #     ustem: ustem,
-  #     crepo: ustem.crepo,
-  #     rmemo: rmemo,
-  #   }
-  # end
 
   @[AC::Route::POST("/:up_id", body: uform)]
   def update(up_id : Int32, uform : Upstem)
     ustem = get_ustem(up_id)
+    crepo = ustem.crepo
+
     guard_owner ustem.owner, 1, "sửa sưu tầm cá nhân"
 
-    ustem.zname = uform.zname unless uform.zname.empty?
-    ustem.vname = uform.vname unless uform.vname.empty?
+    unless uform.zname.empty?
+      ustem.zname = uform.zname
+      crepo.zname = uform.zname
+    end
 
-    ustem.wn_id = uform.wn_id
+    unless uform.vname.empty?
+      ustem.vname = uform.vname
+      crepo.vname = uform.vname
+    end
+
+    if wn_id = uform.wn_id
+      ustem.wn_id = wn_id
+      crepo.wn_id = wn_id
+    end
 
     ustem.vintro = uform.vintro
     ustem.labels = uform.labels
 
     ustem.updated_at = Time.utc
 
-    saved = ustem.update!
-    render json: saved
+    ustem = ustem.update!
+    crepo = crepo.upsert!
+
+    render json: {
+      ustem: ustem,
+      crepo: crepo,
+    }
   end
 
   @[AC::Route::PATCH("/:up_id", body: uform)]

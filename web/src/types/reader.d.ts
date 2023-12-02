@@ -98,8 +98,9 @@ declare namespace CV {
 
     multp: number
 
-    rlink: string
-    rtime: Int64
+    rm_slink: string
+    rm_stime: number
+    rm_chmin: number
 
     view_count: number
     like_count: number

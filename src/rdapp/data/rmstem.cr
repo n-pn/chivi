@@ -65,8 +65,8 @@ class RD::Rmstem
       repo.stype = 1_i16
       repo.sname = @sname
 
-      repo.rlink = @rlink
-      repo.rtime = @rtime
+      repo.rm_slink = @rlink
+      repo.rm_stime = @rtime
 
       repo.chmax = @chap_count
       repo.wn_id = @wn_id

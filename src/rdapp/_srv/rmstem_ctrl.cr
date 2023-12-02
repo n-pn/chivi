@@ -47,43 +47,26 @@ class RD::RmstemCtrl < AC::Base
     render json: json
   end
 
-  # @[AC::Route::POST("/", body: form)]
-  # def create(form : Rmstem)
-  #   guard_privi 1, "tạo dự án cá nhân"
+  @[AC::Route::GET("/:sname/:sn_id/reload")]
+  def reload(sname : String, sn_id : String, crawl : Int32 = 0, regen : Bool = false)
+    rstem = get_rstem(sname, sn_id)
 
-  #   form.id = nil
-  #   form.sname = "@#{_uname}"
-  #   form.viuser_id = _vu_id
-  #   form.wninfo_id = nil if form.wninfo_id == 0
+    if regen
+      rstem.fix_wn_id!
+      rstem.translate!
+    end
 
-  #   saved = form.insert!
-  #   saved.mkdirs!
+    rstem.update!(crawl, regen) if crawl > 0 || regen
 
-  #   render json: saved
-  # end
-
-  # @[AC::Route::GET("/:sname/:sn_id")]
-  # def show(sname : String, sn_id : String, crawl : Int32 = 0, regen : Bool = false)
-  #   rstem = get_rstem(sname, sn_id)
-
-  #   if regen
-  #     rstem.fix_wn_id!
-  #     rstem.translate!
-  #   end
-
-  #   rstem.update!(crawl, regen) if crawl > 0 || regen
-  #   rmemo = Rdmemo.load!(vu_id: self._vu_id, sname: "rm#{sname}", sn_id: sn_id)
-
-  #   render json: {
-  #     rstem: rstem,
-  #     crepo: rstem.crepo,
-  #     rmemo: rmemo,
-  #   }
-  # end
+    render json: {
+      rstem: rstem,
+      crepo: rstem.crepo,
+    }
+  end
 
   @[AC::Route::POST("/")]
   def upsert!(rlink : String)
-    guard_privi 1, "thêm nguồn nhúng mới"
+    guard_privi 1, "thêm/sửa nguồn nhúng mới"
 
     rhost = Rmhost.from_link!(rlink)
     sn_id = rhost.extract_bid(rlink)
@@ -101,6 +84,16 @@ class RD::RmstemCtrl < AC::Base
     rstem.translate!
 
     rstem.upsert!
+    crepo = rstem.crepo
+
+    crepo.zname = rstem.btitle_zh
+    crepo.vname = rstem.btitle_vi
+
+    crepo.rm_slink = rstem.rlink
+    crepo.rm_stime = rstem.rtime
+
+    crepo.wn_id = rstem.wn_id
+    crepo.upsert!
 
     render json: rstem
   rescue ex

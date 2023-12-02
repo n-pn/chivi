@@ -16,7 +16,7 @@
     const p_idx = rmemo.lc_p_idx || 1
 
     return {
-      ch_href: chap_path(`/ts/${sroot}`, 'c' + ch_no, { ...rmemo, p_idx }),
+      ch_href: chap_path(`/ts/${sroot}`, ch_no, { ...rmemo, p_idx }),
       ch_icon: ['player-play', 'player-skip-forward', 'pin'][rmemo.lc_mtype],
       ch_mute: chmax == 0,
     }
@@ -28,7 +28,7 @@
 
   export let crepo: CV.Tsrepo
   export let rmemo: Writable<CV.Rdmemo>
-  export let conf_path = `${crepo.sroot}/+conf`
+  export let conf_path = `/ts/${crepo.sroot}/+conf`
 
   $: sroot = `/ts/${crepo.sroot}`
   $: ({ ch_href, ch_icon, ch_mute } = gen_quick_read(crepo, $rmemo))

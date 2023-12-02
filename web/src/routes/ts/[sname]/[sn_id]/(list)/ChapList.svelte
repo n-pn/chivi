@@ -8,12 +8,13 @@
   export let rmemo: CV.Rdmemo
   export let chaps: CV.Wnchap[]
 
-  $: ({ lc_ch_no, lc_p_idx } = rmemo)
+  $: ({ lc_ch_no } = rmemo)
 
   const gen_chap_href = (cinfo: CV.Wnchap) => {
-    let cpath = `c${cinfo.ch_no}`
-    if (cinfo.ch_no == lc_ch_no && lc_p_idx > 1) cpath += `_${lc_p_idx}`
-    return chap_path(`/ts/${crepo.sroot}`, cpath, rmemo)
+    return chap_path(`/ts/${crepo.sroot}`, cinfo.ch_no, {
+      p_idx: rmemo.lc_p_idx,
+      ...rmemo,
+    })
   }
 </script>
 
@@ -22,7 +23,7 @@
     <a
       href={gen_chap_href(cinfo)}
       class="cinfo"
-      class:_active={cinfo.ch_no == rmemo.lc_ch_no}
+      class:_active={cinfo.ch_no == lc_ch_no}
       rel="nofollow">
       <div class="ctext">
         <span class="title">{cinfo.title}</span>

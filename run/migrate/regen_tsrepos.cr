@@ -93,15 +93,14 @@ def regen_rmstems
     repo.cover = rstem.cover_rm
 
     repo.chmax = rstem.chap_count
-    repo.avail = rstem.chap_avail
 
     repo.plock = 2
     repo.multp = rstem.multp
 
     repo.mtime = rstem.update_int
 
-    repo.rlink = rstem.rlink
-    repo.rtime = rstem.stime
+    repo.rm_slink = rstem.rlink
+    repo.rm_stime = rstem.stime
 
     repo.view_count = rstem.view_count
     # repo.like_count = rstem.like_count
@@ -118,6 +117,6 @@ def regen_rmstems
   end
 end
 
-# regen_upstems()
+regen_upstems()
 # regen_wnstems()
-regen_rmstems()
+# regen_rmstems()

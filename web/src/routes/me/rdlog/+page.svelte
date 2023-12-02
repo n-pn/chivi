@@ -12,7 +12,7 @@
 
   import RdchapList from '$gui/parts/rdmemo/RdchapList.svelte'
 
-  import { chap_path, _pgidx } from '$lib/kit_path'
+  import { _pgidx } from '$lib/kit_path'
 
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 

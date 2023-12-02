@@ -17,4 +17,57 @@ class RD::TsrepoCtrl < AC::Base
       rmemo: rmemo,
     }
   end
+
+  @[AC::Route::GET("/:sname/:sn_id/reload")]
+  def reload(sname : String, sn_id : Int32, cmode : Int32 = 0)
+    crepo = Tsrepo.load!("#{sname}/#{sn_id}")
+    crepo.fix_pdict! if crepo.pdict.empty?
+
+    regen = cmode > 0 ? crepo.update_from_link!(cmode: cmode) : false
+    crepo.update_vinfos!
+
+    render json: {
+      chmax: crepo.chmax,
+      mtime: crepo.mtime,
+      regen: regen,
+    }
+  end
+
+  struct TsrepoForm
+    include JSON::Serializable
+
+    getter slink : String? = nil
+    getter pdict : String? = nil
+    getter multp : Int16? = nil
+  end
+
+  SLINK_PLOCK = {1, 1, 1}
+  PDICT_PLOCK = {2, 1, 2}
+  MUTLP_PLOCK = {3, 1, 3}
+
+  @[AC::Route::PATCH("/:sname/:sn_id", body: cform)]
+  def config(sname : String, sn_id : Int32, cform : TsrepoForm)
+    crepo = Tsrepo.load!("#{sname}/#{sn_id}")
+
+    owner, privi = crepo.edit_privi(self._vu_id)
+    guard_owner owner, privi, "sửa thiết đặt nguồn chương"
+
+    if slink = cform.slink
+      guard_privi SLINK_PLOCK[crepo.stype], "sửa nguồn liên kết ngoài"
+      crepo.rm_slink = slink
+    end
+
+    if pdict = cform.pdict
+      guard_privi PDICT_PLOCK[crepo.stype], "chọn từ điển chính thức"
+      crepo.pdict = pdict
+    end
+
+    if multp = cform.multp
+      guard_privi MUTLP_PLOCK[crepo.stype], "sửa hệ số nhân truyện"
+      crepo.multp = multp
+    end
+
+    crepo.upsert!
+    render json: crepo
+  end
 end

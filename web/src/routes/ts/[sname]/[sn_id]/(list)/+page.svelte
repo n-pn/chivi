@@ -23,17 +23,20 @@
   let _onload = false
   let err_msg: string
 
-  async function do_reload(_mode = 1) {
+  async function do_reload(cmode = 1) {
     _onload = true
     err_msg = ''
 
-    const url = `/_rd/tsrepos/${crepo.sroot}/reload?crawl=1&regen=1`
+    const url = `/_rd/tsrepos/${crepo.sroot}/reload?cmode=${cmode}`
     const res = await fetch(url)
     _onload = false
 
     if (!res.ok) {
       err_msg = await res.text()
+      console.log({ err_msg })
     } else {
+      const data = await res.json()
+      console.log(data)
       await invalidateAll()
     }
   }
@@ -48,15 +51,21 @@
 
 <header class="pinfo">
   <div class="infos">
-    <span class="sname">{crepo.sroot}</span>
+    <span class="sname">{crepo.sname}</span>
     <span class="rstat">{crepo.chmax} chương</span>
     <span class="rstat"><RTime mtime={crepo.mtime} /></span>
+    {#if crepo.rm_slink}
+      <a href={crepo.rm_slink} class="rstat" target="_blank">
+        <span>Nguồn ngoài</span>
+        <SIcon name="external-link" />
+      </a>
+    {/if}
   </div>
 
   <btn-group>
     <button
       class="m-btn _success"
-      class:_fill={xstem.rlink}
+      class:_fill={crepo.rm_slink}
       disabled={$_user.privi < 0}
       data-tip="Cập nhật từ nguồn ngoài hoặc dịch lại nội dung"
       data-tip-pos="right"
@@ -148,6 +157,9 @@
       content: '·';
       padding: 0 0.25rem;
     }
+  }
+  a.rstat:hover {
+    @include fgcolor(primary, 5);
   }
 
   btn-group {

@@ -10,53 +10,56 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ crepo, sroot } = data)
+  let slink = data.crepo.rm_slink || ''
+  let pdict = data.crepo.pdict || ''
+  let multp = data.crepo.multp
 
-  let cform = {
-    pdict: data.crepo.pdict || '',
-    multp: data.crepo.multp,
+  $: ({ crepo } = data)
+  $: action = `/_rd/tsrepos/${crepo.sroot}`
+
+  const update_conf = async (cform: Record<string, any>) => {
+    console.log({ cform })
+    try {
+      const res = await api_call(action, cform, 'PATCH')
+      goto(data.sroot)
+    } catch (ex) {
+      alert(ex.body.message)
+    }
   }
 
-  let errs = ''
+  const plock = {
+    slink: [1, 1, 1],
+    pdict: [2, 1, 2],
+    multp: [3, 1, 3],
+  }
 
-  $: action = `/_rd/tsrepos/${crepo.sname}/${crepo.sn_id}`
-
-  const update_conf = async () => {
-    try {
-      crepo = await api_call(action, cform, 'PATCH')
-      goto(sroot)
-    } catch (ex) {
-      errs = ex.body.message
-    }
+  const conf_disabled = (type: string, privi: number) => {
+    if (privi > 3) return false
+    if (crepo.stype == 1 && crepo.owner != $_user.vu_id) return true
+    return privi < plock[type][crepo.stype]
   }
 </script>
 
 <details open>
-  <summary
-    >Hệ số nhân theo số lượng chữ để tính vcoin cần thiết khi mở chương</summary>
-  <p class="hints">
-    Tùy vào độ hiếm có, đặc dị, mức độ hoàn thiện của nội dung mà bạn có thể
-    thiết đặt giá chương sao cho hợp lý
-  </p>
+  <summary>Liên kết với nguồn nhúng ngoài</summary>
 
-  <div class="options">
-    {#each [1, 2, 3, 4, 5, 10, 20] as value}
-      <label class="radio">
-        <input type="radio" {value} bind:group={cform.multp} />
-        <span>{value}x</span>
-      </label>
-    {/each}
-    <label>
-      <span>Tự chọn:</span>
-      <input
-        type="number"
-        class="m-input _sm _multp"
-        bind:value={cform.multp} />
-    </label>
+  <div class="field">
+    <input
+      class="m-input _sm"
+      type="link"
+      name="rm_slink"
+      bind:value={slink}
+      placeholder="Thêm nguồn mới" />
+
+    <button
+      class="m-btn _sm _primary _fill"
+      disabled={!slink && conf_disabled('slink', $_user.privi)}
+      on:click={() => update_conf({ slink })}>
+      <SIcon name="send" />
+      <span>Lưu</span>
+      <SIcon name="privi-{plock.slink[crepo.stype]}" iset="icons" />
+    </button>
   </div>
-  <p class="hints">
-    Công thức tính: <code>1 vcoin / 100_000 chữ * hệ số nhân.</code>
-  </p>
 </details>
 
 <details open>
@@ -66,12 +69,12 @@
     được liên kết.
   </p>
 
-  <div class="options">
+  <div class="field options">
     <label class="radio">
       <input
         type="radio"
         value={crepo.stype == 1 ? `up${crepo.sn_id}` : 'combine'}
-        bind:group={cform.pdict} />
+        bind:group={pdict} />
       <span>Dùng từ điển độc lập</span>
     </label>
 
@@ -79,53 +82,93 @@
       <input
         type="radio"
         value="wn{crepo.wn_id}"
-        bind:group={cform.pdict}
+        bind:group={pdict}
         disabled={crepo.wn_id < 1} />
       <span>Dùng từ điển bộ truyện</span>
     </label>
+
+    <button
+      class="m-btn _sm _fill _success u-right"
+      disabled={conf_disabled('pdict', $_user.privi)}
+      on:click={() => update_conf({ pdict })}>
+      <SIcon name="send" />
+      <span>Lưu</span>
+      <SIcon name="privi-{plock.pdict[crepo.stype]}" iset="icons" />
+    </button>
   </div>
 </details>
 
-{#if errs}<div class="form-msg _err">{errs}</div>{/if}
+<details open>
+  <summary
+    >Hệ số nhân theo số lượng chữ để tính vcoin cần thiết khi mở chương</summary>
+  <p class="hints">
+    Tùy vào độ hiếm có, đặc dị, mức độ hoàn thiện của nội dung mà bạn có thể
+    thiết đặt giá chương sao cho hợp lý
+  </p>
 
-<footer class="action">
-  <button
-    class="m-btn _primary _fill"
-    disabled={$_user.privi < 1}
-    on:click={update_conf}>
-    <SIcon name="device-floppy" />
-    <span>Lưu thay đổi</span>
-  </button>
-</footer>
+  <div class="field options">
+    {#each [1, 2, 3, 4, 5] as value}
+      <label class="radio">
+        <input type="radio" {value} bind:group={multp} />
+        <span>{value}x</span>
+      </label>
+    {/each}
+    <label>
+      <span>Tự chọn:</span>
+      <input type="number" class="m-input _sm _multp" bind:value={multp} />
+    </label>
+
+    <button
+      class="m-btn _sm _fill _warning u-right"
+      disabled={conf_disabled('multp', $_user.privi)}
+      on:click={() => update_conf({ multp })}>
+      <SIcon name="send" />
+      <span>Lưu</span>
+      <SIcon name="privi-{plock.multp[crepo.stype]}" iset="icons" />
+    </button>
+  </div>
+
+  <p class="hints">
+    Công thức tính: <code>1 vcoin / 100_000 chữ * hệ số nhân.</code>
+  </p>
+</details>
 
 <style lang="scss">
   details {
     @include border(--bd-soft, $loc: bottom);
-    padding: 0.5rem 0;
+    padding-top: 0.25rem;
   }
 
-  summary {
-    font-weight: 500;
-    line-height: 2rem;
-    @include ftsize(lg);
-    @include fgcolor(secd);
-
-    &:hover,
-    details[open] & {
-      @include fgcolor(primary, 5);
+  .field {
+    @include flex-cy($gap: 0.5rem);
+    margin-bottom: 0.75rem;
+    input {
+      flex: 1;
     }
   }
 
+  // summary {
+  //   font-weight: 500;
+  //   // line-height: 2rem;
+  //   @include ftsize(lg);
+  //   @include fgcolor(secd);
+
+  //   &:hover,
+  //   details[open] & {
+  //     @include fgcolor(primary, 5);
+  //   }
+  // }
+
   .hints {
+    line-height: 1rem;
     font-style: italic;
+    margin: 0.5rem 0;
     @include ftsize(sm);
     @include fgcolor(tert);
-    line-height: 1rem;
-    margin-top: 0.5rem;
   }
 
   .options {
-    display: flex;
+    @include flex-cy($gap: 0.5rem);
     flex-wrap: wrap;
     margin-top: 0.75rem;
   }
@@ -135,7 +178,7 @@
     display: inline-flex;
     line-height: 1.5rem;
     padding: 0.25rem 0;
-    margin-right: 0.5rem;
+    // font-weight: 500;
     input {
       margin-right: 0.25rem;
     }
