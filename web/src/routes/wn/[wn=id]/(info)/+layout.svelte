@@ -104,9 +104,12 @@
       {/each}
     </div>
   </div>
-
-  <UserMemo crepo={$page.data.crepo} rmemo={$page.data.rmemo} />
 </div>
+
+<UserMemo
+  crepo={$page.data.crepo}
+  rmemo={$page.data.rmemo}
+  conf_path={`/wn/+book?id=${nvinfo.id}`} />
 
 <Section {tabs}>
   <slot />

@@ -28,6 +28,7 @@
 
   export let crepo: CV.Tsrepo
   export let rmemo: Writable<CV.Rdmemo>
+  export let conf_path = `${crepo.sroot}/+conf`
 
   $: sroot = `/ts/${crepo.sroot}`
   $: ({ ch_href, ch_icon, ch_mute } = gen_quick_read(crepo, $rmemo))
@@ -115,7 +116,7 @@
         <span>Đăng text gốc</span>
       </a>
 
-      <a class="gmenu-item _harmful" href="{sroot}/+conf">
+      <a class="gmenu-item _harmful" href={conf_path}>
         <SIcon name="edit" />
         <span>Sửa thông tin</span>
       </a>

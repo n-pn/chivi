@@ -14,19 +14,9 @@
   let labels = (uform.labels || []).join(', ')
 
   let err_text: string
+  let confirm: number
 
-  const action = '/_rd/upstems'
-
-  async function submit() {
-    const body = { ...uform, labels: labels.split(',') }
-
-    try {
-      const { sname, id } = await api_call(action, body, 'POST')
-      await goto(`/up/${sname}:${id}`)
-    } catch (ex) {
-      err_text = ex.body.message
-    }
-  }
+  $: action = uform.id ? `/_rd/upstems/${uform.id}` : '/_rd/upstems'
 
   const tl_zname = async () => {
     const res = await fetch(`/_sp/hname?input=${uform.zname}`)
@@ -42,6 +32,24 @@
       headers,
     })
     uform.vintro = await res.text()
+  }
+
+  const submit = async () => {
+    const body = { ...uform, labels: labels.split(',') }
+
+    try {
+      const { sname, id } = await api_call(action, body, 'POST')
+      await goto(`/up/${sname}:${id}`)
+    } catch (ex) {
+      err_text = ex.body.message
+    }
+  }
+
+  const delete_project = async () => {
+    const res = await fetch(`/_rd/upstems/${uform.id}`, { method: 'DELETE' })
+
+    if (res.ok) goto('/up')
+    else err_text = await res.text()
   }
 </script>
 
@@ -112,8 +120,27 @@
   {#if err_text}<div class="form-msg _err">{err_text}</div>{/if}
 
   <footer class="action">
+    {#if uform.id}
+      <div class="delete">
+        <span class="x-label">Xóa dự án:</span>
+        <input
+          type="number"
+          class="m-input"
+          placeholder="ID dự án"
+          bind:value={confirm} />
+        <button
+          type="button"
+          class="m-btn _harmful _fill"
+          disabled={confirm != uform.id}
+          on:click={delete_project}>
+          <SIcon name="trash" />
+          <span class="-txt">Xóa</span>
+        </button>
+      </div>
+    {/if}
+
     <button
-      class="m-btn _primary _fill _lg"
+      class="m-btn _primary _fill _lg u-right"
       type="submit"
       disabled={$_user.privi < 1}>
       <SIcon name="send" />
@@ -164,7 +191,13 @@
 
   .action {
     @include flex();
-    justify-content: right;
     margin: 0.75rem 0;
+  }
+  .delete {
+    @include flex-ca();
+    gap: 0.5rem;
+    input {
+      width: 7rem;
+    }
   }
 </style>
