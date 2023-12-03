@@ -18,6 +18,7 @@ class RD::RdmemoCtrl < AC::Base
       limit: limit == 24 ? 25 : limit,
       offset: offset
     )
+
     total = offset
 
     if items.size < limit
@@ -46,6 +47,7 @@ class RD::RdmemoCtrl < AC::Base
 
   @[AC::Route::GET("/:sname/:sn_id")]
   def show(sname : String, sn_id : Int32)
+    sname = sname.sub(/wn|up|rm/, "")
     rmemo = Rdmemo.load!(vu_id: self._vu_id, sname: sname, sn_id: sn_id)
     render json: rmemo
   end

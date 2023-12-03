@@ -1,5 +1,7 @@
 <script lang="ts">
+  import SIcon from '$gui/atoms/SIcon.svelte'
   import BCover from '$gui/atoms/BCover.svelte'
+  import { rstate_icons, rstate_labels } from '$lib/consts/rd_states'
   import { _pgidx } from '$lib/kit_path'
 
   export let crepo: CV.Tsrepo
@@ -7,13 +9,37 @@
   $: pg_no = crepo.lc_ch_no > 32 ? _pgidx(crepo.lc_ch_no) : 1
   $: query = pg_no > 1 ? `?pg=${pg_no}` : ''
   $: cover = crepo.cover || '//cdn.chivi.app/covers/blank.png'
+
+  $: state = crepo.rd_state || 0
+
+  const stype_colors = [1, 3, 2]
+
+  const ratings = ['', '🤮', '🙁', '😐', '🙂', '🤩']
 </script>
 
 <a class="crepo" href="/ts/{crepo.sroot}{query}">
   <div class="cover">
     <BCover srcset={cover} />
-    <div class="rdlog">
-      Đang đọc: {crepo.lc_ch_no}/{crepo.chmax}
+
+    <div class="stype _{stype_colors[crepo.stype]}" data-tip="Loại nguồn">
+      {crepo.sname.replace('.com', '')}
+    </div>
+
+    {#if crepo.rd_stars > 0}
+      <div class="stars" data-tip="Cho điểm">
+        {ratings[crepo.rd_stars]}
+      </div>
+    {/if}
+
+    {#if state > 0}
+      <div class="rstate _{state}" data-tip={rstate_labels[state]}>
+        <SIcon name={rstate_icons[state]} />
+      </div>
+    {/if}
+
+    <div class="stats">
+      <div class="chmax" data-tip="Tổng số chương">{crepo.chmax}</div>
+      <div class="rdlog _2" data-tip="Chương đã đọc">{crepo.lc_ch_no}</div>
     </div>
   </div>
   <div class="title">{crepo.vname}</div>
@@ -24,71 +50,89 @@
     @include bps(display, none, $tm: block, $ls: none);
   }
 
-  .crepo {
-    position: relative;
-  }
-
   .cover {
     position: relative;
   }
 
-  .rdlog {
-    @include flex-ca;
-    @include fgcolor(secd);
-    @include ftsize(xs);
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-  }
-
-  // .tooltip {
-  //   display: none;
-  //   position: absolute;
-  //   top: 0;
-  //   left: 0;
-  //   z-index: 10;
-  //   width: 100%;
-  //   padding: 0.375rem;
-  //   line-height: 1.25em;
-  //   font-family: var(--font-sans);
-
-  //   color: var(--bg-main);
-  //   background-color: var(--fg-secd);
-  //   opacity: 0.85;
-
-  //   @include ftsize(xs);
-  //   @include bdradi(0.25rem);
-
-  //   .crepo:hover & {
-  //     display: initial;
-  //   }
-  // }
-
-  .extra {
-    display: flex;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 100%;
+  @mixin badge {
+    font-weight: 500;
+    line-height: 0.9rem;
     padding: 0.25rem;
-    background: linear-gradient(color(neutral, 1, 1), color(neutral, 7, 7));
+
+    border-radius: 4px;
+
+    @include ftsize(xs);
+    @include fgcolor(white);
+
+    @include bgcolor(neutral, 6, 8);
+    @include shadow;
+
+    &._1 {
+      @include bgcolor(primary, 6, 8);
+    }
+
+    &._2 {
+      @include bgcolor(success, 6, 8);
+    }
+
+    &._3 {
+      @include bgcolor(warning, 6, 8);
+    }
+
+    &._4 {
+      @include bgcolor(harmful, 6, 8);
+    }
+
+    &._5 {
+      @include bgcolor(private, 6, 8);
+    }
   }
 
-  .score {
-    margin-left: auto;
-    display: inline-flex;
-    line-height: 1.25rem;
-    @include bps(font-size, 10px, 11px, 12px);
+  .stars {
+    // @include badge;
 
-    > .-text {
-      margin-left: 0.25rem;
-      padding: 0 0.25rem;
-      font-weight: 500;
-      color: $color-white;
-      @include bdradi;
-      @include bgcolor(primary, 6, 5);
-    }
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+
+    @include ftsize(sm);
+  }
+
+  .stype {
+    @include badge;
+
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+  }
+
+  .rstate {
+    @include badge;
+    @include flex-ca;
+
+    position: absolute;
+    bottom: 0.5rem;
+    left: 0.5rem;
+  }
+
+  .stats {
+    @include flex-ca;
+    position: absolute;
+    bottom: 0.5rem;
+    right: 0.5rem;
+  }
+
+  .chmax,
+  .rdlog {
+    @include badge;
+  }
+
+  .chmax {
+    @include bdradi(0, $loc: right);
+  }
+
+  .rdlog {
+    @include bdradi(0, $loc: left);
   }
 
   .title {
@@ -106,14 +150,5 @@
     @include tm-dark {
       @include fgcolor(neutral, 3);
     }
-  }
-
-  .genre {
-    font-weight: 500;
-    font-size: rem(11px);
-    text-transform: uppercase;
-    line-height: 1rem;
-    margin-top: 0.125rem;
-    @include fgcolor(neutral, 5);
   }
 </style>

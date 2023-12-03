@@ -10,7 +10,7 @@ class RD::TsrepoCtrl < AC::Base
     crepo = xstem.crepo
     crepo.fix_pdict! if crepo.pdict.empty?
 
-    rmemo = Rdmemo.load!(vu_id: self._vu_id, sname: sname, sn_id: sn_id)
+    rmemo = Rdmemo.load!(vu_id: self._vu_id, sname: sname.sub(/wn|up|rm/, ""), sn_id: sn_id)
 
     render json: {
       xstem: xstem,

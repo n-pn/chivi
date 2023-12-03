@@ -9,7 +9,14 @@
     rstate_colors,
   } from '$lib/consts/rd_states'
 
-  const star_names = ['--', 'Mứt', 'Nhạt', 'Ổn', 'Khá', 'Đỉnh']
+  const star_names = [
+    '--',
+    'Như mứt',
+    'Hơi nhạt',
+    'Đọc ổn',
+    'Cũng khá',
+    'Tuyệt vời',
+  ]
 
   function gen_quick_read({ chmax, sroot }, rmemo: CV.Rdmemo) {
     const ch_no = rmemo.lc_ch_no || 1
@@ -36,11 +43,7 @@
   $: rstate = $rmemo.rd_state
   $: rstars = $rmemo.rd_stars
 
-  function render_stars(stars: number) {
-    let output = ''
-    for (; stars; stars--) output += '⭐'
-    return output
-  }
+  const ratings = ['', '🤮', '🙁', '😐', '🙂', '🤩']
 
   async function update_rstate(rstate: number) {
     // if ($_user.privi < -1) return
@@ -89,8 +92,11 @@
 
   <Gmenu class="action" loc="bottom">
     <button class="m-btn" class:_warning={rstars > 0} slot="trigger">
-      <SIcon name="star" />
-      {#if rstars > 0}<span>{rstars}</span>{/if}
+      {#if rstars > 0}
+        <span>{ratings[rstars]}</span>
+      {:else}
+        <SIcon name="mood-smile" />
+      {/if}
     </button>
 
     <svelte:fragment slot="content">
@@ -100,7 +106,7 @@
           class:_active={value == rstars}
           on:click={() => update_rating(value)}>
           <span>{star_names[value]}</span>
-          <span class="u-right">{render_stars(value)}</span></button>
+          <span class="u-right">{ratings[value]}</span></button>
       {/each}
     </svelte:fragment>
   </Gmenu>
