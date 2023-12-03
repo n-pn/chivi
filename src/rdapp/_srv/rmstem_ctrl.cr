@@ -48,7 +48,7 @@ class RD::RmstemCtrl < AC::Base
   end
 
   @[AC::Route::GET("/:sname/:sn_id/reload")]
-  def reload(sname : String, sn_id : String, crawl : Int32 = 0, regen : Bool = false)
+  def reload(sname : String, sn_id : Int32, crawl : Int32 = 0, regen : Bool = false)
     rstem = get_rstem(sname, sn_id)
 
     if regen
@@ -69,7 +69,7 @@ class RD::RmstemCtrl < AC::Base
     guard_privi 1, "thêm/sửa nguồn nhúng mới"
 
     rhost = Rmhost.from_link!(rlink)
-    sn_id = rhost.extract_bid(rlink)
+    sn_id = rhost.extract_bid(rlink).to_i
     bfile = rhost.book_file(sn_id)
 
     bhtml = rhost.load_page(rlink, bfile)

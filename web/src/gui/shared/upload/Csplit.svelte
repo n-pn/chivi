@@ -193,7 +193,7 @@
   {#if chaps.length > 4}
     <div class="d-label">Các chương cuối</div>
     {#each chaps.slice(chaps.length - 3) as zdata, index}
-      <Czcard {zdata} index={index + chaps.length - 3} />
+      <Czcard {zdata} index={index + chaps.length - 2} />
     {/each}
   {/if}
 {/if}

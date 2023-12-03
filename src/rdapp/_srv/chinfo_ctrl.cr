@@ -39,7 +39,7 @@ class RD::ChinfoCtrl < AC::Base
     when 1
       get_ustem(crepo.sn_id, sname).inc_view_count!(value)
     when 2
-      get_rstem(sname, crepo.sn_id.to_s).inc_view_count!(value)
+      get_rstem(sname, crepo.sn_id).inc_view_count!(value)
     end
   end
 

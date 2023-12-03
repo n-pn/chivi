@@ -74,9 +74,9 @@ class RD::Tsrepo
 
   def edit_privi(vu_id : Int32)
     case @stype
-    when 0 then {0, vu_id}
-    when 1 then {1, @owner}
-    else        {2, vu_id}
+    when 0 then {vu_id, 0}
+    when 1 then {@owner, 1}
+    else        {vu_id, 2}
     end
   end
 
@@ -363,6 +363,6 @@ class RD::Tsrepo
   end
 
   def self.load!(sroot : String)
-    load!(sroot) { |crepo| crepo }
+    load!(sroot) { raise NotFound.new("Nguồn chương không tồn tại!") }
   end
 end

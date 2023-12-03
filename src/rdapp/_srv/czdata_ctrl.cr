@@ -8,8 +8,8 @@ class RD::CzdataCtrl < AC::Base
   def get_ztext(sname : String, sn_id : Int32, ch_no : Int32)
     crepo = Tsrepo.load!("#{sname}/#{sn_id}")
 
-    owner, privi = crepo.edit_privi(self._vu_id)
-    guard_owner owner, privi, "truy cập text gốc của chương"
+    owner, plock = crepo.edit_privi(self._vu_id)
+    guard_owner owner, plock, "truy cập text gốc của chương"
 
     ch_no = crepo.chmax &+ 1 if ch_no < 1
 
@@ -29,8 +29,8 @@ class RD::CzdataCtrl < AC::Base
 
     crepo = Tsrepo.load!("#{sname}/#{sn_id}")
 
-    owner, privi = crepo.edit_privi(self._vu_id)
-    guard_owner owner, privi, "thêm text gốc cho nguồn truyện"
+    owner, plock = crepo.edit_privi(self._vu_id)
+    guard_owner owner, plock, "thêm text gốc cho nguồn truyện"
 
     crepo.mkdirs!
     clist.each(&.save!(crepo: crepo, uname: self._uname))
@@ -55,7 +55,7 @@ class RD::CzdataCtrl < AC::Base
       ustem = get_ustem(crepo.sn_id, sname)
       ustem.update_stats!(chmax: chmax, persist: true)
     when 2_i16
-      rstem = get_rstem(sname, crepo.sn_id.to_s)
+      rstem = get_rstem(sname, crepo.sn_id)
       rstem.update_stats!(chmax: chmax, persist: true)
     else
       raise "invalid type: #{sname}"

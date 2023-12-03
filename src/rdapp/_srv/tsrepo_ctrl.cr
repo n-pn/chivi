@@ -5,11 +5,12 @@ class RD::TsrepoCtrl < AC::Base
 
   @[AC::Route::GET("/:sname/:sn_id")]
   def show(sname : String, sn_id : Int32)
-    crepo = Tsrepo.load!("#{sname}/#{sn_id}")
+    xstem = get_xstem(sname, sn_id)
+
+    crepo = xstem.crepo
     crepo.fix_pdict! if crepo.pdict.empty?
 
     rmemo = Rdmemo.load!(vu_id: self._vu_id, sname: sname, sn_id: sn_id)
-    xstem = get_xstem(crepo)
 
     render json: {
       xstem: xstem,
@@ -49,8 +50,8 @@ class RD::TsrepoCtrl < AC::Base
   def config(sname : String, sn_id : Int32, cform : TsrepoForm)
     crepo = Tsrepo.load!("#{sname}/#{sn_id}")
 
-    owner, privi = crepo.edit_privi(self._vu_id)
-    guard_owner owner, privi, "sửa thiết đặt nguồn chương"
+    owner, plock = crepo.edit_privi(self._vu_id)
+    guard_owner owner, plock, "sửa thiết đặt nguồn chương"
 
     if slink = cform.slink
       guard_privi SLINK_PLOCK[crepo.stype], "sửa nguồn liên kết ngoài"

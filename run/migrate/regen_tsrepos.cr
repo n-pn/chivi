@@ -35,6 +35,7 @@ end
 
 def regen_upstems
   upstems = RD::Upstem.get_all
+  puts upstems.max_by(&.id!).to_json
   puts "up: #{upstems.size}"
 
   tsrepos = upstems.map do |ustem|

@@ -57,8 +57,8 @@ class RD::UpstemCtrl < AC::Base
     uform.wn_id = nil if uform.wn_id.try(&.< 1)
 
     ustem = uform.insert!
-    crepo = ustem.crepo
 
+    crepo = ustem.crepo
     crepo.mkdirs!
 
     # USTEMS[ustem.id!] = ustem

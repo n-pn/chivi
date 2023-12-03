@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
   import { goto, invalidateAll } from '$app/navigation'
 
   import Cztext from '$gui/shared/upload/Cztext.svelte'
@@ -47,7 +46,7 @@
 
     state = 3
 
-    // await invalidateAll()
+    await invalidateAll()
     if (chaps.length > 1) {
       goto(`${data.sroot}?pg=${_pgidx(ch_no)}`)
     } else {

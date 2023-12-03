@@ -13,7 +13,7 @@ class RD::Rmstem
   schema "rmstems", :postgres, strict: false
 
   field sname : String, pkey: true
-  field sn_id : String, pkey: true
+  field sn_id : Int32, pkey: true
 
   field rtype : Int16 = 0_i16
   field srank : Int16 = 15_i16
@@ -62,8 +62,16 @@ class RD::Rmstem
   def crepo : Tsrepo
     Tsrepo.load!(sroot: "rm#{@sname}/#{@sn_id}") do |repo|
       repo.owner = -1
-      repo.stype = 1_i16
+      repo.stype = 2_i16
       repo.sname = @sname
+
+      repo.sn_id = @sn_id
+      repo.wn_id = @wn_id
+      repo.pdict = @wn_id > 0 ? "wn#{@wn_id}" : "combine"
+
+      repo.zname = @btitle_zh
+      repo.vname = @btitle_vi
+      repo.cover = @cover_rm
 
       repo.rm_slink = @rlink
       repo.rm_stime = @rtime
@@ -73,6 +81,9 @@ class RD::Rmstem
 
       repo.plock = 0
       repo.multp = @multp
+
+      repo.mtime = @update_int
+      repo.view_count = @view_count
     end
   end
 
@@ -221,16 +232,16 @@ class RD::Rmstem
     uniq ? stems.uniq!(&.sname) : stems
   end
 
-  def self.find(sname : String, sn_id : String)
+  def self.find(sname : String, sn_id : Int32)
     get(sname, sn_id, &.<< " where sname = $1 and sn_id = $2")
   end
 
-  def self.find!(sname : String, sn_id : String)
+  def self.find!(sname : String, sn_id : Int32)
     get!(sname, sn_id, &.<< " where sname = $1 and sn_id = $2")
   end
 
   def self.from_html(bhtml : String,
-                     sname : String, sn_id : String,
+                     sname : String, sn_id : Int32,
                      rtime = Time.utc.to_unix, force = false)
     entry = self.find(sname, sn_id) || new(sname, sn_id)
     return if !force && entry.rtime >= rtime

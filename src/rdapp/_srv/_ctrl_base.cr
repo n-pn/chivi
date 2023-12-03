@@ -32,7 +32,7 @@ abstract class AC::Base
     end
   end
 
-  private def get_rstem(sname : String, sn_id : String)
+  private def get_rstem(sname : String, sn_id : Int32)
     RSTEMS["#{sname}/#{sn_id}"] ||= begin
       rstem = RD::Rmstem.find(sname, sn_id) || raise NotFound.new("Nguồn nhúng không tồn tại")
 
@@ -52,9 +52,22 @@ abstract class AC::Base
     when 1_i16
       get_ustem(crepo.sn_id, crepo.sname)
     when 2_i16
-      get_rstem(crepo.sname, crepo.sn_id.to_s)
+      get_rstem(crepo.sname, crepo.sn_id)
     else
       raise "invalid type: #{crepo.stype}"
+    end
+  end
+
+  private def get_xstem(sname : String, sn_id : Int32)
+    case sname
+    when .starts_with?("wn")
+      get_wbook(sn_id)
+    when .starts_with?("up")
+      get_ustem(sn_id)
+    when .starts_with?("rm")
+      get_rstem(sname[2..], sn_id)
+    else
+      raise "invalid type: #{sname}"
     end
   end
 

@@ -41,11 +41,20 @@ class RD::Upstem
       repo.owner = @owner
       repo.sname = @sname
 
+      repo.zname = @zname
+      repo.vname = @vname
+      repo.sn_id = @id || 0
+
       repo.wn_id = @wn_id || 0
+      repo.pdict = @wndic ? "wn#{@wn_id}" : "up#{id}"
+
       repo.chmax = @chap_count
+      repo.mtime = @mtime
 
       repo.plock = @guard
       repo.multp = @multp
+
+      repo.view_count = @view_count
     end
   end
 
