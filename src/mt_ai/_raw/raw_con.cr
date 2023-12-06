@@ -6,71 +6,95 @@ struct MT::RawCon
   getter cpos : String = ""
   getter body : String | Array(RawCon)
 
-  def initialize(@cpos, @body = "")
-  end
+  def self.from_text(text : String, fixed : Bool = false)
+    text = text.strip.gsub(/\n\s+/, ' ') unless fixed
+    iter = Char::Reader.new(text)
 
-  def self.new(input : String, fixed : Bool = false)
-    input = input.strip.gsub(/\n\s+/, ' ') unless fixed
+    queue = [] of self
 
-    iter = input.each_char
-    raise "invalid input: expecting '(' at begin string" unless iter.next == '('
-
-    new(iter)
-  end
-
-  def initialize(iter)
-    @cpos = String.build do |sbuf|
-      iter.each do |char|
-        break if char == ' '
-        sbuf << char
+    while true
+      cpos = String.build do |io|
+        while char = iter.next_char
+          break if char == ' '
+          io << char
+        end
       end
-    end
 
-    @body = [] of RawCon
-
-    while (char = iter.next.as?(Char))
-      case char
-      when '('
-        @body.as(Array) << RawCon.new(iter)
-      when ' '
-        next
-      when ')'
-        break
-      else
-        @body = String.build do |sbuf|
-          sbuf << char
-
-          iter.each do |char|
-            break if char == ')'
-            sbuf << char
-          end
+      char = iter.next_char
+      if char == '('
+        node = new(cpos, [] of self)
+        if last = queue.last?
+          last.body.as(Array) << node
         end
 
-        break
+        queue << node
+        next
       end
+
+      body = String.build do |io|
+        io << char
+        while char = iter.next_char
+          break if char == ')'
+          io << char
+        end
+      end
+
+      node = new(cpos, body)
+      return node unless last = queue.last? # for special cases e.g `(OD 第１)`
+
+      last.body.as(Array) << node
+
+      while iter.next_char == ')' # either ' ' or ')'
+        last = queue.pop
+        return last if queue.empty?
+      end
+
+      iter.next_char # skip '('
     end
+
+    queue.last
   end
 
-  def initialize(pull : ::JSON::PullParser)
-    pull.read_begin_array
-    @cpos = pull.read_string
+  def self.from_json(json : String)
+    pull = ::JSON::PullParser.new(json)
+    queue = [] of self
 
-    pull.read_begin_array
+    while true
+      pull.read_begin_array
+      cpos = pull.read_string
+      pull.read_begin_array
 
-    if pull.kind.string?
-      @body = pull.read_string
-    else
-      body = [] of RawCon
+      if pull.kind.begin_array?
+        node = new(cpos, [] of self)
+        if last = queue.last?
+          last.body.as(Array) << node
+        end
 
-      while !pull.kind.end_array?
-        body << RawCon.new(pull)
+        queue << node
+        next
       end
 
-      @body = body
+      body = pull.read_string
+      pull.read_end_array
+      pull.read_end_array
+
+      node = new(cpos, body)
+      # for special cases e.g `(OD 第１)`
+      return node unless last = queue.last?
+      last.body.as(Array) << node
+
+      while pull.kind.end_array?
+        pull.read_end_array
+        pull.read_end_array
+        last = queue.pop
+        return last if queue.empty?
+      end
     end
 
-    pull.read_end_array
-    pull.read_end_array
+    queue.last
+  end
+
+  def initialize(@cpos, @body = "")
   end
 
   def to_json(builder : JSON::Builder)
@@ -143,11 +167,15 @@ struct MT::RawCon
 
   ###
 
-  # test = new <<-TXT
+  # test = from_text <<-TXT
   # (TOP (NP
   #   (QP (OD 第１) (CLP (M 章)))
   #   (NP (NN 密会))))
   # TXT
 
   # puts test
+  # json = test.to_json
+
+  # puts json
+  # puts from_json(json)
 end

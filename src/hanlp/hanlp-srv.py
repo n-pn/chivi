@@ -98,16 +98,16 @@ def add_names_to_task(mtl_line):
         with open(COMBINE_FILE, 'a', encoding='UTF-8') as out_file:
             out_file.write(word + '\n')
 
-def call_mtl_task(mtl_task, inp_lines):
-    mtl_data = mtl_task([inp_lines[0]])
+def call_mtl_task_for_plaintext(mtl_task, inp_lines):
+    mtl_data = [mtl_task(x) for x in inp_lines]
 
-    for line in inp_lines[1:]:
-        mtl_line = mtl_task(line)
+    torch.cuda.empty_cache()
+    gc.collect()
 
-        for key in mtl_line:
-            mtl_data[key].append(mtl_line[key])
+    return mtl_data
 
-        add_names_to_task(mtl_line)
+def call_mtl_task_for_tokenized(mtl_task, inp_lines):
+    mtl_data = [mtl_task(x.split('\t'), skip_tasks='tok*') for x in inp_lines]
 
     torch.cuda.empty_cache()
     gc.collect()
@@ -132,7 +132,7 @@ def mtl_from_file(kind):
     inp_path = request.args.get('file', '')
     inp_data = read_txt_file(inp_path)
 
-    mtl_data = call_mtl_task(load_task(kind), inp_data)
+    mtl_data = call_mtl_task_for_plaintext(load_task(kind), inp_data)
     mtl_path = inp_path.replace('.raw.txt', f'.{kind}.mtl')
 
     with open(mtl_path, 'w', encoding='utf-8') as mtl_file:
@@ -144,9 +144,16 @@ def mtl_from_file(kind):
 @app.route("/mtl_text/<kind>", methods=['POST'])
 def mtl_from_text(kind):
     inp_data = request.get_data(as_text=True).split('\n')
-    mtl_data = call_mtl_task(load_task(kind), inp_data)
+    mtl_data = call_mtl_task_for_plaintext(load_task(kind), inp_data)
 
-    return mtl_data.to_json()
+    return json.dumps(mtl_data, ensure_ascii=False)
+
+@app.route("/mtl_toks/<kind>", methods=['POST'])
+def mtl_from_toks(kind):
+    inp_data = request.get_data(as_text=True).split('\n')
+    mtl_data = call_mtl_task_for_tokenized(load_task(kind), inp_data)
+
+    return json.dumps(mtl_data, ensure_ascii=False)
 
 @app.route("/force_term", methods=['GET'])
 def force_term(key, val):
