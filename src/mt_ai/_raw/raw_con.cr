@@ -94,19 +94,44 @@ struct MT::RawCon
     queue.last
   end
 
+  # def initialize(pull : ::JSON::PullParser)
+  #   pull.read_begin_array
+  #   @cpos = pull.read_string
+  #   pull.read_begin_array
+
+  #   if pull.kind.string?
+  #     @body = pull.read_string
+  #   else
+  #     body = [] of RawCon
+
+  #     while !pull.kind.end_array?
+  #       body << RawCon.new(pull)
+  #     end
+
+  #     @body = body
+  #   end
+
+  #   pull.read_end_array
+  #   pull.read_end_array
+  # end
+
   def initialize(@cpos, @body = "")
   end
 
-  def to_json(builder : JSON::Builder)
-    builder.array do
-      builder.string @cpos
+  def to_json(json : JSON::Builder)
+    json.max_nesting = 9999
 
-      if @body.is_a?(String)
-        builder.array { builder.string @body }
-      else
-        @body.to_json(builder)
-      end
+    json.start_array
+    json.string @cpos
+    json.start_array
+
+    case body = @body
+    in String then json.string body
+    in Array  then body.each { |child| child.to_json(json) }
     end
+
+    json.end_array
+    json.end_array
   end
 
   def to_s(io : IO) : Nil
@@ -127,16 +152,8 @@ struct MT::RawCon
   end
 
   SINGLE_LINES = {
-    "VCD",
-    "VRD",
-    "VNV",
-    "VPT",
-    "VCP",
-    "VAS",
-    "DVP",
-    "QP",
-    "DNP",
-    "DP",
+    "VCD", "VRD", "VNV", "VPT", "VCP",
+    "VAS", "DVP", "QP", "DNP", "DP",
     "CLP",
   }
 
@@ -166,16 +183,4 @@ struct MT::RawCon
   end
 
   ###
-
-  # test = from_text <<-TXT
-  # (TOP (NP
-  #   (QP (OD 第１) (CLP (M 章)))
-  #   (NP (NN 密会))))
-  # TXT
-
-  # puts test
-  # json = test.to_json
-
-  # puts json
-  # puts from_json(json)
 end
