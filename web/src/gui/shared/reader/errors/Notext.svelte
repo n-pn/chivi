@@ -35,10 +35,15 @@
 <section class="notext">
   <h1 class="u-warn">Lỗi: Chương tiết không có nội dung.</h1>
 
-  {#if $_user.privi < 0}
+  {#if $_user.privi < -1}
     <p class="u-warn">
       Bạn chưa đăng nhập! Chức năng tự tải chương tiết từ nguồi ngoài chỉ được
       áp dụng cho người dùng đã đăng nhập vào hệ thống!
+    </p>
+  {:else if $_user.privi == -1}
+    <p class="u-warn">
+      Tài khoản của bạn chưa được kích hoạt, bạn cần nâng cấp lên ít nhất là 0
+      để xem các chương tiết chưa được tải xuống.
     </p>
   {/if}
 
@@ -110,20 +115,6 @@
       <x-sname>Tạm thời</x-sname> và <x-sname>Chính thức</x-sname> của truyện chữ
       cho phép các bạn tải text gốc lên nếu bạn có đủ quyền hạn.
     </p>
-    <ul>
-      <li>
-        Nguồn <x-sname>Tổng hợp</x-sname> cần quyền hạn tối thiểu là
-        <strong class="u-warn">2</strong> để thêm sửa text.
-      </li>
-      <li>
-        Nguồn <x-sname>Tạm thời</x-sname> cần quyền hạn tối thiểu là
-        <strong class="u-warn">1</strong> để thêm sửa text.
-      </li>
-      <li>
-        Nguồn <x-sname>Chính thức</x-sname> cần quyền hạn tối thiểu là
-        <strong class="u-warn">3</strong> để thêm sửa text.
-      </li>
-    </ul>
 
     <p>
       Để nâng cấp quyền hạn bạn có thể tham khảo: <a

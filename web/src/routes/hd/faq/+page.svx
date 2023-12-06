@@ -26,7 +26,7 @@ Ngoài ra nếu các bạn có quyền hạn từ 1 trở lên, hãy thử tính
 
 Chivi không sống bằng quảng cáo, cho nên tiền các bạn ủng hộ là đầu vào duy nhất của trang. Để các bạn thêm lý do ủng hộ trang thì Chivi sẽ thêm vài cái hạn chế về quyền hạn, ưu ái các bạn ủng hộ nhiều. Một số tính năng của Chivi (đặc biệt là dịch máy) rất tốn tài nguyên, nên chỉ có thể mở ra cho một vài bạn.
 
-Hướng dẫn nâng cấp quyền hạn: [Ủng hộ Chivi](/hd/nang-cap-quyen-han)
+Hướng dẫn nâng cấp quyền hạn: [Nâng cấp quyền hạn](/hd/nang-cap-quyen-han)
 
 # Tại sao cần thiết quyền hạn 1 để xem bình luận từ yousuu.
 

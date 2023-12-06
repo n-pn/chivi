@@ -108,7 +108,7 @@ class CV::WninfoCtrl < CV::BaseCtrl
 
   @[AC::Route::POST("/", body: :form)]
   def upsert(form : WninfoForm)
-    guard_privi 2, "thêm truyện/sửa nội dung truyện"
+    guard_privi 1, "thêm truyện/sửa nội dung truyện"
 
     nvinfo = form.save!(_uname, _privi)
     Wninfo.cache!(nvinfo)
@@ -131,7 +131,7 @@ class CV::WninfoCtrl < CV::BaseCtrl
 
     nvinfo.delete
     # FIXME: using database constraint instead
-    Ubmemo.query.where(nvinfo_id: nvinfo.id).to_delete.execute
+    # Ubmemo.query.where(nvinfo_id: nvinfo.id).to_delete.execute
 
     render json: {msg: "ok"}
   end

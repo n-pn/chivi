@@ -25,10 +25,70 @@ Chọn quyền hạn muốn nâng cấp + khoảng thời gian, rồi bấm nút
 
 - Thời hạn có hiệu lực của quyền hạn hiện có sẽ được cộng dồn và bảo lưu.
 
-- Nếu bạn nâng cấp quyền hạn lên 2 hoặc 3, thì bạn sẽ được tặng thêm 1 nửa thời gian của quyền hạn thấp hơn.
+- Nếu bạn nâng cấp quyền hạn lên 1, 2 hoặc 3, thì bạn sẽ được tặng thêm 1 nửa thời gian của quyền hạn thấp hơn.
 
-  Ví dụ: Nâng cấp quyền hạn 3 lên 2 tháng thì bạn sẽ được tặng thêm 1 tháng quyền hạn 2, và 2 tuần quyền hạn 1.
+  Ví dụ: Nâng cấp quyền hạn 3 lên 2 tháng thì bạn sẽ được tặng thêm 1 tháng quyền hạn 2, 1 tuần quyền hạn 1, 1 tuần quyền hạn 0.
 
-### Ứng dụng của quyền hạn trong Chivi
+## Ứng dụng của quyền hạn trong Chivi
 
-_(Đợi bổ sung)_
+**_Thông tin chưa đầy đủ, sẽ được bổ sung theo thời gian_**
+
+### Ứng dụng chung:
+
+Bạn được miễn giảm số vcoin cần thiết khi mở khóa chương theo mức độ quyền hạn hiện tại của bạn.
+
+Ví dụ bạn có quyền hạn 2, chương có 2k chữ, cần hệ số nhân là 4 để mở khóa, thì thay vì phải mất 4 \* 2k / 100*000 = 0.08 vcoin để mở khóa chương, bạn chỉ cần (4 - 2) * 2k / 100_000 = 0.04 vcoin. Nếu quyền hạn là 3, bạn chỉ cần 0.02 vcoin. Nếu quyền hạn là 1, bạn cần 0.06 vcoin.
+
+### Quyền hạn -1:
+
+Đây là quyền hạn mặc định của bạn khi đăng ký Chivi
+
+Với quyền hạn -1 bạn có thể dùng các tiện ích như dịch nhanh, tra từ, thêm truyện vào thư viện.
+
+### Quyền hạn 0:
+
+Bạn cần quyền hạn tối thiểu là 0 để đọc nội dung chương tiết các bộ truyện trên Chivi.
+
+Ngoài ra bạn còn có các quyền sau:
+
+- Tạo bình luận, đánh giá truyện, tạo chủ đề trong diễn đàn
+- Thêm từ vào trong từ điển riêng cho bộ truyện (chỉ áp dụng nếu từ chưa tồn tại hoặc đang được mở khóa)
+
+### Quyền hạn 1:
+
+Ngoài các quyền hạn có bên trên, bạn còn có thể:
+
+- [Thêm sửa sưu tầm cá nhân](/up/+proj)
+- [Thêm liên kết nhúng ngoài](/rm/+stem)
+- [Thêm sửa thông tin truyện](/wn/+book)
+- Thêm/sửa text gốc nguồn truyện tổng hợp
+- Thêm từ vào từ điển riêng cho bộ truyện (không áp dụng cho những từ bị khóa cứng), hoặc thêm từ vào từ điển thông dụng (chỉ áp dụng nếu từ chưa có hoặc đang được mở khóa)
+
+### Quyền hạn 2:
+
+Ngoài các quyền hạn có bên trên, bạn còn có thể:
+
+- Khóa cứng các từ trong từ điển riêng (yêu cầu những người có quyền hạn từ 2 trở lên mới có thể sửa nghĩa)
+- Thêm/sửa nghĩa từ trong từ điển thông dụng (không áp dụng cho những từ bị khóa cứng)
+- Thêm/sửa text gốc cho nguồn truyện liên kết nhúng
+
+### Quyền hạn 3:
+
+Ngoài các quyền hạn có bên trên, bạn còn có thể:
+
+- Khóa cứng các từ trong từ điển thông dụng
+- Thêm/sửa nghĩa cho các từ điển đặc biệt
+- Các tính năng đặc biệt khác sẽ thêm dần sau
+
+## Đặc quyền của các quyền hạn
+
+Ngoài các quyền lợi kể trên, các bạn còn đặc quyền khác là yêu cầu tính năng mới,
+yêu cầu hỗ trợ tìm text, sửa lỗi. Quyền hạn của các bạn càng cao thì càng được ưu tiên.
+
+## Lời kết
+
+Quyền hạn trong Chivi tác dụng chủ yếu là hạn chế ảnh hưởng của người dùng này đối với
+những người dùng khác, khi mà ban quản trị của trang hoàn toàn không có thời gian
+để theo dõi sát sao các thay đổi của người dùng đối với trang web.
+
+Vì lý do này mà yêu cầu quyền hạn với các tính năng sẽ thay đổi theo thời gian, các bạn gặp vấn đề, có thắc mắc hãy liên hệ trực tiếp qua kênh Facebook hoặc Discord bên dưới.

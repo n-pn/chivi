@@ -61,9 +61,9 @@ class CV::XvcoinCtrl < CV::BaseCtrl
       raise BadRequest.new("Tên người dùng không đúng")
     end
 
-    # target_uprivi = Uprivi.load!(target.id)
-    # target_uprivi.extend_privi!(0_i16, 30 + xform.amount.to_i // 2, persist: true)
-    # target.fix_privi!(target_uprivi, persist: true)
+    target_uprivi = Uprivi.load!(target.id)
+    target_uprivi.extend_privi!(0_i16, xform.amount.to_i, persist: true)
+    target.fix_privi!(target_uprivi, persist: true)
 
     xform.exchange!(sender: Viuser.system, target: target, xvkind: 60)
 

@@ -11,11 +11,14 @@
     <a href="/hd/faq" class="foot-link">Câu hỏi thường gặp</a>
     <span class="sep" />
     <a href="/hd/donation" class="foot-link">Hướng dẫn nạp vcoin</a>
+    <span class="sep" />
+    <a href="/hd/nang-cap-quyen-han" class="foot-link">Nâng cấp quyền hạn</a>
   </div>
   <div class="secd">
     <strong>Liên kết: </strong>
     {#each links as [text, href], index}
-      {#if index > 0} <span class="sep" />{/if}
+      {#if index > 0}
+        <span class="sep" />{/if}
       <a {href} class="foot-link" target="_blank" rel="noreferrer">{text}</a>
     {/each}
   </div>

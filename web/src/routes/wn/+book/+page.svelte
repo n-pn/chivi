@@ -239,10 +239,10 @@
       <button
         class="m-btn _primary _fill _lg"
         type="submit"
-        disabled={$_user.privi < 2}>
+        disabled={$_user.privi < 1}>
         <SIcon name="send" />
         <span class="-txt">Lưu thông tin</span>
-        <SIcon name="privi-2" iset="icons" />
+        <SIcon name="privi-1" iset="icons" />
       </button>
     </form-group>
   </form>
