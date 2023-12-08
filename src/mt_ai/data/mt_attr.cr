@@ -190,6 +190,18 @@ enum MT::MtAttr
     return None if input.nil? || input.blank?
     input.split(' ').reduce(None) { |memo, item| memo | parse(item) }
   end
+
+  ###
+
+  def self.from_ctb(cpos : String, ctag : String)
+    case
+    when cpos == "NT"  then Ntmp
+    when cpos != "NP"  then None
+    when ctag == "PN"  then Nper
+    when ctag == "TMP" then Ntmp
+    else                    None
+    end
+  end
 end
 
 # puts MT::MtAttr.parse_list("")

@@ -75,6 +75,12 @@ class MT::MCache
                  @uname = "", @mtime = Time.utc.to_unix)
   end
 
+  UPSERT_SQL = @@schema.upsert_stmt(keep_fields: ["con"])
+
+  def upsert_con!(db)
+    self.upsert!(query: UPSERT_SQL, db: db)
+  end
+
   def self.gen_rid(tok : Array(String))
     HashUtil.fnv_1a_64(tok).unsafe_as(Int64)
   end

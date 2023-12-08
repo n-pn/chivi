@@ -8,7 +8,10 @@ struct MT::RawMtl
   include JSON::Serializable
 
   @[JSON::Field(key: "tok/fine")]
-  getter tok : Array(String)
+  getter tok : Array(String) { @tok_coarse }
+
+  @[JSON::Field(key: "tok/coarse")]
+  getter tok_coarse : Array(String)
 
   @[JSON::Field(key: "con")]
   getter con : RawCon
@@ -34,7 +37,10 @@ struct MT::RawMtlBatch
   include JSON::Serializable
 
   @[JSON::Field(key: "tok/fine")]
-  getter tok : Array(Array(String))
+  getter tok : Array(Array(String)) { @tok_coarse }
+
+  @[JSON::Field(key: "tok/coarse")]
+  getter tok_coarse = [] of Array(String)
 
   @[JSON::Field(key: "con")]
   getter con = [] of RawCon
@@ -52,7 +58,7 @@ struct MT::RawMtlBatch
   getter ner_onto = [] of Array(RawEnt)
 
   def to_mcache
-    @tok.map_with_index do |tok, idx|
+    self.tok.map_with_index do |tok, idx|
       MCache.new(
         rid: MCache.gen_rid(tok),
         tok: tok.join('\t'),

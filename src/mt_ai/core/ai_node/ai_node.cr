@@ -112,8 +112,8 @@ module MT::AiNode
 
   ###
 
-  def to_txt
-    String.build { |io| to_txt(io, true, true) }
+  def to_txt(cap : Bool = true, und : Bool = true)
+    String.build { |io| to_txt(io, cap: cap, und: und) }
   end
 
   def to_txt(io : IO, cap : Bool, und : Bool)
@@ -125,6 +125,14 @@ module MT::AiNode
       self.v_each { |node| cap, und = node.to_txt(io, cap: cap, und: und) }
       {cap, und}
     end
+  end
+
+  def to_json
+    JSON.build { |jb| to_json(jb) }
+  end
+
+  def to_json(io : IO) : Nil
+    JSON.build(io) { |jb| to_json(jb: jb) }
   end
 
   def to_json(jb : JSON::Builder) : Nil

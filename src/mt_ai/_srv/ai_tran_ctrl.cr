@@ -13,7 +13,7 @@ class MT::AiTranCtrl < AC::Base
 
     ai_mt = AiCore.new(pdict)
 
-    lines = ztree.map { |line| ai_mt.tl_from_con_data(line) }
+    lines = ztree.map { |line| ai_mt.translate!(RawCon.from_text(line)) }
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
 
     cache_control 3.seconds
@@ -41,7 +41,7 @@ class MT::AiTranCtrl < AC::Base
     ai_mt = AiCore.new(pdict)
 
     input = _read_body.lines(chomp: true)
-    trees = input.map { |line| ai_mt.tl_from_con_data(line) }
+    trees = input.map { |line| ai_mt.translate!(RawCon.from_text(line)) }
 
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
     json = {lines: trees, tspan: tspan}
@@ -61,7 +61,7 @@ class MT::AiTranCtrl < AC::Base
     ztree = HTTP::Client.post(hlink, body: input, &.body_io.gets_to_end).lines
 
     ai_mt = AiCore.new(pdict)
-    vdata = ztree.map { |line| ai_mt.tl_from_con_data(line) }
+    vdata = ztree.map { |line| ai_mt.translate!(RawCon.from_text(line)) }
 
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
     json = {lines: vdata, ztree: ztree, tspan: tspan}

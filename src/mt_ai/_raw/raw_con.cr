@@ -55,8 +55,8 @@ struct MT::RawCon
     queue.last
   end
 
-  def self.from_json(json : String)
-    pull = ::JSON::PullParser.new(json)
+  def self.new(pull : JSON::PullParser)
+    pull.max_nesting = 9999
     queue = [] of self
 
     while true
@@ -93,27 +93,6 @@ struct MT::RawCon
 
     queue.last
   end
-
-  # def initialize(pull : ::JSON::PullParser)
-  #   pull.read_begin_array
-  #   @cpos = pull.read_string
-  #   pull.read_begin_array
-
-  #   if pull.kind.string?
-  #     @body = pull.read_string
-  #   else
-  #     body = [] of RawCon
-
-  #     while !pull.kind.end_array?
-  #       body << RawCon.new(pull)
-  #     end
-
-  #     @body = body
-  #   end
-
-  #   pull.read_end_array
-  #   pull.read_end_array
-  # end
 
   def initialize(@cpos, @body = "")
   end
@@ -180,6 +159,17 @@ struct MT::RawCon
     end
 
     io << ')'
+  end
+
+  def words(res = [] of {String, String})
+    case body = @body
+    when String
+      res << {@cpos, body}
+    when Array
+      body.each { |node| node.words(res) }
+    end
+
+    res
   end
 
   ###

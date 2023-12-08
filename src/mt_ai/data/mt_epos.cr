@@ -1,3 +1,4 @@
+require "./mt_attr"
 enum MT::MtEpos : Int8
   X = 0 # match any
 
@@ -90,5 +91,13 @@ enum MT::MtEpos : Int8
   @[AlwaysInline]
   def can_use_alt?
     self.in?(VRD, VNV, VCD, VCP, VSB, VPT, VP, NP, CP, LCP, IP)
+  end
+
+  ###
+
+  def self.parse_ctb(cpos : String)
+    cpos, _, tags = cpos.partition('-')
+    epos = MtEpos.parse?(cpos) || MtEpos::OTH
+    {epos, MtAttr.from_ctb(cpos, tags)}
   end
 end

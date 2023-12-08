@@ -23,8 +23,6 @@ def import_dir(path : String)
   end
 end
 
-# data = MT::RawMtlBatch.from_file("var/zroot/corpus/yscrit/99/134.hm_eg.mtl")
-
 INP = "var/zroot/corpus/yscrit"
 chilren = Dir.children(INP).sort_by!(&.to_i)
 chilren.each { |child| import_dir "#{INP}/#{child}" }

@@ -1,8 +1,8 @@
-require "../../../src/mt_ai/data/m_cache"
+require "../../src/mt_ai/data/m_cache"
 
 def import_dir(path : String, type = "ele_b")
   cache = Hash(Int32, Array(MT::MCache)).new { |h, k| h[k] = [] of MT::MCache }
-  files = Dir.glob("#{path}/*mtl")
+  files = Dir.glob("#{path}/*con")
 
   case type
   when "ern_g"
@@ -16,14 +16,20 @@ def import_dir(path : String, type = "ele_b")
   return if files.empty?
 
   files.each do |file|
-    if File.size(file) == 0
-      File.delete(file)
-      next
-    end
+    lines = File.read_lines(file)
 
-    data = MT::RawMtlBatch.from_file(file).to_mcache
-    data.each { |entry| cache[entry.tok[0].ord % 2**10] << entry unless entry.tok.empty? }
-    File.delete(file)
+    lines.each do |line|
+      next if line.empty? || line == "(TOP )"
+
+      cdata = MT::RawCon.from_text(line)
+      toks = cdata.words.map(&.[1])
+
+      cache[toks.sum(&.size)] << MT::MCache.new(
+        rid: MT::MCache.gen_rid(toks),
+        tok: toks.join('\t'),
+        con: cdata.to_json
+      )
+    end
   rescue ex
     puts "#{file}: #{ex}"
     File.open("/2tb/var.chivi/cache/mcache-errors.log", "a") { |f| f.puts "#{file}\t#{ex}" }
@@ -33,7 +39,7 @@ def import_dir(path : String, type = "ele_b")
 
   cache.each do |block, items|
     MT::MCache.load_db(block, type).open_tx do |db|
-      items.each(&.upsert!(db: db))
+      items.each(&.upsert_con!(db: db))
     end
   end
 end
