@@ -12,7 +12,7 @@ class MT::QtTranCtrl < AC::Base
     mcore = QtCore.hv_word
 
     hviet = String.build do |io|
-      RD::Chpart.read_raw(fpath) do |line|
+      File.each_line("var/texts/#{fpath}.raw.txt", chomp: true) do |line|
         io << mcore.to_mtl(line.gsub('　', "")) << '\n'
       end
     end

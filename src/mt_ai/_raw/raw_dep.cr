@@ -1,4 +1,4 @@
-require "json"
+require "./_shared"
 
 struct MT::RawDep
   include JSON::Serializable
@@ -9,7 +9,7 @@ struct MT::RawDep
   def initialize(pull : ::JSON::PullParser)
     pull.read_begin_array
 
-    @idx = pull.read_int.to_i
+    @idx = pull.kind.string? ? pull.read_string.to_i : pull.read_int.to_i
     @dep = pull.read_string
 
     pull.read_end_array
@@ -17,7 +17,7 @@ struct MT::RawDep
 
   def to_json(builder : JSON::Builder)
     builder.array do
-      builder.string @idx
+      builder.number @idx
       builder.string @dep
     end
   end

@@ -43,8 +43,6 @@
 <script lang="ts">
   import { page } from '$app/stores'
 
-  import { ctrl as tlspec } from '$gui/parts/Tlspec.svelte'
-
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Gmenu from '$gui/molds/Gmenu.svelte'
   import Dialog from '$gui/molds/Dialog.svelte'
@@ -163,11 +161,6 @@
           <SIcon name="package" />
           <span>Từ điển</span>
         </a>
-
-        <button class="gmenu-item" on:click={tlspec.show}>
-          <SIcon name="flag" />
-          <span>Báo lỗi</span>
-        </button>
 
         <button class="gmenu-item" data-kbd="⌃c" on:click={copy_raw}>
           <SIcon name="copy" />

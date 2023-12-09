@@ -1,7 +1,27 @@
-require "json"
+require "./_shared"
 
 struct MT::RawCon
   include JSON::Serializable
+
+  ###
+
+  def to_db
+    self.to_json
+  end
+
+  def self.to_db(val : self)
+    val.to_json
+  end
+
+  def self.to_db(val : Nil)
+    "[]"
+  end
+
+  def self.from_rs(rs : DB::ResultSet)
+    new(rs.read(JSON::PullParser))
+  end
+
+  ###
 
   getter cpos : String = ""
   getter body : String | Array(RawCon)

@@ -36,6 +36,20 @@ def load_task(kind):
     TASKS_CACHE[kind] = mtl_task
     return mtl_task
 
+def call_mtl_task(mtl_task, inp_lines):
+    mtl_data = mtl_task([inp_lines[0]])
+
+    for line in inp_lines[1:]:
+        mtl_line = mtl_task(line)
+
+        for key in mtl_line:
+            mtl_data[key].append(mtl_line[key])
+
+    torch.cuda.empty_cache()
+    gc.collect()
+
+    return mtl_data
+
 def call_mtl_task_for_plaintext(mtl_task, inp_lines):
     mtl_data = [mtl_task(x) for x in inp_lines]
 
@@ -53,6 +67,6 @@ def call_mtl_task_for_tokenized(mtl_task, inp_lines):
     return mtl_data
 
 if __name__ == '__main__':
-    test = ["2021年\tHanLPv2.\t带\tN\t。"]
-    data = call_mtl_task_for_plaintext(load_task('mtl_1'), test)
-    print(json.dumps(data, ensure_ascii=False))
+    test = ["第一章和美少女们迷失废村", "“所以，我们真的出不去了吗．．．．．．”"]
+    data = call_mtl_task(load_task('mtl_2'), test)
+    print(data.to_json)

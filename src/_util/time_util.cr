@@ -36,6 +36,16 @@ module TimeUtil
   def get_date(time : Time)
     sprintf("%04d-%02d-%02d", *time.date)
   end
+
+  CV_EPOCH = Time.utc(2020, 1, 1, 0, 0, 0).to_unix
+
+  def self.cv_mtime(rtime : Time = Time.utc)
+    ((rtime.to_unix &- CV_EPOCH) // 60).to_i
+  end
+
+  def self.cv_utime(mtime : Int32)
+    mtime > 0 ? CV_EPOCH &+ mtime &* 60 : 0
+  end
 end
 
 # puts TimeUtil.parse_time("5/14/2020 7:00:48 AM")

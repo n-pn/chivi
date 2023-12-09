@@ -3,17 +3,19 @@ require "./_mt_ctrl_base"
 class MT::AiTranCtrl < AC::Base
   base "/_ai"
 
+  ALGOS = {"mtl_0", "mtl_1", "mtl_2", "mtl_3"}
+
   @[AC::Route::GET("/qtran")]
-  def qtran_file(fpath : String, pdict : String = "combine", _algo : String = "avail", force : Bool = false)
+  def qtran_file(fpath : String, pdict : String = "combine", _algo : String = "mtl_1", force : Bool = false)
     start = Time.monotonic
     force = force && _privi >= 0
 
-    cdata = RD::Chpart.new(fpath)
-    ztree, _algo = cdata.read_con(_algo, force: force)
+    zdata = File.read_lines("var/texts/#{fpath}.raw.txt", chomp: true)
+    mdata = MCache.find_all!(zdata, (ALGOS.index(_algo) || 1).to_i16)
 
     ai_mt = AiCore.new(pdict)
 
-    lines = ztree.map { |line| ai_mt.translate!(RawCon.from_text(line)) }
+    lines = mdata.map { |mline| ai_mt.translate!(mline.con) }
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
 
     cache_control 3.seconds
@@ -21,7 +23,7 @@ class MT::AiTranCtrl < AC::Base
 
     json = {
       lines: lines,
-      ztree: ztree,
+      ztree: mdata.map(&.con.to_s),
       tspan: tspan,
       dsize: ai_mt.dict.dsize,
       mtime: mtime,

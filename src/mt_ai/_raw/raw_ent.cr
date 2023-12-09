@@ -1,4 +1,4 @@
-require "json"
+require "./_shared"
 
 struct MT::RawEnt
   include JSON::Serializable

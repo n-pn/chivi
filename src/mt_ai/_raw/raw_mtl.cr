@@ -1,4 +1,5 @@
 require "json"
+require "http/client"
 
 require "./raw_con"
 require "./raw_dep"
@@ -75,6 +76,15 @@ struct MT::RawMtlBatch
 
   def self.from_file(file : String)
     File.open(file, "r") { |f| from_json(f) }
+  end
+
+  def self.call_hanlp(text : String, ver : Int16 = 1_i16) : self
+    link = "http://localhost:5555/mtl_text/mtl_#{ver}"
+
+    HTTP::Client.post(link, body: text) do |res|
+      raise "error: #{res.body_io.gets_to_end}" unless res.status.success?
+      from_json(res.body_io)
+    end
   end
 
   # data = from_file("var/zroot/test.mtl")

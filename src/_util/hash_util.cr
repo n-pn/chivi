@@ -115,10 +115,6 @@ module HashUtil
     hash
   end
 
-  def fnv_1a_64(str_list : Enumerable(String)) : UInt64
-    str_list.reduce(BASIS_64) { |hash, str| fnv_1a_64(str, hash) }
-  end
-
   def fnv_1a(*strs : String) : UInt32
     hash = BASIS_32
 
@@ -132,6 +128,18 @@ module HashUtil
 
     hash
   end
+
+  def cksum_32(input : Array(String), sep_char = '\n')
+    (1...input.size).reduce(fnv_1a(input[0])) do |h, i|
+      fnv_1a(input.unsafe_fetch(i), fnv_1a('\t', h))
+    end
+  end
+
+  def cksum_64(input : Enumerable(String)) : UInt64
+    input.reduce(BASIS_64) { |h, s| fnv_1a_64(s, h) }
+  end
+
+  ###
 
   def uniq_hash(inp : String) : String
     encode32(fnv_1a(inp))
