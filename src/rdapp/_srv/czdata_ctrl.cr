@@ -14,7 +14,7 @@ class RD::CzdataCtrl < AC::Base
     ch_no = crepo.chmax &+ 1 if ch_no < 1
 
     if ch_no.in?(1..crepo.chmax) && (cinfo = crepo.find(ch_no))
-      ztext = "/// #{cinfo.zchdiv}\n#{crepo.load_raw!(cinfo)}"
+      ztext = "/// #{cinfo.zchdiv}\n#{crepo.load_full_raw!(cinfo)}"
     else
       chdiv = crepo.get_chdiv(ch_no)
       ztext = chdiv.empty? ? chdiv : "/// #{chdiv}"

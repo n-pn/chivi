@@ -28,7 +28,7 @@ class MT::ZvPairCtrl < AC::Base
     guard_privi 2, "thêm sửa cặp nghĩa từ"
 
     zform.uname = self._uname
-    zform.mtime = ZvUtil.mtime
+    zform.mtime = TimeUtil.cv_mtime
 
     spawn do
       log_path = ZvPair.db_path.sub(".db3", ".log")

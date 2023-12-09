@@ -24,7 +24,7 @@ def merge_wn_a(db_file : String)
   return if dict.total == 0
 
   dict.mtime = terms.max_of(&.mtime)
-  dict.users = terms.map(&.uname).uniq!.join(',')
+  dict.users = terms.map(&.uname).uniq!.reject!(&.empty?)
 end
 
 def merge_up_a(db_file : String)
@@ -46,7 +46,7 @@ def merge_up_a(db_file : String)
   return if dict.total == 0
 
   dict.mtime = terms.max_of(&.mtime)
-  dict.users = terms.map(&.uname).uniq!.join(',')
+  dict.users = terms.map(&.uname).uniq!.reject!(&.empty?)
 rescue ex
   puts db_file, ex
 end
@@ -70,7 +70,7 @@ def merge_essence
 
   dict.total = terms.size
   dict.mtime = terms.max_of(&.mtime)
-  dict.users = terms.map(&.uname).uniq!.join(',')
+  dict.users = terms.map(&.uname).uniq!.reject!(&.empty?)
 end
 
 def merge_name_hv
@@ -88,7 +88,7 @@ def merge_name_hv
 
   dict.total = terms.size
   dict.mtime = terms.max_of(&.mtime)
-  dict.users = terms.map(&.uname).uniq!.join(',')
+  dict.users = terms.map(&.uname).uniq!.reject!(&.empty?)
 end
 
 def merge_regular
@@ -106,7 +106,7 @@ def merge_regular
 
   dict.total = terms.size
   dict.mtime = terms.max_of(&.mtime)
-  dict.users = terms.map(&.uname).uniq!.join(',')
+  dict.users = terms.map(&.uname).uniq!.reject!(&.empty?)
 end
 
 def merge_combine
@@ -124,7 +124,7 @@ def merge_combine
 
   dict.total = terms.size
   dict.mtime = terms.max_of(&.mtime)
-  dict.users = terms.map(&.uname).uniq!.join(',')
+  dict.users = terms.map(&.uname).uniq!.reject!(&.empty?)
 end
 
 merge_essence
@@ -135,6 +135,6 @@ merge_combine
 Dir.glob("#{INP}/up/*.db3").each { |file| merge_up_a(file) }
 Dir.glob("#{INP}/wn/*.db3").each { |file| merge_wn_a(file) }
 
-MT::ZvDict.db.open_tx do |db|
-  MT::ZvDict::DB_CACHE.each_value(&.upsert!(db: db))
+MT::ZvDict.db.transaction do |db|
+  MT::ZvDict::DB_CACHE.each_value(&.upsert!(db: db.connection))
 end

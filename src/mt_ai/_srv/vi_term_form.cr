@@ -1,7 +1,7 @@
 require "json"
 
 require "../data/vi_term"
-require "../data/vi_dict"
+require "../data/zv_dict"
 
 require "../../_util/char_util"
 require "../../_util/viet_util"
@@ -57,15 +57,13 @@ class MT::ViTermForm
     ViTerm.find(dict: @dname, zstr: @zstr, cpos: @old_cpos)
   end
 
-  def save_to_disk!(uname : String, mtime = ZvUtil.mtime, on_create : Bool = true) : Nil
+  def save_to_disk!(uname : String,
+                    mtime = TimeUtil.cv_mtime,
+                    on_create : Bool = true) : Nil
     spawn do
-      vidict = ViDict.load(@dname)
-
-      if on_create
-        vidict.update_stats!(mtime, 1)
-      elsif on_delete?
-        vidict.update_stats!(mtime, -1)
-      end
+      dname = @dname.sub("book", "wn").tr("/:", "")
+      zvdict = ZvDict.load!(dname)
+      zvdict.update_stats!(mtime, on_create ? 1 : -1)
     end
 
     spawn do

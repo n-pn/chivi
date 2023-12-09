@@ -1,6 +1,4 @@
 require "./_mt_ctrl_base"
-
-require "../data/vi_dict"
 require "../data/vi_term"
 
 class MT::ZvDictCtrl < AC::Base
@@ -33,9 +31,7 @@ class MT::ZvDictCtrl < AC::Base
   def show(dname : String)
     dname = dname.sub("book:", "wn").sub(":", "")
     dinfo = ZvDict.load!(dname)
-
-    json = {dinfo: dinfo, users: dinfo.users.split(',', remove_empty: true)}
-
+    json = {dinfo: dinfo, users: dinfo.users}
     render json: json
   end
 end

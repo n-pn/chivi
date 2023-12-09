@@ -84,8 +84,10 @@ class RD::Tsrepo
     @stype == 1 ? @owner : vu_id
   end
 
+  TXT_DIR = "var/texts"
+
   def mkdirs!
-    Dir.mkdir_p("var/texts/#{@sroot}")
+    Dir.mkdir_p("#{TXT_DIR}/#{@sroot}")
     Dir.mkdir_p(File.dirname("var/stems/#{@sroot}"))
   end
 
@@ -106,20 +108,6 @@ class RD::Tsrepo
     @sroot.split('/')[3..]
   end
 
-  def init_text_db!(uname = "")
-    ignore = self.text_db.open_ro(&.query_all("select ch_no from czinfos where cksum <> 0", as: Int32).to_set)
-
-    cinfos = self.get_all(limit: 99999)
-    zdatas = cinfos.compact_map do |cinfo|
-      next if cinfo.cksum.empty? && cinfo.ch_no.in?(ignore)
-      cbody = load_raw!(cinfo) rescue ""
-      Czdata.from_info(cinfo, cbody, uname)
-    end
-
-    self.text_db.open_tx { |db| zdatas.each(&.upsert!(db: db)) }
-    zdatas.size
-  end
-
   def free_until : Int32
     auto_free = @chmax // 4
     auto_free < 120 ? auto_free : 120
@@ -128,6 +116,11 @@ class RD::Tsrepo
   @[AlwaysInline]
   def free_chap?(ch_no : Int32)
     ch_no < self.free_until
+  end
+
+  def chap_mutlp(ch_no : Int32, vu_id : Int32, privi : Int32)
+    return {0_i16, 0_i16} if vu_id == @owner || free_chap?(ch_no)
+    {@multp > privi ? @multp &- privi : 0_i16, @multp}
   end
 
   ###
@@ -190,17 +183,85 @@ class RD::Tsrepo
     find(ch_no) || Chinfo.new(ch_no)
   end
 
-  def chap_mutlp(ch_no : Int32, vu_id : Int32, privi : Int32)
-    return {0_i16, 0_i16} if vu_id == @owner || free_chap?(ch_no)
-    {@multp > privi ? @multp &- privi : 0_i16, @multp}
+  FIND_ZDATA_SQL = <<-SQL
+    select * from czinfos
+    where ch_no = $1 and cksum <> 0
+    order by mtime desc limit 1
+    SQL
+
+  @[AlwaysInline]
+  def get_zdata(ch_no : Int32)
+    self.text_db.query_one? FIND_ZDATA_SQL, ch_no, as: Czdata
   end
 
-  ####
+  ###
+
+  def init_text_db!(uname = "")
+    ignore = self.text_db.open_ro(&.query_all("select ch_no from czinfos where cksum <> 0", as: Int32).to_set)
+
+    cinfos = self.get_all(limit: 99999)
+    zdatas = cinfos.compact_map do |cinfo|
+      next if cinfo.cksum.empty? && cinfo.ch_no.in?(ignore)
+      cbody = load_raw_from_cksum!(cinfo) rescue ""
+      Czdata.from_info(cinfo, cbody, uname)
+    end
+
+    self.text_db.open_tx { |db| zdatas.each(&.upsert!(db: db)) }
+    zdatas.size
+  end
+
+  def load_full_raw!(cinfo : Chinfo)
+    self.get_zdata(cinfo.ch_no).try(&.parts) || self.load_raw_from_cksum!(cinfo) rescue ""
+  end
+
+  def load_raw_from_cksum!(cinfo : Chinfo)
+    return "" if cinfo.cksum.empty?
+
+    String.build do |io|
+      1.upto(cinfo.psize) do |p_idx|
+        rpath = "#{self.part_name(cinfo, p_idx)}.raw.txt"
+        lines = File.read_lines(rpath, chomp: true)
+        lines.shift if p_idx > 1
+        lines.each { |line| io << line << '\n' }
+      end
+    end
+  end
+
+  ###
 
   @[AlwaysInline]
   def part_name(cinfo : Chinfo, p_idx : Int32)
     "#{@sroot}/#{cinfo.ch_no}-#{cinfo.cksum}-#{p_idx}"
   end
+
+  def get_fpath(cinfo : Chinfo, p_idx : Int32)
+    if !cinfo.cksum.empty?
+      fpath = self.part_name(cinfo, p_idx)
+      return fpath if File.file?("#{TXT_DIR}/#{fpath}.raw.txt")
+    end
+
+    return "" unless zdata = self.get_zdata(cinfo.ch_no)
+
+    cinfo.cksum = ChapUtil.cksum_to_s(zdata.cksum)
+    spawn cinfo.upsert!(db: self.info_db)
+    self.save_raw_text(cinfo, zdata)
+
+    return self.part_name(cinfo, p_idx)
+  end
+
+  private def save_raw_text(cinfo : Chinfo, zdata : Czdata)
+    Dir.mkdir_p("#{TXT_DIR}/#{@sroot}")
+
+    zdata.parts.split("\n\n").each_with_index do |ptext, index|
+      rpath = "#{TXT_DIR}/#{self.part_name(cinfo, index)}.raw.txt"
+      File.open(rpath, "w") do |file|
+        file << zdata.title << '\n' if index > 0
+        file << ptext
+      end
+    end
+  end
+
+  ####
 
   ###
 
@@ -265,29 +326,14 @@ class RD::Tsrepo
     nil
   end
 
-  def save_czdata!(zdata : Czdata)
+  def save_czdata!(zdata : Czdata) : Nil
     spawn zdata.upsert!(db: self.text_db)
 
-    cksum = ChapUtil.cksum_to_s(zdata.cksum)
-
     cinfo = self.load(zdata.ch_no)
-    cinfo.ztitle = zdata.title
-    cinfo.zchdiv = zdata.chdiv
-
-    cinfo.uname = zdata.uname
-    cinfo.mtime = zdata.mtime
-    cinfo.spath = zdata.zorig
-
-    cinfo.cksum = cksum
-    cinfo.sizes = zdata.sizes
-
-    zdata.parts.split("\n\n").each_with_index do |ptext, p_idx|
-      cdata = Chpart.new(part_name(cinfo, p_idx))
-      cdata.save_raw!(ptext, p_idx > 0 ? zdata.title : nil)
-    end
+    cinfo.inherit(zdata)
 
     spawn do
-      bak_path = "var/texts/#{@sroot}/#{zdata.ch_no}-#{cksum}.raw.json"
+      bak_path = "var/texts/#{@sroot}/#{cinfo.ch_no}-#{cinfo.cksum}.raw.json"
       File.write(bak_path, zdata.to_pretty_json)
     end
 
@@ -314,18 +360,6 @@ class RD::Tsrepo
 
     cinfo.mtime = Time.utc.to_unix
     cinfo.upsert!(db: self.info_db)
-  end
-
-  def load_raw!(cinfo : Chinfo)
-    return "" if cinfo.cksum.empty?
-
-    String.build do |io|
-      1.upto(cinfo.psize) do |p_idx|
-        lines = Chpart.read_raw("#{@sroot}/#{cinfo.ch_no}-#{cinfo.cksum}-#{p_idx}")
-        lines.shift if p_idx > 1
-        lines.each { |line| io << line << '\n' }
-      end
-    end
   end
 
   def update_stats!(chmax : Int32, mtime : Int64 = Time.utc.to_unix)

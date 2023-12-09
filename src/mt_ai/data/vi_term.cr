@@ -1,6 +1,7 @@
 require "crorm"
 
 require "../../_util/char_util"
+require "../../_util/time_util"
 require "../../_util/viet_util"
 
 require "./mt_term"
@@ -107,7 +108,7 @@ class MT::ViTerm
       jb.field "attr", @attr
 
       jb.field "uname", @uname
-      jb.field "mtime", ZvUtil.utime(@mtime)
+      jb.field "mtime", TimeUtil.cv_utime(@mtime)
 
       jb.field "plock", @plock
     end

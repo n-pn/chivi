@@ -51,7 +51,7 @@ class RD::ChinfoCtrl < AC::Base
 
     user_multp, real_multp = crepo.chap_mutlp(ch_no, vu_id: vu_id, privi: privi)
 
-    fpath = crepo.part_name(cinfo, p_idx)
+    fpath = crepo.get_fpath(cinfo, p_idx)
     zsize = cinfo.sizes[p_idx]? || 0
 
     if privi < crepo.read_privi

@@ -102,7 +102,7 @@ class MT::ViTermCtrl < AC::Base
     prev_term = form.prev_term
 
     min_plock = prev_term ? prev_term.plock : 0
-    min_privi = ViDict.min_privi(form.dname) + min_plock
+    min_privi = ZvDict::Kind.p_min(form.dname) + min_plock
 
     if _privi < min_privi
       raise Unauthorized.new "Bạn cần quyền hạn tối thiểu là #{min_privi} để thêm/sửa từ"

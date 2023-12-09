@@ -1,4 +1,4 @@
-require "./vi_dict"
+require "./zv_dict"
 require "./mt_term"
 
 class MT::MtTrie
