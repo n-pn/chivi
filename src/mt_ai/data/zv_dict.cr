@@ -68,9 +68,6 @@ class MT::ZvDict
                 @brief = "Từ điển riêng cho [#{label}] (#{Kind.new(@kind).vname})")
   end
 
-  @[DB::Field(ignore: true, auto: true)]
-  getter term_db : Crorm::SQ3 { ZvTerm.load_db(@kind) }
-
   UPDATE_STATS_SQL = <<-SQL
     update #{@@schema.table}
     set mtime = $1, total = total + $2
