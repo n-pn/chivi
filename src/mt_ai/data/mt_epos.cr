@@ -100,4 +100,12 @@ enum MT::MtEpos : Int8
     epos = MtEpos.parse?(cpos) || MtEpos::OTH
     {epos, MtAttr.from_ctb(cpos, tags)}
   end
+
+  def self.from_rs(rs : ::DB::ResultSet)
+    new(rs.read(Int16).to_i8)
+  end
+
+  def self.to_db(epos : self)
+    epos.to_i16
+  end
 end

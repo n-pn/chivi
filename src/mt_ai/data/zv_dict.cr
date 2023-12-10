@@ -64,19 +64,74 @@ class MT::ZvDict
     end
   end
 
-  def set_label(@label,
-                @brief = "Từ điển riêng cho [#{label}] (#{Kind.new(@kind).vname})")
+  @[DB::Field(ignore: true, auto: true)]
+  getter term_hash : Hash(String, Hash(MtEpos, ZvTerm)) do
+    hash = {} of String => Hash(MtEpos, ZvTerm)
+
+    @@db.query_each "select * from zvterm where d_id = $1", @d_id do |rs|
+      term = rs.read(ZvTerm)
+      nest = hash[term.zstr] ||= {} of MtEpos => ZvTerm
+      nest[term.ipos] = term
+    end
+
+    hash
   end
 
-  UPDATE_STATS_SQL = <<-SQL
-    update #{@@schema.table}
-    set mtime = $1, total = total + $2
-    where "name" = $3
-    returning total
-    SQL
+  def find_term(cpos : String, zstr : String)
+    find_term(MtEpos.parse(cpos), zstr)
+  end
 
-  def update_stats!(@mtime = TimeUtil.cv_mtime, change : Int32 = 1)
-    @total = @@db.query_one UPDATE_STATS_SQL, mtime, change, @name, as: Int32
+  def find_term(ipos : MtEpos, zstr : String)
+    self.term_hash[zstr]?.try(&.[ipos])
+  end
+
+  def load_term(cpos : String, zstr : String)
+    ipos = MtEpos.parse(cpos)
+    list = self.term_hash[zstr] ||= {} of MtEpos => ZvTerm
+    list[ipos] ||= ZvTerm.new(d_id: @d_id, cpos: cpos, zstr: zstr, ipos: ipos)
+  end
+
+  #######
+
+  def add_term(tform, uname : String = "", persist : Bool = true)
+    zterm = self.load_term(cpos: tform.cpos, zstr: tform.zstr)
+    fresh = zterm.mtime < 0
+
+    zterm.add_track(uname: uname)
+
+    @total += 1 if fresh
+    @mtime = zterm.mtime
+
+    zterm.vstr = tform.vstr
+    zterm.attr = tform.attr
+
+    zterm.plock = tform.plock
+
+    return zterm unless persist
+
+    self.upsert!
+    zterm.upsert!
+  end
+
+  def delete_term(tform, persist : Bool = true)
+    ipos = MtAttr.parse(tform.cpos)
+    return unless term = self.term_hash.try(&.delete(ipos))
+    return unless persist
+
+    query = "delete from zvterm where d_id = $1, ipos = $2, zstr = $3"
+    @@db.exec query, @d_id, ipos, tform.zstr
+
+    @total -= 1
+    self.upsert!
+  end
+
+  #######
+
+  def gen_brief(label : String)
+    "Từ điển riêng cho [#{label}] (#{Kind.new(@kind).vname})"
+  end
+
+  def set_label(@label, @brief = gen_brief(label))
   end
 
   def to_json(jb : JSON::Builder)

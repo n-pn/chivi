@@ -1,34 +1,35 @@
-require "../../src/mt_ai/data/vi_dict"
-# ENV["MT_DIR"] ||= "/2tb/app.chivi/var/mt_db"
-
-require "../../src/mt_ai/data/vi_term"
+require "../../src/mt_ai/data/zv_dict"
 
 update_query = <<-SQL
-  update dicts set total = $1, mtime = $2, users = $3
-  where dname = $4
+  update zvdict set total = $1, mtime = $2, users = $3
+  where d_id = $4
 SQL
 
-dnames = MT::ViDict.db.open_ro do |db|
-  db.query_all "select dname from dicts", as: String
+record ZvTerm, d_id : Int32, mtime : Int32, uname : String do
+  include DB::Serializable
 end
 
-dnames.each_slice(1000) do |group|
-  MT::ViDict.db.open_tx do |db|
-    group.each do |dname|
-      db_path = MT::ViTerm.db_path(dname)
-      next unless File.file?(db_path)
+dicts = MT::ZvDict.db.query_all "select * from zvdict", as: MT::ZvDict
+terms = MT::ZvDict.db.query_all "select d_id, mtime, uname from zvterm", as: ZvTerm
 
-      stats = DB.open("sqlite3:#{db_path}?immutable=1") do |db2|
-        total = db2.query_one("select count(*) from terms", as: Int32)
-        mtime = db2.query_one("select coalesce(max(mtime), 0) from terms", as: Int32)
-        users = db2.query_all("select distinct(uname) from terms", as: String)
+terms = terms.group_by(&.d_id)
 
-        {total, mtime, users.join(',')}
-      end
+dicts.each_slice(500) do |group|
+  group.select! do |zdict|
+    next false unless avail = terms[zdict.d_id]?
 
-      db.exec(update_query, *stats, dname)
-    rescue ex
-      puts db_path, ex.message
-    end
+    zdict.total = avail.size
+
+    zdict.mtime = avail.max_of(&.mtime)
+    zdict.users = avail.map(&.uname).uniq!.reject!(&.empty?)
+
+    true
+  end
+
+  next if group.empty?
+  puts "saving: #{group.size}"
+
+  MT::ZvDict.db.transaction do |tx|
+    group.each(&.upsert!(db: tx.connection))
   end
 end

@@ -15,11 +15,12 @@ class MT::ZvTerm
   include Crorm::Model
   schema "zvterm", :postgres
 
-  field d_id : Int32 = 0, pkey: true
-  field ipos : Int16 = 0, pkey: true
+  field d_id : Int32, pkey: true
+  field ipos : MtEpos, pkey: true, converter: MT::MtEpos
   field zstr : String, pkey: true
 
   field cpos : String = "X"
+  field fixp : String = ""
 
   field vstr : String = ""
   field attr : String = ""
@@ -30,45 +31,64 @@ class MT::ZvTerm
   field segr : Int16 = 2_i16
   field posr : Int16 = 2_i16
 
+  field plock : Int16 = 0_i16
   field uname : String = ""
-  field mtime : Int32 = 0
-  field plock : Int16 = 1_i16
+  field mtime : Int32 = -1
 
-  def self.new(cols : Array(String), d_id = 0)
+  @[DB::Field(ignore: true, auto: true)]
+  getter matt : MtAttr { MtAttr.new(@attr) }
+
+  def self.new(d_id : Int32, cols : Array(String), fixed : Bool = false)
     zstr, cpos, vstr = cols
 
-    zstr = CharUtil.to_canon(zstr, true)
-    vstr = vstr.empty? ? "" : VietUtil.fix_tones(vstr)
+    unless fixed
+      zstr = CharUtil.to_canon(zstr, true)
+      vstr = vstr.empty? ? "" : VietUtil.fix_tones(vstr)
+    end
 
-    new(zstr: zstr, d_id: d_id, cpos: cpos, vstr: vstr, attr: cols[3]? || "")
+    new(d_id: d_id,
+      cpos: cpos,
+      zstr: zstr,
+      vstr: vstr,
+      attr: cols[3]? || "",
+      fixed: true)
   end
 
-  def self.new(zstr : String, cpos : String, vstr : String, attr : MtAttr, d_id : Int32 = 0)
-    zstr = CharUtil.to_canon(zstr, true)
-    vstr = VietUtil.fix_tones(vstr)
-    new(zstr: zstr, d_id: d_id, cpos: cpos, vstr: vstr, attr: attr.to_str)
+  def self.new(d_id : Int32, cpos : String, zstr : String,
+               vstr : String, attr : MtAttr, fixed : Bool = false)
+    unless fixed
+      zstr = CharUtil.to_canon(zstr, true)
+      vstr = vstr.empty? ? "" : VietUtil.fix_tones(vstr)
+    end
+
+    new(d_id: d_id,
+      cpos: cpos,
+      zstr: zstr,
+      vstr: vstr,
+      attr: attr)
   end
 
-  def initialize(@d_id, @zstr, @cpos,
-                 @vstr = "", @attr = "",
-                 @toks = [zstr.size], @ners = [] of String,
-                 @segr = 2_i16, @posr = 2_i16,
-                 @uname = "", @mtime = 0,
+  def initialize(@d_id, @cpos, @zstr, @vstr = zstr,
+                 @ipos = MtEpos.parse(cpos),
+                 @matt = MtAttr::None,
+                 @attr = matt.to_str,
+                 @toks = [zstr.size],
                  @plock = 1_i16)
-    @ipos = MtEpos.parse(cpos).to_i16
   end
 
-  def cpos=(cpos : MtEpos)
-    @cpos = cpos.to_s
-    @ipos = cpos.to_i16
+  def add_track(@uname, @mtime = TimeUtil.cv_mtime)
+  end
+
+  def cpos=(@ipos : MtEpos)
+    @cpos = ipos.to_s
   end
 
   def cpos=(@cpos : String)
-    @ipos = MtEpos.parse(cpos).to_i16
+    @ipos = MtEpos.parse(cpos)
   end
 
-  def attr=(attr : MtAttr)
-    @attr = attr.to_str
+  def attr=(@matt : MtAttr)
+    @attr = matt.to_str
   end
 
   def to_json(jb : JSON::Builder)
@@ -94,27 +114,32 @@ class MT::ZvTerm
 
   ###
 
+  def self.init(d_id : Int32, cpos : String, zstr : String)
+    self.find(d_id: d_id, ipos: MtEpos.parse(cpos), zstr: zstr) || self.new(d_id: d_id, cpos: cpos, zstr: zstr)
+  end
+
   def self.find(d_id : Int32, cpos : String, zstr : String)
-    ipos = MtEpos.parse(cpos).value.to_i16
-    self.find(d_id, ipos: ipos, zstr: zstr)
+    self.find(d_id, ipos: MtEpos.parse(cpos), zstr: zstr)
   end
 
   @@find_one_sql : String = @@schema.select_by_pkey + " limit 1"
 
   @[AlwaysInline]
-  def self.find(d_id : Int32, ipos : Int16, zstr : String)
-    @@db.query_one?(@@find_one_sql, d_id, ipos, zstr, as: self)
+  def self.find(d_id : Int32, ipos : MtEpos, zstr : String)
+    @@db.query_one?(@@find_one_sql, d_id, ipos.value.to_i16, zstr, as: self)
   end
 
   def self.delete(d_id : Int32, cpos : String, zstr : String)
-    ipos = MtEpos.parse(cpos).value.to_i16
-    self.delete(d_id, zstr, ipos: ipos)
+    self.delete(d_id, zstr, ipos: MtEpos.parse(cpos))
   end
 
-  DELETE_SQL = "delete from #{@@schema.table} where d_id = $1 and ipos = $3 and zstr = $2"
+  DELETE_SQL = <<-SQL
+    delete from #{@@schema.table}
+    where d_id = $1 and ipos = $2 and zstr = $3
+    SQL
 
   @[AlwaysInline]
-  def self.delete(d_id : Int32, ipos : Int16, zstr : String)
-    @@db.exec DELETE_SQL, d_id, ipos, zstr
+  def self.delete(d_id : Int32, ipos : MtEpos, zstr : String)
+    @@db.exec DELETE_SQL, d_id, ipos.value.to_i16, zstr
   end
 end

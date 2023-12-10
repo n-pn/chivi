@@ -15,12 +15,11 @@ export interface TermsData extends CV.Paginate {
   start: number
 }
 
-export const load = (async ({ fetch, url, params: { dname }, parent }) => {
+export const load = (async ({ fetch, url, parent }) => {
   const { dinfo } = await parent()
-  dname = dname.replace(/^wn/, 'wn/').replace(/^up/, 'up/')
 
-  const search = merge_query(url.searchParams, { dname, lm: 50 })
-  const terms = await api_get<TermsData>(`/_ai/terms?${search}`, fetch)
+  const query = merge_query(url.searchParams, { d_id: dinfo.d_id, lm: 50 })
+  const table = await api_get<TermsData>(`/_ai/terms?${query}`, fetch)
 
   const _meta = {
     left_nav: [
@@ -29,10 +28,10 @@ export const load = (async ({ fetch, url, params: { dname }, parent }) => {
     ],
   }
 
-  const query = gen_query(url.searchParams)
+  const filter = gen_query(url.searchParams)
   const _title = 'Từ điển: ' + dinfo.label
 
-  return { terms, query, _meta, _title }
+  return { table, filter, _meta, _title }
 }) satisfies PageLoad
 
 function gen_query(params: URLSearchParams) {

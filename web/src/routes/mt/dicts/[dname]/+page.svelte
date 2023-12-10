@@ -12,16 +12,16 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ dinfo, terms } = data)
+  $: ({ dinfo, table } = data)
 
-  $: query = data.query
+  $: filter = data.filter
 
   $: pager = new Pager($page.url)
   $: root_path = $page.url.pathname
 
-  function reset_query() {
-    for (let key in query) query[key] = ''
-    query = query
+  function reset_filter() {
+    for (let key in filter) filter[key] = ''
+    filter = filter
   }
 </script>
 
@@ -44,27 +44,35 @@
           <th>Cập nhật</th>
         </tr>
 
-        <tr class="tquery">
+        <tr class="filter">
           <td><SIcon name="search" /></td>
-          <td><input type="text" placeholder="-" bind:value={query.zstr} /></td>
-          <td><input type="text" placeholder="-" bind:value={query.vstr} /></td>
+          <td
+            ><input type="text" placeholder="-" bind:value={filter.zstr} /></td>
+          <td
+            ><input type="text" placeholder="-" bind:value={filter.vstr} /></td>
           <td>
-            <button class="m-btn _sm">{query.cpos || '-'}</button>
+            <button class="m-btn _sm">{filter.cpos || '-'}</button>
           </td>
           <td class="attr"
-            ><input type="text" placeholder="-" bind:value={query.attr} /></td>
+            ><input type="text" placeholder="-" bind:value={filter.attr} /></td>
           <td class="uname"
-            ><input type="text" placeholder="-" bind:value={query.uname} /></td>
+            ><input
+              type="text"
+              placeholder="-"
+              bind:value={filter.uname} /></td>
           <td class="plock"
-            ><input type="text" placeholder="-" bind:value={query.plock} /></td>
+            ><input
+              type="text"
+              placeholder="-"
+              bind:value={filter.plock} /></td>
           <td>
-            <button class="m-btn _sm" on:click={reset_query}>
+            <button class="m-btn _sm" on:click={reset_filter}>
               <SIcon name="eraser" />
             </button>
             <a
               class="m-btn _sm"
               data-kbd="ctrl+enter"
-              href={pager.gen_url({ ...query, pg: 1 })}>
+              href={pager.gen_url({ ...filter, pg: 1 })}>
               <SIcon name="search" />
             </a>
           </td>
@@ -72,11 +80,11 @@
       </thead>
 
       <tbody>
-        {#each terms.items as { zstr, vstr, cpos, attr, mtime, uname, plock }, idx}
+        {#each table.items as { zstr, vstr, cpos, attr, mtime, uname, plock }, idx}
           <tr class="term">
             <td class="-idx">
               <a href="/mt/dicts/{data.dname}/+term?zstr={zstr}&cpos={cpos}">
-                {terms.start + idx}</a>
+                {table.start + idx}</a>
             </td>
             <!-- svelte-ignore a11y-click-events-have-zstr-events -->
             <td class="-zstr">
@@ -84,7 +92,7 @@
               <div class="hover">
                 <button
                   class="m-btn _xs"
-                  on:click|stopPropagation={() => (query.zstr = zstr)}>
+                  on:click|stopPropagation={() => (filter.zstr = zstr)}>
                   <SIcon name="search" />
                 </button>
               </div>
@@ -100,7 +108,7 @@
                 </span>
                 <button
                   class="m-btn _xs"
-                  on:click|stopPropagation={() => (query.vstr = vstr)}>
+                  on:click|stopPropagation={() => (filter.vstr = vstr)}>
                   <SIcon name="search" />
                 </button>
               </div>
@@ -137,7 +145,7 @@
   </div>
 
   <footer class="foot">
-    <Mpager {pager} pgidx={terms.pgidx} pgmax={terms.pgmax} />
+    <Mpager {pager} pgidx={table.pgidx} pgmax={table.pgmax} />
   </footer>
 </article>
 
@@ -266,7 +274,7 @@
     }
   }
 
-  .tquery {
+  .filter {
     input {
       margin: 0;
       padding: 0 0.5rem;

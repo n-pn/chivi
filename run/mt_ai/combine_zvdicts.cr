@@ -6,16 +6,16 @@ require "../../src/mt_ai/data/zv_term"
 require "../../src/mt_ai/data/zv_dict"
 
 def make_zvterm(term, d_id)
-  MT::ZvTerm.new(
+  zterm = MT::ZvTerm.new(
     d_id: d_id,
     zstr: term.zstr,
     cpos: term.cpos,
     vstr: term.vstr,
     attr: term.attr,
-    uname: term.uname,
-    mtime: term.mtime,
     plock: term.plock.to_i16,
   )
+
+  zterm.tap(&.add_track(term.uname, term.mtime))
 end
 
 def merge_wn_a(db_file : String)
@@ -23,7 +23,7 @@ def merge_wn_a(db_file : String)
   return if d_id[0] == '$'
 
   terms = DB.open("sqlite3:#{db_file}?immutable=1") do |db|
-    db.query_all "select * from terms", as: MT::ViTerm
+    db.query_all "select * from terms where mtime > $1", MTIME, as: MT::ViTerm
   end
 
   puts "#{db_file}: #{terms.size} entries"
@@ -45,7 +45,7 @@ def merge_up_a(db_file : String)
   dict = MT::ZvDict.load!("up#{d_id}")
 
   terms = DB.open("sqlite3:#{db_file}?immutable=1") do |db|
-    db.query_all "select * from terms", as: MT::ViTerm
+    db.query_all "select * from terms where mtime > $1", MTIME, as: MT::ViTerm
   end
 
   puts "#{db_file}: #{terms.size} entries"
@@ -98,11 +98,13 @@ def merge_name_hv
   end
 end
 
+MTIME = TimeUtil.cv_mtime - 60
+
 def merge_regular
   dict = MT::ZvDict.load!("regular")
 
   terms = DB.open("sqlite3:#{INP}/regular.db3?immutable=1") do |db|
-    db.query_all "select * from terms", as: MT::ViTerm
+    db.query_all "select * from terms where mtime > $1", MTIME, as: MT::ViTerm
   end
 
   puts "regular: #{terms.size} entries"
@@ -120,7 +122,7 @@ def merge_combine
   dict = MT::ZvDict.load!("combine")
 
   terms = DB.open("sqlite3:#{INP}/combine.db3?immutable=1") do |db|
-    db.query_all "select * from terms", as: MT::ViTerm
+    db.query_all "select * from terms where mtime > $1", MTIME, as: MT::ViTerm
   end
 
   puts "combine: #{terms.size} entries"
@@ -134,10 +136,10 @@ def merge_combine
   end
 end
 
-merge_essence
+# merge_essence
 merge_regular
-merge_combine
-merge_name_hv
+# merge_combine
+# merge_name_hv
 
 Dir.glob("#{INP}/up/*.db3").each { |file| merge_up_a(file) }
 Dir.glob("#{INP}/wn/*.db3").each { |file| merge_wn_a(file) }

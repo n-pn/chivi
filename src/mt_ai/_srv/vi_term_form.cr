@@ -16,9 +16,15 @@ class MT::ViTermForm
   getter attr : String
 
   getter dname : String
-  getter plock : Int32
+  getter plock : Int16 = 0_i16
 
-  getter old_cpos : String = ""
+  getter toks : Array(Int32) = [] of Int32
+  getter ners : Array(String) = [] of String
+
+  getter posr : Int16 = 2_i16
+  getter segr : Int16 = 2_i16
+
+  getter fixp : String = ""
 
   struct Context
     getter fpath : String = ""
@@ -46,24 +52,27 @@ class MT::ViTermForm
     @attr = MtAttr.parse_list(@attr).to_str
 
     @dname = @dname.sub(':', '/')
-    @plock = 1 unless 0 <= @plock <= 2
+    @plock = 0_i16 unless 0 <= @plock <= 2
 
-    @old_cpos = @cpos if @old_cpos.blank?
+    @fixp = "" if @fixp.blank? || @fixp == @cpos
   end
 
   getter? on_delete : Bool { @vstr.empty? && !@attr.includes?("Hide") }
 
   def prev_term
-    ViTerm.find(dict: @dname, zstr: @zstr, cpos: @old_cpos)
+    ViTerm.find(dict: @dname, zstr: @zstr, cpos: @cpos)
   end
 
   def save_to_disk!(uname : String,
                     mtime = TimeUtil.cv_mtime,
                     on_create : Bool = true) : Nil
-    spawn do
-      dname = @dname.sub("book", "wn").tr("/:", "")
-      zvdict = ZvDict.load!(dname)
-      zvdict.update_stats!(mtime, on_create ? 1 : -1)
+    dname = @dname.sub("book", "wn").tr("/:", "")
+    zvdict = ZvDict.load!(dname)
+
+    if on_delete?
+      zvdict.delete_term(self)
+    else
+      zvdict.add_term(self, uname)
     end
 
     spawn do
