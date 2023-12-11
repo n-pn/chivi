@@ -1,4 +1,5 @@
 require "./mt_attr"
+
 enum MT::MtEpos : Int8
   X = 0 # match any
 
@@ -106,6 +107,6 @@ enum MT::MtEpos : Int8
   end
 
   def self.to_db(epos : self)
-    epos.to_i16
+    epos.to_i
   end
 end

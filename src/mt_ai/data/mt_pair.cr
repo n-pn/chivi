@@ -1,4 +1,4 @@
-require "./mt_attr"
+require "./shared/*"
 require "./zv_pair"
 
 class MT::MtPair

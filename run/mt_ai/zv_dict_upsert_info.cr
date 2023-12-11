@@ -5,8 +5,9 @@ require "../../src/_data/_data"
 require "../../src/mt_ai/data/zv_dict"
 
 CORE = {
-  {"essence", 0, 1, "Nền Tảng", "Các từ cơ bản như dấu câu, chữ latin, emoji, phiên âm hán việt..."},
-  {"pin_yin", 0, 2, "Phanh Âm", "Sử dụng chữ cái Latinh để thể hiện cách phát âm các chữ Hán trong"},
+  {"essence", 0, 1, "Nền Tảng", "Các từ cơ bản như dấu câu, chữ latin, emoji, phiên âm từ đơn Hán Việt..."},
+  {"word_hv", 0, 2, "Hán Việt", "Phiên âm các cụm từ Hán Việt đặc biệt có cách phát âm khác với HV đơn"},
+  {"pin_yin", 0, 3, "Phanh Âm", "Sử dụng chữ cái Latinh để thể hiện cách phát âm các chữ Hán trong"},
 
   {"noun_vi", 0, 11, "Nghĩa Danh", "Các từ dùng để dịch danh từ mới"},
   {"verb_vi", 0, 12, "Nghĩa Động", "Các từ dùng để dịch động từ mới"},
@@ -36,15 +37,15 @@ CORE = {
 }
 
 def add_fixtures
-  saved = MT::ZvDict.get_all(:wnovel, limit: 999999).to_h { |x| {x.d_id // 10, x} }
+  saved = MT::ZvDict.fetch_all(:wnovel, limit: 999999).to_h { |x| {x.d_id // 10, x} }
 
   dicts = CORE.map do |name, kind, d_id, label, brief|
-    kind = MT::ZvDict::Kind.new(kind.to_i16)
+    kind = MT::DictKind.new(kind.to_i16)
     dict = MT::ZvDict.find(name) || MT::ZvDict.new(name, kind, d_id)
     dict.tap(&.set_label(label, brief))
   end
 
-  puts "cỏe dicts: #{dicts.size}"
+  puts "core dicts: #{dicts.size}"
 
   MT::ZvDict.db.transaction do |db|
     dicts.each(&.upsert!(db: db.connection))
@@ -62,7 +63,7 @@ def add_wn_dicts
 
   puts "wn dicts: #{inputs.size}"
 
-  saved = MT::ZvDict.get_all(:wnovel, limit: 999999).to_h { |x| {x.d_id // 10, x} }
+  saved = MT::ZvDict.fetch_all(:wnovel, limit: 999999).to_h { |x| {x.d_id // 10, x} }
 
   dicts = inputs.map do |wn_id, bname|
     dict = saved[wn_id]? || MT::ZvDict.new("wn#{wn_id}", kind: :wnovel, d_id: wn_id)
@@ -84,7 +85,7 @@ def add_up_dicts
   end
 
   puts "up dicts: #{inputs.size}"
-  saved = MT::ZvDict.get_all(:userpj, limit: 999999).to_h { |x| {x.d_id // 10, x} }
+  saved = MT::ZvDict.fetch_all(:userpj, limit: 999999).to_h { |x| {x.d_id // 10, x} }
 
   dicts = inputs.map do |up_id, bname|
     dict = saved[up_id]? || MT::ZvDict.new("up#{up_id}", kind: :userpj, d_id: up_id)

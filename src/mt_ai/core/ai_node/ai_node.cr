@@ -7,7 +7,7 @@ module MT::AiNode
   property epos = MtEpos::X
   property attr = MtAttr::None
 
-  property dnum = -1_i8
+  property dnum : DictEnum = DictEnum::Unknown_0
   property _idx = 0
 
   abstract def z_each(& : AiNode ->)
@@ -69,7 +69,7 @@ module MT::AiNode
     @dnum = term.dnum
   end
 
-  def set_vstr!(@vstr : String, @dnum : Int8 = MtDnum::Fixture_2.to_i8) : Nil
+  def set_vstr!(@vstr : String, @dnum : DictEnum = :fixture_2) : Nil
   end
 
   def has_attr?(attr : MtAttr)
@@ -118,7 +118,7 @@ module MT::AiNode
 
   def to_txt(io : IO, cap : Bool, und : Bool)
     # pp [self]
-    if @dnum >= 0 || self.is_a?(M0Node)
+    if !@dnum.unknown_0? || self.is_a?(M0Node)
       io << ' ' unless @attr.undent?(und: und)
       @attr.render_vstr(io, @vstr, cap: cap, und: und)
     else
@@ -139,7 +139,7 @@ module MT::AiNode
     jb.array do
       jb.string @epos.to_s
 
-      if @dnum >= 0 || self.is_a?(M0Node)
+      if !@dnum.unknown_0? || self.is_a?(M0Node)
         jb.string @zstr
       else
         jb.array { self.v_each(&.to_json(jb)) }
@@ -151,7 +151,7 @@ module MT::AiNode
       jb.string @vstr
       jb.string(@attr.none? ? "" : @attr.to_str)
 
-      jb.number @dnum
+      jb.number @dnum.value
     end
   end
 end

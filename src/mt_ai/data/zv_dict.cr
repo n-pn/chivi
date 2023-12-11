@@ -1,39 +1,7 @@
-require "../../_data/zr_db"
 require "./zv_term"
+require "./mt_data"
 
 class MT::ZvDict
-  enum Kind : Int16
-    System = 0 # system dict
-    Global = 1 # regular dict
-
-    Themes = 4 # common themes
-    Wnovel = 5 # use for chivi official book series
-    Userpj = 6 # use for user created series
-    Public = 7 # use for public domain series
-    Userqt = 8 # unique for each user, use for every quick trans posts
-
-    def vname
-      case self
-      when System then "hệ thống"
-      when Global then "thông dụng"
-      when Themes then "văn cảnh riêng"
-      when Wnovel then "bộ truyện chữ"
-      when Userpj then "sưu tầm cá nhân"
-      when Public then "sở hữu công cộng"
-      when Userqt then "dịch nhanh cá nhân"
-      end
-    end
-
-    def self.p_min(dname : String)
-      case dname
-      when /^(book|wn|up|qt|tm|pd)/  then 0
-      when /regular|combine|suggest/ then 1
-      when .ends_with?("pair")       then 1
-      else                                2
-      end
-    end
-  end
-
   class_getter db : ::DB::Database = ZR_DB
 
   ######
@@ -53,7 +21,7 @@ class MT::ZvDict
   field mtime : Int32 = 0
   field users : Array(String) = [] of String
 
-  def initialize(@name, kind : Kind, d_id : Int32)
+  def initialize(@name, kind : DictKind, d_id : Int32)
     @kind = kind.value
     @d_id = d_id * 10 + @kind
 
@@ -65,64 +33,53 @@ class MT::ZvDict
   end
 
   @[DB::Field(ignore: true, auto: true)]
-  getter term_hash : Hash(String, Hash(MtEpos, ZvTerm)) do
-    hash = {} of String => Hash(MtEpos, ZvTerm)
+  getter hash_dict : HashDict do
+    HashDict.new(@d_id).tap do |hash|
+      MtData.fetch(@d_id) { |x| hash.add(x.zstr, x.epos, x.to_mt) }
+    end
+  end
 
-    @@db.query_each "select * from zvterm where d_id = $1", @d_id do |rs|
-      term = rs.read(ZvTerm)
-      nest = hash[term.zstr] ||= {} of MtEpos => ZvTerm
-      nest[term.ipos] = term
+  @[DB::Field(ignore: true, auto: true)]
+  getter trie_dict : TrieDict do
+    root = TrieDict.new
+
+    self.hash_dict.hash.each do |zstr, hash|
+      root[zstr] = hash.each_value.max_by(&.prio)
     end
 
-    hash
+    root
   end
 
-  def find_term(cpos : String, zstr : String)
-    find_term(MtEpos.parse(cpos), zstr)
-  end
-
-  def find_term(ipos : MtEpos, zstr : String)
-    self.term_hash[zstr]?.try(&.[ipos])
-  end
-
+  @[AlwaysInline]
   def load_term(cpos : String, zstr : String)
-    ipos = MtEpos.parse(cpos)
-    list = self.term_hash[zstr] ||= {} of MtEpos => ZvTerm
-    list[ipos] ||= ZvTerm.new(d_id: @d_id, cpos: cpos, zstr: zstr, ipos: ipos)
+    ZvTerm.init(d_id: @d_id, cpos: cpos, zstr: zstr)
   end
 
   #######
 
-  def add_term(tform, uname : String = "", persist : Bool = true)
-    zterm = self.load_term(cpos: tform.cpos, zstr: tform.zstr)
-    fresh = zterm.mtime < 0
-
-    zterm.add_track(uname: uname)
-
+  def add_term(zterm : ZvTerm, fresh : Bool = true, persist : Bool = true)
     @total += 1 if fresh
     @mtime = zterm.mtime
 
-    zterm.vstr = tform.vstr
-    zterm.attr = tform.attr
+    mdata = MtData.new(zterm)
+    spawn mdata.save!
 
-    zterm.plock = tform.plock
+    mterm = mdata.to_mt
 
-    return zterm unless persist
+    @hash_dict.try(&.add(zterm.zstr, zterm.ipos, mterm))
+    @trie_dict.try(&.[zterm.zstr] = mterm)
 
-    self.upsert!
-    zterm.upsert!
+    self.upsert! if persist
   end
 
-  def delete_term(tform, persist : Bool = true)
-    ipos = MtAttr.parse(tform.cpos)
-    return unless term = self.term_hash.try(&.delete(ipos))
+  def delete_term(zterm : ZvTerm, persist : Bool = true)
+    @hash_dict.try(&.delete(zterm.zstr, zterm.ipos))
+    @trie_dict.try(&.[zterm.zstr] = nil)
+
     return unless persist
 
-    query = "delete from zvterm where d_id = $1, ipos = $2, zstr = $3"
-    @@db.exec query, @d_id, ipos, tform.zstr
-
-    @total -= 1
-    self.upsert!
+    MtData.delete(@d_id, zterm.ipos, zterm.zstr)
+    ZvTerm.delete(@d_id, zterm.ipos, zterm.zstr)
   end
 
   #######
@@ -154,6 +111,10 @@ class MT::ZvDict
 
   DB_CACHE = {} of String => self
 
+  class_getter regular : self { load!("regular") }
+  class_getter essence : self { load!("essence") }
+  class_getter suggest : self { load!("suggest") }
+
   def self.load!(name : String)
     DB_CACHE[name] ||= find(name) || begin
       case name
@@ -179,22 +140,24 @@ class MT::ZvDict
     self.get!(name, db: @@db, &.<< " where name = $1")
   end
 
+  ####
+
   COUNT_SQL = "select coalesce(count(*)::int, 0) from #{@@schema.table} "
 
   def self.count(kind : String) : Int32
     case kind
     when "wn"
-      query = "#{COUNT_SQL} where kind = #{Kind::Wnovel.value}"
+      query = "#{COUNT_SQL} where kind = #{DictKind::Wnovel.value}"
     when "up"
-      query = "#{COUNT_SQL} where kind = #{Kind::Userpj.value}"
+      query = "#{COUNT_SQL} where kind = #{DictKind::Userpj.value}"
     when "pd"
-      query = "#{COUNT_SQL} where kind = #{Kind::Public.value}"
+      query = "#{COUNT_SQL} where kind = #{DictKind::Public.value}"
     when "qt"
-      query = "#{COUNT_SQL} where kind = #{Kind::Userqt.value}"
+      query = "#{COUNT_SQL} where kind = #{DictKind::Userqt.value}"
     when "tm"
-      query = "#{COUNT_SQL} where kind = #{Kind::Themes.value}"
+      query = "#{COUNT_SQL} where kind = #{DictKind::Themes.value}"
     else
-      query = "#{COUNT_SQL} where kind < #{Kind::Themes.value}"
+      query = "#{COUNT_SQL} where kind < #{DictKind::Themes.value}"
     end
 
     @@db.query_one(query, as: Int32)
@@ -211,14 +174,14 @@ class MT::ZvDict
     end
   end
 
-  def self.fetch_all(kind : Kind, limit = 50, offset = 0)
+  def self.fetch_all(kind : DictKind, limit = 50, offset = 0)
     self.get_all kind.value, limit, offset do |sql|
       sql << " where kind = $1 order by mtime desc, total desc limit $2 offset $3"
     end
   end
 
   def self.fetch_all_core
-    self.get_all(&.<< " where kind < #{Kind::Themes.value} order by d_id asc")
+    self.get_all(&.<< " where kind < #{DictKind::Themes.value} order by d_id asc")
   end
 
   def self.init_wn_dict!(wn_id : Int32, bname : String, db = self.db)

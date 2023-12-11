@@ -1,155 +1,155 @@
-require "crorm"
+# require "crorm"
 
-require "../../_util/char_util"
-require "../../_util/time_util"
-require "../../_util/viet_util"
+# require "../../_util/char_util"
+# require "../../_util/time_util"
+# require "../../_util/viet_util"
 
-require "./mt_term"
-require "./zv_util"
+# require "./mt_term"
+# require "./zv_util"
 
-class MT::ViTerm
-  class_getter init_sql = <<-SQL
-    create table terms(
-      ipos tinyint not null default 0,
-      cpos varchar not null default 'X',
+# class MT::ViTerm
+#   class_getter init_sql = <<-SQL
+#     create table terms(
+#       ipos tinyint not null default 0,
+#       cpos varchar not null default 'X',
 
-      zstr varchar not null,
-      vstr varchar not null default '',
+#       zstr varchar not null,
+#       vstr varchar not null default '',
 
-      attr varchar not null default '',
-      iatt integer not null default 0,
+#       attr varchar not null default '',
+#       iatt integer not null default 0,
 
-      uname varchar not null default '',
-      mtime integer not null default 0,
-      plock tinyint not null default 1,
+#       uname varchar not null default '',
+#       mtime integer not null default 0,
+#       plock tinyint not null default 1,
 
-      primary key (ipos, zstr)
-    )
-    SQL
+#       primary key (ipos, zstr)
+#     )
+#     SQL
 
-  DIR = ENV["MT_DIR"]? || "var/mt_db/mt_ai"
+#   DIR = ENV["MT_DIR"]? || "var/mt_db/mt_ai"
 
-  def self.db_path(dname : String, type : String = "db3")
-    "#{DIR}/#{dname}.#{type}"
-  end
+#   def self.db_path(dname : String, type : String = "db3")
+#     "#{DIR}/#{dname}.#{type}"
+#   end
 
-  ###
+#   ###
 
-  include Crorm::Model
-  schema "terms", :sqlite, multi: true
+#   include Crorm::Model
+#   schema "terms", :sqlite, multi: true
 
-  field zstr : String, pkey: true
-  field vstr : String = ""
+#   field zstr : String, pkey: true
+#   field vstr : String = ""
 
-  field ipos : Int32, pkey: true
-  field cpos : String = ""
+#   field ipos : Int32, pkey: true
+#   field cpos : String = ""
 
-  field attr : String = ""
-  field iatt : Int32 = 0
+#   field attr : String = ""
+#   field iatt : Int32 = 0
 
-  field uname : String = ""
-  field mtime : Int32 = 0
-  field plock : Int32 = 1
+#   field uname : String = ""
+#   field mtime : Int32 = 0
+#   field plock : Int32 = 1
 
-  def self.new(cols : Array(String))
-    zstr, cpos, vstr = cols
+#   def self.new(cols : Array(String))
+#     zstr, cpos, vstr = cols
 
-    zstr = CharUtil.to_canon(zstr, true)
-    vstr = vstr.empty? ? "" : VietUtil.fix_tones(vstr)
+#     zstr = CharUtil.to_canon(zstr, true)
+#     vstr = vstr.empty? ? "" : VietUtil.fix_tones(vstr)
 
-    new(zstr: zstr, cpos: cpos, vstr: vstr, attr: cols[3]? || "")
-  end
+#     new(zstr: zstr, cpos: cpos, vstr: vstr, attr: cols[3]? || "")
+#   end
 
-  def self.new(zstr : String, cpos : String, vstr : String, attr : MtAttr)
-    zstr = CharUtil.to_canon(zstr, true)
-    vstr = VietUtil.fix_tones(vstr)
-    new(zstr: zstr, cpos: cpos, vstr: vstr, attr: attr.to_str)
-  end
+#   def self.new(zstr : String, cpos : String, vstr : String, attr : MtAttr)
+#     zstr = CharUtil.to_canon(zstr, true)
+#     vstr = VietUtil.fix_tones(vstr)
+#     new(zstr: zstr, cpos: cpos, vstr: vstr, attr: attr.to_str)
+#   end
 
-  def initialize(@zstr, @cpos = "X", @vstr = "", @attr = "",
-                 @uname = "", @mtime = 0, @plock = 1)
-    @ipos = MtEpos.parse(cpos).to_i
-    @iatt = MtAttr.parse_list(attr).to_i
-  end
+#   def initialize(@zstr, @cpos = "X", @vstr = "", @attr = "",
+#                  @uname = "", @mtime = 0, @plock = 1)
+#     @ipos = MtEpos.parse(cpos).to_i
+#     @iatt = MtAttr.parse_list(attr).to_i
+#   end
 
-  def ipos=(cpos : MtEpos)
-    @cpos = cpos.to_s
-    @ipos = cpos.to_i
-  end
+#   def ipos=(cpos : MtEpos)
+#     @cpos = cpos.to_s
+#     @ipos = cpos.to_i
+#   end
 
-  def ipos=(@cpos : String)
-    @ipos = MtEpos.parse(cpos).to_i
-  end
+#   def ipos=(@cpos : String)
+#     @ipos = MtEpos.parse(cpos).to_i
+#   end
 
-  def cpos=(cpos : MtEpos)
-    @cpos = cpos.to_s
-    @ipos = cpos.to_i
-  end
+#   def cpos=(cpos : MtEpos)
+#     @cpos = cpos.to_s
+#     @ipos = cpos.to_i
+#   end
 
-  def cpos=(@cpos : String)
-    @ipos = MtEpos.parse(cpos).to_i
-  end
+#   def cpos=(@cpos : String)
+#     @ipos = MtEpos.parse(cpos).to_i
+#   end
 
-  def attr=(attr : MtAttr)
-    @attr = attr.to_str
-    @iatt = attr.to_i
-  end
+#   def attr=(attr : MtAttr)
+#     @attr = attr.to_str
+#     @iatt = attr.to_i
+#   end
 
-  def attr=(@attr : String)
-    @iatt = MtAttr.parse_list(attr).to_i
-  end
+#   def attr=(@attr : String)
+#     @iatt = MtAttr.parse_list(attr).to_i
+#   end
 
-  def to_json(jb : JSON::Builder)
-    jb.object do
-      jb.field "zstr", @zstr
-      jb.field "cpos", @cpos
+#   def to_json(jb : JSON::Builder)
+#     jb.object do
+#       jb.field "zstr", @zstr
+#       jb.field "cpos", @cpos
 
-      jb.field "vstr", @vstr
-      jb.field "attr", @attr
+#       jb.field "vstr", @vstr
+#       jb.field "attr", @attr
 
-      jb.field "uname", @uname
-      jb.field "mtime", TimeUtil.cv_utime(@mtime)
+#       jb.field "uname", @uname
+#       jb.field "mtime", TimeUtil.cv_utime(@mtime)
 
-      jb.field "plock", @plock
-    end
-  end
+#       jb.field "plock", @plock
+#     end
+#   end
 
-  def to_tsv_line
-    String.build do |io|
-      io << @zstr << '\t' << @cpos << '\t' << @vstr
+#   def to_tsv_line
+#     String.build do |io|
+#       io << @zstr << '\t' << @cpos << '\t' << @vstr
 
-      if @plock != 1
-        io << '\t' << @attr
-        io << '\t' << @uname << '\t' << @mtime
-        io << '\t' << @plock
-      elsif @uname != ""
-        io << '\t' << @attr
-        io << '\t' << @uname << '\t' << @mtime
-      elsif @attr != ""
-        io << '\t' << @attr
-      end
-    end
-  end
+#       if @plock != 1
+#         io << '\t' << @attr
+#         io << '\t' << @uname << '\t' << @mtime
+#         io << '\t' << @plock
+#       elsif @uname != ""
+#         io << '\t' << @attr
+#         io << '\t' << @uname << '\t' << @mtime
+#       elsif @attr != ""
+#         io << '\t' << @attr
+#       end
+#     end
+#   end
 
-  ###
+#   ###
 
-  def self.find(dict : String, zstr : String, cpos : String)
-    self.find(dict, zstr, ipos: MtEpos.parse(cpos).to_i)
-  end
+#   def self.find(dict : String, zstr : String, cpos : String)
+#     self.find(dict, zstr, ipos: MtEpos.parse(cpos).to_i)
+#   end
 
-  def self.find(dict : String, zstr : String, ipos : Int32)
-    query = @@schema.select_by_pkey + " limit 1"
-    self.db(dict).query_one?(query, zstr, ipos, as: self)
-  end
+#   def self.find(dict : String, zstr : String, ipos : Int32)
+#     query = @@schema.select_by_pkey + " limit 1"
+#     self.db(dict).query_one?(query, zstr, ipos, as: self)
+#   end
 
-  def self.delete(dict : String, zstr : String, cpos : String)
-    self.delete(dict, zstr, ipos: MtEpos.parse(cpos).to_i)
-  end
+#   def self.delete(dict : String, zstr : String, cpos : String)
+#     self.delete(dict, zstr, ipos: MtEpos.parse(cpos).to_i)
+#   end
 
-  def self.delete(dict : String, zstr : String, ipos : Int32)
-    self.db(dict).open_rw do |db|
-      query = "delete from #{@@schema.table} where zstr = $1 and ipos = $2"
-      db.exec query, zstr, ipos
-    end
-  end
-end
+#   def self.delete(dict : String, zstr : String, ipos : Int32)
+#     self.db(dict).open_rw do |db|
+#       query = "delete from #{@@schema.table} where zstr = $1 and ipos = $2"
+#       db.exec query, zstr, ipos
+#     end
+#   end
+# end

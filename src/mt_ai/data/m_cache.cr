@@ -112,7 +112,7 @@ class MT::MCache
     indexes = [] of Int32
     missing = String::Builder.new
 
-    rids = inp.map { |str| gen_rid(str) }
+    rids = inp.map { |str| gen_rid(str.gsub('　', "")) }
     hash = @@db.query_all(SCAN_BY_STR_SQL, rids, ver, as: self).group_by(&.rid)
 
     outputs = rids.map_with_index do |rid, idx|
@@ -127,8 +127,9 @@ class MT::MCache
     end
 
     return outputs if indexes.empty?
+    missing = missing.to_s
 
-    raw_data = RawMtlBatch.call_hanlp(missing.to_s, ver: ver)
+    raw_data = RawMtlBatch.call_hanlp(missing, ver: ver)
     new_data = [] of self
 
     raw_data.tok.each_with_index do |tok, idx|
@@ -142,9 +143,7 @@ class MT::MCache
       new_data << entry
     end
 
-    spawn do
-      @@db.transaction { |tx| new_data.each(&.upsert!(db: tx.connection)) }
-    end
+    @@db.transaction { |tx| new_data.each(&.upsert!(db: tx.connection)) }
 
     outputs
   end

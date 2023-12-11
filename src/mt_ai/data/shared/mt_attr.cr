@@ -1,10 +1,9 @@
-require "../../_util/char_util"
-require "../../_util/text_util"
+require "./_shared"
 
 @[Flags]
 # word peculiarity
 # sort by most common types
-enum MT::MtAttr
+enum MT::MtAttr : Int32
   # nominal characteristics
 
   Ndes # descriptive noun
@@ -201,6 +200,14 @@ enum MT::MtAttr
     when ctag == "TMP" then Ntmp
     else                    None
     end
+  end
+
+  def self.from_rs(rs : ::DB::ResultSet)
+    new(rs.read(Int32))
+  end
+
+  def self.to_db(epos : self)
+    epos.value
   end
 end
 

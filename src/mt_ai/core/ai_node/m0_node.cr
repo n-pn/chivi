@@ -8,7 +8,7 @@ class MT::M0Node
 
   @[AlwaysInline]
   def translate!(dict : AiDict, rearrange : Bool = true) : Nil
-    self.set_term!(dict.get(@zstr, @epos)) if @dnum < 0
+    self.set_term!(dict.get(@zstr, @epos)) if @dnum.unknown_0?
   end
 
   def z_each(&)
@@ -31,6 +31,6 @@ class MT::M0Node
 
   def inspect_inner(io : IO)
     io << ' ' << @zstr.colorize.dark_gray
-    io << ' ' << @vstr.colorize(COLORS[@dnum % 10]) if @dnum >= 0
+    io << ' ' << @vstr.colorize(COLORS[@dnum.value % 10]) unless @dnum.unknown_0?
   end
 end

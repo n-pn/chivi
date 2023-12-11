@@ -4,27 +4,21 @@ require "./qt_core"
 require "./tl_unit"
 
 class MT::AiDict
-  @main_dict : MtDict
-  @auto_dict : MtDict
-
-  @@cache = {} of String => self
+  CACHE = {} of String => self
 
   def self.load(pdict : String)
-    @@cache[pdict] ||= begin
-      pdict = pdict.sub("book/", "wn/")
-      new(pdict)
-    end
+    CACHE[pdict] ||= new(pdict.sub("book", "wn").tr(":/", ""))
   end
 
-  def initialize(@pdict : String = "combined")
-    @main_dict = MtDict.load(pdict)
-    @auto_dict = MtDict.new(pdict, :autogen)
+  @pdict : ZvDict
 
-    @dict_list = {@main_dict, MtDict.regular, @auto_dict}
+  def initialize(pdict : String = "combined")
+    @pdict = ZvDict.load!(pdict)
+    @dicts = {@pdict, ZvDict.regular, ZvDict.essence}
   end
 
   def dsize
-    {@main_dict.size, @auto_dict.size, MtDict.regular.size}
+    {@pdict.total, ZvDict.regular.total, ZvDict.essence.total}
   end
 
   def get(zstr : String, epos : MtEpos) : MtTerm
@@ -32,14 +26,16 @@ class MT::AiDict
   end
 
   def get?(zstr : String, epos : MtEpos)
-    @dict_list.each do |dict|
-      dict.get?(zstr, epos).try { |found| return found }
+    @dicts.each do |dict|
+      next unless term = dict.hash_dict.get?(zstr, epos)
+      return term
     end
   end
 
   def get_alt?(zstr : String)
-    @dict_list.each do |dict|
-      dict.any?(zstr).try { |found| return found }
+    @dicts.each do |dict|
+      next unless term = dict.hash_dict.any?(zstr)
+      return term
     end
   end
 
@@ -71,8 +67,15 @@ class MT::AiDict
 
   @[AlwaysInline]
   def add_temp(zstr : String, epos : MtEpos, vstr : String, attr : MtAttr = :none)
-    # TODO: Add to main_dict directly?
-    @auto_dict.add(zstr, epos, vstr, attr)
+    # TODO: Add to pdict directly?
+    term = MtTerm.new(
+      vstr: vstr, attr: attr,
+      dnum: DictEnum.from(4, 0),
+      prio: MtTerm.calc_prio(zstr.size),
+      fpos: epos,
+    )
+
+    @pdict.hash_dict.add(zstr, epos, term)
   end
 
   NT_RE = /^([\d零〇一二两三四五六七八九十百千]+)(.*)/

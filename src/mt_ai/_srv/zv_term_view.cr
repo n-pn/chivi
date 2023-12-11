@@ -12,19 +12,19 @@ class MT::ZvtermView
     limit : Int32 = 50,
     offset : Int32 = 0
   )
-    args = [] of String | Int32 | Int16
+    args = [d_id] of String | Int32 | Int16
 
     where_stmt = String.build do |sql|
-      sql << " where 1 = 1"
-
-      if zstr
-        args << fix_query_str(zstr)
-        sql << " and zstr like $" << args.size
-      end
+      sql << " where d_id = $1"
 
       if cpos
         args << MtEpos.parse(cpos).value.to_i16
         sql << " and ipos = $" << args.size
+      end
+
+      if zstr
+        args << fix_query_str(zstr)
+        sql << " and zstr like $" << args.size
       end
 
       if vstr
@@ -61,11 +61,11 @@ class MT::ZvtermView
     if terms.size < args[-2].as(Int32)
       count = terms.size
     else
-      args[-2] = args[-2].as(Int32) &* 3
+      args[-2] = limit &* 3
       count = ZvTerm.db.query_all("select d_id from zvterm #{where_stmt}", args: args, as: Int32).size
     end
 
-    {terms, count &+ args[-1].as(Int32)}
+    {terms, offset &+ count}
   end
 
   private def self.fix_query_str(str : String)

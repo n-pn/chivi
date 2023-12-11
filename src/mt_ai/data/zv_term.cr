@@ -1,11 +1,5 @@
 require "../../_data/zr_db"
-
-require "../../_util/char_util"
-require "../../_util/viet_util"
-require "../../_util/time_util"
-
-require "./mt_term"
-require "./zv_util"
+require "./shared/*"
 
 class MT::ZvTerm
   class_getter db : ::DB::Database = ZR_DB
@@ -20,7 +14,7 @@ class MT::ZvTerm
   field zstr : String, pkey: true
 
   field cpos : String = "X"
-  field fixp : String = ""
+  field fixp : String = "X"
 
   field vstr : String = ""
   field attr : String = ""
@@ -35,9 +29,6 @@ class MT::ZvTerm
   field uname : String = ""
   field mtime : Int32 = -1
 
-  @[DB::Field(ignore: true, auto: true)]
-  getter matt : MtAttr { MtAttr.new(@attr) }
-
   def self.new(d_id : Int32, cols : Array(String), fixed : Bool = false)
     zstr, cpos, vstr = cols
 
@@ -46,12 +37,14 @@ class MT::ZvTerm
       vstr = vstr.empty? ? "" : VietUtil.fix_tones(vstr)
     end
 
-    new(d_id: d_id,
+    new(
+      d_id: d_id,
       cpos: cpos,
       zstr: zstr,
       vstr: vstr,
       attr: cols[3]? || "",
-      fixed: true)
+      fixed: true
+    )
   end
 
   def self.new(d_id : Int32, cpos : String, zstr : String,
@@ -61,22 +54,31 @@ class MT::ZvTerm
       vstr = vstr.empty? ? "" : VietUtil.fix_tones(vstr)
     end
 
-    new(d_id: d_id,
+    new(
+      d_id: d_id,
       cpos: cpos,
       zstr: zstr,
       vstr: vstr,
-      attr: attr)
+      attr: attr
+    )
   end
 
   def initialize(@d_id, @cpos, @zstr, @vstr = zstr,
                  @ipos = MtEpos.parse(cpos),
-                 @matt = MtAttr::None,
-                 @attr = matt.to_str,
-                 @toks = [zstr.size],
-                 @plock = 1_i16)
+                 @attr = "", @toks = [zstr.size],
+                 @plock = 0_i16)
   end
 
   def add_track(@uname, @mtime = TimeUtil.cv_mtime)
+  end
+
+  def to_mt(dtype : DictType = :generic)
+    MtTerm.new(
+      vstr: vstr,
+      attr: MtAttr.parse_list(@attr),
+      dnum: DictEnum.from(dtype, @plock),
+      prio: MtTerm.calc_prio(@zstr.size, @segr, @posr)
+    )
   end
 
   def cpos=(@ipos : MtEpos)
@@ -87,8 +89,8 @@ class MT::ZvTerm
     @ipos = MtEpos.parse(cpos)
   end
 
-  def attr=(@matt : MtAttr)
-    @attr = matt.to_str
+  def attr=(attr : MtAttr)
+    @attr = attr.to_str
   end
 
   def to_json(jb : JSON::Builder)
@@ -110,6 +112,10 @@ class MT::ZvTerm
       jb.field "mtime", TimeUtil.cv_utime(@mtime)
       jb.field "plock", @plock
     end
+  end
+
+  def as_temp
+    self.dup.tap { |x| x.dnum += 2_i8 }
   end
 
   ###

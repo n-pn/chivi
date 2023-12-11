@@ -1,17 +1,31 @@
 require "./mt_attr"
 require "./mt_epos"
+require "./dict_type"
 
 struct MT::MtTerm
   getter vstr : String
   getter attr : MtAttr
 
-  getter dnum : Int8
+  getter dnum : DictEnum = :autogen_0
+  getter prio : Int16 = 0_i16
 
-  def initialize(@vstr, @attr = :none, @dnum = 1_i8)
+  getter fpos : MtEpos = MtEpos::X
+
+  def self.calc_prio(size : Int32, segr = 2_i16, posr = 2_i16)
+    segr == 0 ? 0_i16 : size.to_i16 ** 2_i16 &* 100_i16 &+ segr &* 10_i16 &+ posr
   end
 
-  def as_temp
-    MtTerm.new(@vstr, @attr, @dnum &+ 2_i8)
+  def initialize(char : Char)
+    @vstr = char.to_s
+    @attr = MtAttr.parse(char)
+    @prio = MtTerm.calc_prio(1)
+  end
+
+  def initialize(@vstr,
+                 @attr = :none,
+                 @dnum = :unknown_0,
+                 @prio = 0_i16,
+                 @fpos = :X)
   end
 
   # def to_txt(io : IO, apply_cap : Bool, pad_space : Bool)
@@ -38,7 +52,4 @@ struct MT::MtTerm
 
   ###
 
-  def self.from_char(char : Char)
-    new(CharUtil.normalize(char).to_s, MtAttr.parse(char), 0_i8)
-  end
 end

@@ -59,55 +59,33 @@ class MT::ViTermForm
 
   getter? on_delete : Bool { @vstr.empty? && !@attr.includes?("Hide") }
 
-  def prev_term
-    ViTerm.find(dict: @dname, zstr: @zstr, cpos: @cpos)
-  end
+  def save!(uname : String = "", privi = 4, persist : Bool = true)
+    zdict = ZvDict.load!(@dname.sub("book", "wn").tr("/:", ""))
 
-  def save_to_disk!(uname : String,
-                    mtime = TimeUtil.cv_mtime,
-                    on_create : Bool = true) : Nil
-    dname = @dname.sub("book", "wn").tr("/:", "")
-    zvdict = ZvDict.load!(dname)
-
-    if on_delete?
-      zvdict.delete_term(self)
-    else
-      zvdict.add_term(self, uname)
+    if privi < zdict.p_min
+      raise Unauthorized.new "Bạn cần quyền hạn tối thiểu là #{zdict.p_min} để thêm/sửa từ"
     end
 
-    spawn do
-      db_path = ViTerm.db_path(@dname, "tsv")
+    zterm = zdict.load_term(cpos: @cpos, zstr: @zstr)
+    fresh = zterm.mtime < 0
+    p_min = zdict.p_min + zterm.plock
 
-      File.open(db_path, "a") do |file|
-        file << '\n'
-        {@zstr, @cpos, @vstr, @attr, uname, mtime, @plock}.join(file, '\t')
-      end
+    if @plock < p_min && privi < p_min + 1
+      raise Unauthorized.new "Từ đã bị khoá, bạn cần quyền hạn tối thiểu là #{p_min + 1} để đổi khoá"
     end
 
-    if on_delete?
-      ViTerm.delete(dict: @dname, zstr: @zstr, cpos: @cpos)
-    else
-      ViTerm.new(
-        zstr: @zstr, cpos: @cpos,
-        vstr: @vstr, attr: @attr,
-        uname: uname, mtime: mtime,
-        plock: @plock
-      ).upsert!(db: ViTerm.db(@dname))
+    if @vstr.empty? && !@attr.includes?("Hide")
+      return zdict.delete_term(zterm: zterm, persist: persist)
     end
-  end
 
-  def sync_with_dict!
-    return unless mt_dict = MtDict.get?(@dname)
-    epos = MtEpos.parse(@cpos)
+    zterm.vstr = @vstr
+    zterm.attr = @attr
+    zterm.plock = @plock
 
-    if self.on_delete?
-      mt_dict.del(zstr, epos)
-    else
-      attr = MtAttr.parse_list(@attr)
-      dnum = MtDnum.from(dtype: mt_dict.type, plock: @plock.to_i8)
+    zterm.uname = uname
+    zterm.mtime = TimeUtil.cv_mtime
 
-      mt_term = MtTerm.new(vstr: @vstr, attr: attr, dnum: dnum)
-      mt_dict.add(zstr, epos: epos, term: mt_term)
-    end
+    zterm = zterm.upsert!
+    zdict.add_term(zterm, fresh: fresh, persist: true)
   end
 end

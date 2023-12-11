@@ -7,14 +7,14 @@ text = ARGV[0]? || "(TOP (IP (IP (IP (IP (NP (NN 明眸)) (ADJP (VA 善)) (NP (N
 dict = ARGV[1]? || "up/1234"
 
 text = text.gsub(/\n\s+/, " ")
-data = MT::AiCore.new(dict).tl_from_con_data(text)
+data = MT::AiCore.new(dict).translate!(MT::RawCon.from_text(text))
 
 puts "--------------------------------".colorize.dark_gray
 puts data.zstr.colorize.cyan
 puts "--------------------------------".colorize.dark_gray
 puts MT::QtCore.tl_hvword(data.zstr, true).colorize.light_gray
 puts "--------------------------------".colorize.dark_gray
-data.root.inspect(STDOUT)
+data.inspect(STDOUT)
 puts
 puts "--------------------------------".colorize.dark_gray
 puts data.to_txt.colorize.yellow

@@ -35,33 +35,16 @@ class MT::ViTermCtrl < AC::Base
   LOG_DIR = "var/ulogs/mtapp"
   Dir.mkdir_p(LOG_DIR)
 
-  @[AC::Route::PUT("/once", body: :form)]
-  def upsert_once(form : ViTermForm)
-    _log_action("once", form, ldir: LOG_DIR)
-
-    prev_term = form.prev_term
-
-    min_plock = prev_term ? prev_term.plock : 0
-    min_privi = ZvDict::Kind.p_min(form.dname) + min_plock
-
-    if _privi < min_privi
-      raise Unauthorized.new "Bạn cần quyền hạn tối thiểu là #{min_privi} để thêm/sửa từ"
-    end
-
-    if form.plock < min_plock && _privi < min_privi &+ 1
-      raise Unauthorized.new "Từ đã bị khoá, bạn cần quyền hạn tối thiểu là #{min_privi + 1} để đổi khoá"
-    end
-
-    spawn form.save_to_disk!(_uname, on_create: prev_term.nil?)
-
-    form.sync_with_dict!
+  @[AC::Route::PUT("/once", body: :tform)]
+  def upsert_once(tform : ViTermForm)
+    _log_action("once", tform, ldir: LOG_DIR)
+    tform.save!(uname: self._uname, privi: self._privi)
     render text: "ok"
   end
 
   @[AC::Route::GET("/find")]
-  def show(dict : String, zstr : String, cpos : String)
-    dict = dict.sub(':', '/')
-    term = ViTerm.find(dict: dict, zstr: zstr, cpos: cpos)
+  def show(d_id : Int32, zstr : String, cpos : String)
+    term = ZvTerm.find(d_id: d_id, zstr: zstr, cpos: cpos)
 
     if term
       render json: term

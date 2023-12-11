@@ -1,17 +1,24 @@
 require "../data/*"
 
 class MT::QtDict
-  class_getter pin_yin : self { new(MtTrie.pin_yin) }
-  class_getter hv_word : self { new(MtTrie.hv_word) }
-  class_getter hv_name : self { new(MtTrie.hv_name) }
+  class_getter pin_yin : self { new("pin_yin") }
+  class_getter hv_word : self { new("word_hv") }
+  class_getter hv_name : self { new("name_hv") }
 
-  def initialize(@main : MtTrie)
+  BASE_TRIE = ZvDict.essence.trie_dict
+
+  getter pdict : ZvDict
+
+  def initialize(dname : String)
+    @pdict = ZvDict.load!(dname)
   end
 
   ###
 
   def find(chars : Array(Char), start = 0) : {MtTerm, Int32, Int32}
-    existed = @main.find_best(chars, start) || MtTrie.essence.find_best(chars, start)
+    existed = @pdict.trie_dict.match(chars, start)
+    existed ||= BASE_TRIE.match(chars, start)
+
     initial = init(chars, start)
 
     existed && existed[1] >= initial[1] ? existed : initial
@@ -21,11 +28,15 @@ class MT::QtDict
     first_char = chars.unsafe_fetch(start)
 
     unless CharUtil.fw_alnum?(first_char)
-      return {MtTerm.from_char(first_char), 1, 4}
+      return {MtTerm.new(first_char), 1, 4}
     end
 
+    zstr = String::Builder.new
     vstr = String::Builder.new
+
+    zstr << first_char
     vstr << CharUtil.normalize(first_char)
+
     attr = MtAttr::None
 
     index = start &+ 1
@@ -34,12 +45,21 @@ class MT::QtDict
       char = chars.unsafe_fetch(index)
       break unless '！' <= char <= '～'
 
+      zstr << char
       vstr << CharUtil.normalize(char)
+
       attr = MtAttr::Asis unless CharUtil.fw_alnum?(char)
 
       index &+= 1
     end
 
-    {MtTerm.new(vstr.to_s, attr, 0_i8), index &- start, 5}
+    term = MtTerm.new(
+      vstr: vstr.to_s,
+      attr: attr,
+      dnum: :autogen_0,
+      prio: MtTerm.calc_prio(index &- start)
+    )
+
+    {term, index &- start, 5}
   end
 end
