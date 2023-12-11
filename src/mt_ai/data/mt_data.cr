@@ -36,7 +36,7 @@ struct MT::MtData
   ###
 
   include Crorm::Model
-  schema "mtdata", :sqlite, multi: true
+  schema "mtdata", :sqlite, multi: true, strict: false
 
   field d_id : Int32, pkey: true
   field epos : MtEpos, pkey: true, converter: SQ3Enum(MT::MtEpos)
@@ -44,10 +44,7 @@ struct MT::MtData
 
   field vstr : String
   field attr : MtAttr, converter: SQ3Enum(MT::MtAttr)
-
   field dnum : DictEnum, converter: SQ3Enum(MT::DictEnum)
-  field prio : Int32 = 0
-
   field fpos : MtEpos = MT::MtEpos::X, converter: SQ3Enum(MT::MtEpos)
 
   def initialize(zterm : ZvTerm)
@@ -61,14 +58,11 @@ struct MT::MtData
     @fpos = MtEpos.parse(zterm.fixp) unless zterm.fixp.empty?
 
     @dnum = DictEnum.from(zterm.d_id, zterm.plock)
-    @prio = MtTerm.calc_prio(zterm.zstr.size, zterm.segr, zterm.posr).to_i
   end
 
   def initialize(@d_id, @epos, @zstr,
                  @vstr = TextUtil.normalize(zstr),
-                 @attr = :none,
-                 @dnum = :unknown_0,
-                 @prio = 0)
+                 @attr = :none, @dnum = :unknown_0)
   end
 
   def save!
@@ -78,7 +72,7 @@ struct MT::MtData
   end
 
   def to_mt
-    MtTerm.new(vstr: @vstr, attr: @attr, dnum: @dnum, prio: @prio.to_i16)
+    MtTerm.new(vstr: @vstr, attr: @attr, dnum: @dnum)
   end
 
   def self.fetch(d_id : Int32)

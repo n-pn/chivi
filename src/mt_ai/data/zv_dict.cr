@@ -44,7 +44,7 @@ class MT::ZvDict
     root = TrieDict.new
 
     self.hash_dict.hash.each do |zstr, hash|
-      root[zstr] = hash.each_value.max_by(&.prio)
+      root[zstr] = hash.each_value.first
     end
 
     root

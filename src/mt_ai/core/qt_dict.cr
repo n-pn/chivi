@@ -53,13 +53,7 @@ class MT::QtDict
       index &+= 1
     end
 
-    term = MtTerm.new(
-      vstr: vstr.to_s,
-      attr: attr,
-      dnum: :autogen_0,
-      prio: MtTerm.calc_prio(index &- start)
-    )
-
+    term = MtTerm.new(vstr: vstr.to_s, attr: attr, dnum: :autogen_0)
     {term, index &- start, 5}
   end
 end

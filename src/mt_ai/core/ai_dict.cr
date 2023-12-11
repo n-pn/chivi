@@ -71,7 +71,6 @@ class MT::AiDict
     term = MtTerm.new(
       vstr: vstr, attr: attr,
       dnum: DictEnum.from(4, 0),
-      prio: MtTerm.calc_prio(zstr.size),
       fpos: epos,
     )
 

@@ -4,8 +4,14 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  import { btran_word } from '$utils/qtran_utils/btran_free'
+  import { Rdline } from '$lib/reader'
+  import { btran_text } from '$utils/qtran_utils/btran_free'
   import { gtran_word } from '$utils/qtran_utils/gtran_free'
+  import { baidu_word } from '$utils/qtran_utils/baidu_free'
+
+  import Wpanel from '$gui/molds/Wpanel.svelte'
+
+  $: rline = new Rdline(data.input)
 </script>
 
 <header>
@@ -28,33 +34,25 @@
 </header>
 
 {#if data.input}
-  <h2 class="h4">Google Translate</h2>
-  {#await gtran_word(data.input)}
-    <div class="d-emtpy-xs">
-      <SIcon name="loader-2" spin={true} />
-      <em>Đang tải</em>
-    </div>
-  {:then terms}
-    <div class="out-list">
-      {#each terms as term}
-        <div class="out-term">{term}</div>
-      {/each}
-    </div>
-  {/await}
+  <Wpanel
+    class="_big"
+    title="Dịch bằng Google:"
+    loader={rline.load_gtran.bind(rline)} />
+  <Wpanel
+    class="_big"
+    title="Dịch bằng Bing:"
+    loader={rline.load_bt_zv.bind(rline)} />
 
-  <h2 class="h4">Bing Translate</h2>
-  {#await btran_word(data.input)}
-    <div class="d-emtpy-xs">
-      <SIcon name="loader-2" spin={true} />
-      <em>Đang tải</em>
-    </div>
-  {:then terms}
-    <div class="out-list">
-      {#each terms as term}
-        <div class="out-term">{term}</div>
-      {/each}
-    </div>
-  {/await}
+  <Wpanel
+    title="Dịch bằng Baidu:"
+    class="_big"
+    wdata={rline.baidu}
+    loader={rline.load_baidu.bind(rline)} />
+
+  <Wpanel
+    class="_big"
+    title="GPT Tiên hiệp:"
+    loader={rline.load_c_gpt.bind(rline)} />
 {:else}
   <div class="d-empty-sm">
     <em>Nhập tiếng Trung để dịch nhanh</em>
@@ -87,19 +85,5 @@
       @include bdradi(0, $loc: left);
       height: 2.25rem;
     }
-  }
-
-  .out-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .out-term {
-    @include bdradi;
-
-    @include bgcolor(main);
-    padding: 0.25rem 0.5rem;
   }
 </style>

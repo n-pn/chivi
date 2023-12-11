@@ -1,22 +1,28 @@
-<script context="module">
-  const stats = ['Thu nhỏ xuống', 'Trạng thái thường', 'Phóng to hết cỡ']
-  const icons = ['minimize', 'resize', 'maximize']
-</script>
-
 <script lang="ts">
   import { copy_to_clipboard } from '$utils/btn_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
+  import { browser } from '$app/environment'
 
   export let title = ''
-  export let state = 1
-  export let lines = 3
-
   export let wdata = ''
+
+  export let loader: () => Promise<string> = undefined
+  export let loaded = !!wdata
+
+  export let lines = 3
+  export let _full = false
+
+  $: if (browser && loader && !loaded) {
+    loader().then((x) => {
+      wdata = x
+      loaded = true
+    })
+  }
 </script>
 
-<section style="--lc: {lines}">
-  <h4>
+<section class="panel {$$props.class}" style="--lc: {lines}">
+  <header>
     <span class="title">{title}</span>
     <span class="tools">
       <slot name="tools" />
@@ -31,36 +37,68 @@
         <SIcon name="copy" />
       </button>
 
-      {#each icons as icon, new_state}
+      {#if loader}
         <button
+          type="button"
           class="-btn"
-          class:_active={state == new_state}
-          on:click={() => (state = new_state)}
-          data-tip={stats[new_state]}
+          data-tip="Dịch lại nội dung"
           data-tip-loc="bottom"
-          data-tip-pos="right">
-          <SIcon name={icon} />
+          data-tip-pos="right"
+          on:click={() => (loaded = false)}>
+          <SIcon name="refresh" />
         </button>
-      {/each}
-    </span>
-  </h4>
+      {/if}
 
-  <div class="wbody cdata {$$props.class} _{state}">
-    <slot />
-    {#if !wdata}<div class="d-empty-xs"><slot name="empty" /></div>{/if}
+      <button
+        class="-btn"
+        on:click={() => (_full = !_full)}
+        data-tip="Mở rộng/thu hẹp cửa sổ"
+        data-tip-loc="bottom"
+        data-tip-pos="right">
+        <SIcon name={_full ? 'minimize' : 'maximize'} />
+      </button>
+    </span>
+  </header>
+
+  <div class="wbody cdata {$$props.class}" class:_full>
+    {#if !loaded && loader}
+      <div class="d-empty-xs">
+        <SIcon name="loader-2" spin={true} />
+        <em>Đang tải</em>
+      </div>
+    {:else if !wdata}
+      <div class="d-empty-xs">
+        <slot name="empty">Không có nội dung.</slot>
+      </div>
+    {:else}
+      <slot>{@html wdata}</slot>
+    {/if}
   </div>
 </section>
 
 <style lang="scss">
-  h4 {
-    display: flex;
-    margin-top: 0.5rem;
-    margin-bottom: 0.25rem;
+  .panel {
+    margin: 0.75rem 0;
+    @include bdradi;
+    @include border(--bd-soft);
+    @include bgcolor(tert);
+
+    // &:global(._big) {
+    //   margin: 1rem 0;
+    // }
+  }
+
+  header {
+    @include flex-cy;
+    padding: 0 0.25rem 0 0.5rem;
+    font-weight: 500;
+    line-height: 1.5rem;
+    // @include border(--bd-soft, $loc: bottom);
     @include ftsize(sm);
 
-    // padding: 0 0.75rem;
-    font-weight: 500;
-    line-height: 1rem;
+    // :global(._big) > & {
+    //   padding: 0.25rem 0.5rem 0.25rem 0.75rem;
+    // }
   }
 
   .tools {
@@ -74,7 +112,6 @@
       font-style: italic;
       font-weight: 400;
 
-      &._active,
       &:hover {
         @include fgcolor(primary, 5);
       }
@@ -92,24 +129,12 @@
 
     --lh: 1.25em;
     line-height: var(--lh);
+    max-height: calc(var(--lh) * var(--lc, 3) + 0.5rem);
 
-    @include bgcolor(tert);
+    @include bgcolor(secd);
+    @include bdradi($loc: bottom);
 
-    @include border;
-    @include bdradi;
-
-    &._0,
-    &._1 {
-      @include scroll;
-    }
-
-    &._0 {
-      max-height: calc(var(--lh) + 0.55rem);
-    }
-
-    &._1 {
-      max-height: calc(var(--lh) * var(--lc, 3) + 0.5rem);
-    }
+    @include scroll;
 
     &._lg {
       @include ftsize(lg);
@@ -121,6 +146,10 @@
 
     &._ct {
       overflow-x: scroll;
+    }
+
+    &._full {
+      max-height: initial;
     }
   }
 

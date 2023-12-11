@@ -1,5 +1,6 @@
 import { btran_text } from '$utils/qtran_utils/btran_free'
 import { call_baidu } from '$utils/qtran_utils/baidu_free'
+import { gtran_word } from '$utils/qtran_utils/gtran_free'
 
 import {
   gen_ctree_html,
@@ -47,6 +48,8 @@ export class Rdline {
   qt_v1: string
   baidu: string
 
+  gtran: string
+
   bt_zv: string
   c_gpt: string
   vtran: string
@@ -57,23 +60,51 @@ export class Rdline {
     this.mt_ai = undefined
 
     this.baidu = ''
+    this.gtran = ''
+
     this.qt_v1 = ''
     this.bt_zv = ''
     this.c_gpt = ''
     this.vtran = ''
   }
 
-  async load_c_gpt(rmode = 0) {
-    const c_gpt = this.c_gpt
+  async load_gtran(rmode = 1) {
+    if (rmode == 0 || !this.ztext) return this.gtran
+    if (this.gtran && rmode < 2) return this.gtran
 
-    if (c_gpt && rmode < 2) return this
-    if (rmode == 0) return this
+    const data = await gtran_word(this.ztext)
+    this.gtran = data[0]
+    return this.gtran
+  }
+
+  async load_bt_zv(rmode = 1) {
+    if (rmode == 0 || !this.ztext) return this.bt_zv
+    if (this.bt_zv && rmode < 2) return this.bt_zv
+
+    const data = await btran_text([this.ztext])
+    this.bt_zv = data[0]
+    return this.bt_zv
+  }
+
+  async load_baidu(rmode = 1) {
+    if (rmode == 0 || !this.ztext) return this.baidu
+    if (this.baidu && rmode < 2) return this.baidu
+
+    const baidu = await call_baidu(this.ztext)
+
+    this.baidu = baidu[0]
+    return this.baidu
+  }
+
+  async load_c_gpt(rmode = 1) {
+    if (rmode == 0 || !this.ztext) return this.c_gpt
+    if (this.c_gpt && rmode < 2) return this.c_gpt
 
     const rinit = { method: 'POST', cache: 'default', body: this.ztext }
     const res = await fetch('/_sp/c_gpt', rinit as RequestInit)
 
     this.c_gpt = await res.text()
-    return this
+    return this.c_gpt
   }
 
   get_ztext(from: number, upto: number) {

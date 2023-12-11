@@ -41,7 +41,7 @@ class MT::HashDict
 
   def any?(zstr : String)
     return unless hash = @hash[zstr]?
-    hash.each_value.max_by(&.prio)
+    hash.each_value.first
   end
 
   def delete(zstr : String, epos : MtEpos)

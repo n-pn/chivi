@@ -7,8 +7,6 @@ struct MT::MtTerm
   getter attr : MtAttr
 
   getter dnum : DictEnum = :autogen_0
-  getter prio : Int16 = 0_i16
-
   getter fpos : MtEpos = MtEpos::X
 
   def self.calc_prio(size : Int32, segr = 2_i16, posr = 2_i16)
@@ -18,14 +16,9 @@ struct MT::MtTerm
   def initialize(char : Char)
     @vstr = char.to_s
     @attr = MtAttr.parse(char)
-    @prio = MtTerm.calc_prio(1)
   end
 
-  def initialize(@vstr,
-                 @attr = :none,
-                 @dnum = :unknown_0,
-                 @prio = 0_i16,
-                 @fpos = :X)
+  def initialize(@vstr, @attr = :none, @dnum = :unknown_0, @fpos = :X)
   end
 
   # def to_txt(io : IO, apply_cap : Bool, pad_space : Bool)
