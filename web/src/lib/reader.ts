@@ -107,6 +107,30 @@ export class Rdline {
     return this.c_gpt
   }
 
+  async load_qt_v1(rmode = 1, wn_id = 0) {
+    if (rmode == 0 || !this.ztext) return this.c_gpt
+    if (this.c_gpt && rmode < 2) return this.c_gpt
+
+    const url = `/_m1/qtran?wn_id=${wn_id}&format=txt`
+    const res = await fetch(url, { method: 'post', body: this.ztext })
+
+    if (res.ok) this.qt_v1 = await res.text()
+    return this.qt_v1
+  }
+
+  async load_mtran(rmode = 1, pdict = 'combine', _algo = 'mtl_2') {
+    if (rmode == 0 || !this.ztext) return this.mt_ai
+    if (this.mt_ai && rmode < 2) return this.mt_ai
+
+    const url = `/_ai/qtran?pdict=${pdict}&_algo=${_algo}`
+    const res = await fetch(url, { method: 'post', body: this.ztext })
+    if (!res.ok) return null
+
+    const { lines } = await res.json()
+    this.mt_ai = lines[0]
+    return this.mt_ai
+  }
+
   get_ztext(from: number, upto: number) {
     return this.ztext.substring(from, upto)
   }

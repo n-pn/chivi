@@ -37,6 +37,25 @@ class MT::AiTranCtrl < AC::Base
     render status, json: {lines: [] of String, error: ex.message}
   end
 
+  @[AC::Route::POST("/qtran")]
+  def qtran_text(pdict : String = "combine", _algo : String = "mtl_1")
+    start = Time.monotonic
+
+    input = self._read_body.lines(chomp: true)
+    zdata = MCache.find_all!(input, ver: _algo[-1].to_i16)
+
+    ai_mt = AiCore.new(pdict)
+    vdata = zdata.map { |line| ai_mt.translate!(line.con) }
+
+    tspan = (Time.monotonic - start).total_milliseconds.round(2)
+    json = {lines: vdata, ztree: zdata.map(&.con.to_s), tspan: tspan}
+
+    render json: json
+  rescue ex
+    Log.error(exception: ex) { input }
+    render 455, ex.message
+  end
+
   @[AC::Route::POST("/reload")]
   def reload(pdict : String = "combine")
     start = Time.monotonic
@@ -47,26 +66,6 @@ class MT::AiTranCtrl < AC::Base
 
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
     json = {lines: trees, tspan: tspan}
-
-    render json: json
-  rescue ex
-    Log.error(exception: ex) { input }
-    render 455, ex.message
-  end
-
-  @[AC::Route::POST("/debug")]
-  def debug(pdict : String = "combine", m_alg = "mtl_1")
-    start = Time.monotonic
-
-    input = _read_body.strip
-    hlink = "#{CV_ENV.lp_host}/mtl_text/#{m_alg}"
-    ztree = HTTP::Client.post(hlink, body: input, &.body_io.gets_to_end).lines
-
-    ai_mt = AiCore.new(pdict)
-    vdata = ztree.map { |line| ai_mt.translate!(RawCon.from_text(line)) }
-
-    tspan = (Time.monotonic - start).total_milliseconds.round(2)
-    json = {lines: vdata, ztree: ztree, tspan: tspan}
 
     render json: json
   rescue ex

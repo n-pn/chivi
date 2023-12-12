@@ -2,22 +2,30 @@
   import { copy_to_clipboard } from '$utils/btn_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import { browser } from '$app/environment'
 
   export let title = ''
   export let wdata = ''
 
-  export let loader: () => Promise<string> = undefined
+  export let loader: (rmode: number) => Promise<string> = undefined
   export let loaded = !!wdata
 
   export let lines = 3
   export let _full = false
 
-  $: if (browser && loader && !loaded) {
-    loader().then((x) => {
-      wdata = x
-      loaded = true
-    })
+  $: if (loader && !loaded && !_onload) {
+    do_reload(1)
+  }
+
+  let _onload = false
+
+  const do_reload = async (rmode = 1) => {
+    wdata = ''
+    _onload = true
+
+    wdata = await loader(rmode)
+    if (wdata) loaded = true
+
+    _onload = false
   }
 </script>
 
@@ -44,7 +52,8 @@
           data-tip="Dịch lại nội dung"
           data-tip-loc="bottom"
           data-tip-pos="right"
-          on:click={() => (loaded = false)}>
+          disabled={_onload}
+          on:click={() => do_reload(2)}>
           <SIcon name="refresh" />
         </button>
       {/if}
@@ -60,18 +69,18 @@
     </span>
   </header>
 
-  <div class="wbody cdata {$$props.class}" class:_full>
-    {#if !loaded && loader}
+  <div class="wbody" class:_full>
+    {#if wdata}
+      <slot>{wdata}</slot>
+    {:else if _onload || !loaded}
       <div class="d-empty-xs">
-        <SIcon name="loader-2" spin={true} />
+        <SIcon name="loader-2" spin={_onload} />
         <em>Đang tải</em>
       </div>
-    {:else if !wdata}
+    {:else}
       <div class="d-empty-xs">
         <slot name="empty">Không có nội dung.</slot>
       </div>
-    {:else}
-      <slot>{@html wdata}</slot>
     {/if}
   </div>
 </section>
@@ -106,6 +115,10 @@
     margin-left: auto;
     gap: 0.125em;
 
+    :global(svg + svg) {
+      margin-left: -0.5em;
+    }
+
     > :global(.-btn) {
       background-color: inherit;
       @include fgcolor(tert);
@@ -118,6 +131,10 @@
       &:disabled {
         @include fgcolor(mute);
       }
+    }
+
+    > :global(.-btn._active) {
+      @include fgcolor(primary, 5);
     }
   }
 
