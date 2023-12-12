@@ -159,14 +159,14 @@ def mtl_from_file(kind):
 
 @app.route("/mtl_text/<kind>", methods=['POST'])
 def mtl_from_text(kind):
-    inp_data = request.get_data(as_text=True).split('\n')
+    inp_data = request.get_data(as_text=True).splitlines()
     mtl_data = call_mtl_task(load_task(kind), inp_data)
 
     return mtl_data.to_json()
 
 @app.route("/mtl_toks/<kind>", methods=['POST'])
 def mtl_from_toks(kind):
-    inp_data = request.get_data(as_text=True).split('\n')
+    inp_data = request.get_data(as_text=True).splitlines()
     mtl_data = call_mtl_task_tokenized(load_task(kind), inp_data)
 
     return mtl_data.to_json()

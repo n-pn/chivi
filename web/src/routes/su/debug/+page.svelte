@@ -13,8 +13,7 @@
     mt_rm: 'mtl_3',
   }
 
-  $: ai_url = `/_ai/debug?pdict=${ropts.pdict}&m_alg=${ropts.mt_rm}`
-  $: hv_url = `/_ai/hviet?pdict=${ropts.pdict}&m_alg=${ropts.mt_rm}`
+  $: ai_url = `/_ai/qtran?pdict=${ropts.pdict}&_algo=${ropts.mt_rm}&debug=true`
 
   let ztext =
     '“既然你现在魔道双修，或许可以利用你体内同时存在两套的､本该是水火不容的根基，做一些出人意料的事情。”'
@@ -23,7 +22,8 @@
   $: rinit = { body: ztext, method: 'POST' }
 
   const call_debug = async () => {
-    const hdata = await fetch(hv_url, rinit).then((r) => r.text())
+    const hdata = await fetch('/_ai/hviet', rinit).then((r) => r.text())
+
     rpage.hviet = hdata
       .split('\n')
       .map((x) => x.match(/[\s\u200b].[^\s\u200b]*/g))

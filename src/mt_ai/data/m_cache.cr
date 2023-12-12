@@ -108,21 +108,38 @@ class MT::MCache
     end
   end
 
-  def self.find_all!(inp : Array(String), ver : Int16 = 1_i16)
+  SCAN_CON_BY_STR_SQL = <<-SQL
+    select rid, con from mcache
+    where rid = any ($1) and ver = $2
+    order by mtime desc
+    SQL
+
+  def self.find_con!(inp : Array(String), ver : Int16 = 1_i16)
+    inp = inp.map! { |str| CharUtil.to_canon(str).tr("　", "") }
+
+    rids = inp.map { |str| gen_rid(str) }
+    hash = {} of Int64 => RawCon
+
+    @@db.query_each(SCAN_CON_BY_STR_SQL, rids, ver) do |rs|
+      rid = rs.read(Int64)
+      con = RawCon.from_rs(rs)
+      hash[rid] ||= con
+    end
+
     indexes = [] of Int32
     missing = String::Builder.new
 
-    rids = inp.map { |str| gen_rid(str.gsub('　', "")) }
-    hash = @@db.query_all(SCAN_BY_STR_SQL, rids, ver, as: self).group_by(&.rid)
-
     outputs = rids.map_with_index do |rid, idx|
-      hash[rid]?.try(&.first) || begin
-        missing << '\n' unless indexes.empty?
-
+      hash[rid]? || begin
         str = inp[idx]
-        missing << str
-        indexes << idx
-        new(ver: ver, tok: [str])
+
+        unless str.empty?
+          missing << '\n' unless indexes.empty?
+          missing << str
+          indexes << idx
+        end
+
+        RawCon.new("TOP", [] of RawCon)
       end
     end
 
@@ -139,7 +156,7 @@ class MT::MCache
       raw_data.dep[idx]?.try { |dep| entry.dep = dep }
       entry.ner = raw_data.ner_msra[idx].concat(raw_data.ner_onto[idx])
 
-      outputs[indexes[idx]] = entry
+      outputs[indexes[idx]] = entry.con
       new_data << entry
     end
 

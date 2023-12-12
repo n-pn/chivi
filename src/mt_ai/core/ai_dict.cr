@@ -14,7 +14,12 @@ class MT::AiDict
 
   def initialize(pdict : String = "combined")
     @pdict = ZvDict.load!(pdict)
-    @dicts = {@pdict, ZvDict.regular, ZvDict.essence}
+    @dicts = {
+      @pdict.hash_dict,
+      ZvDict.regular.hash_dict,
+      ZvDict.essence.hash_dict,
+      HashDict.new(@pdict.d_id),
+    }
   end
 
   def dsize
@@ -27,14 +32,14 @@ class MT::AiDict
 
   def get?(zstr : String, epos : MtEpos)
     @dicts.each do |dict|
-      next unless term = dict.hash_dict.get?(zstr, epos)
+      next unless term = dict.get?(zstr, epos)
       return term
     end
   end
 
   def get_alt?(zstr : String)
     @dicts.each do |dict|
-      next unless term = dict.hash_dict.any?(zstr)
+      next unless term = dict.any?(zstr)
       return term
     end
   end
@@ -68,13 +73,8 @@ class MT::AiDict
   @[AlwaysInline]
   def add_temp(zstr : String, epos : MtEpos, vstr : String, attr : MtAttr = :none)
     # TODO: Add to pdict directly?
-    term = MtTerm.new(
-      vstr: vstr, attr: attr,
-      dnum: DictEnum.from(4, 0),
-      fpos: epos,
-    )
-
-    @pdict.hash_dict.add(zstr, epos, term)
+    term = MtTerm.new(vstr: vstr, attr: attr, dnum: :autogen_0, fpos: epos)
+    @dicts.last.add(zstr, epos, term)
   end
 
   NT_RE = /^([\d零〇一二两三四五六七八九十百千]+)(.*)/

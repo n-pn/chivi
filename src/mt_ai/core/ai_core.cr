@@ -1,5 +1,6 @@
 require "../_raw/raw_con"
 require "./ai_node/*"
+require "./tl_chap"
 
 class MT::AiCore
   getter dict : AiDict
@@ -8,10 +9,14 @@ class MT::AiCore
     @dict = AiDict.load(pdict)
   end
 
-  def translate!(data : RawCon, rearrange : Bool = true)
-    root = init_node(data, _idx: 0)
-    root.translate!(dict: @dict, rearrange: rearrange)
-    root
+  def translate!(data : RawCon, pre : Nil = nil)
+    init_node(data, _idx: 0).tap(&.translate!(dict: @dict))
+  end
+
+  def translate!(data : RawCon, pre : AiNode)
+    root = init_node(data, _idx: pre.zstr.size)
+    root.as(MxNode).list.unshift(pre)
+    root.tap(&.translate!(dict: @dict))
   end
 
   private def init_node(data : RawCon, _idx : Int32 = 0)
@@ -29,6 +34,8 @@ class MT::AiCore
     end
 
     case
+    when epos.top?
+      MxNode.new(list, epos, attr: attr, _idx: _idx)
     when list.size == 1
       M1Node.new(list[0], epos, attr: attr, _idx: _idx)
     when epos.np?

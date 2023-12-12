@@ -7,7 +7,7 @@ class MT::QtTranCtrl < AC::Base
   TEXT_DIR = "var/wnapp/chtext"
 
   @[AC::Route::GET("/qt/hviet")]
-  def hviet_file(fpath : String)
+  def hfile(fpath : String)
     start = Time.monotonic
     mcore = QtCore.hv_word
 
@@ -33,7 +33,7 @@ class MT::QtTranCtrl < AC::Base
   end
 
   @[AC::Route::POST("/hviet")]
-  def hviet_text
+  def htext
     mcore = QtCore.hv_word
 
     hviet = String.build do |io|

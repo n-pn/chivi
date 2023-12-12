@@ -41,7 +41,7 @@ enum MT::DictEnum : Int8
   end
 
   @[AlwaysInline]
-  def self.from(d_id : Int32, plock : Int16)
+  def self.from(d_id : Int32, plock : Int16 = 0_i16)
     dtype = d_id % 10 < 4 ? 2_i8 : 1_i8
     new(plock.to_i8 &* 10_i8 &+ dtype)
   end

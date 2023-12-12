@@ -15,6 +15,12 @@ module MT::AiNode
   abstract def first
   abstract def last
 
+  def inc_idx!(val : Int32)
+    @_idx += val
+    return if self.is_a?(M0Node)
+    self.z_each(&.inc_idx!(val))
+  end
+
   def tl_whole!(dict : AiDict)
     unless term = dict.get?(@zstr, @epos)
       return if self.is_a?(M1Node)
@@ -53,7 +59,7 @@ module MT::AiNode
   end
 
   def attr?(attr : MtAttr)
-    @att == MtAttr
+    @attr == MtAttr
   end
 
   def attr?(&)
