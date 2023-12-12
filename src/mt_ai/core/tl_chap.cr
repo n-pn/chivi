@@ -43,7 +43,7 @@ module MT::TlChap
     zh_ch += trash
     vi_ch += ':' unless title.empty?
 
-    node = M0Node.new(zstr: zh_ch, epos: :LST)
+    node = M0Node.new(zstr: zh_ch.gsub('　', ""), epos: :LST)
     node.set_vstr!(vi_ch)
     node.set_attr!(:capn)
 
