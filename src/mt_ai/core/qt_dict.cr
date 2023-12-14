@@ -5,19 +5,16 @@ class MT::QtDict
   class_getter hv_word : self { new("word_hv") }
   class_getter hv_name : self { new("name_hv") }
 
-  BASE_TRIE = ZvDict.essence.trie_dict
-
-  getter pdict : ZvDict
+  BASE_TRIE = TrieDict.essence
 
   def initialize(dname : String)
-    @pdict = ZvDict.load!(dname)
+    @pdict = TrieDict.load!(dname)
   end
 
   ###
 
   def find(chars : Array(Char), start = 0) : {MtTerm, Int32, Int32}
-    existed = @pdict.trie_dict.match(chars, start)
-    existed ||= BASE_TRIE.match(chars, start)
+    existed = @pdict.match(chars, start) || BASE_TRIE.match(chars, start)
 
     initial = init(chars, start)
 

@@ -62,20 +62,17 @@ class MT::ViTermForm
   def save!(uname : String = "", privi = 4, persist : Bool = true)
     zdict = ZvDict.load!(@dname.sub("book", "wn").tr("/:", ""))
 
-    if privi < zdict.p_min
-      raise Unauthorized.new "Bạn cần quyền hạn tối thiểu là #{zdict.p_min} để thêm/sửa từ"
-    end
-
     zterm = zdict.load_term(cpos: @cpos, zstr: @zstr)
-    fresh = zterm.mtime < 0
     p_min = zdict.p_min + zterm.plock
 
-    if @plock < p_min && privi < p_min + 1
-      raise Unauthorized.new "Từ đã bị khoá, bạn cần quyền hạn tối thiểu là #{p_min + 1} để đổi khoá"
+    if privi < p_min
+      raise Unauthorized.new "Bạn cần quyền hạn tối thiểu là #{p_min} để thêm/sửa từ"
     end
 
+    fresh = zterm.mtime < 0
+
     if @vstr.empty? && !@attr.includes?("Hide")
-      return zdict.delete_term(zterm: zterm, persist: persist)
+      return zdict.delete_term(zterm: zterm, fresh: fresh, persist: persist)
     end
 
     zterm.vstr = @vstr

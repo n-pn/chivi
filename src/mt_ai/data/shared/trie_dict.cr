@@ -1,6 +1,39 @@
 require "./mt_term"
+require "./hash_dict"
 
 class MT::TrieDict
+  CACHE = {} of String => self
+
+  class_getter essence : self { load!("essence") }
+
+  # class_getter regular : self { load!("regular") }
+
+  # class_getter suggest : self { load!("suggest") }
+
+  def self.load!(dname : String) : self
+    CACHE[dname] ||= begin
+      self.new.tap do |root|
+        time = Time.measure do
+          HashDict.load!(dname).hash.each do |zstr, hash|
+            root[zstr] = hash.first_value
+          end
+        end
+
+        Log.info { "loading #{dname} trie: #{time.total_milliseconds}" }
+      end
+    end
+  end
+
+  def self.add_term(dname : String, zstr : String, mterm : MtTerm)
+    CACHE[dname]?.try(&.[zstr] = mterm)
+  end
+
+  def self.delete_term(dname : String, zstr : String)
+    CACHE[dname]?.try(&.[zstr] = nil)
+  end
+
+  ####
+
   property term : MtTerm? = nil
   property hash = {} of Char => TrieDict
 

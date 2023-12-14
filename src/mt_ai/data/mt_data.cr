@@ -14,7 +14,6 @@ struct MT::MtData
       attr int not null default 0,
 
       dnum int not null default 0,
-      prio int not null default 0,
       fpos int not null default 0,
 
       primary key (d_id, epos, zstr)
@@ -44,6 +43,7 @@ struct MT::MtData
 
   field vstr : String
   field attr : MtAttr, converter: SQ3Enum(MT::MtAttr)
+
   field dnum : DictEnum, converter: SQ3Enum(MT::DictEnum)
   field fpos : MtEpos = MT::MtEpos::X, converter: SQ3Enum(MT::MtEpos)
 
@@ -75,7 +75,7 @@ struct MT::MtData
     MtTerm.new(vstr: @vstr, attr: @attr, dnum: @dnum)
   end
 
-  def self.fetch(d_id : Int32)
+  def self.fetch(d_id : Int32, &)
     self.load_db(d_id).open_ro do |db|
       db.query_each("select * from #{@@schema.table} where d_id = $1", d_id) do |rs|
         yield rs.read(self)
@@ -85,7 +85,7 @@ struct MT::MtData
 
   def self.delete(d_id : Int32, epos : MtEpos, zstr : String)
     self.load_db(d_id).open_rw do |db|
-      query = "delete from #{@@schema.table} where d_id = $1, epos = $2, zstr = $3"
+      query = "delete from #{@@schema.table} where d_id = $1 and epos = $2 and zstr = $3"
       db.exec query, d_id, epos.to_i, zstr
     end
   end

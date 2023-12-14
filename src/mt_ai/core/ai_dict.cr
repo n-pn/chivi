@@ -10,20 +10,15 @@ class MT::AiDict
     CACHE[pdict] ||= new(pdict.sub("book", "wn").tr(":/", ""))
   end
 
-  @pdict : ZvDict
+  @dicts : {HashDict, HashDict, HashDict, HashDict}
 
   def initialize(pdict : String = "combined")
-    @pdict = ZvDict.load!(pdict)
     @dicts = {
-      @pdict.hash_dict,
-      ZvDict.regular.hash_dict,
-      ZvDict.essence.hash_dict,
-      HashDict.new(@pdict.d_id),
+      HashDict.load!(pdict),
+      HashDict.regular,
+      HashDict.essence,
+      HashDict.suggest,
     }
-  end
-
-  def dsize
-    {@pdict.total, ZvDict.regular.total, ZvDict.essence.total}
   end
 
   def get(zstr : String, epos : MtEpos) : MtTerm

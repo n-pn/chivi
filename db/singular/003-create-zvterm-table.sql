@@ -6,13 +6,10 @@ CREATE TABLE IF NOT EXISTS zvterm(
   zstr text NOT NULL,
   --
   cpos text NOT NULL DEFAULT 'X',
+  fixp text NOT NULL DEFAULT 'X',
+  --
   vstr text NOT NULL DEFAULT '',
   attr text NOT NULL DEFAULT '',
-  --
-  toks int[] NOT NULL DEFAULT '{}',
-  ners text[] NOT NULL DEFAULT '{}',
-  segr smallint NOT NULL DEFAULT 2,
-  posr smallint NOT NULL DEFAULT 2,
   --
   uname text NOT NULL DEFAULT '',
   mtime int NOT NULL DEFAULT 0,

@@ -9,8 +9,8 @@ struct MT::MtTerm
   getter dnum : DictEnum = :autogen_0
   getter fpos : MtEpos = MtEpos::X
 
-  def self.calc_prio(size : Int32, segr = 2_i16, posr = 2_i16)
-    segr == 0 ? 0_i16 : size.to_i16 ** 2_i16 &* 100_i16 &+ segr &* 10_i16 &+ posr
+  def self.calc_prio(size : Int32, prio : Int16 = 5_i16)
+    prio == 0 ? 0_i16 : size.to_i16 &* (prio &+ size.to_i16)
   end
 
   def initialize(char : Char)

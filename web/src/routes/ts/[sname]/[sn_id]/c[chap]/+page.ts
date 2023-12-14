@@ -2,8 +2,8 @@ import { _pgidx } from '$lib/kit_path'
 import type { PageLoad } from './$types'
 
 const gen_pdict = ({ stype, wn_id, sn_id }) => {
-  if (wn_id > 0) return `wn/${wn_id}`
-  if (stype == 1) return `up/${sn_id}`
+  if (wn_id > 0) return `wn${wn_id}`
+  if (stype == 1) return `up${sn_id}`
   return 'combine'
 }
 

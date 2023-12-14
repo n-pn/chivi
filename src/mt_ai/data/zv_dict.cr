@@ -32,24 +32,6 @@ class MT::ZvDict
     end
   end
 
-  @[DB::Field(ignore: true, auto: true)]
-  getter hash_dict : HashDict do
-    HashDict.new(@d_id).tap do |hash|
-      MtData.fetch(@d_id) { |x| hash.add(x.zstr, x.epos, x.to_mt) }
-    end
-  end
-
-  @[DB::Field(ignore: true, auto: true)]
-  getter trie_dict : TrieDict do
-    root = TrieDict.new
-
-    self.hash_dict.hash.each do |zstr, hash|
-      root[zstr] = hash.each_value.first
-    end
-
-    root
-  end
-
   @[AlwaysInline]
   def load_term(cpos : String, zstr : String)
     ZvTerm.init(d_id: @d_id, cpos: cpos, zstr: zstr)
@@ -66,20 +48,25 @@ class MT::ZvDict
 
     mterm = mdata.to_mt
 
-    @hash_dict.try(&.add(zterm.zstr, zterm.ipos, mterm))
-    @trie_dict.try(&.[zterm.zstr] = mterm)
+    HashDict.add_term(@name, zterm.zstr, zterm.ipos, mterm)
+    TrieDict.add_term(@name, zterm.zstr, mterm)
 
     self.upsert! if persist
   end
 
-  def delete_term(zterm : ZvTerm, persist : Bool = true)
-    @hash_dict.try(&.delete(zterm.zstr, zterm.ipos))
-    @trie_dict.try(&.[zterm.zstr] = nil)
+  def delete_term(zterm : ZvTerm, fresh : Bool = true, persist : Bool = true)
+    HashDict.delete_term(@name, zterm.zstr, zterm.ipos)
+    TrieDict.delete_term(@name, zterm.zstr)
+
+    return unless fresh
+    @total -= 1
 
     return unless persist
 
     MtData.delete(@d_id, zterm.ipos, zterm.zstr)
     ZvTerm.delete(@d_id, zterm.ipos, zterm.zstr)
+
+    self.upsert!
   end
 
   #######
