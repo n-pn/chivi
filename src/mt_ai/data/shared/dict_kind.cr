@@ -69,7 +69,7 @@ enum MT::DictKind : Int16
       when .starts_with?("qt") then 10 * dname[2..].to_i + Userqt.value
       when .starts_with?("tm") then 10 * dname[2..].to_i + Themes.value
       when .starts_with?("pd") then 10 * dname[2..].to_i + Public.value
-      else                          raise "invalid dname"
+      else                          raise "invalid dname #{dname}"
       end
   end
 end

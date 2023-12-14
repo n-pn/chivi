@@ -71,8 +71,12 @@ struct MT::MtData
     self.upsert!(db: db)
   end
 
-  def to_mt
+  def mt_term
     MtTerm.new(vstr: @vstr, attr: @attr, dnum: @dnum)
+  end
+
+  def ws_term
+    WsTerm.new(zstr: zstr)
   end
 
   def self.fetch(d_id : Int32, &)

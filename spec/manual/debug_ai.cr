@@ -4,7 +4,7 @@ time = Time.monotonic
 
 text = ARGV[0]? || "(TOP (IP (NP (NP (OD 第１０３) (CLP (M 章)) (NP (NR 长河)))) (VP (VV 决堤))))"
 
-dict = ARGV[1]? || "up/1234"
+dict = ARGV[1]? || "up1234"
 
 text = text.gsub(/\n\s+/, " ")
 data = MT::AiCore.new(dict).translate!(MT::RawCon.from_text(text))

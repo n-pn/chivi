@@ -1,5 +1,6 @@
+require "./_utils"
+
 require "./tl_unit"
-require "../../_util/char_util"
 
 module MT::TlChap
   extend self

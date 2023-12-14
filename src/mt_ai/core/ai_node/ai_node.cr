@@ -15,17 +15,17 @@ module MT::AiNode
   abstract def first
   abstract def last
 
-  def inc_idx!(val : Int32)
-    @_idx += val
-    return if self.is_a?(M0Node)
-    self.z_each(&.inc_idx!(val))
-  end
+  # def inc_idx!(val : Int32)
+  #   @_idx += val
+  #   return if self.is_a?(M0Node)
+  #   self.z_each(&.inc_idx!(val))
+  # end
 
   def tl_whole!(dict : AiDict)
     unless term = dict.get?(@zstr, @epos)
-      return if self.is_a?(M1Node)
-      term = dict.get_alt?(@zstr) if @epos.can_use_alt?
+      term = dict.get_alt?(@zstr) if !self.is_a?(M1Node) && @epos.can_use_alt?
     end
+
     self.set_term!(term) if term
   end
 
@@ -73,6 +73,7 @@ module MT::AiNode
     @vstr = term.vstr
     @attr |= term.attr
     @dnum = term.dnum
+    @epos = term.fpos unless term.fpos.x?
   end
 
   def set_vstr!(@vstr : String, @dnum : DictEnum = :fixture_2) : Nil

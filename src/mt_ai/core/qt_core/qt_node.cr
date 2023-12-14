@@ -1,6 +1,6 @@
 # require "../shared/mt_output"
 require "json"
-require "../../data/vi_term"
+require "../../data/shared/*"
 
 struct MT::QtNode
   getter zstr : String

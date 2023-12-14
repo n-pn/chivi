@@ -1,6 +1,6 @@
 require "../_raw/raw_con"
 require "./ai_node/*"
-require "./tl_chap"
+require "./mt_core/*"
 
 class MT::AiCore
   getter dict : AiDict
@@ -19,10 +19,20 @@ class MT::AiCore
     root.tap(&.translate!(dict: @dict))
   end
 
+  private def make_m0_node!(zstr : String, epos : MtEpos, attr : MtAttr, _idx : Int32)
+    node = M0Node.new(zstr, epos, attr: attr, _idx: _idx)
+    node.tap(&.set_term!(dict.get(zstr, epos)))
+  end
+
+  private def make_ai_node!(body : Array(RawCon), epos : MtEpos, attr : MtAttr, _idx : Int32)
+    # zstr =
+  end
+
   private def init_node(data : RawCon, _idx : Int32 = 0)
     epos, attr = MtEpos.parse_ctb(data.cpos)
-    body = data.body
-    return M0Node.new(body, epos, attr: attr, _idx: _idx) if body.is_a?(String)
+    zstr, body = data.zstr, data.body
+
+    return make_m0_node!(body, epos, attr, _idx) if body.is_a?(String)
 
     from = _idx
     list = [] of AiNode

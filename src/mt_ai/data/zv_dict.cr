@@ -46,17 +46,15 @@ class MT::ZvDict
     mdata = MtData.new(zterm)
     spawn mdata.save!
 
-    mterm = mdata.to_mt
-
-    HashDict.add_term(@name, zterm.zstr, zterm.ipos, mterm)
-    TrieDict.add_term(@name, zterm.zstr, mterm)
+    HashDict.add_term(@name, zterm.zstr, zterm.ipos, mdata.mt_term)
+    # TrieDict.add_term(@name, zterm.zstr, mdata.ws_term)
 
     self.upsert! if persist
   end
 
   def delete_term(zterm : ZvTerm, fresh : Bool = true, persist : Bool = true)
     HashDict.delete_term(@name, zterm.zstr, zterm.ipos)
-    TrieDict.delete_term(@name, zterm.zstr)
+    # TrieDict.delete_term(@name, zterm.zstr)
 
     return unless fresh
     @total -= 1

@@ -1,22 +1,18 @@
-require "./mt_term"
+require "./ws_term"
 require "./hash_dict"
 
 class MT::TrieDict
   CACHE = {} of String => self
 
   class_getter essence : self { load!("essence") }
-
-  # class_getter regular : self { load!("regular") }
-
-  # class_getter suggest : self { load!("suggest") }
+  class_getter regular : self { load!("regular") }
 
   def self.load!(dname : String) : self
     CACHE[dname] ||= begin
       self.new.tap do |root|
         time = Time.measure do
-          HashDict.load!(dname).hash.each do |zstr, hash|
-            root[zstr] = hash.first_value
-          end
+          root.load_from_db3!(dname)
+          root.load_from_tsv!(dname)
         end
 
         Log.info { "loading #{dname} trie: #{time.total_milliseconds}" }
@@ -24,8 +20,8 @@ class MT::TrieDict
     end
   end
 
-  def self.add_term(dname : String, zstr : String, mterm : MtTerm)
-    CACHE[dname]?.try(&.[zstr] = mterm)
+  def self.add_term(dname : String, wterm : WsTerm)
+    CACHE[dname]?.try(&.[wstem.zstr] = wterm)
   end
 
   def self.delete_term(dname : String, zstr : String)
@@ -34,35 +30,52 @@ class MT::TrieDict
 
   ####
 
-  property term : MtTerm? = nil
+  property term : WsTerm? = nil
   property hash = {} of Char => TrieDict
 
-  def [](zstr : String)
-    zstr.each_char.reduce(self) { |acc, char| acc.hash[char] ||= TrieDict.new }
+  def load_from_db3!(dname : String)
+    HashDict.load!(dname).hash.each_key do |zstr|
+      self[zstr] = WsTerm.new(zstr)
+    end
   end
 
-  def []=(zstr : String, term : MtTerm?)
+  DIR = "var/mtdic/wseg"
+
+  def load_from_tsv!(dname : String)
+    tsv_file = "#{DIR}/#{dname}.tsv"
+    return unless File.file?(tsv_file)
+
+    File.each_line(tsv_file) do |line|
+      cols = line.split('\t')
+      next if cols.empty?
+      term = WsTerm.new(cols)
+      self[term.zstr] = term
+    end
+  end
+
+  def []=(zstr : String, term : WsTerm?)
     self[zstr].term = term
   end
 
-  def match(chars : Array(Char), start : Int32 = 0, dpos : Int32 = 2)
+  def [](zstr : String)
+    zstr.each_char.reduce(self) do |acc, char|
+      acc.hash[char] ||= TrieDict.new
+    end
+  end
+
+  def scan(chars : Array(Char), start : Int32 = 0, &)
     node = self
     size = 0
 
-    best_term = nil
-    best_size = 0
-
     start.upto(chars.size &- 1) do |idx|
+      size &+= 1
       char = chars.unsafe_fetch(idx)
-      char = CharUtil.to_canon(char, true)
+      char = CharUtil.to_canon(char, false)
 
       break unless node = node.hash[char]?
-      size &+= 1
-
       next unless term = node.term
-      best_term, best_size = term, size
-    end
 
-    {best_term, best_size, dpos} if best_term
+      yield size, term
+    end
   end
 end

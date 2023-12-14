@@ -1,52 +1,76 @@
 require "../../_util/char_util"
 
 require "./qt_core/*"
-require "./qt_dict"
+require "./ws_core"
 
 class MT::QtCore
-  class_getter hv_name : self { new(QtDict.hv_name) }
-  class_getter hv_word : self { new(QtDict.hv_word) }
-  class_getter pin_yin : self { new(QtDict.pin_yin) }
+  class_getter hv_word : self { new("word_hv") }
+  class_getter hv_name : self { new("name_hv") }
+
+  # class_getter pin_yin : self { new("pin_yin", nil) }
 
   def self.tl_hvname(str : String)
     return CharUtil.normalize(str) unless str.matches?(/\p{Han}/)
-    self.hv_name.tokenize(str).to_txt(cap: true)
+    self.hv_name.translate(str, cap: true)
   end
 
   def self.tl_hvword(str : String, cap : Bool = false)
     return CharUtil.normalize(str) unless str.matches?(/\p{Han}/)
-    self.hv_word.tokenize(str).to_txt(cap: cap)
+    self.hv_word.translate(str, cap: cap)
   end
 
   def self.tl_pinyin(str : String, cap : Bool = false)
     return CharUtil.normalize(str) unless str.matches?(/\p{Han}/)
-    self.pin_yin.tokenize(str).to_txt(cap: cap)
+    self.pin_yin.translate(str, cap: cap)
   end
 
-  def initialize(@dict : QtDict)
-  end
-
-  def tokenize(input : String)
-    chars = input.chars
-
-    index = 0
-    stack = QtData.new
-
-    while index < chars.size
-      term, _len, _dic = @dict.find(chars, start: index)
-      zstr = chars[index, _len].join
-      stack << QtNode.new(zstr, term.vstr, term.attr, _idx: index, _dic: _dic)
-      index &+= _len
-    end
-
-    stack
+  def initialize(*dnames : String)
+    @wseg = WsCore.load!(*dnames)
+    @dicts = [] of HashDict
+    dnames.each { |dname| @dicts << HashDict.load!(dname) }
+    @dicts << HashDict.essence
+    # @dicts <<  HashDict.new
   end
 
   def translate(str : String, cap : Bool = true)
-    tokenize(str).to_txt(cap: cap)
+    parse!(str).to_txt(cap: cap)
   end
 
   def to_mtl(str : String)
-    tokenize(str).to_mtl(cap: true)
+    parse!(str).to_mtl(cap: true)
+  end
+
+  def parse!(input : String, _idx = 0)
+    output = QtData.new
+    @wseg.parse!(input).each do |token|
+      zstr = token.zstr
+      size = zstr.size
+
+      next if @dicts.each_with_index(1) do |dict, _dic|
+                next unless term = dict.any?(zstr)
+                output << QtNode.new(zstr, term.vstr, term.attr, _idx: _idx, _dic: _dic)
+                _idx &+= size
+                break true
+              end
+
+      vstr, attr = init_data(token.zstr, token.bner)
+
+      output << QtNode.new(zstr, vstr, attr, _idx: _idx, _dic: -1)
+      _idx += size
+    end
+
+    output
+  end
+
+  private def init_data(zstr : String, bner : MtEner = :none)
+    vstr = CharUtil.normalize(zstr)
+    return {vstr, MtAttr[Capx, Undb, Undn]} if vstr.blank?
+
+    case bner
+    when .link?, .dint?
+      {vstr, MtAttr::Asis}
+    else
+      {vstr, MtAttr::None}
+    end
   end
 end

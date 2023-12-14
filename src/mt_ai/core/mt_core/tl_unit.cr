@@ -1,6 +1,3 @@
-require "log"
-require "colorize"
-
 module MT::TlUnit
   extend self
 
@@ -120,7 +117,7 @@ module MT::TlUnit
       when extra = EXTRA_STR[char]?
         pre_str = pre_str.empty? ? extra : "#{pre_str}#{extra} "
       when !(int = HAN_TO_INT[char]?)
-        Log.error { "#{char} not match any known type" }
+        # Log.error { "#{char} not match any known type" }
         pre_str = pre_str.empty? ? char.to_s : "#{pre_str}#{char} "
       when int >= 0
         digits << Digit.new('０' + int) # convert to full width form

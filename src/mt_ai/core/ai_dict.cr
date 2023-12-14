@@ -1,7 +1,7 @@
 # require "../util/*"
 require "../data/*"
 require "./qt_core"
-require "./tl_unit"
+require "./mt_core/tl_unit"
 
 class MT::AiDict
   CACHE = {} of String => self

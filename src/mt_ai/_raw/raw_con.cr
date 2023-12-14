@@ -182,5 +182,15 @@ struct MT::RawCon
     res
   end
 
+  def zstr
+    String.build { |io| zstr(io) }
+  end
+
+  def zstr(io : IO) : Nil
+    case body = @body
+    in String then io << body
+    in Array  then body.each(&.zstr(io))
+    end
+  end
   ###
 end

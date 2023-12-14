@@ -2,6 +2,7 @@ require "./dict_kind"
 
 require "./mt_term"
 require "./mt_epos"
+require "../mt_data"
 
 class MT::HashDict
   CACHE_HD = {} of String => self
@@ -10,7 +11,7 @@ class MT::HashDict
   class_getter essence : self { load!("essence") }
   class_getter suggest : self { load!("suggest") }
 
-  def self.load!(dname : String)
+  def self.load!(dname : String) : self
     CACHE_HD[dname] ||= begin
       hash = new(DictKind.map_id(dname))
       time = Time.measure { hash.load_from_db3! }
@@ -45,7 +46,7 @@ class MT::HashDict
 
         vstr = rs.read(String)
         attr = MtAttr.from_value(rs.read(Int32))
-        dnum = DictEnum.from(rs.read(Int32))
+        dnum = DictEnum.from_value(rs.read(Int32))
         fpos = MtEpos.from_value(rs.read(Int32))
 
         add(zstr, epos, MtTerm.new(vstr: vstr, attr: attr, dnum: dnum, fpos: fpos))
