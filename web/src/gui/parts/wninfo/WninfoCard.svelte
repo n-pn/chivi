@@ -21,7 +21,7 @@
   $: route = nvtab == 'index' ? '' : nvtab
 </script>
 
-<a class="book" href="/wn/{nvinfo.bslug}/{route}">
+<a class="book" href="/wn/{nvinfo.id}/{route}">
   <div class="tooltip">{nvinfo.vtitle} - {nvinfo.vauthor}</div>
 
   <div class="cover">

@@ -1,11 +1,4 @@
 <script lang="ts" context="module">
-  const stypes = [
-    ['', 'Không phân loại'],
-    ['wn', 'Truyện chữ'],
-    ['up', 'Sưu tầm'],
-    ['rm', 'Nguồn nhúng'],
-  ]
-
   const mark_types = ['eye', 'bookmark', 'pin']
 </script>
 
@@ -14,7 +7,7 @@
   import { get_rtime } from '$gui/atoms/RTime.svelte'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  export let items: CV.Tsrepo[]
+  export let items: Array<CV.Tsrepo & CV.Rdmemo>
 </script>
 
 <div class="chaps">

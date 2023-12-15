@@ -27,6 +27,15 @@
     </a>
   {/each}
 </nav>
+
+<form class="qtran" action="/qt" method="GET">
+  <input class="m-input" name="zh" placeholder="Dịch nhanh câu tiếng trung" />
+  <button type="submit" class="m-btn _primary _fill">
+    <SIcon name="bolt" />
+    <span class="u-show-pl">Dịch nhanh</span>
+  </button>
+</form>
+
 <article class="article island">
   <section class="list">
     <header class="head">
@@ -81,8 +90,24 @@
 </section> -->
 
 <style lang="scss">
+  .qtran {
+    @include flex-ca;
+    margin: 0.75rem 0 1.5rem;
+    width: 100%;
+
+    > input {
+      flex: 1;
+      @include bdradi(0, $loc: right);
+      height: 2.25rem;
+    }
+    > button {
+      @include bdradi(0, $loc: left);
+      height: 2.25rem;
+    }
+  }
+
   .nav-list {
-    margin-bottom: 0.75rem;
+    margin: 1.5rem 0 0.75rem;
   }
 
   .list {

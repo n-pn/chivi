@@ -15,7 +15,7 @@ export const load = (async ({ url, fetch, parent }) => {
   const title = id ? 'Sửa đánh giá' : 'Thêm đánh giá'
 
   const { nvinfo } = await parent()
-  const book_path = `/wn/${nvinfo.bslug}`
+  const book_path = `/wn/${nvinfo.id}`
   const curr_path = `${book_path}/uc/+crit${url.search}`
 
   const path = `/_db/crits/form?wn=${nvinfo.id}&id=${id}`

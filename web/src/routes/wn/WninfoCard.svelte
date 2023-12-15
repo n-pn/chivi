@@ -20,7 +20,7 @@
   $: stars = rating_stars(nvinfo.rating, nvinfo.voters)
 </script>
 
-<a class="book" href="/wn/{nvinfo.bslug}/{nvtab}">
+<a class="book" href="/wn/{nvinfo.id}/{nvtab}">
   <div class="cover">
     <BCover srcset={nvinfo.bcover} />
     {#if nvinfo.voters > 10}

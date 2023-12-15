@@ -1,3 +1,5 @@
+@use '../essence' as *;
+
 a {
   touch-action: manipulation;
 }
@@ -8,10 +10,11 @@ a[class] {
 
 a:not([class]),
 .m-link {
-  color: var(--color-link, #0e97ec);
+  @include fgcolor(primary, 6);
   text-decoration: none;
 
   &:hover {
+    @include fgcolor(primary, 5);
     border-bottom: 1px solid #50b7f7;
   }
 }

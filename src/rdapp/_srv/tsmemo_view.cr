@@ -92,9 +92,11 @@ class RD::TsmemoView
         sql << " and t.stype = $2"
       end
 
-      if state >= 0
+      if state > 0
         args << state
         sql << " and m.rd_state = $#{args.size}"
+      elsif state == 0
+        sql << " and m.rd_state > 0"
       end
 
       case rtype

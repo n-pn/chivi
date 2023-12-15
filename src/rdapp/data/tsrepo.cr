@@ -24,7 +24,6 @@ class RD::Tsrepo
   field pdict : String = ""
 
   field chmax : Int32 = 0
-
   field mtime : Int64 = 0_i64
 
   field plock : Int16 = 0_i16

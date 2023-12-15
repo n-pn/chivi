@@ -1,13 +1,11 @@
 <script lang="ts">
-  // import { page } from '$app/stores'
+  import { page } from '$app/stores'
   import { goto } from '$app/navigation'
 
   import { api_call } from '$lib/api_call'
-  import { seed_path, _pgidx } from '$lib/kit_path'
+  import { stem_path, _pgidx } from '$lib/kit_path'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-
-  export let book_info: CV.Wninfo
   export let wstem: CV.Wnstem
 
   export let can_conf = false
@@ -19,7 +17,7 @@
   async function cut_chapters() {
     try {
       await api_call(edit_url, { cut_from }, 'PATCH')
-      const href = seed_path(book_info.bslug, wstem.sname, _pgidx(cut_from))
+      const href = stem_path($page.data.sroot, _pgidx(cut_from))
 
       await goto(href)
     } catch (ex) {

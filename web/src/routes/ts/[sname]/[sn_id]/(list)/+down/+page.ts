@@ -25,8 +25,7 @@ export const load = (async ({ fetch, url, params, depends, parent }) => {
   const _meta = {
     desc: 'Tải xuống bản dịch bộ truyện',
     left_nav: [
-      home_nav('tm', ''),
-      book_nav(nvinfo.bslug, nvinfo.vtitle, 'tm'),
+      book_nav(nvinfo.id, nvinfo.vtitle, 'tm'),
       nav_link('+down', 'Tải bản dịch', 'pencil'),
     ],
   }

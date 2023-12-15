@@ -1,12 +1,13 @@
 <script lang="ts">
-  import { rstate_labels } from '$lib/consts/rd_states'
   import TsrepoList from '$gui/shared/tsrepo/TsrepoList.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
+
+  $: ({ items, pgidx, pgmax } = data.table)
 </script>
 
-<TsrepoList {...data.table} />
+<TsrepoList {items} {pgidx} {pgmax} />
 
 <style lang="scss">
   .tabs {

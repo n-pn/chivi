@@ -4,7 +4,8 @@ import { api_get } from '$lib/api_call'
 interface BookUser {
   uname: string
   privi: number
-  umark: number
+  track: number
+  ch_no: number
 }
 
 export interface BookFront {

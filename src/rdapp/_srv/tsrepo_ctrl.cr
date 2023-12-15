@@ -3,6 +3,12 @@ require "./_ctrl_base"
 class RD::TsrepoCtrl < AC::Base
   base "/_rd/tsrepos"
 
+  @[AC::Route::GET("/")]
+  def for_wn(wn_id : Int32)
+    items = TsrepoView.for_wn(wn_id)
+    render json: items
+  end
+
   @[AC::Route::GET("/:sname/:sn_id")]
   def show(sname : String, sn_id : Int32)
     xstem = get_xstem(sname, sn_id)

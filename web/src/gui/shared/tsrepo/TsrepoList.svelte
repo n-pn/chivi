@@ -32,6 +32,7 @@
     @include flex($center: horz, $gap: 0.375rem);
   }
   .list {
+    margin: 1rem 0;
     display: grid;
     grid-gap: 0.5rem;
 

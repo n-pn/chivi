@@ -42,7 +42,7 @@
             </a>
           </td>
           <td class="title">
-            <a class="link" href="/wn/{book.bslug}">{book.vtitle}</a>
+            <a class="link" href="/wn/{book.id}">{book.vtitle}</a>
           </td>
           <td>
             <div class="value">

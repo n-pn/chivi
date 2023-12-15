@@ -29,8 +29,8 @@
     }
 
     try {
-      const { id, bslug } = await api_call(action, form, 'POST')
-      await goto(`/wn/${id}-${bslug}`)
+      const { id } = await api_call(action, form, 'POST')
+      await goto(`/wn/${id}`)
     } catch (ex) {
       errors = ex.body.message
     }

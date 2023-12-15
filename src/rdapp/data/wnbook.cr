@@ -19,11 +19,17 @@ class RD::Wnbook
   field btitle_vi : String = ""
 
   field scover : String = ""
+  field bcover : String = ""
 
   field chap_count : Int32 = 0
   field view_count : Int32 = 0
 
   field utime : Int64 = 0
+
+  def cover_url
+    return "//cdn.chivi.app/covers/#{@bcover}" unless @bcover.empty?
+    @scover.blank? ? "//cdn.chivi.app/covers/_blank.webp" : @scover
+  end
 
   def crepo : Tsrepo
     Tsrepo.load!("wn~avail/#{@id}") do |r|
@@ -31,7 +37,7 @@ class RD::Wnbook
       r.stype = 0_i16
 
       r.sname = "~avail"
-      r.cover = @scover
+      r.cover = self.cover_url
 
       r.sn_id = @id
       r.wn_id = @id

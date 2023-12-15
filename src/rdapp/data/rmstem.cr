@@ -71,6 +71,7 @@ class RD::Rmstem
 
       repo.zname = @btitle_zh
       repo.vname = @btitle_vi
+
       repo.cover = @cover_rm
 
       repo.rm_slink = @rlink

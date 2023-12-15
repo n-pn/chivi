@@ -95,23 +95,23 @@ class CV::Ubmemo
     ubmemo.save!
   end
 
-  record BookUser, uname : String, privi : Int32, umark : Int32, ch_no : Int32 do
+  record BookUser, uname : String, privi : Int32, track : Int16, ch_no : Int32 do
     include DB::Serializable
     include JSON::Serializable
   end
 
-  def self.book_users(wninfo_id : Int32)
-    PGDB.query_all <<-SQL, wninfo_id, as: BookUser
+  def self.book_users(wn_id : Int32)
+    PGDB.query_all <<-SQL, wn_id, as: BookUser
       select
         u.uname as uname, u.privi as privi,
-        m.status as "umark", m.lr_chidx as ch_no
-      from ubmemos as m
+        m.rd_track as "track", m.lc_ch_no as ch_no
+      from rdmemos as m
         inner join viusers as u
-        on u.id = m.viuser_id
-      where m.nvinfo_id = $1
-        and u.privi >= 0
-        and (m.status > 0)
-      order by m.status desc, m.utime desc
+        on u.id = m.vu_id
+      where m.sn_id = $1
+        and m.sname = '~avail'
+        and u.privi > -2
+      order by m.rd_track desc, m.atime desc
     SQL
   end
 end

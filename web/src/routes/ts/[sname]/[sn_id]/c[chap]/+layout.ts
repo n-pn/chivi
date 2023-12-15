@@ -1,6 +1,6 @@
 import { _pgidx } from '$lib/kit_path'
 import { api_get } from '$lib/api_call'
-import { seed_nav, nav_link } from '$utils/header_util'
+import { nav_link } from '$utils/header_util'
 import type { PageLoad } from './$types'
 
 const parse_chid = ({ chap }) => chap.split('_').map((x) => parseInt(x))

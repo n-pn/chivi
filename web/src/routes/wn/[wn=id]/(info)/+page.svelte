@@ -57,7 +57,7 @@
 <section>
   <h3 class="sub">
     <sub-label>Đánh giá nổi bật</sub-label>
-    <a class="sub-link" href="/wn/{nvinfo.bslug}/uc">Xem tất cả</a>
+    <a class="sub-link" href="/wn/{nvinfo.id}/uc">Xem tất cả</a>
   </h3>
 
   <div class="crits">
@@ -93,9 +93,9 @@
 
   {#if bdata.users.length > 0}
     <div class="users">
-      {#each bdata.users as { uname, privi, umark }}
-        {@const status = status_types[umark]}
-        {#if umark > 0}
+      {#each bdata.users as { uname, privi, track }}
+        {@const status = status_types[track]}
+        {#if track > 0}
           <a
             class="m-chip _{status_colors[status]}"
             href="/@{uname}/books/{status}"

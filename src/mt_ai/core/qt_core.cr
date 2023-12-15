@@ -69,6 +69,8 @@ class MT::QtCore
     case bner
     when .link?, .dint?
       {vstr, MtAttr::Asis}
+    when .punc?
+      {vstr, MtAttr.parse_punct(zstr)}
     else
       {vstr, MtAttr::None}
     end

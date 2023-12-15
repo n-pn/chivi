@@ -12,15 +12,15 @@
   import type { LayoutData } from './$types'
   export let data: LayoutData
 
-  $: ({ crepo, rmemo } = data)
+  $: ({ crepo, rmemo, xroot } = data)
 
   $: $crumbs = [
-    { text: `[${crepo.vname || crepo.sroot}]`, href: data.sroot },
-    { text: 'Chương tiết mục lục' },
+    { text: `[${crepo.vname || crepo.sroot}]`, href: xroot },
+    { text: 'Chương tiết mục lục', href: data.sroot },
   ]
 
   $: tabs = [
-    { type: 'ch', href: data.sroot, icon: 'list', text: 'Chương tiết' },
+    { type: 'ch', href: data.sroot, icon: 'list', text: 'Mục lục' },
     {
       type: 'ul',
       href: `${data.sroot}/+text`,
@@ -32,6 +32,4 @@
 
 <UserMemo {crepo} {rmemo} />
 
-<Section {tabs} _now={$page.data.ontab}>
-  <slot />
-</Section>
+<Section {tabs} _now={$page.data.ontab}><slot /></Section>

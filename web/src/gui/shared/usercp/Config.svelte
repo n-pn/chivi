@@ -114,9 +114,9 @@
     <span>Cá nhân</span>
   </a>
 
-  <a class="m-btn _xs _primary" href="/me/books">
+  <a class="m-btn _xs _primary" href="/ts/track">
     <SIcon name="books" />
-    <span>Tủ truyện</span>
+    <span>Đang đọc</span>
   </a>
 
   <a class="m-btn _xs _warning" href="/me/earned">
@@ -128,7 +128,7 @@
 <hr />
 <h4>
   <span>Chương tiết vừa đọc</span>
-  <a href="/me/rdlog"><em>Xem tất cả</em></a>
+  <a href="/ts/rdlog"><em>Xem tất cả</em></a>
 </h4>
 
 <div class="chaps">

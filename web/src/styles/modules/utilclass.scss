@@ -86,14 +86,6 @@
   font-weight: 500;
 }
 
-.u-link {
-  @include fgcolor(primary, 6);
-
-  &:hover {
-    @include fgcolor(primary, 5);
-  }
-}
-
 x-sname,
 .u-sname {
   display: inline;

@@ -28,7 +28,7 @@ output = [] of {Int32, String, String}
 
 book_ids.each_slice(100) do |slice|
   sql = String.build do |io|
-    io << "select id::int, bslug, vname from wninfos where id in ("
+    io << "select id::int, vname from wninfos where id in ("
     (1..slice.size).join(io, ", ") { |x, i| i << '$' << x }
     io << ')'
   end
@@ -38,13 +38,13 @@ book_ids.each_slice(100) do |slice|
   end
 end
 
-rank_book_sql = "select id::int, bslug, vname from wninfos order by voters desc, rating desc limit 20000"
+rank_book_sql = "select id::int, vname from wninfos order by voters desc, rating desc limit 20000"
 db.query_each(rank_book_sql) do |rs|
-  id, bslug, vname = rs.read(Int32, String, String)
+  id,  vname = rs.read(Int32, String, String)
   next if book_ids.includes?(id)
 
   book_ids << id
-  output << {id, bslug, vname}
+  output << {id,  vname}
 end
 
 book_ids.concat db.query_all(rank_book_sql, as: Int32)
@@ -54,7 +54,7 @@ puts book_ids.size
 output.sort_by!(&.first)
 
 File.open("var/cvmtl/corpus-books.tsv", "w") do |file|
-  output.each do |id, bslug, vname|
-    file << id << '\t' << bslug << '\t' << vname << '\n'
+  output.each do |id,  vname|
+    file << id << '\t' <<  << vname << '\n'
   end
 end

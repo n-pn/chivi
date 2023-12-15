@@ -2,22 +2,23 @@
   import { rstate_labels } from '$lib/consts/rd_states'
   import TsrepoList from '$gui/shared/tsrepo/TsrepoList.svelte'
 
-  import type { PageData } from './[[state]]/$types'
+  import type { PageData } from './$types'
   export let data: PageData
+  $: ({ items, pgidx, pgmax } = data.table)
 </script>
 
 <div class="tabs">
   {#each rstate_labels as label, value}
     <a
-      href="/me/books?state={value}"
+      href="/ts/track?state={value}"
       class="tab"
       class:_active={value == data.state}>
-      {label}
+      <span>{value > 0 ? label : 'Tất cả'}</span>
     </a>
   {/each}
 </div>
 
-<TsrepoList {...data.table} />
+<TsrepoList {items} {pgidx} {pgmax} />
 
 <style lang="scss">
   .tabs {

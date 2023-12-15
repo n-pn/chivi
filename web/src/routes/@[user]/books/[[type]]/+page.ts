@@ -21,7 +21,6 @@ export const load = (async ({ url, params, fetch }) => {
       nav_link(`/@${uname}`, uname, 'at', { show: 'ts' }),
       nav_link(url.pathname, 'Tủ truyện', 'books', { show: 'tm' }),
     ],
-    right_nav: [nav_link(`/me/books`, 'Của bạn', 'book', { show: 'tm' })],
   }
 
   return { ...data, uname: uname, bmark, _title, _meta, ontab: 'book' }

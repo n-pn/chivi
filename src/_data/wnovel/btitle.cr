@@ -5,37 +5,37 @@ class CV::Btitle
   include Crorm::Model
   schema "btitles", :postgres, strict: false
 
-  field zname : String = "" # chinese title
-  field hname : String = "" # hanviet title
-  field vname : String = "" # localization
-
-  timestamps # created_at and updated_at
+  field name_zh : String = "" # chinese title
+  field name_hv : String = "" # hanviet title
+  field name_vi : String = "" # localization
 
   VNAMES = {} of String => {String, String}
 
-  def self.get_names(zname : String) : {String, String}
-    VNAMES[zname] ||= begin
+  def self.get_names(name_zh : String) : {String, String}
+    VNAMES[name_zh] ||= begin
       stmt = <<-SQL
-        select coalesce(nullif(vname, ''), hname), hname
-        from btitles where zname = $1 limit 1
+        select coalesce(nullif(name_vi, ''), name_hv), name_hv
+        from btitles where name_zh = $1 limit 1
         SQL
 
-      PGDB.query_one?(stmt, zname, as: {String, String}) || {zname, zname}
+      PGDB.query_one?(stmt, name_zh, as: {String, String}) || begin
+        name_hv = MT::QtCore.tl_hvname(name_zh)
+        spawn upsert!(name_zh, name_hv)
+
+        {name_hv, name_hv}
+      end
     end
   end
 
-  def self.upsert!(zname : String, vname : String?) : self
-    hname = MT::QtCore.tl_hvname(zname)
-    xname = vname || hname
-    ctime = Time.utc
+  def self.upsert!(name_zh : String, name_hv = MT::QtCore.tl_hvname(name_zh), name_vi : String? = nil) : self
+    name_xx = name_vi || name_hv
 
-    PGDB.query_one <<-SQL, zname, xname, hname, ctime, ctime, vname, as: Btitle
-      insert into btitles(zname, vname, hname, created_at, updated_at)
-      values ($1, $2, $3, $4, $5)
-      on conflict(zname) do update set
-        hname = excluded.hname,
-        vname = coalesce($6, btitles.vname),
-        updated_at = excluded.updated_at
+    PGDB.query_one <<-SQL, name_zh, name_xx, name_hv, name_vi, as: Btitle
+      insert into btitles(name_zh, name_vi, name_hv)
+      values ($1, $2, $3, $4)
+      on conflict(name_zh) do update set
+        name_hv = excluded.name_hv,
+        name_vi = coalesce($4, btitles.name_vi)
       returning *
       SQL
   end

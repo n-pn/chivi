@@ -16,7 +16,7 @@ export const load = (async ({ url, fetch, params, parent }) => {
 
   const _meta = {
     left_nav: [
-      book_nav(nvinfo.bslug, nvinfo.vtitle, 'pl'),
+      book_nav(nvinfo.id, nvinfo.vtitle, 'pl'),
       nav_link('bants', 'Thảo luận', 'message', { show: 'pm' }),
     ],
   }

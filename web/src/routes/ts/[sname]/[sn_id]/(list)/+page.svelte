@@ -9,6 +9,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import RTime from '$gui/atoms/RTime.svelte'
   import Footer from '$gui/sects/Footer.svelte'
+  import RepoList from '$gui/shared/wnovel/RepoList.svelte'
 
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
 
@@ -49,17 +50,19 @@
   }
 </script>
 
+{#if crepo.wn_id}
+  <RepoList
+    wn_id={crepo.wn_id}
+    pg_no={+$page.url.searchParams.get('pg')}
+    sname={crepo.sname}
+    sn_id={crepo.sn_id} />
+{/if}
+
 <header class="pinfo">
   <div class="infos">
     <span class="sname">{crepo.sname}</span>
     <span class="rstat">{crepo.chmax} chương</span>
     <span class="rstat"><RTime mtime={crepo.mtime} /></span>
-    {#if crepo.rm_slink}
-      <a href={crepo.rm_slink} class="rstat" target="_blank">
-        <span>Nguồn ngoài</span>
-        <SIcon name="external-link" />
-      </a>
-    {/if}
   </div>
 
   <btn-group>
@@ -72,10 +75,24 @@
       data-tip-loc="bottom"
       on:click={() => do_reload(2)}>
       <SIcon name={_onload ? 'loader-2' : 'refresh'} spin={_onload} />
-      <span>Làm mới</span>
+      <span class="u-show-pm">Làm mới</span>
     </button>
   </btn-group>
 </header>
+
+{#if crepo.rm_slink}
+  <div class="phint">
+    <SIcon name="alert-circle" />
+
+    Danh sách chương tiết được đồng bộ với
+    <a href={crepo.rm_slink} class="m-link" target="_blank">
+      <strong>nguồn ngoài</strong>
+    </a>
+    khoảng <strong class="u-warn"><RTime mtime={crepo.mtime} /></strong>. Bấm
+    biểu tượng <SIcon name={'refresh'} spin={_onload} /> phía trên để đồng bộ với
+    nguồn ngoài.
+  </div>
+{/if}
 
 {#if err_msg}<div class="phint _error">{err_msg}</div>{/if}
 
@@ -86,7 +103,11 @@
       Chương từ <strong class="u-warn">{free_chaps + 1}</strong> cần
       <strong class="u-warn">thanh toán vcoin</strong> để mở khoá.
     </span>
-    <span>Hệ số nhân: <strong class="u-warn">{crepo.multp || 3}</strong></span>
+    <span
+      >Hệ số nhân: <strong class="u-warn">{crepo.multp || 3}</strong> (tương
+      đương với bạn cần thanh toán
+      <strong class="u-warn">0.0{crepo.multp}</strong>
+      <SIcon name="vcoin" iset="icons"></SIcon> / một nghìn chữ.)</span>
   </div>
 
   <section>
@@ -105,15 +126,19 @@
   </Footer>
 {:else}
   <div class="d-empty">
-    <h2>Chưa có text gốc.</h2>
-    <p>
-      Hãy liên hệ với ban quản trị để khắc phục. Thông tin liên hệ xem cuối
-      trang.
+    <h1>Chưa có text gốc.</h1>
+
+    <p class="p-empty u-warn">
+      Hãy thử đổi sang các nguồn chương khác ở phía trên nếu có. Hoặc liên hệ
+      với ban quản trị thông qua các kênh thông tin
+      <a class="m-link" href="https://www.facebook.com/chivi.fb">Facebook</a>
+      hoặc <a class="m-link" href="https://discord.gg/mdC3KQH">Discord</a>
+      để được hỗ trợ.
     </p>
 
-    <p>
+    <p class="p-empty">
       Nếu bạn có đủ quyền hạn, có thể bấm vào <a
-        href="/ts/{crepo.sroot}/ul"
+        href="/ts/{crepo.sroot}/+text"
         class="m-link">Đăng tải</a> để tự thêm text gốc.
     </p>
   </div>
@@ -174,6 +199,7 @@
 
     @include ftsize(sm);
     @include fgcolor(tert);
+    line-height: 1.25rem;
 
     &._error {
       font-size: italic;
@@ -182,7 +208,7 @@
 
     :global(svg) {
       display: inline-block;
-      margin-bottom: 0.1em;
+      margin-top: -0.15rem;
     }
   }
 
@@ -195,5 +221,10 @@
   .pager {
     margin-top: 0.75rem;
     margin-bottom: 0.75rem;
+  }
+
+  .p-empty {
+    max-width: 40rem;
+    margin: 1rem 0;
   }
 </style>

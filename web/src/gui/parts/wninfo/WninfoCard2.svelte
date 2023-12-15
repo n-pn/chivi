@@ -6,7 +6,7 @@
   export let nvinfo: CV.Wninfo
 </script>
 
-<a href="/wn/{nvinfo.bslug}" class="nvinfo">
+<a href="/wn/{nvinfo.id}" class="nvinfo">
   <div class="cover">
     <BCover srcset={nvinfo.bcover} />
   </div>

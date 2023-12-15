@@ -4,7 +4,7 @@ import { merge_query, api_get } from '$lib/api_call'
 import type { PageLoad } from './$types'
 
 interface JsonData extends CV.Paginate {
-  items: CV.Rdmemo[]
+  items: CV.Tsrepo[]
 }
 
 export const load = (async ({ url, fetch, parent }) => {
@@ -17,6 +17,7 @@ export const load = (async ({ url, fetch, parent }) => {
     table,
     state,
 
+    ontab: 'index',
     _title: `Nội dung chương tiết`,
     _meta: {
       left_nav: [

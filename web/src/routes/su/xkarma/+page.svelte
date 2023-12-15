@@ -39,7 +39,7 @@
       {@const book = data.book_infos[stat.wninfo_id]}
 
       <span class="stat">
-        <a class="label fg-link" href="/wn/{book.bslug}">{book.vtitle}</a>
+        <a class="label fg-link" href="/wn/{book.id}">{book.vtitle}</a>
         <span class="value">{stat.point_cost}</span>
       </span>
     {/each}

@@ -62,6 +62,6 @@ _Khi bạn ủng hộ Chivi bằng tiền mặt, bạn sẽ được tặng mộ
 
 **Lưu ý: Hiện tại trang chưa có hệ thống thanh toán tự động, cho nên bạn chỉ được cộng vcoin sau khi ban quản trị có người kiểm tra thông tin giao dịch rồi cộng thủ công, quá trình này có thể kéo dài từ vài chục phút tới vài giờ tuỳ tình huống, mong các bạn kiên nhẫn.**
 
-Muốn nhận được vcoin nhanh hơn, hãy thử liên hệ qua các kênh liên lạc của trang như [Facebook](https://www.facebook.com/chivi.app) hoặc [Discord](https://discord.gg/mdC3KQH).
+Muốn nhận được vcoin nhanh hơn, hãy thử liên hệ qua các kênh liên lạc của trang như [Facebook](https://www.facebook.com/chivi.fb) hoặc [Discord](https://discord.gg/mdC3KQH).
 
 Trong tương lai, nếu có nhiều người ủng hộ hơn thì quá trình này có thể sẽ được cải thiện.

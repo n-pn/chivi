@@ -7,7 +7,11 @@ interface JsonData extends CV.Paginate {
 }
 
 export const load = (async ({ url: { searchParams }, fetch }) => {
-  const filter = { lm: 15, rtype: 'rdlog', sname: searchParams.get('sn') || '' }
+  const filter = {
+    lm: 15,
+    rtype: 'rdlog',
+    stype: searchParams.get('stype') || '',
+  }
   const search = merge_query(searchParams, filter)
 
   const path = `/_rd/rdmemos?${search.toString()}`
@@ -16,11 +20,12 @@ export const load = (async ({ url: { searchParams }, fetch }) => {
   return {
     props: data,
     filter,
+    ontab: 'rdlog',
     _title: `Lịch sử đọc tryện`,
     _meta: {
       left_nav: [
-        nav_link(`/me`, 'Cá nhân', 'user', { show: 'ts' }),
-        nav_link('/me/rdlog', 'Lịch sử đọc', 'history', { show: 'tm' }),
+        nav_link(`/ts`, 'Đọc truyện', 'book', { show: 'ts' }),
+        nav_link('/ts/rdlog', 'Lịch sử đọc', 'history', { show: 'tm' }),
       ],
     },
   }

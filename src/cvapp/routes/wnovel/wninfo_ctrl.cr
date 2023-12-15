@@ -80,10 +80,13 @@ class CV::WninfoCtrl < CV::BaseCtrl
       .order_by(weight: :desc)
       .limit(6)
 
-    render json: {
+    json = {
       books: WninfoView.as_list(books),
       users: Ubmemo.book_users(wninfo.id),
     }
+
+    Log.info { json[:users] }
+    render json: json
   end
 
   @[AC::Route::GET("/:wn_id/edit_form")]

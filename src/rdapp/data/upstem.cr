@@ -19,7 +19,9 @@ class RD::Upstem
   field zname : String = ""
   field vname : String = ""
 
+  field zintro : String = ""
   field vintro : String = ""
+
   field labels : Array(String) = [] of String
 
   field multp : Int16 = 4
@@ -144,7 +146,6 @@ class RD::Upstem
 
       case order
       when "mtime" then sql << " order by mtime desc"
-      when "chaps" then sql << " order by chap_count desc"
       when "views" then sql << " order by view_count desc"
       else              sql << " order by id desc"
       end

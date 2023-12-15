@@ -15,33 +15,40 @@
   const stype_colors = [1, 3, 2]
 
   const ratings = ['', '🤮', '🙁', '😐', '🙂', '🤩']
+
+  const stype_icons = ['books', 'album', 'world']
 </script>
 
 <a class="crepo" href="/ts/{crepo.sroot}{query}">
   <div class="cover">
     <BCover srcset={cover} />
 
-    <div class="stype _{stype_colors[crepo.stype]}" data-tip="Loại nguồn">
-      {crepo.sname.replace('.com', '')}
+    <div class="badge _tl">
+      <span class="label" data-tip="Loại nguồn">
+        <SIcon name={stype_icons[crepo.stype]} />
+        {crepo.sname.replace('.com', '')}
+      </span>
+      <span class="label _1" data-tip="Số chương">{crepo.chmax}</span>
+    </div>
+
+    <div class="badge _bl">
+      <span class="label _{state}" data-tip="Đánh dấu nguồn">
+        <SIcon name={rstate_icons[state]} />
+        <span>{state > 0 ? rstate_labels[state] : 'Chưa đọc'}</span>
+      </span>
+
+      <span class="label _2" data-tip="Chương đã đọc">{crepo.lc_ch_no}</span>
     </div>
 
     {#if crepo.rd_stars > 0}
-      <div class="stars" data-tip="Cho điểm">
-        {ratings[crepo.rd_stars]}
+      <div class="badge _br">
+        <span class="label _lg" data-tip="Cho điểm">
+          {ratings[crepo.rd_stars]}
+        </span>
       </div>
     {/if}
-
-    {#if state > 0}
-      <div class="rstate _{state}" data-tip={rstate_labels[state]}>
-        <SIcon name={rstate_icons[state]} />
-      </div>
-    {/if}
-
-    <div class="stats">
-      <div class="chmax" data-tip="Tổng số chương">{crepo.chmax}</div>
-      <div class="rdlog _2" data-tip="Chương đã đọc">{crepo.lc_ch_no}</div>
-    </div>
   </div>
+
   <div class="title">{crepo.vname}</div>
 </a>
 
@@ -52,20 +59,77 @@
 
   .cover {
     position: relative;
+
+    &:before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      z-index: 1;
+      content: '';
+
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.5),
+        transparent 20%,
+        transparent 80%,
+        rgba(0, 0, 0, 0.5)
+      );
+    }
   }
 
-  @mixin badge {
+  .badge {
+    @include flex-ca;
+    position: absolute;
+    z-index: 2;
+
     font-weight: 500;
     line-height: 0.9rem;
-    padding: 0.25rem;
-
     border-radius: 4px;
-
-    @include ftsize(xs);
-    @include fgcolor(white);
-
-    @include bgcolor(neutral, 6, 8);
+    height: 1.25rem;
     @include shadow;
+
+    &._tl {
+      top: 0.5rem;
+      left: 0.5rem;
+    }
+    &._tr {
+      top: 0.5rem;
+      right: 0.5rem;
+    }
+
+    &._bl {
+      bottom: 0.5rem;
+      left: 0.5rem;
+    }
+
+    &._br {
+      bottom: 0.5rem;
+      right: 0.5rem;
+    }
+
+    > :first-child {
+      @include bdradi(4px, $loc: left);
+    }
+
+    > :last-child {
+      @include bdradi(4px, $loc: right);
+    }
+
+    :global(svg) {
+      height: 0.75rem;
+      width: 0.75rem;
+    }
+  }
+
+  .label {
+    padding: 0.25rem;
+    @include ftsize(xs);
+
+    @include flex-ca($gap: 0.125rem);
+    @include fgcolor(white);
+    @include bgcolor(neutral, 6, 7);
 
     &._1 {
       @include bgcolor(primary, 6, 8);
@@ -86,53 +150,10 @@
     &._5 {
       @include bgcolor(private, 6, 8);
     }
-  }
 
-  .stars {
-    // @include badge;
-
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-
-    @include ftsize(sm);
-  }
-
-  .stype {
-    @include badge;
-
-    position: absolute;
-    top: 0.5rem;
-    left: 0.5rem;
-  }
-
-  .rstate {
-    @include badge;
-    @include flex-ca;
-
-    position: absolute;
-    bottom: 0.5rem;
-    left: 0.5rem;
-  }
-
-  .stats {
-    @include flex-ca;
-    position: absolute;
-    bottom: 0.5rem;
-    right: 0.5rem;
-  }
-
-  .chmax,
-  .rdlog {
-    @include badge;
-  }
-
-  .chmax {
-    @include bdradi(0, $loc: right);
-  }
-
-  .rdlog {
-    @include bdradi(0, $loc: left);
+    &._lg {
+      @include ftsize(sm);
+    }
   }
 
   .title {

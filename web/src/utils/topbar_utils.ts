@@ -1,5 +1,5 @@
-export function nvinfo_bar(nvinfo: CV.Wninfo, extra?: App.HeadItem) {
-  const opts = { 'href': `/wn/${nvinfo.bslug}`, 'data-kind': 'title' }
+export function nvinfo_bar({ id, vtitle }: CV.Wninfo, extra?: App.HeadItem) {
+  const opts = { 'href': `/wn/${id}`, 'data-kind': 'title' }
   if (extra) Object.assign(opts, extra)
-  return { text: nvinfo.vtitle, icon: 'book', ...opts }
+  return { text: vtitle, icon: 'book', ...opts }
 }

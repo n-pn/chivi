@@ -1,9 +1,9 @@
 <script lang="ts" context="module">
   const stypes = [
-    ['', 'Không phân loại'],
-    ['wn', 'Truyện chữ'],
-    ['up', 'Sưu tầm'],
-    ['rm', 'Nguồn nhúng'],
+    ['', 'Tất cả'],
+    ['0', 'Truyện chữ'],
+    ['1', 'Sưu tầm'],
+    ['2', 'Nguồn nhúng'],
   ]
 </script>
 
@@ -21,7 +21,7 @@
 
   $: props = data.props
 
-  $: pager = new Pager($page.url, { pg: 1, sn: '' })
+  $: pager = new Pager($page.url, { pg: 1, stype: '' })
 </script>
 
 <nav class="links">
@@ -29,8 +29,8 @@
   {#each stypes as [filter, label]}
     <a
       class="m-btn _xs _primary"
-      class:_fill={data.filter.sname == filter}
-      href={pager.gen_url({ pg: 1, sn: filter })}>{label}</a>
+      class:_fill={data.filter.stype == filter}
+      href={pager.gen_url({ pg: 1, stype: filter })}>{label}</a>
   {/each}
 
   <!-- <div class="right">

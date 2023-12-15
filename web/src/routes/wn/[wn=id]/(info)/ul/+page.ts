@@ -18,10 +18,10 @@ export const load = (async ({ url, fetch, parent }) => {
   }
 }) satisfies PageLoad
 
-const build_meta = (book: CV.Wninfo) => {
+const build_meta = ({ id, vtitle }: CV.Wninfo) => {
   return {
     left_nav: [
-      book_nav(book.bslug, book.vtitle, 'ts'),
+      book_nav(id, vtitle, 'ts'),
       nav_link('lists', 'Thư đơn', 'bookmarks', { show: 'pm' }),
     ],
   }

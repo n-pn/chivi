@@ -1,5 +1,6 @@
 @[Flags]
 enum MT::MtEner
+  PUNC
   # foreign words
 
   FRAG # unknown fragment

@@ -12,7 +12,7 @@
 
   $: nvinfo = $page.data.nvinfo
 
-  $: rpath = `/wn/${nvinfo.bslug}`
+  $: rpath = `/wn/${nvinfo.id}`
 
   $: tabs = [
     { type: 'fp', href: rpath, icon: 'news', text: 'Tổng quan' },

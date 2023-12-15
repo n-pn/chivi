@@ -36,7 +36,7 @@
       error = await res.text()
     } else {
       const vc_id = await res.text()
-      await goto(`/wn/${data.nvinfo.bslug}/uc/v${vc_id}`)
+      await goto(`/wn/${data.nvinfo.id}/uc/v${vc_id}`)
     }
   }
 

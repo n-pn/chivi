@@ -13,22 +13,22 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 </script>
 
-<nav class="bread">
-  <span class="crumb"><a href="/"><SIcon name="home" />Trang chủ</a></span>
-  {#each $crumbs as { text, href, icon }}
-    <div class="crumb">
-      <svelte:element this={href ? 'a' : 'span'} {href}>
-        {#if icon}<SIcon name={icon} />{/if}{text}
-      </svelte:element>
-    </div>
-  {/each}
-
-  <slot />
-</nav>
+{#if $crumbs.length}
+  <nav class="bread">
+    <span class="crumb"><a href="/"><SIcon name="home" />Trang chủ</a></span>
+    {#each $crumbs as { text, href, icon }}
+      <div class="crumb">
+        <svelte:element this={href ? 'a' : 'span'} {href}>
+          {#if icon}<SIcon name={icon} />{/if}{text}
+        </svelte:element>
+      </div>
+    {/each}
+  </nav>
+{/if}
 
 <style lang="scss">
   .bread {
-    padding: 0.75rem 0;
+    margin: 0.75rem 0;
     line-height: 1.25rem;
     @include ftsize(sm);
     display: flex;

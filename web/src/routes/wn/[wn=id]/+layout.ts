@@ -23,7 +23,7 @@ export const load = (async ({ params, fetch }) => {
     crepo,
     rmemo: writable(rmemo),
     _meta: {
-      left_nav: [home_nav('ts'), book_nav(nvinfo.bslug, nvinfo.vtitle, '')],
+      left_nav: [home_nav('ts'), book_nav(nvinfo.id, nvinfo.vtitle, '')],
     },
     _title: nvinfo.vtitle,
     _image: nvinfo.bcover || '//cdn.chivi.app/covers/_blank.webp',

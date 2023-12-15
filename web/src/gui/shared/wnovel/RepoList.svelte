@@ -1,107 +1,119 @@
 <script lang="ts">
-  import { page } from '$app/stores'
-
-  import type { LayoutData } from './$types'
-  import { seed_path } from '$lib/kit_path'
+  import { browser } from '$app/environment'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  export let data: LayoutData
+  export let wn_id = 0
+  export let pg_no = 1
 
-  $: ({ nvinfo, wstem } = data)
-  $: pg_no = +$page.url.searchParams.get('pg') || 1
+  export let sname = ''
+  export let sn_id = 0
 
-  $: ({ wstems = [], ustems = [], rstems = [] } = data.bstems)
-  const find_stem = (wstems: CV.Chstem[], sname: string) => {
-    return wstems.find((x) => x.sname == sname) || { sname, chmax: 0 }
+  let repos: Array<CV.Tsrepo> = []
+  $: chivi = repos.find((x) => x.sname == '~avail' && x.sn_id == wn_id) || {
+    sroot: `wn~avail/${wn_id}`,
+    sname: '~avail',
+    sn_id: wn_id,
+    chmax: 0,
+  }
+  $: up_repos = repos.filter((x) => x.stype == 1)
+  $: rm_repos = repos.filter((x) => x.stype == 2)
+
+  $: if (browser && wn_id) reload_repos(wn_id)
+
+  const reload_repos = async (wn_id: number) => {
+    const res = await fetch(`/_rd/tsrepos?wn_id=${wn_id}`)
+    if (!res.ok) return
+    repos = (await res.json()) as Array<CV.Tsrepo>
   }
 
-  $: avail_stem = find_stem(wstems, '~avail')
+  const repo_path = ({ sroot }, pg_no = 1) => {
+    return pg_no > 1 ? `/ts/${sroot}?pg=${pg_no}` : `/ts/${sroot}`
+  }
 
-  let show_up = false
-  let show_rm = false
+  let show_more = 0
 </script>
 
-<div class="seed-list">
+<h3 class="title">Các nguồn chương tiết khác:</h3>
+
+<div class="rlist">
   <a
-    href={seed_path(nvinfo.bslug, '~avail', pg_no)}
-    class="seed-name"
-    class:_active={'~avail' == wstem.sname}
-    data-tip-loc="bottom">
-    <div class="seed-label">Nguồn tổng hợp</div>
-    <div class="seed-stats">
-      <strong>{avail_stem.chmax}</strong> chương
+    href={repo_path(chivi, pg_no)}
+    class="rchip"
+    class:_active={sname == '~avail'}>
+    <div class="sname">Nguồn tổng hợp</div>
+    <div class="chmax">
+      <strong>{chivi.chmax}</strong> chương
     </div>
   </a>
 
   <button
-    class="seed-name"
-    on:click={() => (show_up = !show_up)}
-    class:_active={show_up}
+    class="rchip"
+    on:click={() => (show_more = show_more == 1 ? 0 : 1)}
+    class:_active={show_more == 1}
     data-tip="Sưu tầm cá nhân liên kết với bộ truyện"
     data-tip-loc="bottom">
-    <div class="seed-label">Sưu tầm riêng</div>
+    <div class="sname">Sưu tầm riêng</div>
 
-    <div class="seed-stats">
-      <strong>{ustems.length}+</strong> nguồn
+    <div class="chmax">
+      <strong>{up_repos.length}</strong> nguồn
     </div>
   </button>
 
   <button
-    class="seed-name"
-    on:click={() => (show_rm = !show_rm)}
-    class:_active={show_rm}
+    class="rchip"
+    on:click={() => (show_more = show_more == 2 ? 0 : 2)}
+    class:_active={show_more == 2}
     data-tip="Các nguồn ngoài liên kết với bộ truyện"
     data-tip-loc="bottom">
-    <div class="seed-label">Liên kết ngoài</div>
+    <div class="sname">Liên kết nhúng</div>
 
-    <div class="seed-stats">
-      <strong>{rstems.length}+</strong> nguồn
+    <div class="chmax">
+      <strong>{rm_repos.length}</strong> nguồn
     </div>
   </button>
 </div>
 
-{#if show_up}
+{#if show_more == 1}
   <h4 class="title">Sưu tầm cá nhân:</h4>
-  <div class="seed-list _extra">
-    {#each ustems as { sname, sn_id, chmax }}
+  <div class="rlist _extra">
+    {#each up_repos as crepo}
       <a
-        href="/up/{sname}:{sn_id}"
-        class="seed-name _sub"
-        data-tip="Danh sách chương cá nhân của {sname}"
+        href={repo_path(crepo, pg_no)}
+        class="rchip _sub"
+        class:_active={crepo.sname == sname}
+        data-tip="Danh sách chương cá nhân của {crepo.sname}"
         data-tip-loc="bottom">
-        <div class="seed-label">{sname}</div>
-        <div class="seed-stats"><strong>{chmax}</strong> chương</div>
+        <div class="sname">{crepo.sname}</div>
+        <div class="chmax"><strong>{crepo.chmax}</strong> chương</div>
       </a>
     {/each}
 
     <a
-      href="/up/+proj?wn={nvinfo.id}"
-      class="seed-name _sub _btn"
+      href="/up/+proj?wn={wn_id}"
+      class="rchip _sub _btn"
       data-tip="Tạo dự án cá nhân mới liên kết tới bộ truyện"
       data-tip-loc="bottom">
       <SIcon name="file-plus" />
       <div class="btn-label">Tạo mới</div>
     </a>
   </div>
-{/if}
-
-{#if show_rm}
+{:else if show_more == 2}
   <h4 class="title">Nguồn liên kết ngoài:</h4>
-  <div class="seed-list _extra">
-    {#each rstems as { sname, sn_id, chmax }}
+  <div class="rlist _extra">
+    {#each rm_repos as crepo}
       <a
-        href="/rm/{sname}:{sn_id}"
-        class="seed-name _sub"
-        class:_active={sname == wstem.sname}>
-        <div class="seed-label">{sname}</div>
-        <div class="seed-stats"><strong>{chmax}</strong> chương</div>
+        href={repo_path(crepo, pg_no)}
+        class="rchip _sub"
+        class:_active={crepo.sname == sname}>
+        <div class="sname">{crepo.sname}</div>
+        <div class="chmax"><strong>{crepo.chmax}</strong> chương</div>
       </a>
     {/each}
 
     <a
-      href="/rm/+stem?wn={nvinfo.id}"
-      class="seed-name _sub _btn"
+      href="/rm/+stem?wn={wn_id}"
+      class="rchip _sub _btn"
       data-tip="Thêm liên kết tới nguồn ngoài"
       data-tip-loc="bottom">
       <SIcon name="square-plus" />
@@ -111,12 +123,12 @@
 {/if}
 
 <style lang="scss">
-  .seed-list {
-    @include flex-cx($gap: 0.25rem);
+  .rlist {
+    @include flex-cx($gap: 0.375rem);
     flex-wrap: wrap;
     padding: 0 var(--gutter);
 
-    margin-top: 0.5rem;
+    // margin-top: 0.5rem;
     margin-left: auto;
     margin-right: auto;
     max-width: 35rem;
@@ -136,7 +148,7 @@
     @include fgcolor(tert);
   }
 
-  .seed-name {
+  .rchip {
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -155,7 +167,7 @@
 
     // prettier-ignore
     &._active, &:hover, &:active {
-      .seed-label { @include fgcolor(primary, 5); }
+      .sname { @include fgcolor(primary, 5); }
     }
 
     &._sub {
@@ -169,7 +181,7 @@
     }
   }
 
-  .seed-label {
+  .sname {
     @include flex($center: both);
     @include label();
 
@@ -195,7 +207,7 @@
     @include bps(font-size, rem(11px), $ts: rem(12px));
   }
 
-  .seed-stats {
+  .chmax {
     display: block;
     text-align: center;
     line-height: 0.875rem;
@@ -213,17 +225,8 @@
   .title {
     @include fgcolor(tert);
     @include ftsize(sm);
+    padding: 0.25rem 0;
     font-style: italic;
     text-align: center;
   }
-
-  // .seed-task {
-  //   display: flex;
-  //   flex-wrap: wrap;
-  //   justify-content: center;
-  //   gap: 0.25rem;
-  //   // text-align: center;
-  //   margin-top: 0.5rem;
-  //   margin-bottom: 0.5rem;
-  // }
 </style>

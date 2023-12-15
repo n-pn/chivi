@@ -11,8 +11,6 @@ CREATE TABLE wninfos(
   btitle_zh varchar NOT NULL DEFAULT '',
   btitle_vi varchar NOT NULL DEFAULT '',
   btitle_hv varchar NOT NULL DEFAULT '',
-  --
-  bslug varchar UNIQUE NOT NULL,
   -- extra
   igenres int[] NOT NULL DEFAULT '{}',
   vlabels citext[] NOT NULL DEFAULT '{}',

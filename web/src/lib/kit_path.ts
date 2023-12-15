@@ -9,24 +9,13 @@ export function scrub_params(
   return params
 }
 
+export function book_path(wn_id: number | string, child: string = '') {
+  return child ? `/wn/${wn_id}/${child}` : `/wn/${wn_id}`
+}
+
 export const stem_path = (sroot: string, pg_no = 1) => {
   if (pg_no < 33) return sroot
   return `${sroot}?pg=${_pgidx(pg_no)}`
-}
-
-export function book_path(bslug: string, child: string = '') {
-  return child ? `/wn/${bslug}/${child}` : `/wn/${bslug}`
-}
-
-export function seed_path(bslug: string, sname: string, pg_no = 0): string {
-  const path = `/wn/${bslug}/ch${sname}`
-  return pg_no > 1 ? path + `?pg=${pg_no}` : path
-}
-
-const seed_prefixes = ['~', '@', '!', '+']
-// prettier-ignore
-export const fix_sname = (sname: string) => {
-  return seed_prefixes.includes(sname[0]) ? sname : '~avail'
 }
 
 export function chap_path(
