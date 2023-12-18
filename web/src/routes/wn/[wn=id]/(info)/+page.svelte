@@ -16,6 +16,13 @@
     status_colors,
   } from '$lib/constants'
 
+  import {
+    rstate_labels,
+    rstate_colors,
+    rstate_icons,
+    rstate_slugs,
+  } from '$lib/consts/rd_states'
+
   $: ({ gdroot, rplist, nvinfo, ydata, bdata } = data)
 
   let short_intro = false
@@ -94,24 +101,13 @@
   {#if bdata.users.length > 0}
     <div class="users">
       {#each bdata.users as { uname, privi, track }}
-        {@const status = status_types[track]}
-        {#if track > 0}
-          <a
-            class="m-chip _{status_colors[status]}"
-            href="/@{uname}/books/{status}"
-            data-tip="Đánh dấu: {status_names[status]}">
-            <cv-user data-privi={privi}>{uname}</cv-user>
-            <SIcon name={status_icons[status]} />
-          </a>
-        {:else}
-          <a
-            class="m-chip _neutral"
-            href="/@{uname}/books/default"
-            data-tip="Chưa thêm đánh dấu">
-            <cv-user data-privi={privi}>{uname}</cv-user>
-            <SIcon name="eye" />
-          </a>
-        {/if}
+        <a
+          class="m-chip _{rstate_colors[track]}"
+          href="/@{uname}/books/{rstate_slugs[track]}"
+          data-tip={track > 0 ? rstate_labels[track] : 'Chưa đánh dấu'}>
+          <cv-user data-privi={privi}>{uname}</cv-user>
+          <SIcon name={track > 0 ? rstate_icons[track] : 'eye'} />
+        </a>
       {/each}
     </div>
   {:else}

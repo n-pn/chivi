@@ -36,7 +36,7 @@ struct CV::WninfoView
         jb.field "ztitle", @data.btitle_zh
         jb.field "htitle", @data.btitle_hv
 
-        jb.field "origins", @data.orig_links
+        jb.field "origins", Wnlink.all_origs(@data.id)
       end
     end
   end

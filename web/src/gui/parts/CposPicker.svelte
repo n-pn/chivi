@@ -47,7 +47,7 @@
   }
 </script>
 
-<Dialog --z-idx={80} class="cpos-picker" {on_close}>
+<Dialog class="cpos-picker" {on_close}>
   <svelte:fragment slot="header">
     <span>Từ loại:</span>
     <span class="tabs">

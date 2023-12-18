@@ -3,7 +3,6 @@
   import { toleft, layers } from '$lib/stores'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import { onDestroy } from 'svelte'
 
   export let actived = false
   export let sticked = false
@@ -32,41 +31,42 @@
   class="slider-wrap"
   class:_active={actived}
   class:_sticky={sticked}
-  on:click={hide_slider} />
+  on:click={hide_slider}>
+  <div
+    class="slider-main {klass}"
+    class:_left={_slider == 'left'}
+    class:_right={_slider == 'right'}
+    class:_active={actived}
+    on:click={(e) => e.stopPropagation()}>
+    <header class="head">
+      <slot name="header-left" />
+      <slot name="header-right" />
 
-<div
-  class="slider-main {klass}"
-  class:_left={_slider == 'left'}
-  class:_right={_slider == 'right'}
-  class:_active={actived}>
-  <header class="head">
-    <slot name="header-left" />
-    <slot name="header-right" />
+      {#if _sticky}
+        <button
+          class="-btn"
+          class:_active={sticked}
+          on:click={() => (sticked = !sticked)}>
+          <SIcon name="pin" />
+        </button>
+      {/if}
 
-    {#if _sticky}
       <button
         class="-btn"
-        class:_active={sticked}
-        on:click={() => (sticked = !sticked)}>
-        <SIcon name="pin" />
+        data-kbd="esc"
+        on:click={hide_slider}
+        data-tip="Đóng"
+        data-tip-loc="bottom">
+        <SIcon name="x" />
       </button>
-    {/if}
+    </header>
 
-    <button
-      class="-btn"
-      data-kbd="esc"
-      on:click={hide_slider}
-      data-tip="Đóng"
-      data-tip-loc="bottom">
-      <SIcon name="x" />
-    </button>
-  </header>
+    <section class="body">
+      <slot />
+    </section>
 
-  <section class="body">
-    <slot />
-  </section>
-
-  <slot name="foot" />
+    <slot name="foot" />
+  </div>
 </div>
 
 <style lang="scss">
@@ -79,7 +79,7 @@
     right: 0;
     z-index: 50;
 
-    background-color: rgba(#000, 0.5);
+    background-color: rgba(#000, 0.6);
     // transition: background-color 0.5s ease-in-out;
 
     // prettier-ignore

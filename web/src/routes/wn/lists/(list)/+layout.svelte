@@ -2,34 +2,20 @@
   import Section from '$gui/sects/Section.svelte'
   import { crumbs } from '$gui/global/Bcrumb.svelte'
 
-  import { get_user } from '$lib/stores'
-  const _user = get_user()
-
-  $: privi = $_user.privi
-  const sroot = '/wn/lists'
-
   const tabs = [
-    { type: 'home', href: sroot, icon: 'bookmarks', text: 'Thư đơn' },
+    { type: 'index', href: '/wn/lists', icon: 'list', text: 'Danh sách' },
+
     {
-      type: 'like',
-      href: sroot + `/liked`,
-      icon: 'heart',
-      text: 'Ưa thích',
-      mute: privi < 0,
-    },
-    {
-      type: 'mine',
-      href: sroot + `/owned`,
+      type: 'owned',
+      href: `/wn/lists/owned`,
       icon: 'ballpen',
       text: 'Của tôi',
-      mute: privi < 0,
     },
     {
       type: '+new',
-      href: sroot + `/+list`,
+      href: `/wn/lists/+list`,
       icon: 'circle-plus',
       text: 'Tạo mới',
-      mute: privi < 0,
     },
   ]
 

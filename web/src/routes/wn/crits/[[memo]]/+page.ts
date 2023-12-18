@@ -3,9 +3,11 @@ import { home_nav, nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 
-export const load = (async ({ url, fetch, parent }) => {
+export const load = (async ({ url, fetch, params: { memo } }) => {
   const sort = url.searchParams.get('sort') || 'utime'
-  const data = await load_crits(url, fetch, { sort })
+  const from = url.searchParams.get('from') || 'vi'
+
+  const data = await load_crits(url, fetch, { sort, memo, from })
 
   const _meta = {
     left_nav: [
@@ -14,5 +16,6 @@ export const load = (async ({ url, fetch, parent }) => {
     ],
   }
 
-  return { ...data, sort, _meta, _title: 'Đánh giá truyện chữ', ontab: 'home' }
+  const ontab = memo || 'index'
+  return { ...data, sort, ontab, _meta, _title: 'Đánh giá truyện chữ' }
 }) satisfies PageLoad

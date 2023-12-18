@@ -6,22 +6,16 @@ class CV::WninfoCtrl < CV::BaseCtrl
   base "/_db/books"
 
   @[AC::Route::GET("/")]
-  def index(
-    order : String = "access",
-    btitle : String? = nil, author : String? = nil,
-    seed : String? = nil, from : String? = nil,
-    genres : String? = nil, tagged : String? = nil,
-    voters : Int32? = nil, rating : Int32? = nil,
-    uname : String? = nil, bmark : String? = nil,
-    status : Int32? = nil
-  )
+  def index(order : String = "access",
+            btitle : String? = nil, author : String? = nil,
+            genres : String? = nil, tagged : String? = nil,
+            voters : Int32? = nil, rating : Int32? = nil,
+            status : Int32? = nil, from : String? = nil)
     pg_no, limit, offset = _paginate(max: 100)
-
-    query = Wninfo.query.sort_by(order).where("subdue_id = 0")
+    query = Wninfo.query.sort_by(order)
 
     query.filter_btitle(btitle) if btitle
     query.filter_author(author) if author
-    query.filter_wnseed(seed) if seed
     query.filter_origin(from) if from
 
     query.filter_genres(genres)
@@ -30,16 +24,17 @@ class CV::WninfoCtrl < CV::BaseCtrl
     query.where("status = ?", status - 1) if status
     query.where("voters >= ?", voters) if voters
     query.where("rating >= ?", rating) if rating
-    query.filter_viuser(uname, bmark) if uname && bmark
 
     total = query.dup.limit(offset + limit * 3).offset(0).count
     query.limit(limit == 24 ? 25 : limit).offset(offset)
 
-    render json: {
+    json = {
       books: WninfoView.as_list(query),
       total: total, pgidx: pg_no,
       pgmax: _pgidx(total, limit),
     }
+
+    render json: json
   end
 
   @[AC::Route::GET("/find/:bslug")]
@@ -82,10 +77,9 @@ class CV::WninfoCtrl < CV::BaseCtrl
 
     json = {
       books: WninfoView.as_list(books),
-      users: Ubmemo.book_users(wninfo.id),
+      users: BookUser.of_book(wninfo.id),
     }
 
-    Log.info { json[:users] }
     render json: json
   end
 

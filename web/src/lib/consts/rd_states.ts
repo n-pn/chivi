@@ -1,5 +1,5 @@
 export const rstate_slugs = [
-  'default',
+  '',
   'reading',
   'finished',
   'onhold',

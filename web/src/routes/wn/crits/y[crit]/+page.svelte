@@ -2,12 +2,12 @@
   import { get_rtime } from '$gui/atoms/RTime.svelte'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  import YscritCard from '$gui/parts/review/YscritCard2.svelte'
+  import YscritCard from '$gui/parts/review/YscritCard.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ ycrit, repls, nvinfo } = data)
+  $: ({ ycrit, repls } = data)
 
   // const gen_avatar_url = (yu_id: number, u_pic: string) => {
   //   if (!u_pic) return '/img/blank.png'
@@ -15,15 +15,10 @@
   // }
 </script>
 
-<h3 id="ycrit">
-  Đánh giá của <strong>{ycrit.uname}</strong> cho bộ truyện
-  <strong>{nvinfo.vtitle}</strong>
-</h3>
-
-<YscritCard {ycrit} view_all={true} />
+<YscritCard {...ycrit} view_all={true} big_text={true} />
 
 <section id="repls" class="repls">
-  <h3 class="repls-head">Phản hồi đánh giá ({ycrit.repl_count}):</h3>
+  <h3 class="repls-head">Phản hồi đánh giá ({ycrit.crit.repl_count}):</h3>
 
   {#each repls as repl}
     {@const user_href = `/wn/crits?from=ys&user=${repl.yu_id}`}
@@ -45,7 +40,7 @@
       </section>
     </div>
   {:else}
-    <div class="d-empty">Không có phản hồi.</div>
+    <div class="d-empty-sm">Không có phản hồi.</div>
   {/each}
 </section>
 

@@ -20,44 +20,18 @@
   export let view_all = false
   export let big_text = false
 
-  let body_type = 'vhtml'
+  $: crit_path = `/wn/crits/y${crit.id}`
 
-  $: content = crit.vhtml
-  $: swap_content(body_type)
+  $: [plock, ptype, label] = check_locking(crit.stars)
 
-  let cached = {}
-  $: cached = { vhtml: crit.vhtml }
-
-  let _onload = false
-
-  async function swap_content(body_type: string) {
-    let cached_data = cached[body_type]
-
-    if (cached_data || body_type == 'vhtml') {
-      content = cached_data || crit.vhtml
-      return
-    }
-
-    _onload = true
-
-    const url = `/_ys/crits/${crit.id}/${body_type}`
-    const res = await globalThis.fetch(url)
-    const res_text = await res.text()
-    _onload = false
-
-    if (!res.ok) return alert(res_text)
-    cached[body_type] = res_text
-    content = res_text
+  const check_locking = (stars = 3): [number, string, string] => {
+    if (stars == 5) return [-1, 'đăng nhập', 'bình luận 5 sao']
+    if (stars < 4)
+      return [1, 'quyền hạn tối thiểu là 1', 'tất cả các bình luận']
+    return [0, 'kích hoạt tài khoản', 'bình luận từ 4 sao trở lên']
   }
 
-  const body_types: Record<string, [string, number]> = {
-    vhtml: ['Dịch thô', -1],
-    btran: ['Bing (Việt)', 2],
-    deepl: ['DeepL (Eng)', 3],
-  }
-
-  $: book_path = book ? `/wn/${book.bslug}` : `/wn/${crit.book_id}`
-  $: crit_path = `${book_path}/uc/y${crit.id}`
+  crit.stars < 4 ? 10 : crit.stars > 4 ? 5 : 0
 </script>
 
 <section class="crit island">
@@ -88,20 +62,19 @@
   </div>
 
   <section class="body" class:big_text>
-    {#if $_user.privi < 1}
-      <p class="u-fg-mute u-fz-sm">
-        <em
-          >(Bạn cần thiết quyền hạn tối thiểu là 1 để xem bình luận. <a
-            href="/hd/faq">Tham khảo lý do</a
-          >)</em>
+    {#if $_user.privi < plock}
+      <p class="u-fg-mute">
+        <small>
+          <em
+            >(Bạn cần thiết <span class="u-warn">{ptype}</span> để xem {label}).
+            Chi tiết tham khảo:
+            <a class="m-link" href="/hd/nang-cap-quyen-han"
+              >Hướng dẫn nâng cấp quyền hạn.</a>
+          </em>
+        </small>
       </p>
-    {:else if _onload}
-      <div class="loading">
-        <SIcon name="loader-2" spin={_onload} />
-        <span>Đang tải dữ liệu</span>
-      </div>
     {:else}
-      <Truncate html={content} bind:view_all />
+      <Truncate html={crit.vhtml} bind:view_all />
     {/if}
   </section>
 

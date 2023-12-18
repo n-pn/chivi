@@ -13,7 +13,6 @@
   }
 
   const origs = [
-    ['', 'Tất cả', 'Hiển thị tất cả đánh giá'],
     ['vi', 'Chivi', 'Đánh giá do người dùng Chivi viết'],
     ['ys', 'Yousuu', 'Đánh giá sưu tầm từ yousuu.com'],
     ['me', 'Của bạn', 'Đánh giá truyện của riêng bạn'],
@@ -41,7 +40,7 @@
   $: pager = new Pager($page.url, { sort: _sort, smin: 0, smax: 6, pg: 1 })
 
   $: opts = {
-    from: $page.url.searchParams.get('from') || '',
+    from: $page.url.searchParams.get('from') || 'vi',
     sort: _sort,
     smin: +$page.url.searchParams.get('smin') || 1,
     smax: +$page.url.searchParams.get('smax') || 5,

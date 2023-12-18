@@ -6,6 +6,7 @@
   import Item from './Header/HeaderItem.svelte'
   import Appnav from './Modals/Appnav.svelte'
   import Usercp from '../shared/usercp/Usercp.svelte'
+  import Config from '../shared/reader/Config.svelte'
   import Dboard from './Modals/Dboard.svelte'
 
   const _user = get_user()
@@ -50,8 +51,16 @@
         <Item
           type="button"
           icon="message-circle"
-          data-kbd="f"
           on:click={() => popups.show('dboard')} />
+      {/if}
+
+      {#if $page.data._show_conf}
+        <Item
+          type="button"
+          icon="adjustments"
+          text="Cài đặt"
+          opts={{ show: 'pl', kind: 'x' }}
+          on:click={() => popups.show('config')} />
       {/if}
 
       {#if $_user.uname != 'Khách'}
@@ -62,7 +71,6 @@
           iset="icons"
           _dot={$_user.unread_notif > 0}
           opts={{ show: 'pl', kind: 'uname' }}
-          data-kbd="u"
           on:click={() => popups.show('usercp')} />
       {:else}
         <Item
@@ -80,6 +88,7 @@
 {#if $popups.appnav}<Appnav bind:actived={$popups.appnav} />{/if}
 {#if $popups.dboard}<Dboard {thread} bind:actived={$popups.dboard} />{/if}
 {#if $popups.usercp}<Usercp bind:actived={$popups.usercp} />{/if}
+{#if $popups.config}<Config bind:actived={$popups.config} />{/if}
 
 <style lang="scss">
   $header-height: 3rem;

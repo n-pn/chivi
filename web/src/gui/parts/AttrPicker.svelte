@@ -32,7 +32,7 @@
   $: attrs = output.trim().split(' ').filter(Boolean)
 </script>
 
-<Dialog --z-idx={80} class="attr-picker" {on_close}>
+<Dialog class="attr-picker" {on_close}>
   <svelte:fragment slot="header">
     <span>Từ tính</span>
   </svelte:fragment>

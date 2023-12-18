@@ -28,14 +28,11 @@ class CV::Btitle
   end
 
   def self.upsert!(name_zh : String, name_hv = MT::QtCore.tl_hvname(name_zh), name_vi : String? = nil) : self
-    name_xx = name_vi || name_hv
-
-    PGDB.query_one <<-SQL, name_zh, name_xx, name_hv, name_vi, as: Btitle
+    PGDB.query_one <<-SQL, name_zh, name_vi || name_hv, name_hv, as: Btitle
       insert into btitles(name_zh, name_vi, name_hv)
-      values ($1, $2, $3, $4)
+      values ($1, $2, $3)
       on conflict(name_zh) do update set
-        name_hv = excluded.name_hv,
-        name_vi = coalesce($4, btitles.name_vi)
+        name_hv = excluded.name_hv
       returning *
       SQL
   end

@@ -5,6 +5,9 @@
 
   import { rel_time } from '$utils/time_utils'
   import SIcon from '$gui/atoms/SIcon.svelte'
+  import Slider from '$gui/molds/Slider.svelte'
+
+  export let actived = false
 
   export let _user: Writable<App.CurrentUser>
 
@@ -29,26 +32,28 @@
   }
 </script>
 
-<header class="label">
-  <SIcon name="bell" />
-  <span>Thông báo ({data.total})</span>
-  <a class="link" href="/me/notif">Xem tất cả</a>
-</header>
+<Slider bind:actived class="notifs" --slider-width="24rem">
+  <svelte:fragment slot="header-left">
+    <span class="-icon"><SIcon name="bell" /></span>
+    <span class="-text">Thông báo ({data.total})</span>
+    <a class="link" href="/me/notif">Xem tất cả</a>
+  </svelte:fragment>
 
-<div class="notifs">
-  {#each data.notifs as notif}
-    <div class="notif" class:_fresh={!notif.reached_at}>
-      {@html notif.content}
-      <footer class="notif-foot">
-        <time>{rel_time(notif.created_at)}</time>
-      </footer>
-    </div>
-  {/each}
-</div>
+  <div class="notifs">
+    {#each data.notifs as notif}
+      <div class="notif" class:_fresh={!notif.reached_at}>
+        {@html notif.content}
+        <footer class="notif-foot">
+          <time>{rel_time(notif.created_at)}</time>
+        </footer>
+      </div>
+    {/each}
+  </div>
 
-<footer class="foot">
-  <a class="m-btn _primary _fill _sm" href="/me/notif">Tất cả thông báo</a>
-</footer>
+  <footer class="foot">
+    <a class="m-btn _primary _fill _sm" href="/me/notif">Tất cả thông báo</a>
+  </footer>
+</Slider>
 
 <style lang="scss">
   .label {
@@ -101,5 +106,6 @@
 
   .foot {
     text-align: center;
+    margin-bottom: 1rem;
   }
 </style>

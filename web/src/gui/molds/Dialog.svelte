@@ -11,15 +11,18 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="wrap" on:click={() => on_close(false)}>
-  <!-- <div class="wrap" on:click={() => on_close(false)} in:fade={{ duration: 100 }}> -->
+<!-- <div class="wrap" on:click={() => on_close(false)} in:fade={{ duration: 100 }}> -->
+<div class="dialog-wrap" on:click={() => on_close(false)}>
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div
-    class="main {$$props.class} _{_size}"
+    class="dialog-main {$$props.class} _{_size}"
     on:click={(e) => e.stopPropagation()}>
     <!-- in:scale={{ duration: 100, easing: backInOut }}> -->
     {#if $$slots.header}
-      <header class="head">
+      <header class="dialog-head">
         <slot name="header" />
+
         <button
           type="button"
           class="x-btn"
@@ -37,20 +40,48 @@
 </div>
 
 <style lang="scss">
-  .wrap {
+  .dialog-wrap {
     @include flex-ca;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    width: 100vw;
-    height: 100vh;
-    height: 100svh;
+    bottom: 0;
     z-index: var(--z-idx, 60);
     background: rgba(#000, 0.75);
   }
 
-  .head {
+  $dialog-widths: (
+    xs: 20rem,
+    sm: 24rem,
+    md: 28rem,
+    lg: 32rem,
+    xl: 36rem,
+  );
+
+  .dialog-main {
+    width: 50vw;
+    max-width: 100%;
+
+    @include bgcolor(tert);
+    @include shadow(1);
+    @include darksd();
+
+    // prettier-ignore
+    @each $style, $width in $dialog-widths {
+      &._#{$style} {
+        width: $width;
+        @media (min-width: $width) { @include bdradi(); }
+      }
+    }
+
+    &.upsert,
+    &.postag {
+      @include bgcolor(tert);
+    }
+  }
+
+  .dialog-head {
     @include flex-cx;
 
     height: 2.25rem;
@@ -71,35 +102,5 @@
     @include fgcolor(tert);
     // prettier-ignore
     &:hover { @include fgcolor(primary, 6); }
-  }
-
-  $dialog-widths: (
-    xs: 20rem,
-    sm: 24rem,
-    md: 28rem,
-    lg: 32rem,
-    xl: 36rem,
-  );
-
-  .main {
-    width: 50vw;
-    max-width: 100%;
-
-    @include bgcolor(tert);
-    @include shadow(1);
-    @include darksd();
-
-    // prettier-ignore
-    @each $style, $width in $dialog-widths {
-      &._#{$style} {
-        width: $width;
-        @media (min-width: $width) { @include bdradi(); }
-      }
-    }
-
-    &.upsert,
-    &.postag {
-      @include bgcolor(tert);
-    }
   }
 </style>

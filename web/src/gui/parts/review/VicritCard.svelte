@@ -32,8 +32,8 @@
     )
   }
 
-  $: crit_path = `/wn/${crit.b_uslug}/uc/v${crit.vc_id}`
-  $: edit_path = `/wn/${crit.b_uslug}/uc/+crit?id=${crit.vc_id}`
+  $: crit_path = `/wn/crits/v${crit.vc_id}`
+  $: edit_path = `/wn/crits/+crit?id=${crit.vc_id}`
   $: list_path = `/wn/lists/v${crit.l_uslug}`
 </script>
 
@@ -57,7 +57,7 @@
 
   {#if show_book && book}<YscritBook {book} />{/if}
 
-  <div class="vtags">
+  <div class="vtags" class:big_text>
     {#each crit.btags as label}
       <a class="vtag" href="/wn/crits?vtag={label}">
         <SIcon name="hash" />
@@ -73,7 +73,7 @@
   <footer class="foot" class:_sticky={view_all}>
     <!-- <span class="m-meta">&middot;</span> -->
 
-    <a class="m-meta" href="{crit_path}#vcrit">
+    <a class="m-meta" href={crit_path}>
       <SIcon name="link" />
       <span>Liên kết</span>
     </a>
@@ -160,6 +160,16 @@
     &._star :global(.star) {
       width: 1.1em;
       height: 1.1em;
+    }
+  }
+
+  .vtags {
+    &.big_text {
+      @include bps(font-size, rem(16px), $pl: rem(17px), $tm: rem(18px));
+    }
+
+    + .body :global(p):first-of-type {
+      margin-top: 0;
     }
   }
 

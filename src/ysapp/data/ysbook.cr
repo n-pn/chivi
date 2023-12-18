@@ -8,7 +8,7 @@ require "../../_data/wnovel/wnlink"
 require "../../mt_v1/data/v1_dict"
 require "../../wnapp/_raw/raw_ysbook"
 
-require "./wninfo_data"
+require "./wninfo"
 
 class YS::Ysbook
   include Clear::Model

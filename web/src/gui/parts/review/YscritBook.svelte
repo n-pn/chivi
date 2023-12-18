@@ -5,6 +5,8 @@
   import { SIcon, BCover } from '$gui'
 
   export let book: CV.Crbook | CV.Wninfo
+
+  $: genres = book.genres || []
 </script>
 
 <section class="book">
@@ -21,9 +23,9 @@
         <span>{book.vauthor}</span>
       </a>
 
-      <a class="m-meta link" href="/wn/~{book.genres[0]}">
+      <a class="m-meta link" href="/wn/~{genres[0]}">
         <SIcon name="folder" />
-        <span>{book.genres[0]}</span>
+        <span>{genres[0]}</span>
       </a>
     </div>
     <div class="extra">

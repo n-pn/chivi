@@ -76,16 +76,18 @@
     Hệ số nhân hiện tại của chương:
     <strong class="u-warn">{crepo.multp}</strong>.
   </p>
+
   <p class="u-fg-tert">
     <em>
-      {#if crepo.stype == 'up'}
-        Gợi ý: Hệ số nhân của nguồn sưu tầm cá nhân do người dùng tự thiết đặt.
-        Thử liên hệ với chủ sở hữu dự án nếu thấy chưa phù hợp!
-      {:else}
-        Gợi ý: Hệ số nhân của chương được tính bằng hệ số nhân mặc định của
-        nguồn truyện trừ cho quyền hạn hiện tại của bạn. Quyền hạn càng cao thì
-        hệ số nhân càng giảm.
-      {/if}
+      Gợi ý 1: Hệ số nhân của chương được tính bằng hệ số nhân mặc định của
+      nguồn truyện trừ cho quyền hạn hiện tại của bạn. Quyền hạn càng cao thì hệ
+      số nhân càng giảm.
+    </em>
+  </p>
+
+  <p class="u-fg-tert">
+    <em>
+      Gợi ý 2: Vào [Cài đặt] phía trên để bật chế độ Tự động mở khóa chương.
     </em>
   </p>
 

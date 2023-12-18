@@ -128,16 +128,6 @@ class CV::Wninfo
     input ? where("igenres @> ?", GenreMap.map_int(input.split('+'))) : self
   end
 
-  scope :filter_viuser do |uname, bmark|
-    if uname && (viuser = Viuser.load!(uname))
-      where_clause = "viuser_id=#{viuser.id}"
-      where_clause += " and status=#{Ubmemo.status(bmark)}" if bmark
-      where("id IN (SELECT nvinfo_id from ubmemos where #{where_clause})")
-    else
-      self
-    end
-  end
-
   scope :filter_tagged do |input|
     input ? where("vlabels @> ?", input.split("+").map(&.strip)) : self
   end
@@ -153,8 +143,6 @@ class CV::Wninfo
     end
   end
 
-  getter orig_links : Array(Wnlink) { Wnlink.all_origs(self.id.to_i) }
-
   include WninfoInner
 
   def canonical_path
@@ -166,8 +154,6 @@ class CV::Wninfo
   def self.preload(ids : Array(Int32))
     ids.empty? ? [] of self : query.where("id = any(?)", ids)
   end
-
-  class_getter total : Int32 { query.count.to_i }
 
   CACHE_INT = RamCache(Int32, self).new
   CACHE_STR = {} of String => Int32

@@ -1,12 +1,12 @@
 require "./_ys_ctrl_base"
-require "../data/ysbook_data"
+require "../data/ysbook"
 
 class YS::CritCtrl < AC::Base
-  base "/_ys"
+  base "/_ys/crits"
 
   # list revies
-  @[AC::Route::GET("/crits")]
-  def query(sort : String = "utime",
+  @[AC::Route::GET("/")]
+  def index(sort : String = "utime",
             smin : Int32 = 3, smax : Int32 = 5,
             from : String = "ys", user : String? = nil,
             book : Int32? = nil, list : Int32? = nil,
@@ -56,43 +56,39 @@ class YS::CritCtrl < AC::Base
     })
   end
 
-  @[AC::Route::GET("/crits/:crit_id")]
-  def entry(crit_id : Int32)
-    render json: YscritPeek.fetch_one(crit_id)
+  @[AC::Route::GET("/:crit_id")]
+  def show(crit_id : Int32)
+    ycrit = Yscrit.find!({id: crit_id})
+    wn_id = ycrit.nvinfo_id
+    wbook = wn_id > 0 ? Wninfo.find({id: wn_id}) : nil
+    ylist = Yslist.find({id: ycrit.yslist_id})
+
+    json = {
+      crit: CritView.new(ycrit),
+      book: wbook ? BookView.new(wbook) : nil,
+      list: ylist ? ListView.new(ylist) : nil,
+      user: UserView.new(Ysuser.find!({id: ycrit.ysuser_id})),
+    }
+
+    render json: json
   rescue ex
     Log.error(exception: ex) { ex }
     render :not_found, text: "Đánh giá không tồn tại"
   end
 
-  @[AC::Route::GET("/crits/:crit_id/ztext")]
-  def ztext(crit_id : Int32)
-    ztext, wn_id = YscritPeek.get_ztext_and_wn_id(crit_id)
-    response.headers["X-WN_ID"] = wn_id.to_s
-    render text: ztext
-  rescue err
-    render :not_found, text: "Đánh giá không tồn tại"
-  end
-
-  @[AC::Route::GET("/crits/:crit_id/vhtml")]
-  def vhtml(crit_id : Int32)
+  @[AC::Route::GET("/:crit_id/:type")]
+  def show_body(crit_id : Int32, type : String)
     ycrit = Yscrit.find!({id: crit_id})
-    render text: ycrit.vhtml
-  rescue err
-    render :not_found, text: "Đánh giá không tồn tại"
-  end
+    response.headers["X-WN_ID"] = ycrit.nvinfo_id.to_s
 
-  @[AC::Route::GET("/crits/:crit_id/btran")]
-  def btran(crit_id : Int32)
-    ycrit = Yscrit.find!({id: crit_id})
-    render text: ycrit.load_btran_from_disk
-  rescue err
-    render :not_found, text: "Đánh giá không tồn tại"
-  end
+    case type
+    when "ztext" then text = ycrit.ztext
+    when "ms_vi" then text = ycrit.load_btran_from_disk
+    when "dl_en" then text = ycrit.load_deepl_from_disk
+    else              text = ycrit.vhtml
+    end
 
-  @[AC::Route::GET("/crits/:crit_id/deepl")]
-  def deepl(crit_id : Int32)
-    ycrit = Yscrit.find!({id: crit_id})
-    render text: ycrit.load_deepl_from_disk
+    render text: text
   rescue err
     render :not_found, text: "Đánh giá không tồn tại"
   end

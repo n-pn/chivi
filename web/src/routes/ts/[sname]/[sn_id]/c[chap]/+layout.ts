@@ -24,5 +24,5 @@ export const load = (async ({ params, parent, fetch }) => {
     ],
   }
 
-  return { rdata, _meta, _title }
+  return { rdata, _meta, _title, _show_conf: true }
 }) satisfies PageLoad

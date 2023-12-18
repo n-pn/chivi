@@ -29,18 +29,26 @@ class CV::VicritCtrl < CV::BaseCtrl
 
     books = Wninfo.preload(crits.map(&.wn_id))
 
-    render json: {
+    json = {
       crits: crits,
       books: WninfoView.as_hash(books),
       total: total,
       pgidx: pg_no,
       pgmax: _pgidx(total, limit),
     }
+
+    render json: json
   end
 
   @[AC::Route::GET("/:crit_id")]
   def show(crit_id : Int32)
-    render json: VicritView.fetch_one(crit_id, _vu_id)
+    vcrit = VicritView.fetch_one(crit_id, _vu_id)
+    binfo = Wninfo.find!({id: vcrit.wn_id})
+
+    render json: {
+      crit: vcrit,
+      book: WninfoView.new(binfo),
+    }
   end
 
   private def load_crit(id : Int64)

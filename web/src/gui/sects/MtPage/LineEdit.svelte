@@ -149,10 +149,10 @@
 </script>
 
 <Dialog
-  actived={fix_raw}
-  on_close={() => (fix_raw = false)}
   class="fixraw"
-  _size="lg">
+  _size="lg"
+  actived={fix_raw}
+  on_close={() => (fix_raw = false)}>
   <header slot="header">Sửa text gốc</header>
 
   <div class="body">
@@ -170,7 +170,7 @@
       </div>
     </section>
 
-    <section class="rawtxt m-input ">
+    <section class="rawtxt m-input">
       <div class="underlay" bind:this={underlay}>
         {@html render_rawtxt(newtxt)}
       </div>

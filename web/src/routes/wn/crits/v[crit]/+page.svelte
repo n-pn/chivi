@@ -8,20 +8,15 @@
 
   $: ({ vcdata } = data)
 
-  $: gdroot = `vc:${vcdata.vc_id}`
-  $: touser = vcdata.user_id
+  $: gdroot = `vc:${vcdata.crit.vc_id}`
+  $: touser = vcdata.crit.vu_id
 </script>
 
-<h3 id="vcrit">
-  Đánh giá truyện của <strong>{vcdata.u_uname}</strong> cho bộ truyện
-  <strong>{vcdata.b_title}</strong>
-</h3>
-
-<VicritCard crit={vcdata} book={undefined} show_book={false} view_all={true} />
+<VicritCard {...vcdata} show_book={true} view_all={true} big_text={true} />
 
 <section id="repls" class="repls">
   <h3 class="repls-head">
-    Bình luận đánh giá <span class="m-badge">{vcdata.repl_count}</span>
+    Bình luận đánh giá <span class="m-badge">{vcdata.crit.repl_count}</span>
   </h3>
 
   <GdreplList rplist={data.rplist} {gdroot} {touser} fluid={true} />
