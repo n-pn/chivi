@@ -18,12 +18,17 @@ struct RD::ZcdataForm
     @chdiv = TextUtil.canon_clean(@chdiv)
   end
 
-  def save!(crepo : Tsrepo, uname : String = "")
+  def save!(crepo : Tsrepo, tmdir : String, uname : String = "", edit_mode : Bool = false)
     zdata = Czdata.new(
       ch_no: @ch_no, cbody: @ztext,
       title: @title, chdiv: @chdiv,
       uname: uname, zorig: "#{crepo.sroot}/#{@ch_no}"
     )
+
+    suffix = edit_mode ? '1' : '0'
+    txt_file = "#{tmdir}/#{ch_no}#{suffix}.zh"
+    File.write(txt_file, "///#{chdiv}\n#{zdata.parts}")
+
     crepo.save_czdata!(zdata)
   end
 end

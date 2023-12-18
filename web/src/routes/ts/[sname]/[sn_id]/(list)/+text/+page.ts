@@ -17,7 +17,8 @@ export const load = (async ({ url, fetch, params, parent }) => {
   const vname = crepo.vname || crepo.sroot
 
   return {
-    ...zform,
+    zform,
+    fixed: !!zform.ztext,
     ontab: 'ul',
     _title: `Đăng tải text gốc - ${vname}`,
     _meta: {

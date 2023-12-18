@@ -23,17 +23,33 @@ class RD::CzdataCtrl < AC::Base
     render json: {ch_no: ch_no, ztext: ztext}
   end
 
-  @[AC::Route::POST("/:sname/:sn_id", body: :clist)]
-  def upsert(sname : String, sn_id : Int32, clist : Array(ZcdataForm))
-    raise "Bạn chỉ được đăng tải nhiều nhất 64 chương một lúc!" if clist.size > 64
+  @[Flags]
+  enum UploadKind
+    First; Last; Edit
+  end
 
+  TMP_DIR = "/2tb/zroot/ztext"
+
+  @[AC::Route::POST("/:sname/:sn_id", body: :clist)]
+  def upsert(sname : String, sn_id : Int32,
+             clist : Array(ZcdataForm), ukind : Int32 = 1)
+    raise "Bạn chỉ được đăng tải nhiều nhất 64 chương một lúc!" if clist.size > 64
     crepo = Tsrepo.load!("#{sname}/#{sn_id}")
+
+    ukind = UploadKind.from_value(ukind)
+    xname = sname.sub(/^rm|up|wn/, "")
+    tmdir = "#{TMP_DIR}/#{xname}/#{sn_id}"
+
+    if ukind.first?
+      Dir.mkdir_p(tmdir)
+      crepo.mkdirs!
+    end
 
     owner, plock = crepo.edit_privi(self._vu_id)
     guard_owner owner, plock, "thêm text gốc cho nguồn truyện"
 
-    crepo.mkdirs!
-    clist.each(&.save!(crepo: crepo, uname: self._uname))
+    clist.each(&.save!(crepo: crepo, tmdir: tmdir, uname: self._uname))
+    spawn { `zip -FSrjyoq '#{tmdir}.zip' '#{tmdir}'` } if ukind.last?
 
     chmin, chmax = clist.minmax_of(&.ch_no)
     spawn update_stats!(crepo, sname, chmax: chmax)

@@ -19,6 +19,8 @@
     @include flex-cx;
     position: sticky;
     padding: 0.5rem 0;
+    left: 0;
+    right: 0;
 
     will-change: transform;
     transition: transform 100ms ease-in-out;
@@ -29,6 +31,12 @@
     &:global(.sticky) {
       background-color: color(neutral, 5, 5);
       transform: translateY(100%);
+      margin-left: calc(var(--gutter) * -1);
+      margin-right: calc(var(--gutter) * -1);
+
+      padding-left: var(--gutter);
+      padding-right: var(--gutter);
+
       // @include bdradi(0.5rem, $loc: top);
 
       --bg-to: #{color(neutral, 7, 7)};
