@@ -11,10 +11,8 @@
   $: ({ lc_ch_no } = rmemo)
 
   const gen_chap_href = (cinfo: CV.Wnchap) => {
-    return chap_path(`/ts/${crepo.sroot}`, cinfo.ch_no, {
-      p_idx: rmemo.lc_p_idx,
-      ...rmemo,
-    })
+    const p_idx = cinfo.ch_no == rmemo.lc_ch_no ? rmemo.lc_p_idx : 1
+    return chap_path(`/ts/${crepo.sroot}`, cinfo.ch_no, { p_idx, ...rmemo })
   }
 </script>
 

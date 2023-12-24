@@ -22,8 +22,10 @@
   async function submit(evt: Event) {
     evt.preventDefault()
 
+    const keeps = /btitle|author/
+
     for (const key in form) {
-      if (key == 'btitle_zh' || key == 'author_zh') continue
+      if (keeps.test(key)) continue
       const val = form[key]
       if (val == data.form[key]) delete form[key]
     }

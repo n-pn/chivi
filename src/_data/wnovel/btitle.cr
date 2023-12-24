@@ -20,19 +20,22 @@ class CV::Btitle
 
       PGDB.query_one?(stmt, name_zh, as: {String, String}) || begin
         name_hv = MT::QtCore.tl_hvname(name_zh)
-        spawn upsert!(name_zh, name_hv)
+        spawn upsert!(name_zh, name_hv: name_hv)
 
         {name_hv, name_hv}
       end
     end
   end
 
-  def self.upsert!(name_zh : String, name_hv = MT::QtCore.tl_hvname(name_zh), name_vi : String? = nil) : self
-    PGDB.query_one <<-SQL, name_zh, name_vi || name_hv, name_hv, as: Btitle
+  def self.upsert!(name_zh : String,
+                   name_vi : String? = nil,
+                   name_hv = MT::QtCore.tl_hvname(name_zh)) : self
+    PGDB.query_one <<-SQL, name_zh, name_vi || name_hv, name_hv, name_vi, as: Btitle
       insert into btitles(name_zh, name_vi, name_hv)
       values ($1, $2, $3)
       on conflict(name_zh) do update set
-        name_hv = excluded.name_hv
+        name_hv = excluded.name_hv,
+        name_vi = coalesce($4, btitles.name_vi)
       returning *
       SQL
   end

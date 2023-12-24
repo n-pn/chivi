@@ -67,7 +67,7 @@ class CV::Gdroot
   # for examples:
   # - general discusion topic, the link is `/gc/t{t_id}` instead
   # - book general discussion, the link is `wn/{b_id}/gd/bants`
-  # - user review page, the link is `/wn/{b_id}/uc/v{c_id}` instead
+  # - user review page, the link is `/wn/crits/v{c_id}` instead
 
   field rlink : String = ""
   field htags : Array(String) = [] of String

@@ -46,8 +46,7 @@ class CV::Vicrit
   end
 
   def canonical_path
-    wninfo = Wninfo.load!(self.nvinfo_id)
-    "#{wninfo.canonical_path}/uc/v#{self.id}"
+    "wn/crits/v#{self.id}"
   end
 
   ###
