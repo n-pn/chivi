@@ -1,4 +1,4 @@
-require "../../../mt_ai/core/tl_unit"
+require "../../../mt_ai/util/qt_number"
 
 module M1::MtUtil
   extend self
@@ -83,7 +83,7 @@ module M1::MtUtil
       _, idx_zh, num, lbl, pad, title = match
       idx_cv = String.build do |io|
         io << LBLS.fetch(lbl, "#") << ' '
-        io << MT::TlUnit.translate(num, true)
+        io << MT::QtNumber.translate(num, :pure_digit)
       end
 
       {idx_zh, idx_cv, pad, title}

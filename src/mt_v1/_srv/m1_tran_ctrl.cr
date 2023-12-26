@@ -7,7 +7,7 @@ class M1::TranCtrl < AC::Base
   base "/_m1/qtran"
 
   @[AC::Route::GET("/")]
-  def file(fpath : String, wn_id : Int32 = 0)
+  def qtran_file(fpath : String, wn_id : Int32 = 0)
     start = Time.monotonic
     mcore = MtCore.init(wn_id, user: _uname)
 
@@ -30,15 +30,23 @@ class M1::TranCtrl < AC::Base
   end
 
   @[AC::Route::POST("/")]
-  def convert(wn_id : Int32 = 0, format = "mtl")
-    input = request.body.try(&.gets_to_end) || ""
+  def qtran_text(wn_id : Int32 = 0, format = "mtl")
+    start = Time.monotonic
+    mcore = MtCore.init(wn_id, user: _uname)
 
-    qtran = TranData.new(input, wn_id, format)
-    cvmtl = qtran.cv_wrap(_uname, w_stat: false) do |io, engine|
-      cv_post(io, engine)
+    plain = false
+    lines = [] of String
+
+    self._read_body.each_line do |line|
+      data = plain ? mcore.cv_plain(line) : mcore.cv_title(line)
+      lines << (format == "mtl" ? data.to_mtl : data.to_txt)
+      plain = true
     end
 
-    render text: cvmtl
+    tspan = (Time.monotonic - start).total_milliseconds.round(2)
+    mtime = Time.utc.to_unix
+
+    render json: {lines: lines, mtime: mtime, tspan: tspan}
   end
 
   @[AC::Route::GET("/cached")]

@@ -233,16 +233,19 @@ export class Rdpage {
     this.state.hviet = 1
   }
 
-  gen_rinit(cache: number): RequestInit {
-    return { cache: cache == 2 ? 'no-cache' : 'force-cache' }
+  gen_rinit(cache: number, method = 'GET'): RequestInit {
+    return {
+      method,
+      cache: cache == 2 ? 'no-cache' : 'force-cache',
+      body: method == 'POST' ? this.ztext.join('\n') : undefined,
+    }
   }
 
   async load_hviet(cache = 0) {
     if (cache < 2 && this.state.hviet > 0) return this
     if (cache == 0) return this
 
-    const url = `/_ai/qt/hviet?fpath=${this.ropts.fpath}`
-    const res = await fetch(url, this.gen_rinit(cache))
+    const res = await fetch(`/_ai/qt/hviet`, this.gen_rinit(cache, 'POST'))
     if (!res.ok) return this
 
     this.tspan.hviet = +res.headers.get('X-TSPAN')
@@ -313,7 +316,7 @@ export class Rdpage {
     }
 
     const url = `/_sp/btran?fpath=${this.ropts.fpath}&force=${force}`
-    const res = await fetch(url, this.gen_rinit(cache))
+    const res = await fetch(url, this.gen_rinit(cache, 'POST'))
 
     if (!res.ok) {
       this.bt_zv = []
@@ -349,8 +352,8 @@ export class Rdpage {
     if (!fpath) return this
     const zpath = encodeURIComponent(fpath)
 
-    const url = `/_m1/qtran?fpath=${zpath}&wn_id=${wn_id}`
-    const res = await fetch(url, this.gen_rinit(cache))
+    const url = `/_m1/qtran?fpath=${zpath}&wn_id=${wn_id}&format=txt`
+    const res = await fetch(url, this.gen_rinit(cache, 'POST'))
 
     if (!res.ok) {
       this.qt_v1 = []
@@ -390,7 +393,7 @@ export class Rdpage {
 
     const url = `/_ai/qtran?fpath=${zpath}&pdict=${zdict}&_algo=${mt_rm}&force=${force}`
 
-    const res = await globalThis.fetch(url, this.gen_rinit(cache))
+    const res = await globalThis.fetch(url, this.gen_rinit(cache, 'POST'))
 
     if (!res.ok) {
       this.mt_ai = []
