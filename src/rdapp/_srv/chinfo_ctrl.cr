@@ -24,12 +24,77 @@ class RD::ChinfoCtrl < AC::Base
                 force : Bool = false, regen : Bool = false)
     crepo = Tsrepo.load!("#{sname}/#{sn_id}")
     cinfo = get_cinfo(crepo, ch_no)
+    ztext, cksum, error, ulkey, multp = build_cpart(crepo, cinfo, p_idx, force, regen)
+    spawn { inc_view_count!(crepo, crepo.sname) } if error == 0
 
-    crepo.save_raw_from_link!(cinfo, _uname, force: regen) if _privi >= 0
-    rdata = show_part(crepo: crepo, cinfo: cinfo, p_idx: p_idx, force: force)
-    spawn inc_view_count!(crepo, sname[2..]) if rdata[:error] < 300
+    json = {
+      ch_no: cinfo.ch_no,
+      p_max: cinfo.psize,
+      p_idx: p_idx,
 
-    render 200, json: rdata
+      title: cinfo.vtitle,
+      chdiv: cinfo.vchdiv,
+      rlink: cinfo.rlink,
+
+      error: error,
+      plock: crepo.read_privi,
+
+      fpath: ulkey,
+      ztext: error > 0 ? "" : ztext,
+
+      multp: multp,
+      mtime: cinfo.mtime,
+      uname: cinfo.uname,
+
+      _prev: prev_part(crepo, cinfo.ch_no, p_idx),
+      _next: next_part(crepo, cinfo.ch_no, p_idx, cinfo.psize),
+    }
+
+    render 200, json: json
+  end
+
+  private def build_cpart(crepo, cinfo, p_idx, force, regen)
+    vu_id, privi = self._vu_id, self._privi
+    user_multp, real_multp = crepo.chap_mutlp(cinfo.ch_no, vu_id: vu_id, privi: privi)
+
+    ztext, cksum = crepo.load_raw_part(cinfo, p_idx, regen: regen)
+
+    if cinfo.cksum.empty?
+      ulkey = "#{crepo.sname}/#{crepo.sn_id}/#{cksum.to_s(32)}"
+    else
+      ulkey = "#{crepo.sroot}/#{cinfo.ch_no}-#{cinfo.cksum}-#{p_idx}"
+    end
+
+    if privi < crepo.read_privi
+      error = 403
+    elsif cksum == 0
+      error = 414
+    elsif real_multp < 1 || Unlock.unlocked?(vu_id, ulkey, cksum.unsafe_as(Int32))
+      error = 0
+    elsif force || user_multp == 0
+      error = Unlock.new(
+        vu_id: vu_id, ulkey: ulkey,
+        owner: crepo.owner, zsize: ztext.size,
+        cksum: cksum.unsafe_as(Int32),
+        user_multp: user_multp, real_multp: real_multp,
+      ).unlock!
+    else
+      error = 413
+    end
+
+    {ztext, cksum, error, error > 0 ? "" : ulkey, user_multp}
+  end
+
+  private def prev_part(crepo, ch_no, p_idx)
+    return "#{ch_no}_#{p_idx &- 1}" if p_idx > 1
+    return "" unless pchap = Chinfo.find_prev(crepo.info_db, ch_no)
+    psize = pchap.psize
+    psize > 1 ? "#{pchap.ch_no}_#{psize}" : pchap.ch_no.to_s
+  end
+
+  private def next_part(crepo, ch_no : Int32, p_idx : Int32, psize : Int32)
+    return "#{ch_no}_#{p_idx &+ 1}" if p_idx < psize
+    Chinfo.find_next(crepo.info_db, ch_no).try(&.ch_no).to_s
   end
 
   private def inc_view_count!(crepo : Tsrepo, sname : String)
@@ -41,63 +106,5 @@ class RD::ChinfoCtrl < AC::Base
     when 2
       get_rstem(sname, crepo.sn_id).inc_view_count!(value)
     end
-  end
-
-  private def show_part(crepo : Tsrepo, cinfo : Chinfo, p_idx : Int32,
-                        force : Bool = false)
-    vu_id = self._vu_id
-    privi = self._privi
-    ch_no = cinfo.ch_no
-
-    user_multp, real_multp = crepo.chap_mutlp(ch_no, vu_id: vu_id, privi: privi)
-
-    fpath = crepo.get_fpath(cinfo, p_idx)
-    zsize = cinfo.sizes[p_idx]? || 0
-
-    if privi < crepo.read_privi
-      error = 403
-    elsif zsize == 0 || cinfo.cksum.empty?
-      error = 414
-    elsif real_multp < 1 || Unlock.unlocked?(vu_id, fpath)
-      error = 0
-    elsif force || user_multp == 0
-      error = Unlock.new(
-        vu_id: vu_id, ulkey: fpath,
-        owner: crepo.owner, zsize: zsize,
-        user_multp: user_multp, real_multp: real_multp,
-      ).unlock!
-    else
-      error = 413
-    end
-
-    fpath = "" if error > 0
-    ztext = fpath.empty? ? [] of String : Chpart.read_raw(fpath)
-    ztext.map!(&.gsub('　', ""))
-
-    {
-      ch_no: cinfo.ch_no,
-      p_max: cinfo.psize,
-      p_idx: p_idx,
-
-      zname: cinfo.ztitle,
-      rlink: cinfo.rlink,
-
-      title: cinfo.vtitle.empty? ? cinfo.ztitle : cinfo.vtitle,
-      chdiv: cinfo.vchdiv.empty? ? cinfo.zchdiv : cinfo.vchdiv,
-
-      error: error,
-      plock: crepo.read_privi,
-
-      fpath: fpath,
-      ztext: ztext,
-      zsize: zsize,
-
-      multp: user_multp,
-      mtime: cinfo.mtime,
-      uname: cinfo.uname,
-
-      _prev: crepo.prev_part(cinfo.ch_no, p_idx),
-      _next: crepo.next_part(cinfo.ch_no, p_idx, cinfo.psize),
-    }
   end
 end

@@ -13,11 +13,9 @@ class RD::CzdataCtrl < AC::Base
 
     ch_no = crepo.chmax &+ 1 if ch_no < 1
 
-    if ch_no.in?(1..crepo.chmax) && (cinfo = crepo.find(ch_no))
-      ztext = "/// #{cinfo.zchdiv}\n#{crepo.load_full_raw!(cinfo)}"
-    else
+    unless ztext = crepo.text_db.get_chap_text(ch_no)
       chdiv = crepo.get_chdiv(ch_no)
-      ztext = chdiv.empty? ? chdiv : "/// #{chdiv}"
+      ztext = chdiv.empty? ? "" : "///#{chdiv}"
     end
 
     render json: {ch_no: ch_no, ztext: ztext}
@@ -34,22 +32,18 @@ class RD::CzdataCtrl < AC::Base
   def upsert(sname : String, sn_id : Int32,
              clist : Array(ZcdataForm), ukind : Int32 = 1)
     raise "Bạn chỉ được đăng tải nhiều nhất 64 chương một lúc!" if clist.size > 64
-    crepo = Tsrepo.load!("#{sname}/#{sn_id}")
-
     ukind = UploadKind.from_value(ukind)
-    xname = sname.sub(/^rm|up|wn/, "")
-    tmdir = "#{TMP_DIR}/#{xname}/#{sn_id}"
-
-    if ukind.first?
-      Dir.mkdir_p(tmdir)
-      crepo.mkdirs!
-    end
+    crepo = Tsrepo.load!("#{sname}/#{sn_id}")
 
     owner, plock = crepo.edit_privi(self._vu_id)
     guard_owner owner, plock, "thêm text gốc cho nguồn truyện"
 
-    clist.each(&.save!(crepo: crepo, tmdir: tmdir, uname: self._uname))
-    spawn { `zip -FSrjyoq '#{tmdir}.zip' '#{tmdir}'` } if ukind.last?
+    smode = ukind.edit? ? 1 : 0
+    mtime = Time.utc.to_unix
+    chaps = clist.map(&.persist!(crepo, smode, uname: self._uname, mtime: mtime))
+
+    crepo.info_db.open_tx { |db| chaps.each(&.upsert!(db: db)) }
+    crepo.text_db.zipping_text!
 
     chmin, chmax = clist.minmax_of(&.ch_no)
     spawn update_stats!(crepo, sname, chmax: chmax)

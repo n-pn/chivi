@@ -63,20 +63,6 @@ class RD::Chinfo
   def initialize(@ch_no, @rlink, @spath, @ztitle, @zchdiv)
   end
 
-  def inherit(zdata)
-    @ztitle = zdata.title
-    @zchdiv = zdata.chdiv
-
-    @uname = zdata.uname
-    @mtime = zdata.mtime
-    @spath = zdata.zorig
-
-    @cksum = ChapUtil.cksum_to_s(zdata.cksum)
-    @sizes = zdata.sizes
-
-    self
-  end
-
   def inspect(io : IO)
     {@ch_no, @ztitle, @rlink, @zchdiv, @spath}.join(io, '\t')
   end

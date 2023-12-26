@@ -14,6 +14,8 @@ class RD::Unlock
   field owner : Int32 = -1 # target who will receive vcoin
   field zsize : Int32 = 0
 
+  field cksum : Int32 = 0
+
   field user_multp : Int16 = 0
   field real_multp : Int16 = 0
 
@@ -24,41 +26,11 @@ class RD::Unlock
 
   def initialize(@vu_id, @ulkey,
                  @owner, @zsize,
+                 @cksum = 0,
                  @user_multp = 4_i16,
                  @real_multp = 4_i16)
     @user_lost = (zsize * user_multp * 0.01).to_i
     @owner_got = (zsize * real_multp * 0.01).to_i
-  end
-
-  SAVE_SQL = <<-SQL
-    insert into unlocks(
-      vu_id, "owner",
-      ulkey, zsize,
-      user_multp, real_multp,
-      user_lost, owner_got,
-      ctime
-      )
-    values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-    on conflict(vu_id, ulkey) do update set
-      "owner" = excluded.owner,
-      "zsize" = excluded.zsize,
-      "user_multp" = excluded.user_multp,
-      "real_multp" = excluded.real_multp,
-      "user_lost" = excluded.user_lost,
-      "owner_got" = excluded.owner_got,
-      "ctime" = excluded.ctime
-    returning *
-    SQL
-
-  def save!(db = @@db)
-    db.query_one(
-      SAVE_SQL,
-      @vu_id, @owner,
-      @ulkey, @zsize,
-      @user_multp, @real_multp,
-      @user_lost, @owner_got,
-      @ctime,
-      as: self.class)
   end
 
   # Return status code
@@ -78,7 +50,7 @@ class RD::Unlock
       spawn CV::Xvcoin.increase(vu_id: @owner, value: @owner_got / 1000)
     end
 
-    self.save!(db: db)
+    self.upsert!(db: db)
 
     0
   rescue
@@ -92,11 +64,15 @@ class RD::Unlock
     @@db.query_one?(FIND_BY_UKEY_SQL, vu_id, ulkey, as: self)
   end
 
-  CHECK_BY_UKEY_SQL = "select owner from unlocks where vu_id = $1 and ulkey = $2 limit 1"
+  CHECK_BY_UKEY_SQL = <<-SQL
+    select owner from unlocks
+    where vu_id = $1 and ( ulkey = $2 or cksum = $3)
+    limit 1
+    SQL
 
-  def self.unlocked?(vu_id : Int32, ulkey : String)
+  def self.unlocked?(vu_id : Int32, ulkey : String, cksum : Int32)
     return false if vu_id == 0
-    @@db.query_one?(CHECK_BY_UKEY_SQL, vu_id, ulkey, as: Int32)
+    @@db.query_one?(CHECK_BY_UKEY_SQL, vu_id, ulkey, cksum, as: Int32)
   end
 
   # def self.init(vu_id : Int32, ulkey : String)

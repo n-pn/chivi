@@ -54,10 +54,12 @@ class RawRmchap
 
   ###
 
+  getter sname = ""
   getter title = ""
   getter paras = [] of String
 
   def initialize(html : String, @host : Rmhost, @extra = "")
+    @sname = host.seedname
     @page = Rmpage.new(html)
   end
 

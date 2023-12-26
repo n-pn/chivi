@@ -38,7 +38,7 @@
 
   let l_idx = -1
   $: l_max = rdata.ztext ? rdata.ztext.length : 0
-  $: rpage = init_page(rdata.fpath, rdata.ztext || [], ropts)
+  $: rpage = init_page(rdata.fpath, rdata.ztext || '', ropts)
 
   $: r_mode = $config.r_mode == 1 ? 1 : 2
   $: show_z = $config.show_z

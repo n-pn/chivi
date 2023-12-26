@@ -32,54 +32,7 @@ struct RD::Chpart
   end
 
   def read_raw
-    self.read_file(self.file_path("raw.txt"))
-  end
-
-  def read_raw(&)
-    self.read_file(self.file_path("raw.txt")) { |line| yield line }
-  end
-
-  def read_mtl(m_alg : String, mtype : String)
-    self.read_file(self.file_path("#{m_alg}.#{mtype}"))
-  end
-
-  def read_con(m_alg : String = "mtl_1", force = false)
-    case
-    when m_alg == "mtl_3"
-      con_path = self.file_path("mtl_3.con")
-    when m_alg == "mtl_2"
-      con_path = self.file_path("mtl_2.con")
-    else
-      con_path = self.file_path("mtl_1.con")
-      m_alg = "mtl_1"
-    end
-
-    if File.info?(con_path).try(&.size.> 0)
-      read_con_file(con_path, m_alg)
-    elsif force
-      call_hanlp_file_api(self.file_path("raw.txt"), con_path, m_alg)
-    else
-      raise "404"
-    end
-  end
-
-  @[AlwaysInline]
-  private def read_con_file(con_path : String, m_alg : String)
-    {self.read_file(con_path), m_alg}
-  end
-
-  def call_hanlp_file_api(txt_path : String, con_path : String, m_alg : String)
-    txt_data = File.read(txt_path)
-    txt_path = URI.encode_path_segment(txt_path)
-    link = "#{CV_ENV.lp_host}/mtl_file/#{m_alg}?file=#{txt_path}"
-
-    HTTP::Client.get(link, body: txt_data) do |res|
-      con_data = res.body_io.gets_to_end
-      raise "error: [#{con_data}] for #{txt_path}" unless res.status.success?
-
-      spawn File.write(con_path, con_data)
-      {con_data.lines, m_alg}
-    end
+    File.read(self.file_path("raw.txt"))
   end
 
   def save_raw!(ptext : String, title : String? = nil)

@@ -209,8 +209,8 @@ export class Rdpage {
   tspan: Rstate
   mtime: Rstate
 
-  constructor(ztext: string[], ropts: CV.Rdopts) {
-    this.lines = ztext.map((x) => new Rdline(x))
+  constructor(ztext: string, ropts: CV.Rdopts) {
+    this.lines = ztext.split('\n').map((x) => new Rdline(x))
     this.ropts = ropts
 
     this.state = { ...init_data }

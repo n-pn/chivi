@@ -14,21 +14,17 @@ struct RD::ZcdataForm
     raise "Vị trí chương không hợp lệ!" if @ch_no < 1
     raise "Nội dung quá dài!" if @ztext.size > 100_000
 
-    @title = TextUtil.canon_clean(@title)
-    @chdiv = TextUtil.canon_clean(@chdiv)
+    @title, @chdiv = ChapUtil.split_ztitle(@title, @chdiv, cleaned: false)
+    @ztext = Cztext.fix_raw(@ztext)
   end
 
-  def save!(crepo : Tsrepo, tmdir : String, uname : String = "", edit_mode : Bool = false)
-    zdata = Czdata.new(
-      ch_no: @ch_no, cbody: @ztext,
-      title: @title, chdiv: @chdiv,
-      uname: uname, zorig: "#{crepo.sroot}/#{@ch_no}"
+  def persist!(crepo : Tsrepo, smode = 1, uname : String = "", mtime : Int64 = 0)
+    crepo.save_chap!(
+      ch_no: @ch_no, title: @title,
+      ztext: @ztext, chdiv: @chdiv,
+      smode: smode, spath: "",
+      uname: uname, mtime: mtime,
+      persist: false
     )
-
-    suffix = edit_mode ? '1' : '0'
-    txt_file = "#{tmdir}/#{ch_no}#{suffix}.zh"
-    File.write(txt_file, "///#{chdiv}\n#{zdata.parts}")
-
-    crepo.save_czdata!(zdata)
   end
 end

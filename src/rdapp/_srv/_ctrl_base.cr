@@ -8,40 +8,19 @@ abstract class AC::Base
 
   private def get_wbook(wn_id : Int32)
     WBOOKS[wn_id] ||= begin
-      wbook = RD::Wnbook.find(wn_id) || raise "Nguồn truyện không tồn tại"
-      spawn wbook.crepo.update_vinfos!
-      wbook
+      RD::Wnbook.find(wn_id) || raise "Nguồn truyện không tồn tại"
     end
   end
 
   private def get_ustem(up_id : Int32, sname : String? = nil)
     USTEMS[up_id] ||= begin
-      ustem = RD::Upstem.find(up_id, sname) || raise NotFound.new("Dự án không tồn tại")
-
-      ustem.crepo.tap do |crepo|
-        spawn crepo.update_vinfos!
-
-        if crepo._flag == 0
-          crepo.init_text_db!(uname: ustem.sname)
-          crepo._flag = 1
-          crepo.upsert!
-        end
-      end
-
-      ustem
+      RD::Upstem.find(up_id, sname) || raise NotFound.new("Dự án không tồn tại")
     end
   end
 
   private def get_rstem(sname : String, sn_id : Int32)
     RSTEMS["#{sname}/#{sn_id}"] ||= begin
-      rstem = RD::Rmstem.find(sname, sn_id) || raise NotFound.new("Nguồn nhúng không tồn tại")
-
-      if rstem._flag == 0
-        spawn rstem.crepo.update_vinfos!
-        rstem._flag == 1
-      end
-
-      rstem
+      RD::Rmstem.find(sname, sn_id) || raise NotFound.new("Nguồn nhúng không tồn tại")
     end
   end
 
@@ -88,6 +67,6 @@ abstract class AC::Base
 
   @[AlwaysInline]
   private def get_cinfo(crepo : RD::Tsrepo, ch_no : Int32)
-    crepo.find(ch_no) || raise NotFound.new("Chương tiết không tồn tại")
+    crepo.get_cinfo(ch_no) { raise NotFound.new("Chương tiết không tồn tại") }
   end
 end
