@@ -87,7 +87,7 @@ class RD::Tsrepo
   ###
 
   def load_raw_part(cinfo : Chinfo, p_idx = 1, regen : Bool = false)
-    ztext = self.text_db.get_chap_text(cinfo.ch_no, cinfo.cksum)
+    ztext = self.text_db.get_chap_text(cinfo.ch_no)
 
     if (regen || !ztext) && !cinfo.rlink.empty?
       ztext = self.seed_ztext!(cinfo, force: regen)
@@ -96,14 +96,18 @@ class RD::Tsrepo
     if ztext
       parts = ztext.split("\n\n")
       title = parts[0].lines.last
-      cpart = "#{title}\n#{parts[p_idx]}"
+      ptext = parts[p_idx]? || ""
+
+      cpart = "#{title}\n#{ptext}"
       cksum = HashUtil.fnv_1a(cpart)
+      p_max = parts.size &- 1
     else
-      cksum = 0
       cpart = cinfo.ztitle
+      cksum = 0
+      p_max = 0
     end
 
-    {cpart.gsub('　', ""), cksum}
+    {cpart.gsub('　', ""), cksum, p_max}
   end
 
   def seed_ztext!(cinfo : Chinfo, force : Bool = false)
@@ -121,7 +125,8 @@ class RD::Tsrepo
 
     cinfo.uname = raw_chap.sname
     cinfo.mtime = Time.utc.to_unix
-    cinfo.sizes = ztext.size.to_s
+    cinfo.sizes = ztext.split("\n\n").map(&.size).join(' ')
+
     cinfo.upsert!(db: self.info_db)
 
     ztext
@@ -151,7 +156,7 @@ class RD::Tsrepo
     cinfo.uname = uname
     cinfo.mtime = mtime
     cinfo.spath = spath
-    cinfo.sizes = ztext.size.to_s
+    cinfo.sizes = ztext.split("\n\n").map(&.size).join(' ')
 
     cinfo.upsert!(db: self.info_db) if persist
     cinfo

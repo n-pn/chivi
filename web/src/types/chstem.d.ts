@@ -24,15 +24,23 @@ declare namespace CV {
 
     zname: string
     vname: string
-    uslug: string
 
-    vintro: string
+    au_zh: string
+    au_vi: string
+
+    img_og: string
+    img_cv: string
+
+    zdesc: string
+    vdesc: string
+
     labels: string[]
 
     multp: number
     wndic: boolean
 
     chap_count: number
+    word_count: number
     view_count: number
   }
 

@@ -1,74 +1,98 @@
 <script lang="ts">
-  import SIcon from '$gui/atoms/SIcon.svelte'
   import { rel_time } from '$utils/time_utils'
+  import SIcon from '$gui/atoms/SIcon.svelte'
+  import BCover from '$gui/atoms/BCover.svelte'
 
   export let ustem: CV.Upstem
   export let upath = '/up'
 
   $: sroot = `/up/${ustem.sname}:${ustem.id}`
 
-  $: intro = ustem.vintro.split('\n').slice(0, 3).join()
   $: uname = ustem.sname.substring(1)
+  $: intro = ustem.vdesc || 'Chưa có giới thiệu'
 </script>
 
 <article class="ustem island">
-  <div class="xtags">
-    <a class="m-chip _xs _primary" href="{upath}?by={uname}">
-      <SIcon name="at" />
-      <span class="-trim">{uname}</span>
-    </a>
-    {#if ustem.wn_id}
-      <a class="m-chip _xs _success" href="{upath}?wn={ustem.wn_id}">
-        <SIcon name="book" />
-        <span>{ustem.wn_id}</span>
-      </a>
-    {/if}
-    {#each ustem.labels as label}
-      <a class="m-chip _xs _warning" href="{upath}?lb={label}">
-        <span class="-trim">{label}</span>
-      </a>
-    {/each}
-  </div>
+  <section class="binfo">
+    <a class="title u-fz-lg" href={sroot}>{ustem.vname}</a>
 
-  <a class="title u-fz-lg u-fg-secd" href={sroot}>{ustem.vname}</a>
-  <p class="intro u-fz-sm u-fg-tert u-fs-i">{intro || 'Không có giới thiệu'}</p>
+    <div class="xtags">
+      <a class="m-chip _xs _primary" href="{upath}?by={uname}">
+        <SIcon name="at" />
+        <span class="-trim">{uname}</span>
+      </a>
 
-  <div class="stats u-fz-sm u-fs-i">
-    <span class="group">
-      <span class="u-fg-mute">Cập nhật:</span>
-      <span class="u-fg-tert">{rel_time(ustem.mtime)}</span>
-    </span>
-    <span class="group">
-      <span class="u-fg-mute">Số chương:</span>
-      <span class="u-fg-tert">{ustem.chap_count}</span>
-    </span>
-    <span class="group">
-      <span class="u-fg-mute">Hệ số nhân:</span>
-      <span class="u-fg-tert">{ustem.multp}</span>
-    </span>
-    <span class="group">
-      <span class="u-fg-mute">Lượt xem:</span>
-      <span class="u-fg-tert">{ustem.view_count}</span>
-    </span>
-  </div>
+      <a class="m-chip _xs _warning" href="{upath}?au={ustem.au_vi}">
+        <SIcon name="edit" />
+        <span>{ustem.au_vi}</span>
+      </a>
+
+      {#if ustem.wn_id}
+        <a class="m-chip _xs _success" href="{upath}?wn={ustem.wn_id}">
+          <SIcon name="book" />
+          <span>{ustem.wn_id}</span>
+        </a>
+      {/if}
+      {#each ustem.labels as label}
+        <a class="m-chip _xs _default _tag" href="{upath}?lb={label}">
+          <SIcon name="tag" />
+          <span class="-trim">{label}</span>
+        </a>
+      {/each}
+    </div>
+
+    <p class="intro u-fz-sm u-fg-tert u-fs-i">
+      {intro || 'Không có giới thiệu'}
+    </p>
+
+    <div class="stats u-fz-sm u-fs-i">
+      <span class="group">
+        <span class="u-fg-mute">Số chương:</span>
+        <span class="u-fg-tert">{ustem.chap_count}</span>
+      </span>
+
+      <span class="group">
+        <span class="u-fg-mute">Lượt xem:</span>
+        <span class="u-fg-tert">{ustem.view_count}</span>
+      </span>
+    </div>
+  </section>
+
+  <a href={sroot} class="cover">
+    <BCover srcset={ustem.img_cv || ustem.img_og} />
+  </a>
 </article>
 
 <style lang="scss">
   .ustem {
+    display: flex;
     padding: 0.5rem var(--gutter);
-    row-gap: 0.5rem;
-
-    // @include bgcolor(tert);
     @include border(--bd-soft);
+
+    &:hover {
+      border-color: color(primary, 5, 5);
+    }
 
     & + :global(.ustem) {
       margin-top: 1rem;
     }
   }
 
-  .-trim {
-    max-width: 30vw;
-    @include clamp($width: null);
+  .binfo {
+    flex: 1;
+    width: calc(100% - 96px);
+    padding-right: 0.75rem;
+  }
+
+  .title {
+    display: block;
+    padding: 0.25rem 0 0.5rem;
+    line-height: 1.2;
+    @include fgcolor(main);
+
+    &:hover {
+      @include fgcolor(primary);
+    }
   }
 
   .xtags {
@@ -79,28 +103,33 @@
 
   .m-chip {
     gap: 0.125em;
-  }
 
-  .title {
-    display: block;
-    padding: 0.5rem 0;
+    &._tag {
+      text-transform: capitalize;
+    }
 
-    &:hover {
-      @include fgcolor(primary);
+    .-trim {
+      max-width: 30vw;
+      @include clamp($width: null);
     }
   }
 
   .intro {
     line-height: 1.25rem;
-    @include clamp($lines: 1);
+    margin-top: 0.5rem;
+    @include clamp($width: null);
   }
 
   .stats {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 0.25rem 0;
+    @include flex($gap: 0.5rem);
+    margin-top: 0.375rem;
     line-height: 1rem;
-    gap: 0.25rem;
-    margin-top: 0.25rem;
+  }
+
+  .cover {
+    display: block;
+    width: 30vw;
+    max-width: 96px;
+    margin-left: auto;
   }
 </style>

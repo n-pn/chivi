@@ -9,5 +9,5 @@
   ys={data.ys || undefined}
   vi={data.vi || undefined}
   _sort={data.sort || 'score'}
-  bslug={data.nvinfo.bslug}
+  wn_id={data.nvinfo.id}
   show_book={false} />

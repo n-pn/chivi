@@ -1,14 +1,14 @@
 <script lang="ts">
-  export let srcset: string = ''
+  export let srcset: string
   export let _class = 'round'
 
   $: src = srcset.startsWith('/covers')
-    ? `https://cdn.chivi.app${srcset}`
-    : srcset
+    ? `//cdn.chivi.app${srcset}`
+    : srcset || '//cdn.chivi.app/covers/blank.webp'
 
   const on_error = (e: Event) => {
     const target = e.target as HTMLImageElement
-    target.src = 'https://cdn.chivi.app/covers/_blank.png'
+    target.src = '//cdn.chivi.app/covers/_blank.png'
   }
 </script>
 

@@ -1,40 +1,43 @@
-<script lang="ts" context="module">
-  const status_strs = ['Còn tiếp', 'Hoàn thành', 'Tạm dừng', 'Không rõ']
-</script>
-
 <script lang="ts">
-  import SIcon from '$gui/atoms/SIcon.svelte'
-  import Truncate from '$gui/atoms/Truncate.svelte'
+  import { page } from '$app/stores'
   import { crumbs } from '$gui/global/Bcrumb.svelte'
+
+  import Section from '$gui/sects/Section.svelte'
+  import UserMemo from '$gui/shared/wnovel/UserMemo.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
   import { get_rtime } from '$gui/atoms/RTime.svelte'
   import BCover from '$gui/atoms/BCover.svelte'
 
-  export let rstem: CV.Rmstem
-  export let binfo: CV.Wninfo
+  import type { LayoutData } from './$types'
+  export let data: LayoutData
 
-  // $: sroot = `/rm/${rstem.sname}:${rstem.sn_id}`
+  $: ({ rstem, sroot, crepo, rmemo } = data)
 
-  $: intro = rstem.intro_vi || rstem.intro_zh
+  $: tabs = [
+    { type: 'index', href: `${sroot}`, icon: 'article', text: 'Mục lục' },
+    {
+      type: 'bants',
+      href: `${sroot}/bants`,
+      icon: 'message',
+      text: 'Thảo luận',
+    },
+    // { type: 'notif', href: `${sroot}/notif`, icon: 'activity', text: 'Thay đổi' },
+  ]
+
   $: sname = rstem.sname.substring(1)
-
   $: author = rstem.author_vi || rstem.author_zh
-
-  $: labels = rstem.genre_vi || rstem.genre_zh
-
-  $: dhtml = intro
-    .split('\n')
-    .map((x) => `<p>${x}</p>`)
-    .join('\n')
 
   $: $crumbs = [
     { text: 'Nguồn liên kết nhúng', href: `/rm` },
     { text: sname, href: `/rm?sn=${rstem.sname}` },
     { text: `ID: ${rstem.sn_id}` },
   ]
+
+  const status_strs = ['Còn tiếp', 'Hoàn thành', 'Tạm dừng', 'Không rõ']
 </script>
 
-<section class="rinfo">
-  <div class="names">
+<section class="bwrap">
+  <div class="binfo">
     <h1 class="title">{rstem.btitle_vi} - {rstem.btitle_zh}</h1>
 
     <div class="links">
@@ -53,29 +56,15 @@
       </span>
     </div>
 
-    <div class="xtags labels">
-      {#each labels.split('\t') as label}
-        <a class="m-chip _xs" href="/rm?lb={label}">{label}</a>
-      {/each}
-    </div>
-
-    {#if binfo}
-      <div class="binfo">
-        Liên kết với bộ truyện: <a class="m-link" href="/wn/{binfo.bslug}"
-          >{binfo.vtitle} <SIcon name="external-link" />
-        </a>
-      </div>
-    {/if}
-
     <div class="stats">
       <span class="xstat">
         <span class="-text">Số chương:</span>
-        <span class="-data">{rstem.chap_count}</span>
+        <span class="-data">{crepo.chmax}</span>
       </span>
 
       <span class="xstat">
         <span class="-text">Cập nhật:</span>
-        <span class="-data">{get_rtime(rstem.update_int)}</span>
+        <span class="-data">{get_rtime(crepo.mtime)}</span>
       </span>
 
       <span class="xstat">
@@ -85,12 +74,12 @@
 
       <span class="xstat">
         <span class="-text">Hệ số:</span>
-        <span class="-data">{rstem.multp}</span>
+        <span class="-data">{crepo.multp}</span>
       </span>
 
       <span class="xstat">
         <span class="-text">Lượt xem:</span>
-        <span class="-data">{rstem.view_count}</span>
+        <span class="-data">{crepo.view_count}</span>
       </span>
     </div>
   </div>
@@ -100,23 +89,15 @@
   </div>
 </section>
 
-<h3>Giới thiệu:</h3>
-<div class="intro">
-  {#if intro}
-    <Truncate html={dhtml} />
-  {:else}
-    <p>Chưa có giới thiệu</p>
-  {/if}
-</div>
+<UserMemo {crepo} {rmemo} />
+
+<Section {tabs} _now={$page.data.ontab}>
+  <slot />
+</Section>
 
 <style lang="scss">
-  .rinfo {
+  .bwrap {
     display: flex;
-  }
-
-  .xtags {
-    display: flex;
-    gap: 0.2rem;
   }
 
   .title {
@@ -199,37 +180,10 @@
     }
   }
 
-  .binfo {
-    margin-bottom: 0.5rem;
-    @include bps(
-      font-size,
-      rem(14px),
-      $pl: rem(15px),
-      $ts: rem(16px),
-      $tm: rem(17px)
-    );
-  }
-
   .cover {
     width: 30vw;
-    min-width: 120px;
-    max-width: 180px;
+    max-width: 96px;
     padding-left: 0.75rem;
     margin-left: auto;
-  }
-
-  .intro {
-    font-style: italic;
-    @include fgcolor(tert);
-    @include ftsize(sm);
-    line-height: 1.25rem;
-    margin-bottom: 1rem;
-
-    --line: 4;
-  }
-
-  .labels {
-    margin-bottom: 0.5rem;
-    flex-wrap: wrap;
   }
 </style>

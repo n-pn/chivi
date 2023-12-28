@@ -13,16 +13,23 @@ const _meta: App.PageMeta = {
 
 const init_form = {
   id: 0,
+
   wn_id: 0,
+
+  wndic: false,
 
   owner: -1,
   sname: '',
 
   zname: '',
   vname: '',
-  uslug: '',
 
-  vintro: '',
+  au_zh: '佚名',
+  au_vi: 'Dật Danh',
+
+  zdesc: '',
+  vdesc: '',
+  img_og: '',
   labels: [],
 
   guard: 0,
@@ -44,5 +51,5 @@ export const load = (async ({ url: { searchParams }, parent, fetch }) => {
     uform = { ...uform, ...ustem }
   }
 
-  return { uform, ontab: '+new', _meta, _title: 'Thêm/sửa sưu tầm cá nhân' }
+  return { uform, ontab: '+proj', _meta, _title: 'Thêm/sửa sưu tầm cá nhân' }
 }) satisfies PageLoad

@@ -3,113 +3,41 @@ require "../../_util/chap_util"
 
 class RD::Czdata
   class_getter init_sql = <<-SQL
-    CREATE TABLE IF NOT EXISTS czinfos(
-      ch_no int not null,
-      cksum bigint NOT NULL,
+    CREATE TABLE IF NOT EXISTS czdata(
+      ch_no integer NOT NULL primary key,
+      s_cid integer NOT NULL default 0,
       --
-      title varchar NOT NULL DEFAULT '',
-      chdiv varchar NOT NULL DEFAULT '',
+      title text NOT NULL DEFAULT '',
+      chdiv text NOT NULL DEFAULT '',
       --
-      uname varchar NOT NULL default '',
-      zorig varchar NOT null default '',
-      mtime bigint NOT NULL DEFAULT 0,
-      --
-      parts varchar NOT null default '',
-      sizes varchar NOT NULL DEFAULT '',
-      --
-      primary key(ch_no, cksum)
-    );
+      ztext text NOT NULL default '',
+      mtime integer NOT NULL DEFAULT 0
+    ) strict;
     SQL
 
-  CZ_DIR = ENV["CZ_DIR"]? || "var/stems"
+  CZ_DIR = "/2tb/zroot/zdata"
 
   @[AlwaysInline]
-  def self.db_path(dname : String)
-    "#{CZ_DIR}/#{dname}-zdata.db3"
+  def self.db_path(sname : String, sn_id : String | Int32)
+    "#{CZ_DIR}/#{sname}/#{sn_id}-zdata.db3"
   end
 
   ###
 
   include Crorm::Model
-  schema "czinfos", :sqlite, multi: true
+  schema "czdata", :sqlite, multi: true
 
   field ch_no : Int32 = 0, pkey: true
-  field cksum : Int64 = 0_i64, pkey: true
+  field s_cid : Int32 = 0
 
   field title : String = ""
   field chdiv : String = ""
 
-  field uname : String = "" # note: for remote source uname is the seed name
-  field zorig : String = "" # note: for remote source, the format is b_id/c_id
   field mtime : Int64 = 0_i64
+  field ztext : String = ""
 
-  field parts : String = ""
-  field sizes : String = "0"
-
-  def initialize(@ch_no, cbody : String, title : String = "", chdiv : String = "",
-                 @uname = "", @zorig = "", @mtime = Time.utc.to_unix)
-    cbody = ChapUtil.split_lines(cbody)
-    title = cbody.first if title.empty?
-
-    self.set_labels(title, chdiv)
-    self.set_czdata(cbody)
-  end
-
-  def initialize(@ch_no, cbody : Array(String), title : String = "", chdiv : String = "",
-                 @uname = "", @zorig = "", @mtime = Time.utc.to_unix)
-    title = cbody.first if title.empty?
-
-    self.set_labels(title, chdiv)
-    self.set_czdata(cbody)
-  end
-
-  @[AlwaysInline]
-  def set_labels(title : String, chdiv : String, cleaned : Bool = false)
-    @title, @chdiv = ChapUtil.split_ztitle(title, chdiv: chdiv, cleaned: cleaned)
-  end
-
-  @[AlwaysInline]
-  def set_czdata(cbody : Array(String))
-    return if cbody.empty?
-    @parts, @sizes, @cksum = ChapUtil.split_cztext(cbody)
+  def initialize(@ch_no, @s_cid = ch_no, @ztext = "", @title = "", @chdiv = "", @mtime = 0_i64)
   end
 
   ###
-
-  def filename
-    "#{@ch_no}-#{ChapUtil.cksum_to_s(@cksum)}.json"
-  end
-
-  ###
-
-  def self.from_info(cinfo : Chinfo, cbody : String = "", uname : String = "")
-    self.new(
-      ch_no: cinfo.ch_no,
-      cbody: cbody,
-      title: cinfo.ztitle,
-      chdiv: cinfo.zchdiv,
-      uname: uname.empty? ? cinfo.uname : uname,
-      zorig: cinfo.spath,
-      mtime: cinfo.mtime
-    )
-  end
 end
-
-# Dir.glob("/www/chivi/xyz/seeds/zxcs.me/split/13442/*.txt").each do |file|
-#   chap = RD::Cztext.new(File.read(file))
-#   puts chap.parts.size, chap.sizes, chap.cksum_to_s
-
-#   chap_2 = RD::Cztext.from_json(chap.to_json)
-#   if chap.cksum != chap_2.cksum
-#     puts "!!!: #{file}"
-#   end
-# end
-
-# lines = File.read_lines("/www/chivi/xyz/seeds/zxcs.me/split/13442/1.txt")
-
-# parts_1, sizes_1, cksum_1 = ChapUtil.split_parts(lines.dup)
-# parts_2, sizes_2, cksum_2 = ChapUtil.split_parts_2(lines)
-
-# puts cksum_1 == cksum_2
-# puts sizes_1.join(' ') == sizes_2
-# puts parts_1.join("\n\n") == parts_2

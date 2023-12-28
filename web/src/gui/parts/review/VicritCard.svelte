@@ -33,7 +33,7 @@
   }
 
   $: crit_path = `/wn/crits/v${crit.vc_id}`
-  $: edit_path = `/wn/crits/+crit?id=${crit.vc_id}`
+  $: edit_path = `/wn/crits/+crit?id=${crit.vc_id}&wn=${crit.wn_id}`
   $: list_path = `/wn/lists/v${crit.l_uslug}`
 </script>
 
@@ -78,7 +78,7 @@
       <span>Liên kết</span>
     </a>
 
-    {#if $_user.uname == crit.u_uname}
+    {#if $_user.uname == crit.u_uname || $_user.privi > 3}
       <a class="m-meta" href={edit_path}>
         <SIcon name="pencil" />
         <span>Sửa chữa</span>

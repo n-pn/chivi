@@ -1,11 +1,12 @@
 <script lang="ts" context="module">
   type Entry = [number, Record<string, string>]
   let entries_cache: Record<string, Entry[]> = {}
+  import { api_call } from '$lib/api_call'
+
+  import { data } from '$lib/stores/lookup_stores'
 </script>
 
 <script lang="ts">
-  import { data } from '$lib/stores/lookup_stores'
-  import { api_call } from '$lib/api_call'
   import { copy_to_clipboard } from '$utils/btn_utils'
 
   import { gen_ztext_html, gen_hviet_html } from '$lib/mt_data_2'
@@ -18,8 +19,8 @@
   export let zfrom = 0
   export let zupto = 0
 
-  $: ztext = $data.ztext[l_idx] || ''
-  $: hviet = $data.hviet[l_idx] || []
+  $: ztext = $data.rline.ztext || ''
+  $: hviet = $data.rline.hviet || []
 
   let entries = []
   let current: Entry[] = []

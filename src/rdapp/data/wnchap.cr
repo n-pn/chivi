@@ -21,7 +21,7 @@ class RD::Wnchap
 
   field mtime : Int32 = 0           # last modified at, optional
   field cksum : Bytes = "".hexbytes # if data existed this will be checksum of each chapter part
-  field extra : String = ""         # last modified by, optional
+  field extra : String = ""         # storing href or note
 
   def initialize(@sname, @sn_id, @c_idx, @ztitle, @zchdiv, @extra = "", @mtime = 0)
   end

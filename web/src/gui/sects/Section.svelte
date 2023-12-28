@@ -112,9 +112,8 @@
     }
   }
 
-  // .body {
-  //   padding: 0.75rem 0;
-  //   display: block;
-  //   min-height: 50vh;
-  // }
+  .body {
+    padding-bottom: var(--gutter);
+    display: block;
+  }
 </style>

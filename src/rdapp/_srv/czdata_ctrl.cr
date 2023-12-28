@@ -40,6 +40,14 @@ class RD::CzdataCtrl < AC::Base
 
     smode = ukind.edit? ? 1 : 0
     mtime = Time.utc.to_unix
+
+    spawn do
+      save_dir = "var/ulogs/ztext/#{sname}-#{sn_id}"
+      Dir.mkdir_p(save_dir) if ukind.first?
+      fpath = "#{save_dir}/#{mtime}-#{self._uname}-#{clist[0].ch_no}-#{ukind}.json"
+      File.write(fpath, clist.to_json)
+    end
+
     chaps = clist.map(&.persist!(crepo, smode, uname: self._uname, mtime: mtime))
 
     crepo.info_db.open_tx { |db| chaps.each(&.upsert!(db: db)) }
@@ -63,7 +71,7 @@ class RD::CzdataCtrl < AC::Base
       wbook.update_stats!(chmax: chmax, persist: true)
     when 1_i16
       ustem = get_ustem(crepo.sn_id, sname)
-      ustem.update_stats!(chmax: chmax, persist: true)
+      ustem.update_stats!(chmax: chmax)
     when 2_i16
       rstem = get_rstem(sname, crepo.sn_id)
       rstem.update_stats!(chmax: chmax, persist: true)

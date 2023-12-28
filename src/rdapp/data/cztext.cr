@@ -14,40 +14,13 @@ class RD::Cztext
     Dir.mkdir_p(@tmp_path)
   end
 
-  def get_chap_text(ch_no : Int32, cksum = "")
-    load_from_zip(ch_no) || load_by_cksum(ch_no, cksum)
-  end
-
-  def load_from_zip(ch_no : Int32, smode = 1)
+  def get_chap_text(ch_no : Int32, smode : Int32 = 1)
     return unless self.has_zip?
 
     Compress::Zip::File.open(@zip_path) do |zip|
       entry = zip["#{ch_no}#{smode}.zh"]? || zip["#{ch_no}0.zh"]?
       entry.try(&.open(&.gets_to_end))
     end
-  end
-
-  def load_by_cksum(ch_no : Int32, cksum : String)
-    return if cksum.empty?
-    sbase = "#{TXT_DIR}/#{@sroot}/#{ch_no}-#{cksum}"
-
-    String.build do |io|
-      0.upto(99) do |p_idx|
-        fpath = "#{sbase}-#{p_idx}.raw.txt"
-        break unless File.file?(fpath)
-
-        cbody = File.read(fpath)
-        cbody = cbody.sub(/^.+\n/, "\n\n") if p_idx > 0
-
-        io << cbody
-      end
-    end
-  end
-
-  def read_text_part_by_ckcsum(ch_no : Int32, cksum : String, p_idx : Int32)
-    return if cksum.empty?
-    fpath = "#{TXT_DIR}/#{@sroot}/#{ch_no}-#{cksum}-#{p_idx}.raw.txt"
-    File.read(fpath) rescue nil
   end
 
   def save_text!(ch_no : Int32, ztext : String,
@@ -59,7 +32,7 @@ class RD::Cztext
   end
 
   def zipping_text!(data_path : String = @tmp_path)
-    `zip -FSrjyoq '#{@zip_path}' '#{data_path}'`
+    `zip -rjyoq '#{@zip_path}' '#{data_path}'`
     @has_zip = true if $?.success?
   end
 

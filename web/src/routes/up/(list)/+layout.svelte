@@ -9,23 +9,16 @@
 
   $: privi = $_user.privi
   const tabs = [
-    { type: 'home', href: `/up`, icon: 'album', text: 'Danh sách' },
+    { type: '', href: `/up`, icon: 'album', text: 'Danh sách' },
     {
-      type: 'like',
-      href: `/up/liked`,
-      icon: 'heart',
-      text: 'Ưa thích',
-      mute: privi < 0,
-    },
-    {
-      type: 'mine',
+      type: 'owned',
       href: `/up/owned`,
       icon: 'at',
       text: 'Của bạn',
       mute: privi < 0,
     },
     {
-      type: '+new',
+      type: '+proj',
       href: `/up/+proj`,
       icon: 'file-plus',
       text: 'Tạo mới',

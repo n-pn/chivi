@@ -52,8 +52,8 @@ class RD::UpstemCtrl < AC::Base
     guard_privi 1, "tạo sưu tầm cá nhân"
 
     uform.id = nil
-    uform.sname = "@#{_uname}"
-    uform.owner = _vu_id
+    uform.sname = "@#{self._uname}"
+    uform.owner = self._vu_id
     uform.wn_id = nil if uform.wn_id.try(&.< 1)
 
     ustem = uform.insert!
@@ -69,9 +69,12 @@ class RD::UpstemCtrl < AC::Base
   @[AC::Route::POST("/:up_id", body: uform)]
   def update(up_id : Int32, uform : Upstem)
     ustem = get_ustem(up_id)
-    crepo = ustem.crepo
-
     guard_owner ustem.owner, 1, "sửa sưu tầm cá nhân"
+
+    ustem.au_zh = uform.au_zh unless uform.au_vi.empty?
+    ustem.au_vi = uform.au_vi unless uform.au_vi.empty?
+
+    crepo = ustem.crepo
 
     unless uform.zname.empty?
       ustem.zname = uform.zname
@@ -88,9 +91,22 @@ class RD::UpstemCtrl < AC::Base
       crepo.wn_id = wn_id
     end
 
-    ustem.vintro = uform.vintro
-    ustem.labels = uform.labels
+    ustem.zdesc = uform.zdesc
+    ustem.vdesc = uform.vdesc
 
+    if ustem.img_og != uform.img_cv
+      ustem.img_og = uform.img_og
+      ustem.img_cv = ""
+    end
+
+    ustem.guard = uform.guard
+    ustem.wndic = uform.wndic
+
+    if uform.wndic && ustem.wn_id
+      crepo.pdict = "wn#{ustem.wn_id}"
+    end
+
+    ustem.labels = uform.labels
     ustem.updated_at = Time.utc
 
     ustem = ustem.update!
@@ -109,7 +125,6 @@ class RD::UpstemCtrl < AC::Base
 
     ustem.guard = uform.guard
     ustem.wndic = uform.wndic
-    ustem.multp = uform.multp
     ustem.updated_at = Time.utc
 
     saved = ustem.update!

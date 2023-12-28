@@ -52,7 +52,6 @@
   const tl_btitle = async (value: string) => {
     const href = `/_m1/qtran/tl_btitle?btitle=${value}&wn_id=${data.id}`
     form.btitle_vi = await fetch_text(href)
-    console.log(form.btitle_vi)
   }
 
   const tl_author = async (value: string) => {
@@ -61,7 +60,7 @@
   }
 
   const tl_bintro = async (body: string) => {
-    const href = `/_m1/qtran?wn_id=${data.id}&format=txt`
+    const href = `/_m1/qtran?wn_id=${data.id}&format=txt&title=0`
     const headers = { 'Content-Type': 'text/plain' }
     form.intro_vi = await fetch_text(href, { method: 'POST', body, headers })
   }

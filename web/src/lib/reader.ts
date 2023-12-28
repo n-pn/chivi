@@ -245,11 +245,8 @@ export class Rdpage {
     if (cache < 2 && this.state.hviet > 0) return this
     if (cache == 0) return this
 
-    const res = await fetch(`/_ai/qt/hviet`, this.gen_rinit(cache, 'POST'))
+    const res = await fetch(`/_ai/hviet`, this.gen_rinit(cache, 'POST'))
     if (!res.ok) return this
-
-    this.tspan.hviet = +res.headers.get('X-TSPAN')
-    this.mtime.hviet = +res.headers.get('X-MTIME')
 
     const lines = await res.text().then((x) => x.split('\n'))
     const hviet = lines.map((x) => x.match(/[\s\u200b].[^\s\u200b]*/g))
@@ -352,19 +349,15 @@ export class Rdpage {
     if (!fpath) return this
     const zpath = encodeURIComponent(fpath)
 
-    const url = `/_m1/qtran?fpath=${zpath}&wn_id=${wn_id}&format=txt`
+    const url = `/_m1/qtran?fpath=${zpath}&wn_id=${wn_id}&format=txt&title=1`
     const res = await fetch(url, this.gen_rinit(cache, 'POST'))
 
     if (!res.ok) {
       this.qt_v1 = []
-      return this
+    } else {
+      const qt_v1 = await res.text()
+      this.qt_v1 = qt_v1.split('\n')
     }
-
-    const { lines, tspan, mtime } = await res.json()
-    this.qt_v1 = lines
-
-    this.tspan.qt_v1 = tspan
-    this.mtime.qt_v1 = mtime
 
     return this
   }

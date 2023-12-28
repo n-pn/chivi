@@ -14,23 +14,28 @@ class RD::Upstem
   field id : Int32, pkey: true, auto: true
   field owner : Int32 = -1
 
-  field sname : String = "@Chivi"
+  field sname : String = ""
+  field guard : Int16 = 0
 
   field zname : String = ""
   field vname : String = ""
 
-  field zintro : String = ""
-  field vintro : String = ""
+  field au_zh : String = ""
+  field au_vi : String = ""
+
+  field zdesc : String = ""
+  field vdesc : String = ""
+
+  field img_og : String = ""
+  field img_cv : String = ""
 
   field labels : Array(String) = [] of String
 
-  field multp : Int16 = 4
-  field guard : Int16 = 0
-
   field wn_id : Int32? = nil
-  field wndic : Bool = false
+  field wndic : Bool = true
 
-  field mtime : Int64 = Time.utc.to_unix
+  field mtime : Int64 = 0_i64
+  field atime : Int64 = Time.utc.to_unix
 
   field chap_count : Int32 = 0
   field view_count : Int32 = 0
@@ -48,13 +53,13 @@ class RD::Upstem
       repo.sn_id = @id || 0
 
       repo.wn_id = @wn_id || 0
-      repo.pdict = @wndic ? "wn#{@wn_id}" : "up#{id}"
+      repo.pdict = @wndic && @wn_id ? "wn#{@wn_id}" : "up#{id}"
 
       repo.chmax = @chap_count
       repo.mtime = @mtime
 
       repo.plock = @guard
-      repo.multp = @multp
+      repo.multp = 4
 
       repo.view_count = @view_count
     end
@@ -70,26 +75,26 @@ class RD::Upstem
     @labels.reject!(&.blank?).uniq!
   end
 
-  def update_stats!(chmax : Int32, mtime : Int64 = Time.utc.to_unix, persist : Bool = false)
+  def update_stats!(chmax : Int32, mtime : Int64 = Time.utc.to_unix)
     @mtime = mtime if @mtime < mtime
-
     @chap_count = chmax if @chap_count < chmax
-    self.crepo.chmax = @chap_count
-
-    return unless persist
 
     query = @@schema.update_stmt(%w{chap_count mtime})
     @@db.exec(query, @chap_count, @mtime, @id)
   end
 
-  INC_VIEW_COUNT_SQL = <<-SQL
-    update upstems set view_count = view_count + $1
-    where id = $2
-    returning view_count
-    SQL
+  def bump_atime!
+    @atime = Time.utc.to_unix
+    @@db.exec("update upstems set atime = $1 where id = $2", @atime, @id)
+  end
 
   def inc_view_count!(value = 1)
-    @view_count = @@db.query_one(INC_VIEW_COUNT_SQL, value, @id, as: Int32)
+    query = <<-SQL
+      update upstems set view_count = view_count + $1
+      where id = $2 returning view_count
+      SQL
+
+    @view_count = @@db.query_one(query, value, @id, as: Int32)
   end
 
   #####
@@ -145,6 +150,7 @@ class RD::Upstem
       end
 
       case order
+      when "atime" then sql << " order by atime desc"
       when "mtime" then sql << " order by mtime desc"
       when "views" then sql << " order by view_count desc"
       else              sql << " order by id desc"

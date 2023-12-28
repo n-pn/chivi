@@ -7,9 +7,9 @@
     hide: () => {
       ctrl.update((x) => ({ ...x, actived: false }))
     },
-    show(xpanel = '') {
+    show(new_panel = '') {
       ctrl.update(({ sticked, panel }) => ({
-        panel: xpanel || panel,
+        panel: new_panel || panel,
         actived: true,
         sticked,
       }))

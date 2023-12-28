@@ -26,12 +26,6 @@
   }
 
   export async function show_lookup(panel = '') {
-    await rpage.load_hviet(1)
-    await rpage.load_qt_v1(1)
-    rpage.load_bt_zv(1)
-    rpage.load_mt_ai(1, false)
-
-    rpage.reload({ hviet: 1, qt_v1: 1, bt_zv: 1, mt_ai: 1 })
     lookup_ctrl.show(panel)
   }
 

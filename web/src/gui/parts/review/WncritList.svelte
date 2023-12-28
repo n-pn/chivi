@@ -30,8 +30,8 @@
   export let ys: CV.YscritList = empty_crits
   export let vi: CV.VicritList = empty_crits
 
+  export let wn_id = 0
   export let _sort = 'score'
-  export let bslug = ''
 
   export let show_book = true
   export let show_list = true
@@ -50,6 +50,8 @@
   $: pgmax = vi.pgmax > ys.pgmax ? vi.pgmax : ys.pgmax
 
   $: no_crit = vi.crits.length + ys.crits.length == 0
+
+  $: new_crit_path = wn_id ? `/wn/crits/+crit?wn=${wn_id}` : ''
 </script>
 
 {#if view_head}
@@ -68,13 +70,11 @@
       </a>
     {/each}
 
-    {#if bslug}
-      <nav class="right">
-        <a class="m-btn _primary _fill _sm" href="/wn/{bslug}/uc/+crit#cform">
-          <SIcon name="ballpen" />
-          <span class="u-show-pm">Tạo mới</span>
-        </a>
-      </nav>
+    {#if wn_id}
+      <a class="m-btn _primary _fill _sm u-right" href={new_crit_path}>
+        <SIcon name="ballpen" />
+        <span class="u-show-pm">Tạo mới</span>
+      </a>
     {/if}
   </header>
 {/if}
@@ -126,15 +126,18 @@
     {/key}
   {/each}
 
-  {#if bslug && no_crit}
-    <div class="empty">
+  {#if no_crit}
+    <div class="d-empty">
       <p class="u-fg-tert fs-i">Chưa có đánh giá.</p>
-      <p>
-        <a class="m-btn _primary _fill _lg" href="/wn/{bslug}/uc/+crit#cform">
-          <SIcon name="ballpen" />
-          <span class="-text">Thêm đánh giá</span>
-        </a>
-      </p>
+
+      {#if wn_id}
+        <p>
+          <a class="m-btn _primary _fill _lg" href={new_crit_path}>
+            <SIcon name="ballpen" />
+            <span class="-text">Thêm đánh giá</span>
+          </a>
+        </p>
+      {/if}
     </div>
   {/if}
 </div>
@@ -151,10 +154,6 @@
     @include border($loc: bottom);
 
     padding: 0.75rem 0;
-
-    .right {
-      margin-left: auto;
-    }
   }
 
   .crits,
@@ -178,13 +177,6 @@
 
   .crits {
     min-height: 10rem;
-  }
-
-  .empty {
-    @include flex-ca;
-    flex-direction: column;
-    gap: 0.5rem;
-    height: 40vh;
   }
 
   .stars {

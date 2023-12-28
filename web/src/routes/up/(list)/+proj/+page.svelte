@@ -18,20 +18,23 @@
 
   $: action = uform.id ? `/_rd/upstems/${uform.id}` : '/_rd/upstems'
 
-  const tl_zname = async () => {
-    const res = await fetch(`/_sp/hname?input=${uform.zname}`)
-    uform.vname = await res.text()
+  const tl_btitle = async () => {
+    uform.vname = await qt_hviet(uform.zname)
+  }
+
+  const tl_author = async () => {
+    uform.au_vi = await qt_hviet(uform.au_zh)
+  }
+
+  const qt_hviet = async (ztext: string) => {
+    const res = await fetch(`/_sp/hname?input=${ztext}`)
+    return await res.text()
   }
 
   const tl_intro = async () => {
     const url = `/_m1/qtran?format=txt`
-    const headers = { 'Content-Type': 'text/plain' }
-    const res = await fetch(url, {
-      method: 'POST',
-      body: uform.vintro,
-      headers,
-    })
-    uform.vintro = await res.text()
+    const res = await fetch(url, { method: 'POST', body: uform.zdesc })
+    uform.vdesc = await res.text()
   }
 
   const submit = async () => {
@@ -56,65 +59,108 @@
 <form {action} method="POST" on:submit|preventDefault={submit}>
   <form-group>
     <form-field>
-      <label class="form-label" for="zname">Tên tiếng Trung</label>
+      <label class="form-label" for="zname">Tên sưu tầm (Trung)</label>
       <input
         type="text"
         class="m-input"
         name="zname"
-        placeholder="Tên gốc tiếng trung"
-        on:change={tl_zname}
+        placeholder="Tên gốc tiếng Trung"
         required
+        on:change={tl_btitle}
         bind:value={uform.zname} />
     </form-field>
 
     <form-field>
-      <label class="form-label" for="vname">Tên tiếng Việt</label>
+      <label class="form-label" for="vname">Tên sưu tầm (Việt)</label>
       <input
         type="text"
-        class="m-input"
         name="vname"
+        class="m-input"
         placeholder="Để trắng để hệ thống tự gợi ý"
         bind:value={uform.vname} />
     </form-field>
   </form-group>
 
-  <div class="form-group vintro">
-    <div class="form-label">
-      <label for="vintro">Giới thiệu tiếng Việt</label>
-      <button type="button" disabled={!uform.vintro} on:click={tl_intro}
-        >Dịch nhanh</button>
-    </div>
-    <textarea
+  <form-group>
+    <form-field>
+      <label class="form-label" for="au_zh">Tên tác giả (Trung)</label>
+      <input
+        type="text"
+        name="au_zh"
+        class="m-input"
+        required
+        placeholder="Tên tác giả Tiếng Trung"
+        on:change={tl_author}
+        bind:value={uform.au_zh} />
+    </form-field>
+
+    <form-field>
+      <label class="form-label" for="au_vi">Tên tác giả (Việt)</label>
+      <input
+        type="text"
+        name="au_vi"
+        class="m-input"
+        placeholder="Để trắng để hệ thống tự gợi ý"
+        bind:value={uform.au_vi} />
+    </form-field>
+  </form-group>
+
+  <form-group>
+    <form-field>
+      <label class="form-label" for="zdesc">Giới thiệu (Trung)</label>
+      <textarea
+        name="zdesc"
+        class="m-input"
+        rows="8"
+        placeholder="Giới thiệu tiếng Trung"
+        on:change={tl_intro}
+        bind:value={uform.zdesc} />
+    </form-field>
+
+    <form-field>
+      <label class="form-label" for="vdesc">Giới thiệu (Việt)</label>
+      <textarea
+        name="vdesc"
+        class="m-input"
+        rows="8"
+        placeholder="Giới thiệu tiếng Việt"
+        bind:value={uform.vdesc} />
+    </form-field>
+  </form-group>
+
+  <div class="form-group">
+    <label class="form-label" for="img_og">Đường dẫn ảnh bìa</label>
+    <input
+      type="url"
+      name="img_og"
       class="m-input"
-      name="vintro"
-      rows="8"
-      bind:value={uform.vintro} />
+      placeholder="https://..."
+      bind:value={uform.img_og} />
   </div>
 
   <div class="form-group labels">
-    <label class="label" for="labels">Nhãn truyện</label>
+    <label class="form-label" for="labels">Nhãn tìm kiếm</label>
     <input
       type="text"
       class="m-input"
       name="labels"
-      placeholder="Các nhãn để tìm kiếm"
+      placeholder="Tách các nhãn bằng dấu phẩy. Các nhãn bằng tiếng Trung sẽ được tự đổi sang tiếng Việt"
       bind:value={labels} />
-    <p class="hints">
-      Gợi ý: 1. Tách các nhãn bằng dấu phẩy (,) 2.Các nhãn bằng tiếng Trung sẽ
-      được tự đổi sang tiếng Việt
-    </p>
   </div>
 
-  <div class="form-group">
-    <form-field>
-      <label class="label" for="book_id">Liên kết tới bộ truyện:</label>
-      <input
-        type="number"
-        class="m-input"
-        name="book_id"
-        placeholder="ID bộ truyện"
-        bind:value={uform.wn_id} />
-    </form-field>
+  <div class="form-group linked">
+    <label class="i-label" for="wn_id">ID bộ truyện chữ:</label>
+    <input
+      type="number"
+      name="wn_id"
+      class="m-input _sm _inline"
+      placeholder="ID bộ truyện"
+      bind:value={uform.wn_id} />
+
+    <label class="i-label">
+      <input type="checkbox" name="wndic" bind:checked={uform.wndic} />
+      <span>Dùng từ điển bộ truyện</span>
+    </label>
   </div>
 
   {#if err_text}<div class="form-msg _err">{err_text}</div>{/if}
@@ -122,7 +168,7 @@
   <footer class="action">
     {#if uform.id}
       <div class="delete">
-        <span class="x-label">Xóa dự án:</span>
+        <span class="label">Xóa dự án:</span>
         <input
           type="number"
           class="m-input"
@@ -140,23 +186,17 @@
     {/if}
 
     <button
-      class="m-btn _primary _fill _lg u-right"
+      class="m-btn _primary _fill u-right"
       type="submit"
       disabled={$_user.privi < 1}>
       <SIcon name="send" />
-      <span class="-txt">Lưu thông tin</span>
+      <span class="-txt">Đăng tải</span>
       <SIcon name="privi-1" iset="icons" />
     </button>
   </footer>
 </form>
 
 <style lang="scss">
-  .label {
-    display: block;
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-  }
-
   .m-input {
     display: block;
     width: 100%;
@@ -166,20 +206,36 @@
     margin-top: 0.75rem;
   }
 
-  .vintro {
-    margin-top: 1rem;
+  .linked {
+    @include flex-cy($gap: 0.75rem);
+    @include border($loc: top);
+    padding-top: 0.75rem;
 
-    .form-label {
-      display: flex;
+    .i-label {
+      font-weight: 500;
     }
 
-    button {
-      margin-left: auto;
-      background: none;
-      @include fgcolor(tert);
-      font-style: italic;
+    .m-input {
+      display: inline;
+      width: 5rem;
+      text-align: center;
     }
   }
+
+  // .vintro {
+  //   margin-top: 1rem;
+
+  //   .form-label {
+  //     display: flex;
+  //   }
+
+  //   button {
+  //     margin-left: auto;
+  //     background: none;
+  //     @include fgcolor(tert);
+  //     font-style: italic;
+  //   }
+  // }
 
   .hints {
     font-style: italic;
@@ -190,9 +246,12 @@
   }
 
   .action {
-    @include flex();
-    margin: 0.75rem 0;
+    @include flex-cy();
+    @include border($loc: top);
+    margin-top: 0.75rem;
+    padding-top: var(--gutter);
   }
+
   .delete {
     @include flex-ca();
     gap: 0.5rem;

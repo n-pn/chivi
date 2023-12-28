@@ -7,13 +7,10 @@ export const load = (async ({ fetch, url, params, parent, depends }) => {
   const { rstem, sroot } = await parent()
   depends(`rm:clist:${params.sn}:${params.id}`)
 
-  const pg_no = +url.searchParams.get('pg') || 1
   const rdurl = `/_rd/chaps/rm${params.sn}/${params.id}`
+  const chaps = await api_get<CV.Wnchap[]>(`${rdurl}?lm=4&_last=true`, fetch)
 
-  const chaps = await api_get<CV.Wnchap[]>(`${rdurl}?pg=${pg_no}`, fetch)
-  const lasts = await api_get<CV.Wnchap[]>(`${rdurl}?lm=4&_last=true`, fetch)
-
-  const _title = `Liên kết ${rstem.sname} - ${rstem.btitle_vi}`
+  const _title = `${rstem.btitle_vi} - ${rstem.sname}`
 
   const _meta: App.PageMeta = {
     left_nav: [
@@ -22,5 +19,5 @@ export const load = (async ({ fetch, url, params, parent, depends }) => {
     ],
   }
 
-  return { chaps, lasts, pg_no, sroot, _title, _meta, intab: 'rd', ontab: 'ch' }
+  return { chaps, _title, _meta, ontab: 'index' }
 }) satisfies PageLoad

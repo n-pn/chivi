@@ -24,12 +24,12 @@ class RD::ChinfoCtrl < AC::Base
                 force : Bool = false, regen : Bool = false)
     crepo = Tsrepo.load!("#{sname}/#{sn_id}")
     cinfo = get_cinfo(crepo, ch_no)
-    ztext, cksum, error, ulkey, multp = build_cpart(crepo, cinfo, p_idx, force, regen)
+    ztext, cksum, p_max, error, ulkey, multp = build_cpart(crepo, cinfo, p_idx, force, regen)
     spawn { inc_view_count!(crepo, crepo.sname) } if error == 0
 
     json = {
       ch_no: cinfo.ch_no,
-      p_max: cinfo.psize,
+      p_max: p_max,
       p_idx: p_idx,
 
       title: cinfo.vtitle,
@@ -51,13 +51,16 @@ class RD::ChinfoCtrl < AC::Base
     }
 
     render 200, json: json
+  rescue ex
+    Log.error(exception: ex) { ex.message }
+    render 500, text: ex.message
   end
 
   private def build_cpart(crepo, cinfo, p_idx, force, regen)
     vu_id, privi = self._vu_id, self._privi
     user_multp, real_multp = crepo.chap_mutlp(cinfo.ch_no, vu_id: vu_id, privi: privi)
 
-    ztext, cksum = crepo.load_raw_part(cinfo, p_idx, regen: regen)
+    ztext, cksum, p_max = crepo.load_raw_part(cinfo, p_idx, regen: regen)
 
     if cinfo.cksum.empty?
       ulkey = "#{crepo.sname}/#{crepo.sn_id}/#{cksum.to_s(32)}"
@@ -82,7 +85,7 @@ class RD::ChinfoCtrl < AC::Base
       error = 413
     end
 
-    {ztext, cksum, error, error > 0 ? "" : ulkey, user_multp}
+    {ztext, cksum, p_max, error, error > 0 ? "" : ulkey, user_multp}
   end
 
   private def prev_part(crepo, ch_no, p_idx)

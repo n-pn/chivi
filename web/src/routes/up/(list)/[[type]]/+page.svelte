@@ -7,4 +7,9 @@
   $: ({ items, pgidx, pgmax } = data.props)
 </script>
 
-<UpstemList {items} {pgidx} {pgmax} query={data.query} upath="/up/owned" />
+<UpstemList
+  {items}
+  {pgidx}
+  {pgmax}
+  query={data.query}
+  upath="/up/{data.ontab}" />
