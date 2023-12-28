@@ -50,7 +50,7 @@ def export(db_path : String)
     puts files, ex.colorize.red
   end
 
-  `zip -FSrjyomq '#{out_dir}.zip' '#{out_dir}'`
+  `zip -rjyomq '#{out_dir}.zip' '#{out_dir}'`
 end
 
 def read_files(files : Array(String))

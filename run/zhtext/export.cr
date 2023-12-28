@@ -27,7 +27,7 @@ def export(db_path)
     File.utime(mtime, mtime, out_file)
   end
 
-  `zip -FSrjyomq '#{out_dir}.zip' '#{out_dir}'`
+  `zip -rjyomq '#{out_dir}.zip' '#{out_dir}'`
 end
 
 INP = "/2tb/var.chivi/stems"

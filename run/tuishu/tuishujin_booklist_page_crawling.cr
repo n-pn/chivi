@@ -14,7 +14,7 @@ URL = "https://pre-api.tuishujun.com/api/listBooklist/v1?type=most_new"
 DIR = "var/zroot/.keep/tuishu/listBooklist"
 Dir.mkdir_p(DIR)
 
-page_total = 35253
+page_total = 38184
 page_limit = 50
 
 page_count = page_total // page_limit + 1

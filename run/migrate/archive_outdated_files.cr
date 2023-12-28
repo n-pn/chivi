@@ -15,6 +15,6 @@ snames.each do |sname|
     zip_path = "#{out_dir}/#{sn_id}.zip"
     puts "zipping: #{inp_path}/#{sn_id} to #{zip_path}"
 
-    `zip -urjyoqm '#{zip_path}' '#{inp_path}/#{sn_id}'`
+    `zip -rjyoqm '#{zip_path}' '#{inp_path}/#{sn_id}'`
   end
 end
