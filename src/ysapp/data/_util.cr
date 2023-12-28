@@ -16,7 +16,7 @@ module YS::YsUtil
   end
 
   def self.zip_data(zip_path : String, inp_path : String)
-    response = `zip -urjyoq '#{zip_path}' '#{inp_path}'`
+    response = `zip -rjyoq '#{zip_path}' '#{inp_path}'`
     raise response unless $?.success?
   end
 end

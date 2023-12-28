@@ -138,6 +138,11 @@ abstract class AC::Base
     request.body.try(&.gets_to_end) || ""
   end
 
+  private def each_body_line(&)
+    return unless body = request.body
+    body.each_line { |line| yield line }
+  end
+
   private def _paginate(min = 5, max = 100)
     pg_no = params["pg"]?.try(&.to_i?) || 1
     limit = params["lm"]?.try(&.to_i?) || min

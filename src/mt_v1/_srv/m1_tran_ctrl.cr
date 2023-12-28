@@ -6,47 +6,43 @@ require "../../rdapp/data/chinfo"
 class M1::TranCtrl < AC::Base
   base "/_m1/qtran"
 
-  @[AC::Route::GET("/")]
-  def qtran_file(fpath : String, wn_id : Int32 = 0)
-    start = Time.monotonic
-    mcore = MtCore.init(wn_id, user: _uname)
+  # @[AC::Route::GET("/")]
+  # def qtran_file(fpath : String, wn_id : Int32 = 0)
+  #   start = Time.monotonic
+  #   mcore = MtCore.init(wn_id, user: _uname)
 
-    plain = false
-    lines = [] of String
+  #   plain = false
+  #   lines = [] of String
 
-    RD::Chpart.new(fpath).read_raw do |line|
-      data = plain ? mcore.cv_plain(line) : mcore.cv_title(line)
-      lines << data.to_txt
-      plain = true
-    end
+  #   RD::Chpart.new(fpath).read_raw do |line|
+  #     data = plain ? mcore.cv_plain(line) : mcore.cv_title(line)
+  #     lines << data.to_txt
+  #     plain = true
+  #   end
 
-    tspan = (Time.monotonic - start).total_milliseconds.round(2)
-    mtime = Time.utc.to_unix
+  #   tspan = (Time.monotonic - start).total_milliseconds.round(2)
+  #   mtime = Time.utc.to_unix
 
-    cache_control 7.days
-    add_etag mtime.to_s
+  #   cache_control 7.days
+  #   add_etag mtime.to_s
 
-    render json: {lines: lines, mtime: mtime, tspan: tspan}
-  end
+  #   render json: {lines: lines, mtime: mtime, tspan: tspan}
+  # end
 
   @[AC::Route::POST("/")]
-  def qtran_text(wn_id : Int32 = 0, format = "mtl")
-    start = Time.monotonic
+  def qtran_text(wn_id : Int32 = 0, title : Int32 = 1,
+                 fpath : String = "", format = "txt")
     mcore = MtCore.init(wn_id, user: _uname)
-
-    plain = false
-    lines = [] of String
-
-    self._read_body.each_line do |line|
-      data = plain ? mcore.cv_plain(line) : mcore.cv_title(line)
-      lines << (format == "mtl" ? data.to_mtl : data.to_txt)
-      plain = true
+    vtran = String.build do |io|
+      self.each_body_line do |line|
+        data = title == 0 ? mcore.cv_plain(line) : mcore.cv_title(line)
+        format == "mtl" ? data.to_mtl(io) : data.to_txt(io)
+        io << '\n'
+        title &-= 1
+      end
     end
 
-    tspan = (Time.monotonic - start).total_milliseconds.round(2)
-    mtime = Time.utc.to_unix
-
-    render json: {lines: lines, mtime: mtime, tspan: tspan}
+    render text: vtran
   end
 
   @[AC::Route::GET("/cached")]
@@ -84,9 +80,9 @@ class M1::TranCtrl < AC::Base
     cv_mt = MtCore.init(wn_id, user: _uname)
 
     intro = String.build do |io|
-      form.bintro.each_line.with_index do |line, idx|
-        io << '\n' if idx > 0
+      form.bintro.each_line do |line|
         cv_mt.cv_plain(line, true).to_txt(io)
+        io << '\n'
       end
     end
 

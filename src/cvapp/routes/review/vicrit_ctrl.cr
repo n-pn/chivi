@@ -65,12 +65,14 @@ class CV::VicritCtrl < CV::BaseCtrl
     crits = VicritView.fetch_all(self_id: _vu_id, vuser: _uname, wbook: wn_id)
 
     vcrit = crits.find(&.vc_id.== vc_id)
+    wn_id = vcrit.wn_id if vcrit && wn_id == 0
+
     crits.reject!(&.vc_id.== vc_id) if vcrit
 
     render json: {
-      ctime: vcrit.try(&.ctime) || 0,
       cform: init_form(vcrit, wn_id),
-
+      ctime: vcrit.try(&.ctime) || 0,
+      bname: Wninfo.get_btitle_vi(wn_id),
       lists: lists,
       crits: crits,
     }

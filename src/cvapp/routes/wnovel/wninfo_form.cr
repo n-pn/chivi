@@ -33,7 +33,13 @@ class CV::WninfoForm
     gen_vi_data! unless @author_vi && @btitle_vi && @intro_vi
   end
 
-  alias ViData = NamedTuple(btitle: String, author: String, bintro: String)
+  record ViData, btitle : String, author : String, bintro : String do
+    include JSON::Serializable
+
+    def after_initialize
+      @bintro = @bintro.strip
+    end
+  end
 
   def gen_vi_data!
     link = "#{CV_ENV.m1_host}/_m1/qtran/tl_wnovel?wn_id=#{@wn_id}"
@@ -45,9 +51,9 @@ class CV::WninfoForm
       return unless res.success?
       data = ViData.from_json(res.body_io.gets_to_end)
 
-      @author_vi ||= data[:author]
-      @btitle_vi ||= data[:btitle]
-      @intro_vi ||= data[:bintro]
+      @author_vi ||= data.author
+      @btitle_vi ||= data.btitle
+      @intro_vi ||= data.bintro
     end
   end
 
