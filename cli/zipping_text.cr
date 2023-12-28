@@ -29,7 +29,7 @@ def zip_seed_dir(sname : String, threads : Int32 = WORKERS, upload = false)
     spawn do
       loop do
         zip_path, inp_path, idx = workers.receive
-        `zip -FSrjyoq '#{zip_path}' '#{inp_path}'`
+        `zip -rjyoq '#{zip_path}' '#{inp_path}'`
         results.send({zip_path, idx})
       end
     end

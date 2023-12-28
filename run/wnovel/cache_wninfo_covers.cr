@@ -1,3 +1,5 @@
+ENV["CV_ENV"] ||= "production"
+
 require "colorize"
 require "../../src/_data/_data"
 require "../../src/_util/hash_util"
