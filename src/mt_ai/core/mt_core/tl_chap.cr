@@ -30,7 +30,7 @@ module MT::TlChap
   def split(title : String)
     if match = CHDIV_RE_1.match(title) || TITLE_RE_1.match(title) || TITLE_RE_2.match(title)
       _, zh_ch, digit, c_lbl, trash, title = match
-      vi_ch = "#{LBLS[c_lbl]} #{TlUnit.translate(digit, true)}"
+      vi_ch = "#{LBLS[c_lbl]} #{QtNumber.translate(digit, :pure_digit)}"
     elsif match = TITLE_RE_3.match(title)
       _, zh_ch, trash, title = match
       vi_ch = CharUtil.normalize(zh_ch)
@@ -44,9 +44,14 @@ module MT::TlChap
     zh_ch += trash
     vi_ch += ':' unless title.empty?
 
-    node = M0Node.new(zstr: zh_ch.gsub('　', ""), epos: :LST)
-    node.set_vstr!(vi_ch)
-    node.set_attr!(:capn)
+    node = AiTerm.new(
+      epos: :LST,
+      attr: :capn,
+      orig: zh_ch.gsub('　', ""),
+      tran: vi_ch,
+      dnum: :autogen_1,
+      _idx: 0
+    )
 
     {title, node}
   end

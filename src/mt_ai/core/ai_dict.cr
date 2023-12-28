@@ -124,14 +124,6 @@ class MT::AiDict
     "‧" => " ",
   }
 
-  def init_od(zstr : String)
-    if zstr[0] == '第'
-      "thứ #{tl_unit(zstr[1..])}"
-    else
-      tl_unit(zstr)
-    end
-  end
-
   def init_cd_dedup(zstr : String)
     return unless zstr.size == 3
     return unless zstr[0] == '一' && zstr[1] == zstr[2]
@@ -145,59 +137,11 @@ class MT::AiDict
     end
   end
 
-  def init_cd(zstr : String)
-    if qnode = init_cd_dedup(zstr)
-      return qnode
-    end
-
-    case zstr
-    when .starts_with?("百分之")
-      sufx = " phần trăm"
-      zstr = zstr[3..]
-    when .starts_with?("分之")
-      sufx = " phần"
-      zstr = zstr[2..]
-    else
-      sufx = ""
-    end
-
-    return sufx if zstr.empty?
-
-    if q_term = get?(zstr[-1].to_s, :M)
-      sufx = " #{q_term.vstr}#{sufx}"
-      zstr = zstr[0..-2]
-    end
-
-    vstr = tl_unit(zstr)
-    sufx.empty? ? vstr : "#{vstr}#{sufx}"
-  end
-
   DECIMAL_SEP = {
     '点' => " chấm ",
     '．' => ".",
     '／' => "/",
   }
-
-  def tl_unit(zstr : String)
-    return CharUtil.to_halfwidth(zstr) if zstr.matches?(/^[／-～]+$/)
-    real_part, sep_char, fract_part = zstr.partition(/[点．／]/)
-
-    real_vstr = TlUnit.translate(real_part)
-    return real_vstr if sep_char.empty?
-
-    if fract_part.empty?
-      sep_vstr = get_alt?(sep_char).try(&.vstr) || sep_char
-      return "#{real_vstr} #{sep_vstr}"
-    end
-
-    sep_vstr = DECIMAL_SEP[sep_char[0]]
-    fractional_vstr = fract_part.empty? ? "" : TlUnit.translate(fract_part)
-
-    "#{real_vstr}#{sep_vstr}#{fractional_vstr}"
-  rescue ex
-    Log.error(exception: ex) { zstr }
-    zstr
-  end
 
   def init_vv(zstr : String) : String
     QtCore.tl_hvword(zstr)

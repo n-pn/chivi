@@ -1,264 +1,96 @@
+require "../../util/qt_number"
+
 module MT::TlUnit
   extend self
 
-  HAN_TO_INT = {
-    '零' => 0, '两' => 2,
-    '〇' => 0, '一' => 1,
-    '二' => 2, '三' => 3,
-    '四' => 4, '五' => 5,
-    '六' => 6, '七' => 7,
-    '八' => 8, '九' => 9,
-    '十' => -1, '百' => -2,
-    '千' => -3, '万' => -4,
-    '亿' => -6, '兆' => -9,
+  def self.translate_od(zstr : String)
+    case zstr[0]
+    when '第' then "thứ #{translate(zstr[1..])}"
+      # TODO: add more
+    else translate(zstr)
+    end
+  end
+
+  def self.translate_mq(zstr : String)
+    return unless zstr.size == 3
+    return unless zstr[0] == '一' && zstr[1] == zstr[2]
+
+    qzstr = zstr[-1].to_s
+    qnode = HashDict.nqnt_vi.any?(qzstr) || HashDict.essence.any?(qzstr)
+
+    qvstr = qnode.try(&.vstr) || qzstr
+    "từng #{qvstr} từng #{qvstr}"
+  end
+
+  PERC_HEAD = {
+    "零" => "không",
+    "〇" => "không",
+    "一" => "một",
+    "二" => "hai",
+    "两" => "hai",
+    "三" => "ba",
+    "四" => "bốn",
+    "五" => "năm",
+    "六" => "sáu",
+    "七" => "bảy",
+    "八" => "tám",
+    "九" => "chín",
+    "几" => "vài",
+    "十" => "mười",
+    "百" => "trăm",
+    "千" => "nghìn",
+    "万" => "vạn",
+    "亿" => "trăm triệu",
+    "兆" => "nghìn tỉ",
   }
 
-  EXTRA_STR = {
-    '来' => "chừng ",
-    '余' => "trên ",
-    '多' => "hơn ",
-    '第' => "thứ ",
-    '几' => "mấy ",
+  def self.translate_cd(input : String)
+    translate_mq(input).try { |x| return x }
+
+    head, mid, tail = input.partition("分之")
+    vstr = tail.empty ? "" : translate(tail)
+
+    return vstr if head.empty?
+    return "#{vstr} phần" unless mid.empty?
+
+    sufx = PERC_HEAD.put_if_absent(head) { QtNumber.translate(head) }
+    "#{vstr} phần #{sufx}"
+  end
+
+  DECI_SEP = {
+    '点' => " chấm ",
+    '．' => ".",
+    '／' => "/",
   }
 
-  class Digit
-    property char : Char
-    property unit : Int32
+  NORM_SEP = {
+    '点' => " điểm",
+    '．' => ".",
+    '／' => "/",
+  }
 
-    def initialize(@char, @unit = 0)
+  def self.translate(input : String)
+    # just return the half-width version if all full width characters
+    return CharUtil.to_halfwidth(input) if input.matches?(/^[／-～]+$/)
+
+    # attempt to split string by delimiters
+    int_part, mid_part, frac_part = input.partition(/[点．／]/)
+
+    real_vstr = QtNumber.translate(int_part)
+    return real_vstr if mid_part.empty?
+
+    if frac_part.empty?
+      sep_vstr = NORM_SEP[mid_part[0]]
+      return "#{real_vstr}#{sep_vstr}"
     end
 
-    @[AlwaysInline]
-    def pure_digit?
-      pure_digit?(@char)
-    end
-
-    @[AlwaysInline]
-    private def pure_digit?(char : Char)
-      '0' <= char <= '9'
-    end
-
-    @[AlwaysInline]
-    private def pure_digit?(vstr : String)
-      pure_digit?(vstr[0])
-    end
-
-    LITS = {"không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"}
-
-    def to_digit(io : IO, prev_unit = 0)
-      zeros = @char == ' ' ? prev_unit : (prev_unit - @unit - 1)
-      zeros.times { io << '0' }
-
-      case
-      when @char == ' ' # do nothing
-      when '0' <= @char <= '9' then io << @char
-      else                          io << @char - 0xfee0
-      end
-    end
-
-    def render(io : IO, use_raw : Bool = self.pure_digit?(@char)) : Nil
-      io << (use_raw ? @char : LITS[@char - '０'])
-    end
-
-    def render(io : IO, prev_unit = 0, use_raw = false) : Nil
-      io << "lẻ " if prev_unit - @unit > 1
-
-      case
-      when prev_unit == 1 && @char == '１'
-        io << "mốt"
-      when prev_unit == 1 && @char == '５'
-        io << "năm"
-      when @unit == 1 && (@char == '１' || use_raw)
-        if use_raw
-          io << @char << '0'
-        else
-          io << "mười"
-        end
-
-        return
-      when @unit == 1 && use_raw
-        return
-      when @char != ' '
-        render(io, use_raw: use_raw)
-      end
-
-      return if @unit == 0
-      io << ' ' unless @char == ' '
-
-      case @unit
-      when 1 then io << "mươi"
-      when 2 then io << "trăm"
-      when 3 then io << "nghìn"
-      when 6 then io << "triệu"
-      when 9 then io << "tỉ"
-      end
-    end
-
-    def inspect(io : IO)
-      io << '{' << @char << ':' << @unit << '}'
-    end
+    sep_vstr = DECI_SEP[mid_part[0]]
+    frac_vstr = QtNumber.translate(frac_part)
+    "#{real_vstr}#{sep_vstr}#{frac_vstr}"
+  rescue ex
+    Log.error(exception: ex) { input }
+    input
   end
 
-  def translate(zstr : String, digit_only : Bool = false)
-    digits = [] of Digit
-
-    no_unit = true
-    pre_str = ""
-    suf_str = ""
-
-    zstr.each_char do |char|
-      case
-      when char.in?('0'..'9')
-        digits << Digit.new(char)
-      when char.in?('０'..'９')
-        digits << Digit.new(char - 0xfee0) # to half width
-      when char == '％'
-        suf_str = suf_str.empty? ? "%" : "#{suf_str}%"
-      when extra = EXTRA_STR[char]?
-        pre_str = pre_str.empty? ? extra : "#{pre_str}#{extra} "
-      when !(int = HAN_TO_INT[char]?)
-        # Log.error { "#{char} not match any known type" }
-        pre_str = pre_str.empty? ? char.to_s : "#{pre_str}#{char} "
-      when int >= 0
-        digits << Digit.new('０' + int) # convert to full width form
-      else
-        no_unit = false
-        unit = -int
-
-        if last = digits.last?
-          digit = Digit.new(' ', unit) if last.unit > unit
-
-          digits.reverse_each do |dig|
-            break if dig.unit > unit
-            dig.unit &+= unit
-          end
-
-          digits << digit if digit
-        else
-          vstr = pre_str.empty? ? '１' : ' '
-          digits << Digit.new(vstr, unit)
-        end
-      end
-    end
-
-    return pre_str if digits.empty?
-
-    if digit_only
-      render_pure_digit(digits, pre_str, suf_str)
-    elsif no_unit
-      render_no_unit(digits, pre_str, suf_str)
-    else
-      render_unit(digits, pre_str, suf_str)
-    end
-  end
-
-  private def render_no_unit(digits : Array(Digit), pre_str : String, suf_str : String)
-    String.build do |io|
-      io << pre_str unless pre_str.empty?
-      was_digit = false
-
-      digits.each_with_index do |digit, index|
-        is_digit = digit.pure_digit?
-        io << ' ' if index > 0 && !(was_digit && is_digit)
-
-        digit.render(io, is_digit)
-        was_digit = is_digit
-      end
-
-      io << suf_str unless suf_str.empty?
-    end
-  end
-
-  private def render_pure_digit(digits : Array(Digit), pre_str : String, suf_str : String)
-    digits = fix_digits_unit!(digits)
-    # pp digits.colorize.blue
-
-    String.build do |io|
-      io << pre_str unless pre_str.empty?
-      prev_unit = 0
-
-      digits.each do |digit|
-        digit.to_digit(io, prev_unit)
-        prev_unit = digit.unit
-      end
-
-      prev_unit.times { io << '0' }
-      io << suf_str unless suf_str.empty?
-    end
-  end
-
-  private def render_unit(digits : Array(Digit), pre_str : String, suf_str : String)
-    digits = fix_digits_unit!(digits)
-    # pp digits
-
-    String.build do |io|
-      io << pre_str unless pre_str.empty?
-
-      prev = digits.unsafe_fetch(0)
-      was_digit = prev.pure_digit?
-      prev_unit = prev.unit
-      prev.render(io, prev_unit: 0, use_raw: was_digit)
-
-      1.upto(digits.size &- 1) do |i|
-        digit = digits.unsafe_fetch(i)
-        is_digit = digit.pure_digit?
-
-        io << ' ' unless is_digit && was_digit
-        digit.render(io, prev_unit, use_raw: is_digit)
-
-        was_digit = is_digit
-
-        if digit.char == ' '
-          prev_unit += digit.unit
-        else
-          prev_unit = digit.unit
-        end
-      end
-
-      io << suf_str unless suf_str.empty?
-    end
-  end
-
-  private def fix_digits_unit!(digits : Array(Digit))
-    i = digits.size &- 1
-
-    while i >= 0
-      digit1 = digits.unsafe_fetch(i)
-      i &-= 1
-
-      case digit1.unit
-      when 1
-        next unless digit1.pure_digit?
-        next unless digit2 = digits[i + 2]?
-        next unless digit2.pure_digit?
-        digit1.unit = 0
-        next
-      when .< 3 then next
-      when .< 6 then unit = 3
-      when .< 9 then unit = 6
-      else           unit = 9
-      end
-
-      if digit1.unit != unit
-        digits.insert(i &+ 2, Digit.new(' ', unit))
-        digit1.unit -= unit
-      end
-
-      ceil = unit &+ unit
-
-      j = i
-
-      while j >= 0
-        digit2 = digits.unsafe_fetch(j)
-        break unless digit2.unit < ceil
-
-        digit2.unit -= unit
-        digit2.unit = 0 if digit2.unit == digits.unsafe_fetch(j &+ 1).unit
-
-        j &-= 1
-      end
-    end
-
-    digits
-  end
+  ###
 end

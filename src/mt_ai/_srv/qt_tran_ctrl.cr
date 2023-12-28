@@ -6,9 +6,8 @@ class MT::QtTranCtrl < AC::Base
 
   TEXT_DIR = "var/wnapp/chtext"
 
-  @[AC::Route::GET("/qt/hviet")]
-  def hfile(fpath : String)
-    start = Time.monotonic
+  @[AC::Route::GET("/hviet")]
+  def hviet_file(fpath : String)
     mcore = QtCore.hv_word
 
     hviet = String.build do |io|
@@ -17,15 +16,7 @@ class MT::QtTranCtrl < AC::Base
       end
     end
 
-    tspan = (Time.monotonic - start).total_milliseconds.round(2)
-    mtime = Time.utc.to_unix
-
-    # cache_control 7.days
-    add_etag mtime.to_s
-
-    response.headers["X-TSPAN"] = tspan.to_s
-    response.headers["X-MTIME"] = mtime.to_s
-
+    add_etag fpath
     render text: hviet
   rescue ex
     Log.error(exception: ex) { ex.message }
@@ -33,11 +24,12 @@ class MT::QtTranCtrl < AC::Base
   end
 
   @[AC::Route::POST("/hviet")]
-  def htext
+  def hviet_text
     mcore = QtCore.hv_word
+    ztext = self._read_body
 
     hviet = String.build do |io|
-      _read_body.each_line { |line| io << mcore.to_mtl(line) << '\n' }
+      ztext.each_line { |line| io << mcore.to_mtl(line) << '\n' }
     end
 
     render text: hviet

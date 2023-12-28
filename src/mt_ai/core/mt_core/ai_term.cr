@@ -5,12 +5,17 @@ class MT::AiTerm
   property attr = MtAttr::None
 
   property orig : String | Array(RawCon) = ""
-  property tran : String | AiTerm | Array(AiTerm) = ""
+  property tran : String | Array(AiTerm) = ""
 
   property dnum = DictEnum::Unknown_0
-  property _idx = 0
+  property from = 0
+  property upto = 0
 
-  def initialize(@epos, @attr, @orig, @tran, @dnum, @_idx)
+  def initialize(@epos, @attr, @orig, @tran, @dnum, @from, @upto)
+  end
+
+  def zstr
+    @orig.try { |x| x.is_a?(String) ? x : x.join(&.zstr) }
   end
 
   # def find_by_epos(epos : MtEpos)
@@ -84,65 +89,82 @@ class MT::AiTerm
 
   # ###
 
-  # def inspect(io : IO)
-  #   io << '('.colorize.dark_gray
-  #   io << @epos.to_s.colorize.bold
-  #   # io << ':' << @_idx
-  #   inspect_inner(io) rescue puts self
+  COLORS = {:green, :yellow, :blue, :red, :cyan, :magenta, :light_gray}
 
-  #   io << ' ' << @attr unless @attr.none?
-  #   io << ')'.colorize.dark_gray
-  # end
+  SINGLE_LINES = {
+    "VCD", "VRD", "VNV", "VPT", "VCP",
+    "VAS", "DVP", "QP", "DNP", "DP",
+    "CLP",
+  }
 
-  # private def inspect_inner(io : IO)
-  #   self.z_each do |node|
-  #     io << ' '
-  #     node.inspect(io)
-  #   end
-  # end
+  def inspect(io : IO, deep = 1)
+    io << '('.colorize.dark_gray
+    io << @epos.to_s.colorize.bold
+    io << ' ' << @attr unless @attr.none?
+    # io << ':' << @_idx
+
+    case tran = @tran
+    when String
+      io << ' ' << self.zstr.colorize.dark_gray
+      io << ' ' << tran.colorize(COLORS[@dnum.value % 10]) unless @dnum.unknown_0?
+    when Array
+      on_line = @epos.to_s.in?(SINGLE_LINES)
+
+      tran.each do |node|
+        if on_line
+          io << ' '
+        else
+          io << '\n'
+          deep.times { io << "  " }
+        end
+        node.inspect(io: io, deep: deep &+ 1)
+      end
+    end
+
+    io << ')'.colorize.dark_gray
+  end
 
   # ###
 
-  # def to_txt(cap : Bool = true, und : Bool = true)
-  #   String.build { |io| to_txt(io, cap: cap, und: und) }
-  # end
+  def to_txt(cap : Bool = true, und : Bool = true)
+    String.build { |io| to_txt(io, cap: cap, und: und) }
+  end
 
-  # def to_txt(io : IO, cap : Bool, und : Bool)
-  #   # pp [self]
-  #   if !@dnum.unknown_0? || self.is_a?(M0Node)
-  #     io << ' ' unless @attr.undent?(und: und)
-  #     @attr.render_vstr(io, @vstr, cap: cap, und: und)
-  #   else
-  #     self.v_each { |node| cap, und = node.to_txt(io, cap: cap, und: und) }
-  #     {cap, und}
-  #   end
-  # end
+  def to_txt(io : IO, cap : Bool, und : Bool)
+    # pp [self]
+    case tran = @tran
+    in String
+      io << ' ' unless @attr.undent?(und: und)
+      @attr.render_vstr(io, tran, cap: cap, und: und)
+    in Array
+      tran.each { |node| cap, und = node.to_txt(io, cap: cap, und: und) }
+      {cap, und}
+    end
+  end
 
-  # def to_json
-  #   JSON.build { |jb| to_json(jb) }
-  # end
+  def to_json
+    JSON.build { |jb| to_json(jb) }
+  end
 
-  # def to_json(io : IO) : Nil
-  #   JSON.build(io) { |jb| to_json(jb: jb) }
-  # end
+  def to_json(io : IO) : Nil
+    JSON.build(io) { |jb| to_json(jb: jb) }
+  end
 
-  # def to_json(jb : JSON::Builder) : Nil
-  #   jb.array do
-  #     jb.string @epos.to_s
+  def to_json(jb : JSON::Builder) : Nil
+    jb.array do
+      jb.string @epos.to_s
 
-  #     if !@dnum.unknown_0? || self.is_a?(M0Node)
-  #       jb.string @zstr
-  #     else
-  #       jb.array { self.v_each(&.to_json(jb)) }
-  #     end
+      case tran = @tran
+      in String
+        jb.string tran
+      in Array
+        jb.array { tran.each(&.to_json(jb)) }
+      end
 
-  #     jb.number @_idx
-  #     jb.number @_idx &+ @zstr.size
-
-  #     jb.string @vstr
-  #     jb.string(@attr.none? ? "" : @attr.to_str)
-
-  #     jb.number @dnum.value
-  #   end
-  # end
+      jb.number @from
+      jb.number @upto
+      jb.string(@attr.none? ? "" : @attr.to_str)
+      jb.number @dnum.value
+    end
+  end
 end

@@ -6,8 +6,7 @@ require "./ws_core"
 class MT::QtCore
   class_getter hv_word : self { new("word_hv") }
   class_getter hv_name : self { new("name_hv") }
-
-  # class_getter pin_yin : self { new("pin_yin", nil) }
+  class_getter pin_yin : self { new("pin_yin") }
 
   def self.tl_hvname(str : String)
     return CharUtil.normalize(str) unless str.matches?(/\p{Han}/)
@@ -42,20 +41,23 @@ class MT::QtCore
 
   def parse!(input : String, _idx = 0)
     output = QtData.new
+
     @wseg.parse!(input).each do |token|
       zstr = token.zstr
       size = zstr.size
 
-      next if @dicts.each_with_index(1) do |dict, _dic|
-                next unless term = dict.any?(zstr)
-                output << QtNode.new(zstr, term.vstr, term.attr, _idx: _idx, _dic: _dic)
-                _idx &+= size
-                break true
-              end
+      found = @dicts.each_with_index(1) do |dict, _dic|
+        next unless defn = dict.any?(zstr)
+        output << QtNode.new(zstr, defn.vstr, defn.attr, _idx: _idx, _dic: _dic)
+        _idx &+= size
+        break true
+      end
+
+      next if found
 
       vstr, attr = init_data(token.zstr, token.bner)
-
       output << QtNode.new(zstr, vstr, attr, _idx: _idx, _dic: -1)
+
       _idx += size
     end
 

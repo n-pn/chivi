@@ -10,6 +10,7 @@ class MT::HashDict
   class_getter regular : self { load!("regular") }
   class_getter essence : self { load!("essence") }
   class_getter suggest : self { load!("suggest") }
+  class_getter nqnt_vi : self { load!("nqnt_vi") }
 
   def self.load!(dname : String) : self
     CACHE_HD[dname] ||= begin
