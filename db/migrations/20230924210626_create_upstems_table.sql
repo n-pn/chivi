@@ -4,20 +4,21 @@ CREATE TABLE upstems(
   id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   -- ordering and filtering
   sname varchar NOT NULL DEFAULT '',
-  mtime bigint NOT NULL DEFAULT 0,
   -- linking
   owner integer NOT NULL REFERENCES viusers(id) ON UPDATE CASCADE ON DELETE CASCADE,
   wn_id integer REFERENCES wninfos(id) ON UPDATE CASCADE ON DELETE SET NULL,
+  guard smallint NOT NULL DEFAULT 0,
   -- heading
   zname citext NOT NULL DEFAULT '',
   vname citext NOT NULL DEFAULT '',
   -- introduction
+  zintro text NOT NULL DEFAULT '',
   vintro text NOT NULL DEFAULT '',
+  --
   labels text[] NOT NULL DEFAULT '{}',
   -- control
-  gifts smallint NOT NULL DEFAULT 2,
-  muplt smallint NOT NULL DEFAULT 0,
-  guard smallint NOT NULL DEFAULT 0,
+  mtime bigint NOT NULL DEFAULT 0,
+  atime bigint NOT NULL DEFAULT 0,
   --
   chap_count integer NOT NULL DEFAULT 0,
   word_count integer NOT NULL DEFAULT 0,

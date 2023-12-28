@@ -109,10 +109,13 @@ class RD::Upstem
     self.db.query_one?(query, id, sname, as: self)
   end
 
-  def self.build_select_sql(guard : Int32 = 4, uname : String? = nil,
-                            wn_id : Int32? = nil, label : String? = nil,
-                            title : String? = nil, liked : Int32? = nil,
-                            order : String = "mtime")
+  def self.build_select_sql(
+    guard : Int32 = 4, uname : String? = nil,
+    wn_id : Int32? = nil, label : String? = nil,
+    title : String? = nil, au_vi : String? = nil,
+    liked : Int32? = nil,
+    order : String = "mtime"
+  )
     args = [guard] of String | Int32
 
     query = String.build do |sql|
@@ -137,6 +140,11 @@ class RD::Upstem
         args << title
         field = title =~ /\p{Han}/ ? "zname" : "vname"
         sql << " and #{field} ilike '%' || $#{args.size} || '%'"
+      end
+
+      if au_vi
+        args << au_vi
+        sql << " and lower(au_vi) = lower($#{args.size})"
       end
 
       if liked

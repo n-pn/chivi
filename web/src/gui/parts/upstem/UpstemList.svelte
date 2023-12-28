@@ -2,7 +2,7 @@
   import { page } from '$app/stores'
   import { goto } from '$app/navigation'
 
-  const icons = { by: 'at', wn: 'book', lb: 'tag' }
+  const icons = { vu: 'at', au: 'edit', wn: 'book', lb: 'tag' }
 
   const sorts = {
     ctime: 'Vừa thêm',
@@ -24,7 +24,7 @@
   export let pgidx = 0
   export let pgmax = 0
 
-  export let query = { by: '', wn: '', lb: '', kw: '' }
+  export let query = { vu: '', au: '', wn: '', lb: '', kw: '' }
   export let upath = '/up'
 
   $: pager = new Pager($page.url, { pg: 1, _s: 'ctime' })
@@ -46,7 +46,7 @@
     apply_filter()
   }
 
-  const labels = ['by', 'wn', 'lb']
+  const labels = ['vu', 'au', 'wn', 'lb']
 
   const apply_filter = async () => {
     const filters = (query.kw || '')

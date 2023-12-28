@@ -6,7 +6,8 @@ class RD::UpstemCtrl < AC::Base
   @[AC::Route::GET("/")]
   def index(
     wn wn_id : Int32? = nil,
-    by uname : String? = nil,
+    au au_vi : String? = nil,
+    vu uname : String? = nil,
     lb label : String? = nil,
     kw title : String? = nil,
     _s order : String = "ctime",
@@ -28,8 +29,8 @@ class RD::UpstemCtrl < AC::Base
     query, args = Upstem.build_select_sql(
       guard: guard, uname: uname,
       wn_id: wn_id, label: label,
-      title: title, liked: liked,
-      order: order,
+      title: title, au_vi: au_vi,
+      liked: liked, order: order,
     )
 
     args << limit << offset

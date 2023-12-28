@@ -26,7 +26,7 @@
         <SIcon name="world" />
         <span class="-trim">{sname}</span>
       </a>
-      <a class="m-chip _xs _primary" href="{rpath}?by={author}">
+      <a class="m-chip _xs _warning" href="{rpath}?by={author}">
         <SIcon name="edit" />
         <span class="-trim">{author}</span>
       </a>
@@ -37,7 +37,8 @@
       {/if}
       {#if labels}
         {#each labels.split('\t') as label}
-          <a class="m-chip _xs _warning" href="{rpath}?lb={label}">
+          <a class="m-chip _xs _tag" href="{rpath}?lb={label}">
+            <SIcon name="tag" />
             <span class="-trim">{label}</span>
           </a>
         {/each}

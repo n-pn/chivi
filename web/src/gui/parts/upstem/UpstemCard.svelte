@@ -17,7 +17,7 @@
     <a class="title u-fz-lg" href={sroot}>{ustem.vname}</a>
 
     <div class="xtags">
-      <a class="m-chip _xs _primary" href="{upath}?by={uname}">
+      <a class="m-chip _xs _primary" href="{upath}?vu={uname}">
         <SIcon name="at" />
         <span class="-trim">{uname}</span>
       </a>

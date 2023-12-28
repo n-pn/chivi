@@ -26,7 +26,7 @@
 
   $: $crumbs = [
     { text: 'Sưu tầm cá nhân', href: `/up` },
-    { text: ustem.sname, href: `/up?by=${ustem.sname.substring(1)}` },
+    { text: ustem.sname, href: `/up?vu=${ustem.sname.substring(1)}` },
     { text: `ID: ${ustem.id}` },
   ]
 

@@ -15,7 +15,8 @@ const _meta = {
 
 export const load = (async ({ url, fetch, params }) => {
   const query = {
-    by: url.searchParams.get('by'),
+    vu: url.searchParams.get('vu'),
+    au: url.searchParams.get('au'),
     wn: url.searchParams.get('wn'),
     lb: url.searchParams.get('lb'),
     kw: url.searchParams.get('kw'),
