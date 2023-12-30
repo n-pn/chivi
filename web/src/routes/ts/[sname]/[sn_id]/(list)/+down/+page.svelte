@@ -9,10 +9,10 @@
   import { debounce } from '$lib/svelte'
   export let data: PageData
 
-  $: ({ nvinfo, ustem, dlcvs, pg_no } = data)
+  $: ({ crepo, dlcvs, pg_no } = data)
 
   let from = 1
-  let upto = data.ustem.chmax || 1
+  let upto = data.crepo.chmax || 1
 
   let _onload = true
   let err_msg: string

@@ -4,7 +4,7 @@ import type { PageLoad } from './$types'
 export const load = (async ({ url }) => {
   const _meta = {
     left_nav: [
-      nav_link('/me/xvcoin', 'Giao dịch', 'wallet', { show: 'ts' }),
+      nav_link('/me/vcoin', 'Giao dịch', 'wallet', { show: 'ts' }),
       nav_link('+send', 'Gửi tặng', 'gift', { kind: 'title' }),
     ],
   }

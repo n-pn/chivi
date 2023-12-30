@@ -17,7 +17,6 @@ def regen_wnstems
     repo.chmax = wstem.chap_total
 
     repo.plock = 1
-    repo.multp = wstem.multp
 
     repo.mtime = wstem.mtime
 
@@ -54,7 +53,6 @@ def regen_upstems
     repo.chmax = ustem.chap_count
 
     repo.plock = 1
-    repo.multp = ustem.multp
 
     repo.mtime = ustem.mtime
     repo.view_count = ustem.view_count

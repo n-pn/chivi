@@ -16,10 +16,10 @@ export const load = (async ({ fetch, parent }) => {
   const _meta = {
     left_nav: [
       nav_link('/me', 'Cá nhân', 'user', { show: 'ts' }),
-      nav_link('/me/xvcoin', 'Giao dịch', 'wallet', { kind: 'title' }),
+      nav_link('/me/vcoin', 'Giao dịch', 'wallet', { kind: 'title' }),
     ],
     right_nav: [
-      nav_link('/me/xvcoin/+send', 'Gửi tặng', 'send', { kind: 'title' }),
+      nav_link('/me/vcoin/+send', 'Gửi tặng', 'send', { kind: 'title' }),
     ],
   }
 

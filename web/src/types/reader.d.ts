@@ -25,6 +25,7 @@ declare namespace CV {
 
     fpath: string
     ztext: string
+    zsize: number
 
     error: number
     plock: number

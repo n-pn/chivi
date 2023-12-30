@@ -29,8 +29,8 @@ class RD::Unlock
                  @cksum = 0,
                  @user_multp = 4_i16,
                  @real_multp = 4_i16)
-    @user_lost = (zsize * user_multp * 0.01).to_i
-    @owner_got = (zsize * real_multp * 0.01).to_i
+    @user_lost = (zsize * user_multp) // 200
+    @owner_got = (zsize * real_multp) // 200
   end
 
   # Return status code

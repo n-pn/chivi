@@ -41,6 +41,7 @@ class RD::ChinfoCtrl < AC::Base
 
       fpath: ulkey,
       ztext: error > 0 ? "" : ztext,
+      zsize: ztext.size,
 
       multp: multp,
       mtime: cinfo.mtime,
@@ -58,7 +59,7 @@ class RD::ChinfoCtrl < AC::Base
 
   private def build_cpart(crepo, cinfo, p_idx, force, regen)
     vu_id, privi = self._vu_id, self._privi
-    user_multp, real_multp = crepo.chap_mutlp(cinfo.ch_no, vu_id: vu_id, privi: privi)
+    user_multp, real_multp = crepo.chap_multp(cinfo.ch_no, vu_id: vu_id, privi: privi &+ 1)
 
     ztext, cksum, p_max = crepo.load_raw_part(cinfo, p_idx, regen: regen)
 
@@ -72,9 +73,9 @@ class RD::ChinfoCtrl < AC::Base
       error = 403
     elsif cksum == 0
       error = 414
-    elsif real_multp < 1 || Unlock.unlocked?(vu_id, ulkey, cksum.unsafe_as(Int32))
+    elsif real_multp == 0 || Unlock.unlocked?(vu_id, ulkey, cksum.unsafe_as(Int32))
       error = 0
-    elsif force || user_multp == 0
+    elsif force
       error = Unlock.new(
         vu_id: vu_id, ulkey: ulkey,
         owner: crepo.owner, zsize: ztext.size,

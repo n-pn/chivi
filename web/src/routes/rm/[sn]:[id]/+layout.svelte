@@ -73,11 +73,6 @@
       </span>
 
       <span class="xstat">
-        <span class="-text">Hệ số:</span>
-        <span class="-data">{crepo.multp}</span>
-      </span>
-
-      <span class="xstat">
         <span class="-text">Lượt xem:</span>
         <span class="-data">{crepo.view_count}</span>
       </span>

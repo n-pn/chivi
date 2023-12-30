@@ -10,7 +10,8 @@
 
   $: ({ ch_no, p_idx } = rdata)
 
-  $: vcoin_cost = Math.round(rdata.multp * rdata.zsize * 0.01) / 1000
+  $: privi = $_user.privi + 1
+  $: vcost = Math.floor(((5 - privi) * rdata.zsize) / 200) / 1000
 
   let msg_text = ''
   let msg_type = ''
@@ -35,7 +36,7 @@
     if (rdata.error == 0) {
       msg_type = 'ok'
       msg_text = 'Mở khoá thành công, trang đang tải lại...'
-      $_user.vcoin -= vcoin_cost
+      $_user.vcoin -= vcost
       window.location.reload()
     } else if (rdata.error == 415) {
       msg_text = 'Không đủ vcoin để mở khóa chương'
@@ -58,10 +59,10 @@
   </p>
 {:else}
   <p>
-    Phần hiện tại có <span class="u-warn">{rdata.zsize}</span> ký tự. Theo hệ
-    số, bạn cần thiết
+    Phần hiện tại có <strong class="u-warn">{rdata.zsize}</strong> ký tự. Bạn
+    cần thiết
     <x-vcoin
-      >{vcoin_cost}
+      >{vcost}
       <SIcon name="vcoin" iset="icons" /></x-vcoin>
     để mở khóa cho chương. Số vcoin bạn đang có:
     <x-vcoin
@@ -71,17 +72,13 @@
 
   <p>
     <em> Công thức tính: </em>
-    <code>[Số ký tự] / 100_000 * [Hệ số nhân] = [Số vcoin cần thiết]</code>
-    <br />
-    Hệ số nhân hiện tại của chương:
-    <strong class="u-warn">{crepo.multp}</strong>.
+    <code
+      >[5 - quyền hạn] * [Số ký tự] / 200_000 = [Số vcoin cần thanh toán]</code>
   </p>
 
   <p class="u-fg-tert">
     <em>
-      Gợi ý 1: Hệ số nhân của chương được tính bằng hệ số nhân mặc định của
-      nguồn truyện trừ cho quyền hạn hiện tại của bạn. Quyền hạn càng cao thì hệ
-      số nhân càng giảm.
+      Gợi ý 1: Giảm chi phí mở khoá chương bằng nâng cấp quyền hạn tài khoản.
     </em>
   </p>
 
@@ -97,7 +94,7 @@
     <button
       type="button"
       class="m-btn _fill _lg _warning"
-      class:_disable={$_user.vcoin < vcoin_cost}
+      class:_disable={$_user.vcoin < vcost}
       data-umami-event="unlock-chap"
       on:click={unlock_chap}>
       <SIcon name="lock-open" />
@@ -106,7 +103,7 @@
 
     {#if msg_text}
       <div class="form-msg _{msg_type}">{msg_text}</div>
-    {:else if $_user.vcoin < vcoin_cost}
+    {:else if $_user.vcoin < vcost}
       <div class="u-warn">
         <em>
           Bạn chưa đủ vcoin để mở khóa cho chương. Nạp vcoin theo <a

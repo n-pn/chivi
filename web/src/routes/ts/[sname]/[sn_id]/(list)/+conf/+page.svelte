@@ -129,7 +129,7 @@
   </div>
 
   <p class="hints">
-    Công thức tính: <code>1 vcoin / 100_000 chữ * hệ số nhân.</code>
+    Công thức tính: <code>1 vcoin / 200_000 chữ * hệ số nhân.</code>
   </p>
 </details>
 

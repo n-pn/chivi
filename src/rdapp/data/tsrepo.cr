@@ -183,7 +183,7 @@ class RD::Tsrepo
 
   def free_until : Int32
     auto_free = @chmax // 4
-    auto_free < 120 ? auto_free : 120
+    auto_free < 150 ? auto_free : 150
   end
 
   @[AlwaysInline]
@@ -191,9 +191,10 @@ class RD::Tsrepo
     ch_no < self.free_until
   end
 
-  def chap_mutlp(ch_no : Int32, vu_id : Int32, privi : Int32)
-    return {0_i16, 0_i16} if vu_id == @owner || free_chap?(ch_no)
-    {@multp > privi ? @multp &- privi : 0_i16, @multp}
+  # returning user multp and real multp
+  def chap_multp(ch_no : Int32, vu_id : Int32, privi : Int32)
+    return {0_i16, 0_i16} if free_chap?(ch_no)
+    vu_id == @owner ? {1_i16, 0_i16} : {5_i16 &- privi, 4_i16}
   end
 
   ###

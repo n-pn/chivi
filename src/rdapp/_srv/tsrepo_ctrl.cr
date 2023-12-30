@@ -50,7 +50,7 @@ class RD::TsrepoCtrl < AC::Base
 
   SLINK_PLOCK = {1, 1, 1}
   PDICT_PLOCK = {2, 1, 2}
-  MUTLP_PLOCK = {3, 1, 3}
+  MULTP_PLOCK = {3, 1, 3}
 
   @[AC::Route::PATCH("/:sname/:sn_id", body: cform)]
   def config(sname : String, sn_id : Int32, cform : TsrepoForm)
@@ -70,7 +70,7 @@ class RD::TsrepoCtrl < AC::Base
     end
 
     if multp = cform.multp
-      guard_privi MUTLP_PLOCK[crepo.stype], "sửa hệ số nhân truyện"
+      guard_privi MULTP_PLOCK[crepo.stype], "sửa hệ số nhân truyện"
       crepo.multp = multp
     end
 

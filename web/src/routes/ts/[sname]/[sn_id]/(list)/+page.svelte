@@ -18,7 +18,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ crepo, rmemo, xstem, chaps, pg_no } = data)
+  $: ({ crepo, rmemo, chaps, pg_no } = data)
   $: pager = new Pager($page.url, { pg: 1 })
 
   let _onload = false
@@ -42,12 +42,9 @@
     }
   }
 
-  $: free_chaps = calc_free_chaps(crepo)
-
-  function calc_free_chaps({ chmax }) {
-    const free_until = (chmax / 4) | 0
-    return free_until < 120 ? free_until : 120
-  }
+  $: gifts = crepo.chmax > 600 ? 150 : Math.floor(crepo.chmax / 4)
+  $: privi = data._user.privi
+  $: price = (5 - privi - 1) * 0.005
 </script>
 
 {#if crepo.wn_id}
@@ -60,7 +57,6 @@
 
 <header class="pinfo">
   <div class="infos">
-    <span class="sname">{crepo.sname}</span>
     <span class="rstat">{crepo.chmax} chương</span>
     <span class="rstat"><RTime mtime={crepo.mtime} /></span>
   </div>
@@ -75,7 +71,7 @@
       data-tip-loc="bottom"
       on:click={() => do_reload(2)}>
       <SIcon name={_onload ? 'loader-2' : 'refresh'} spin={_onload} />
-      <span class="u-show-pm">Làm mới</span>
+      <span class="u-show-pl">Làm mới</span>
     </button>
   </btn-group>
 </header>
@@ -83,14 +79,13 @@
 {#if crepo.rm_slink}
   <div class="phint">
     <SIcon name="alert-circle" />
-
-    Danh sách chương tiết được đồng bộ với
+    Danh sách chương được đồng bộ với
     <a href={crepo.rm_slink} class="m-link" target="_blank">
       <strong>nguồn ngoài</strong>
     </a>
     khoảng <strong class="u-warn"><RTime mtime={crepo.mtime} /></strong>. Bấm
-    biểu tượng <SIcon name={'refresh'} spin={_onload} /> phía trên để đồng bộ với
-    nguồn ngoài.
+    biểu tượng <SIcon name={'refresh'} spin={_onload} /> phía trên để cập nhật lại
+    nếu thấy cần thiết.
   </div>
 {/if}
 
@@ -100,14 +95,16 @@
   <div class="phint">
     <SIcon name="alert-circle" />
     <span>
-      Chương từ <strong class="u-warn">{free_chaps + 1}</strong> cần
+      Chương từ <strong class="u-warn">{gifts + 1}</strong> tới
+      <strong class="u-warn">{crepo.chmax}</strong>
+      cần
       <strong class="u-warn">thanh toán vcoin</strong> để mở khoá.
     </span>
     <span
-      >Hệ số nhân: <strong class="u-warn">{crepo.multp || 3}</strong> (tương
-      đương với bạn cần thanh toán
-      <strong class="u-warn">0.0{crepo.multp}</strong>
-      <SIcon name="vcoin" iset="icons"></SIcon> / một nghìn chữ.)</span>
+      >Theo quyền hạn của bạn (<strong class="u-warn">{privi}</strong>), bạn cần
+      thanh toán
+      <x-vcoin>{price} <SIcon name="vcoin" iset="icons" /></x-vcoin>
+      cho mỗi một nghìn chữ khi mở khoá.</span>
   </div>
 
   <section>
@@ -206,9 +203,8 @@
       @include fgcolor(harmful, 5);
     }
 
-    :global(svg) {
-      display: inline-block;
-      margin-top: -0.15rem;
+    > :global(svg) {
+      font-size: 1.1em;
     }
   }
 
