@@ -202,6 +202,18 @@ enum MT::MtAttr : Int32
     end
   end
 
+  def self.from_ctb(epos : MtEpos, ctag : String, zstr : String = "")
+    case
+    when epos.nt?      then Ntmp
+    when epos.em?      then MtAttr[Asis, Capx]
+    when epos.pu?      then parse_punct(zstr)
+    when !epos.np?     then None
+    when ctag == "PN"  then Nper
+    when ctag == "TMP" then Ntmp
+    else                    None
+    end
+  end
+
   def self.from_rs(rs : ::DB::ResultSet)
     new(rs.read(Int32))
   end

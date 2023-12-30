@@ -1,10 +1,7 @@
 require "./_utils"
-
 require "./tl_unit"
 
 module MT::TlChap
-  extend self
-
   LBLS = {
     "季" => "Mùa",
     "卷" => "Quyển",
@@ -27,7 +24,7 @@ module MT::TlChap
   TITLE_RE_4 = /^(楔　*子)(　+)(.+)$/
 
   # returning chap zh_label, vi_label, padding (trash) + zh_title
-  def split(title : String)
+  def self.split(title : String)
     if match = CHDIV_RE_1.match(title) || TITLE_RE_1.match(title) || TITLE_RE_2.match(title)
       _, zh_ch, digit, c_lbl, trash, title = match
       vi_ch = "#{LBLS[c_lbl]} #{QtNumber.translate(digit, :pure_digit)}"
@@ -44,13 +41,10 @@ module MT::TlChap
     zh_ch += trash
     vi_ch += ':' unless title.empty?
 
-    node = AiTerm.new(
-      epos: :LST,
-      attr: :capn,
-      orig: zh_ch.gsub('　', ""),
-      tran: vi_ch,
-      dnum: :autogen_1,
-      _idx: 0
+    node = AiWord.new(
+      epos: :LST, attr: :capn,
+      zstr: zh_ch.gsub('　', ""), tran: vi_ch,
+      dnum: :autogen_1, from: 0,
     )
 
     {title, node}

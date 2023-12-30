@@ -1,8 +1,6 @@
 require "../../util/qt_number"
 
 module MT::TlUnit
-  extend self
-
   def self.translate_od(zstr : String)
     case zstr[0]
     when '第' then "thứ #{translate(zstr[1..])}"
@@ -86,6 +84,7 @@ module MT::TlUnit
 
     sep_vstr = DECI_SEP[mid_part[0]]
     frac_vstr = QtNumber.translate(frac_part)
+
     "#{real_vstr}#{sep_vstr}#{frac_vstr}"
   rescue ex
     Log.error(exception: ex) { input }

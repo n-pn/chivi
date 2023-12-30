@@ -74,7 +74,7 @@ def extract_zip(zip_path, known, skips, no_remote)
       end
 
       next if ztext.empty?
-      {ch_no, s_cid, ztext.gsub("\0", ""), entry.time.to_unix}
+      {ch_no, s_cid, ztext, entry.time.to_unix}
     rescue ex
       nil
     end

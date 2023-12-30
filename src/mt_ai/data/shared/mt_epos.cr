@@ -85,6 +85,11 @@ enum MT::MtEpos : Int8
   end
 
   @[AlwaysInline]
+  def adjt?
+    self.in?(ADJP, VA, JJ)
+  end
+
+  @[AlwaysInline]
   def is?(epos : self)
     self.value == epos.value
   end
@@ -96,10 +101,11 @@ enum MT::MtEpos : Int8
 
   ###
 
-  def self.parse_ctb(cpos : String)
+  def self.parse_ctb(cpos : String, zstr : String = "")
     cpos, _, tags = cpos.partition('-')
     epos = MtEpos.parse?(cpos) || MtEpos::OTH
-    {epos, MtAttr.from_ctb(cpos, tags)}
+
+    {epos, MtAttr.from_ctb(epos, tags, zstr)}
   end
 
   def self.from_rs(rs : ::DB::ResultSet)

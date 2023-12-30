@@ -34,7 +34,7 @@ class MT::AiTranCtrl < AC::Base
 
   private def do_qtran(input : Array(String), pdict : String, m_alg : String, ch_rm : UInt32, debug = false)
     start = Time.monotonic
-    cinfo = [] of AiTerm | Nil
+    cinfo = [] of AiWord | Nil
 
     ch_rm.times do |index|
       title, split = TlChap.split(input[index])
@@ -46,7 +46,7 @@ class MT::AiTranCtrl < AC::Base
     zdata = MCache.find_con!(input, ver: m_alg[-1].to_i16)
 
     vdata = zdata.map_with_index do |line, l_id|
-      ai_mt.translate!(line, pre_term: cinfo[l_id]?)
+      ai_mt.translate!(line, prfx: cinfo[l_id]?)
     end
 
     tspan = (Time.monotonic - start).total_milliseconds.round(2)
