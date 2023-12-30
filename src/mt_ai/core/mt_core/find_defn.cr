@@ -19,17 +19,17 @@ class MT::AiCore
     when epos.cd?
       TlUnit.translate_od(zstr)
     when epos.qp?
-      TlUnit.translate_qp(zstr)
+      TlUnit.translate_mq(zstr)
     when epos.nr?
       @name_qt.translate(zstr, cap: true)
     when mode == 2
-      get_any_defn?(zstr) || QtCore.tl_hvword(vstr)
+      get_any_defn?(zstr) || QtCore.tl_hvword(zstr)
     when mode == 1
       get_any_defn?(zstr)
     end
   end
 
   def get_any_defn?(zstr : String)
-    @dicts.each { |d| d.any?(zstr).try { |x| return x } }
+    @dicts.each { |d| d.any?(zstr).try { |x| return x.vstr } }
   end
 end

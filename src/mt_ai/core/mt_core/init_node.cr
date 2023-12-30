@@ -21,13 +21,13 @@ class MT::AiCore
   end
 
   private def init_node(data : RawCon, from : Int32 = 0) : AiTerm
-    epos, attr = MtEpos.parse_ctb(data.cpos)
     zstr, orig = data.zstr, data.body
+    epos, attr = MtEpos.parse_ctb(data.cpos, zstr)
 
     if defn = find_defn(zstr, epos, attr)
       return AiWord.new(defn, zstr: zstr, epos: epos, attr: attr, from: from)
     elsif orig.is_a?(String)
-      vstr = get_any_defn?(zstr).try(&.vstr) || QtCore.tl_hvword(zstr)
+      vstr = get_any_defn?(zstr) || QtCore.tl_hvword(zstr)
       return AiWord.new(
         epos: epos, attr: attr,
         zstr: zstr, body: vstr,
@@ -100,6 +100,7 @@ class MT::AiCore
     # pp [list]
 
     zstr = list.join(&.zstr)
+    from = list.first.from
 
     if list[-2].epos.pu?
       epos = MtEpos::IP
@@ -110,9 +111,9 @@ class MT::AiCore
     end
 
     if defn = find_defn(zstr, epos, attr)
-      AiWord.new(defn, zstr: zstr, epos: epos, attr: attr, from: from)
+      AiWord.new(defn: defn, zstr: zstr, epos: epos, attr: attr, from: from)
     else
-      AiCons.new(epos: epos, attr: attr, body: list, zstr: zstr)
+      AiCons.new(epos: epos, attr: attr, body: list, zstr: zstr, from: from)
     end
   end
 end

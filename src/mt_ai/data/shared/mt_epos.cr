@@ -101,7 +101,7 @@ enum MT::MtEpos : Int8
 
   ###
 
-  def self.parse_ctb(cpos : String, zstr : String = "")
+  def self.parse_ctb(cpos : String, zstr : String)
     cpos, _, tags = cpos.partition('-')
     epos = MtEpos.parse?(cpos) || MtEpos::OTH
 

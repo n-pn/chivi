@@ -43,7 +43,7 @@ module MT::TlChap
 
     node = AiWord.new(
       epos: :LST, attr: :capn,
-      zstr: zh_ch.gsub('　', ""), tran: vi_ch,
+      zstr: zh_ch.gsub('　', ""), body: vi_ch,
       dnum: :autogen_1, from: 0,
     )
 

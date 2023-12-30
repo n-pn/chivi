@@ -1,42 +1,36 @@
 require "./ai_term"
 
 class MT::AiCore
-  def fix_np_term!(term : AiCons, list = term.body)
+  def fix_np_term!(term : AiCons, body = term.body)
     return fix_np_pair!(term, fresh: false) if body.size == 2
-    term.body = fix_np_body!(list)
+    term.body = fix_np_body!(body)
+    term
   end
 
   def fix_np_body!(orig : Array(AiTerm))
-    res = [] of AiTerm
-    pos = 0
+    body = [] of AiTerm
+    _pos = orig.size &- 1
 
-    while term = input[pos]?
-      pos &+= 1
+    while term = orig[_pos]?
+      _pos &-= 1
 
       case term.epos
-      when .dp?
-        res.concat(split_dp_term(term))
-      when .nr?
-        if (succ = input[pos]?) && succ.epos.noun?
-          node = AiCons.new([term, succ], epos: succ.epos, attr: succ.attr)
-          res << fix_np_pair!(node, fresh: true)
-          pos &+= 1
-        else
-          res << term
-        end
+      when .noun?
+        noun, _pos = init_nn_term(orig, _pos: _pos, list: [term] of AiTerm)
+        body.unshift(noun)
       else
-        res << term
+        body.unshift(noun)
       end
     end
 
-    res
+    body
   end
 
-  private def split_dp_term(term : AiTerm) : Nil
-    return term.body unless term.is_a?(AiWord)
+  private def split_dp_term(term : AiTerm) : Array(AiTerm)
+    return term.body if term.is_a?(AiCons)
 
     fchar = term.zstr[0]
-    return [term] if term.zstr.size == 1 || !fchar.in?('这', '那')
+    return [term] of AiTerm if term.zstr.size == 1 || !fchar.in?('这', '那')
 
     head = AiWord.new(
       epos: :DT, attr: :none,
@@ -46,44 +40,28 @@ class MT::AiCore
 
     zstr = term.zstr[1..]
     defn = find_defn(zstr, :QP, mode: 2) || raise "invalid #{zstr}!"
-    tail = AiWord.new(defn, zstr: zstr, epos: epos, from: term.from &+ 1)
+    tail = AiWord.new(defn, zstr: zstr, epos: :QP, from: term.from &+ 1)
 
-    [head, tail]
+    [head, tail] of AiTerm
   end
 
   def fix_np_pair!(term : AiCons, fresh : Bool = false)
-    if fresh && (defn = find_defn?(term, :NP))
+    if fresh && (defn = find_defn(term.zstr, :NP))
       return AiWord.new(defn, zstr: term.zstr, epos: :NP, from: term.from)
     end
 
     head, tail = term.body
+    # pp [head, tail]
 
-    if head.epos.adjt?
-      term.body = [tail, head] unless head.attr.at_h?
-    elsif tail.attr.sufx?
+    case
+    when head.epos.adjt?
+      term.body = [tail, head] of AiTerm unless head.attr.at_h?
+    when tail.attr.sufx?
       tail = init_nh_term(tail) if tail.attr.nper?
-      term.body = [tail, head] if tail.attr.at_h?
+      term.body = tail.attr.at_h? ? [tail, head] of AiTerm : [head, tail] of AiTerm
     end
 
     term
-  end
-
-  def init_nh_term(term : AiTerm) : AiTerm
-    if defn = find_defn(term.zstr, :NH, mode: 0)
-      AiWord.new(defn, zstr: zstr, epos: :NH, from: term.from)
-    else
-      term.tap(&.epos = :NH)
-    end
-  end
-
-  def fix_dnp!(list : Array(AiTerm), attr : MtAttr)
-    return {list, attr} unless list.size == 2
-    head, tail = list
-
-    if head.attr.at_h?
-      attr |= :at_h
-      return {list, attr}
-    end
   end
 
   def init_nn_term(orig : Array(AiTerm),
@@ -92,9 +70,7 @@ class MT::AiCore
                    _etc : Bool = false)
     attr = list.last.attr.turn_off(MtAttr[Sufx, Undb])
 
-    while _pos >= 0
-      node = orig[term]?
-
+    while node = orig[_pos]?
       case node.epos
       when .noun?
         list.insert(_etc ? 0 : -1, node)
@@ -104,7 +80,7 @@ class MT::AiCore
         break unless node.attr.prfx?
 
         # combine the noun list for phrase translation
-        body = [node, init_node(list, epos: :NP, attr: attr)]
+        body = [node, init_node(list, epos: :NP, attr: attr)] of AiTerm
         noun = AiCons.new(body, epos: :NP, attr: attr)
         list = [fix_np_pair!(noun, fresh: true)] of AiTerm
 
@@ -118,8 +94,8 @@ class MT::AiCore
 
         prev = @orig[_pos]
         break unless prev.epos.noun?
-
         _pos &-= 1
+
         prev = init_nn_term(orig, _pos, [prev] of AiTerm, _etc) if _pos >= 0
         list.unshift(prev)
       else
@@ -128,7 +104,7 @@ class MT::AiCore
     end
 
     noun = init_node(list, cpos: :NP, attr: attr)
-    return noun if _pos < 0
+    return {noun, _pos} if _pos < 0
 
     init_np_term(orig, [noun of AiTerm], _pos: _pos)
   end
@@ -148,9 +124,11 @@ class MT::AiCore
       when .qp?
         add_qp_to_list(list, node, noun)
       when .adjp?
-        noun = make_node(dict, list, epos: :NP, attr: attr)
-        node = M2Node.new(node, noun, epos: :NP, flip: !node.attr.at_h?, _idx: node._idx)
-        list = [node.tap(&.tl_whole!(dict))] of AiNode
+        body = [node, init_node(list, epos: :NP, attr: attr)]
+        noun = AiCons.new(body, epos: :NP, attr: attr)
+        list = [fix_np_pair!(noun, fresh: true)] of AiTerm
+      when .dp?
+        # TODO: add dp to term
       when .dnp?, .dt?, .dp?
         list.insert(node.attr.at_h? ? 0 : -1, node)
       when .pn?
@@ -163,7 +141,26 @@ class MT::AiCore
       _pos &-= 1
     end
 
-    make_node(dict, list, epos: :NP, attr: attr)
+    {init_node(dict, list, epos: :NP, attr: attr), _pos}
+  end
+
+  def init_nh_term(term : AiTerm) : AiTerm
+    if defn = find_defn(term.zstr, :NH, mode: 0)
+      AiWord.new(defn, zstr: term.zstr, epos: :NH, from: term.from)
+    else
+      term.epos = MtEpos::NH
+      term
+    end
+  end
+
+  def fix_dnp!(list : Array(AiTerm), attr : MtAttr)
+    return {list, attr} unless list.size == 2
+    head, tail = list
+
+    if head.attr.at_h?
+      attr |= :at_h
+      return {list, attr}
+    end
   end
 
   private def pron_at_head?(pron : AiNode, noun : AiNode)

@@ -8,6 +8,10 @@ module MT::AiTerm
   property dnum = DictEnum::Unknown_0
   property from = 0
 
+  def fix_epos!(@epos : MtEpos)
+    self
+  end
+
   def to_json
     JSON.build { |jb| to_json(jb) }
   end
@@ -94,7 +98,7 @@ class MT::AiCons
   property body : Array(AiTerm)
 
   def initialize(@epos, @attr, @body,
-                 @zstr = @body.join(&.zstr),
+                 @zstr = body.join(&.zstr),
                  @dnum = :unknown_0,
                  @from = body.first.from)
   end

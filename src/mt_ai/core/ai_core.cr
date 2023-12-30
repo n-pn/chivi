@@ -28,9 +28,9 @@ class MT::AiCore
 
     case root
     in AiWord
-      root.tran = "#{prfx.tran}#{root.tran}"
+      root.body = "#{prfx.body}#{root.body}"
     in AiCons
-      root.tran.unshift(prfx)
+      root.body.unshift(prfx)
     end
 
     root
