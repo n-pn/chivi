@@ -6,7 +6,7 @@ module M1::TlRule
     if succ.nhanzi? && is_percent?(prev, uzhi)
       # TODO: handle this in fold_number!
       tag = PosTag::Number
-    elsif succ.is_a?(MtTerm)
+    elsif succ.is_a?(MtDefn)
       unless tag = SpDict.fix_u_zhi.fix_uzhi(succ)
         return prev if succ.adjt?
       end

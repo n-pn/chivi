@@ -54,7 +54,7 @@ module M1::MTL
     key = key_io.to_s
     val = val_io.to_s
 
-    MtTerm.new(key, val, PosTag::Nother, 0, idx: start)
+    MtDefn.new(key, val, PosTag::Nother, 0, idx: start)
   end
 
   def recog_anchor(input : Array(Char), key_io, val_io, index)
@@ -77,7 +77,7 @@ module M1::MTL
       end
     end
 
-    MtTerm.new(key_io.to_s, val_io.to_s, PosTag::Urlstr, 0)
+    MtDefn.new(key_io.to_s, val_io.to_s, PosTag::Urlstr, 0)
   end
 
   def recog_number(input : Array(Char), key : Char, val : Char, index = 1)
@@ -128,7 +128,7 @@ module M1::MTL
       end
     end
 
-    MtTerm.new(key_io.to_s, val_io.to_s, PosTag::Number, 0)
+    MtDefn.new(key_io.to_s, val_io.to_s, PosTag::Number, 0)
   end
 
   def match_half_width(char : Char)
@@ -177,7 +177,7 @@ module M1::MTL
       end
     end
 
-    MtTerm.new(key_io.to_s, val_io.to_s, map_ptag(char_half, count), 0)
+    MtDefn.new(key_io.to_s, val_io.to_s, map_ptag(char_half, count), 0)
   end
 
   def map_ptag(char : Char, count = 1)

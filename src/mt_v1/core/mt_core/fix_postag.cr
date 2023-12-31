@@ -58,7 +58,7 @@ module M1::MTL
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def fix_veno(node, prev, succ) : MtTerm
+  def fix_veno(node, prev, succ) : MtDefn
     # puts [node, prev, succ]
 
     case succ
@@ -95,7 +95,7 @@ module M1::MTL
          .adverbial?, .ude2?, .ude3?, .object?
       return SpDict.fix_verbs.fix!(node)
     when .adjective?
-      return SpDict.fix_verbs.fix!(node) unless prev.is_a?(MtTerm)
+      return SpDict.fix_verbs.fix!(node) unless prev.is_a?(MtDefn)
       return prev.modifier? ? SpDict.fix_nouns.fix!(node) : SpDict.fix_verbs.fix!(node)
     when .ude1?
       # TODO: check for adjt + ude1 + verb (grammar error)
@@ -139,7 +139,7 @@ module M1::MTL
       node = SpDict.fix_adjts.fix!(node)
       return node.set!(PosTag::Modi)
     else
-      if succ.is_a?(MtTerm) && succ.key == "到"
+      if succ.is_a?(MtDefn) && succ.key == "到"
         return SpDict.fix_adjts.fix!(node)
       end
     end

@@ -99,6 +99,10 @@ enum MT::MtEpos : Int8
     self.in?(VRD, VNV, VCD, VCP, VSB, VPT, VP, NP, CP, LCP, IP)
   end
 
+  def inline_block?
+    self.in?(VCD, VRD, VNV, VPT, VCP, VAS, DVP, QP, DNP, DP, CLP)
+  end
+
   ###
 
   def self.parse_ctb(cpos : String, zstr : String)

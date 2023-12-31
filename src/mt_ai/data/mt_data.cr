@@ -72,7 +72,7 @@ struct MT::MtData
   end
 
   def mt_term
-    MtTerm.new(vstr: @vstr, attr: @attr, dnum: @dnum)
+    MtDefn.new(vstr: @vstr, attr: @attr, dnum: @dnum)
   end
 
   def ws_term

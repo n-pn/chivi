@@ -1,6 +1,6 @@
 module M1::TlRule
   def heal_quanti!(node : MtNode) : MtNode
-    return node unless node.is_a?(MtTerm)
+    return node unless node.is_a?(MtDefn)
     not_quanti?(node) ? node : SpDict.fix_quanti!(node)
   end
 
@@ -38,7 +38,7 @@ module M1::TlRule
   end
 
   def is_pre_quanti_appro?(node : MtNode)
-    return false unless node.is_a?(MtTerm)
+    return false unless node.is_a?(MtDefn)
     node.to_int?.try { |x| x > 10 && x % 10 == 0 } || false
   end
 

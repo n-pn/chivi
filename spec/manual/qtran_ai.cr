@@ -6,7 +6,7 @@ input = [
 ]
 
 ch_rm = 0
-cheads = [] of MT::AiWord | Nil
+cheads = [] of MT::AiTerm | Nil
 
 ch_rm.times do |index|
   title, split = MT::TlChap.split(input[index])

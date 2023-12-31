@@ -21,7 +21,7 @@ class MT::HashDict
     end
   end
 
-  def self.add_term(dname : String, zstr : String, epos : MtEpos, mterm : MtTerm)
+  def self.add_term(dname : String, zstr : String, epos : MtEpos, mterm : MtDefn)
     CACHE_HD[dname]?.try(&.add(zstr, epos, mterm))
   end
 
@@ -31,7 +31,7 @@ class MT::HashDict
 
   ###
 
-  getter hash = {} of String => Hash(MtEpos, MtTerm)
+  getter hash = {} of String => Hash(MtEpos, MtDefn)
 
   def initialize(@d_id : Int32)
   end
@@ -50,13 +50,13 @@ class MT::HashDict
         dnum = DictEnum.from_value(rs.read(Int32))
         fpos = MtEpos.from_value(rs.read(Int32))
 
-        add(zstr, epos, MtTerm.new(vstr: vstr, attr: attr, dnum: dnum, fpos: fpos))
+        add(zstr, epos, MtDefn.new(vstr: vstr, attr: attr, dnum: dnum, fpos: fpos))
       end
     end
   end
 
-  def add(zstr : String, epos : MtEpos, term : MtTerm) : MtTerm
-    list = @hash[zstr] ||= {} of MtEpos => MtTerm
+  def add(zstr : String, epos : MtEpos, term : MtDefn) : MtDefn
+    list = @hash[zstr] ||= {} of MtEpos => MtDefn
     list[epos] = term
   end
 

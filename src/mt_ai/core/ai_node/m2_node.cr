@@ -75,7 +75,7 @@ class MT::M2Node
       rhsn.set_vstr!("của")
       rhsn.off_attr!(:hide)
     else
-      rhsn.set_term!(MtTerm.new("", attr: MtAttr[Hide, At_t]))
+      rhsn.set_term!(MtDefn.new("", attr: MtAttr[Hide, At_t]))
     end
   end
 

@@ -1,6 +1,6 @@
 module M1::TlRule
   def heal_mixed!(node : MtNode, prev = node.prev, succ = node.succ?)
-    return node unless node.is_a?(MtTerm)
+    return node unless node.is_a?(MtDefn)
     succ = heal_mixed!(succ, prev: node) if succ && succ.polysemy?
 
     case node.tag
@@ -13,7 +13,7 @@ module M1::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def heal_vead!(node : MtTerm, prev : MtNode?, succ : MtNode?) : MtTerm
+  def heal_vead!(node : MtDefn, prev : MtNode?, succ : MtNode?) : MtDefn
     return SpDict.fix_verbs.fix!(node) if succ.nil? || succ.ends?
 
     case succ
@@ -33,7 +33,7 @@ module M1::TlRule
     when .nil?       then node
     when .adverbial? then SpDict.fix_verbs.fix!(node)
     when .nhanzi?
-      return node unless prev.is_a?(MtTerm)
+      return node unless prev.is_a?(MtDefn)
       prev.key == "一" ? SpDict.fix_verbs.fix!(node) : node
     else node
     end
@@ -49,7 +49,7 @@ module M1::TlRule
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def heal_veno!(node : MtTerm, prev : MtNode?, succ : MtNode?) : MtTerm
+  def heal_veno!(node : MtDefn, prev : MtNode?, succ : MtNode?) : MtDefn
     # puts [node, prev, succ]
 
     case succ
@@ -87,7 +87,7 @@ module M1::TlRule
          .adverbial?, .ude2?, .ude3?, .object?
       return SpDict.fix_verbs.fix!(node)
     when .adjective?
-      return SpDict.fix_verbs.fix!(node) unless prev.is_a?(MtTerm)
+      return SpDict.fix_verbs.fix!(node) unless prev.is_a?(MtDefn)
       return prev.modifier? ? SpDict.fix_nouns.fix!(node) : SpDict.fix_verbs.fix!(node)
     when .ude1?
       # TODO: check for adjt + ude1 + verb (grammar error)
@@ -131,7 +131,7 @@ module M1::TlRule
       node = SpDict.fix_adjts.fix!(node)
       return node.set!(PosTag::Modi)
     else
-      if succ.is_a?(MtTerm) && succ.key == "到"
+      if succ.is_a?(MtDefn) && succ.key == "到"
         return SpDict.fix_adjts.fix!(node)
       end
     end

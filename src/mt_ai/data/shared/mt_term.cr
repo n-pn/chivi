@@ -2,7 +2,7 @@ require "./mt_attr"
 require "./mt_epos"
 require "./dict_type"
 
-struct MT::MtTerm
+struct MT::MtDefn
   getter vstr : String
   getter attr : MtAttr
 
@@ -21,9 +21,9 @@ struct MT::MtTerm
   def initialize(@vstr, @attr = :none, @dnum = :unknown_0, @fpos = :X)
   end
 
-  # def to_txt(io : IO, apply_cap : Bool, pad_space : Bool)
-  #   io << ' ' if pad_space && !(@attr.hide? || @attr.padb?)
-  #   render(io, apply_cap, pad_space)
+  # def to_txt(io : IO, cap : Bool, und : Bool)
+  #   io << ' ' if und && !(@attr.hide? || @attr.padb?)
+  #   render(io, cap, und)
   # end
 
   # def to_str(io : IO, cap : Bool, pad : Bool)

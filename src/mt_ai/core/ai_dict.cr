@@ -21,7 +21,7 @@ class MT::AiDict
     }
   end
 
-  def get(zstr : String, epos : MtEpos) : MtTerm
+  def get(zstr : String, epos : MtEpos) : MtDefn
     get?(zstr, epos) || init(zstr, epos)
   end
 
@@ -40,7 +40,7 @@ class MT::AiDict
   end
 
   # ameba:disable Metrics/CyclomaticComplexity
-  def init(zstr : String, epos : MtEpos) : MtTerm
+  def init(zstr : String, epos : MtEpos) : MtDefn
     case epos
     when .pu?
       vstr = CharUtil.normalize(zstr)
@@ -68,7 +68,7 @@ class MT::AiDict
   @[AlwaysInline]
   def add_temp(zstr : String, epos : MtEpos, vstr : String, attr : MtAttr = :none)
     # TODO: Add to pdict directly?
-    term = MtTerm.new(vstr: vstr, attr: attr, dnum: :autogen_0, fpos: epos)
+    term = MtDefn.new(vstr: vstr, attr: attr, dnum: :autogen_0, fpos: epos)
     @dicts.last.add(zstr, epos, term)
   end
 

@@ -69,7 +69,7 @@ module MT::AiNode
   def set_epos!(@epos : MtEpos) : Nil
   end
 
-  def set_term!(term : MtTerm) : Nil
+  def set_term!(term : MtDefn) : Nil
     @vstr = term.vstr
     @attr |= term.attr
     @dnum = term.dnum

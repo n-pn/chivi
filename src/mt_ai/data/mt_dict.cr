@@ -2,7 +2,7 @@
 # require "./shared/*"
 
 # class MT::MtDict
-#   getter data = {} of String => Hash(Int8, MtTerm)
+#   getter data = {} of String => Hash(Int8, MtDefn)
 
 #   getter name : String
 #   getter type : MtDtyp
@@ -26,18 +26,18 @@
 #   ####
 
 #   @[AlwaysInline]
-#   def add(zstr : String, epos : MtEpos, vstr : String, attr : MtAttr, lock = 0_i8) : MtTerm
+#   def add(zstr : String, epos : MtEpos, vstr : String, attr : MtAttr, lock = 0_i8) : MtDefn
 #     dnum = MtDnum.from(dtype: @type, plock: lock)
-#     add(zstr: zstr, epos: epos, term: MtTerm.new(vstr, attr: attr, dnum: dnum))
+#     add(zstr: zstr, epos: epos, term: MtDefn.new(vstr, attr: attr, dnum: dnum))
 #   end
 
 #   @[AlwaysInline]
-#   def add(zstr : String, cpos : String, term : MtTerm) : MtTerm
+#   def add(zstr : String, cpos : String, term : MtDefn) : MtDefn
 #     add(zstr: zstr, epos: MtEpos.parse(cpos), term: term)
 #   end
 
-#   def add(zstr : String, epos : MtEpos, term : MtTerm) : MtTerm
-#     entry = @data[zstr] ||= {} of Int8 => MtTerm
+#   def add(zstr : String, epos : MtEpos, term : MtDefn) : MtDefn
+#     entry = @data[zstr] ||= {} of Int8 => MtDefn
 #     entry[epos.value] = term
 #   end
 

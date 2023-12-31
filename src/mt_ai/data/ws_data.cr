@@ -73,11 +73,11 @@
 #   end
 
 #   def to_mt(dtype : DictType = :generic)
-#     MtTerm.new(
+#     MtDefn.new(
 #       vstr: vstr,
 #       attr: MtAttr.parse_list(@attr),
 #       dnum: DictEnum.from(dtype, @plock),
-#       prio: MtTerm.calc_prio(@zstr.size)
+#       prio: MtDefn.calc_prio(@zstr.size)
 #     )
 #   end
 

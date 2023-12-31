@@ -39,7 +39,7 @@ class M1::MtCore
     mt_data = cv_title(title, offset: chvol.size)
     return mt_data if chvol.empty?
 
-    mt_data.add_head(MtTerm.new("", " - ", idx: chvol.size))
+    mt_data.add_head(MtDefn.new("", " - ", idx: chvol.size))
     cv_title(chvol).concat(mt_data)
   end
 
@@ -50,7 +50,7 @@ class M1::MtCore
     pre_zh += pad
     pre_vi += title.empty? ? "" : ":"
 
-    mt_data = MtData.new(MtTerm.new(pre_zh, pre_vi, dic: 1, idx: offset))
+    mt_data = MtData.new(MtDefn.new(pre_zh, pre_vi, dic: 1, idx: offset))
     return mt_data if title.empty?
 
     mt_data.concat(cv_plain(title, offset: offset + pre_zh.size))
@@ -68,11 +68,11 @@ class M1::MtCore
   end
 
   def tokenize(input : Array(Char), offset = 0) : MtData
-    nodes = [MtTerm.new("", idx: offset)]
+    nodes = [MtDefn.new("", idx: offset)]
     costs = [0]
 
     input.each_with_index do |char, idx|
-      nodes << MtTerm.new(char, idx: idx &+ offset)
+      nodes << MtDefn.new(char, idx: idx &+ offset)
       costs << idx &+ 1
     end
 
@@ -86,7 +86,7 @@ class M1::MtCore
 
         size = ner_term.key.size
         jump = idx &+ size
-        cost = base_cost &+ MtTerm.cost(size, 1)
+        cost = base_cost &+ MtDefn.cost(size, 1)
 
         if cost > costs[jump]
           ner_term.idx = idx &+ offset
@@ -95,7 +95,7 @@ class M1::MtCore
         end
       end
 
-      terms = {} of Int32 => MtTerm
+      terms = {} of Int32 => MtDefn
 
       @dicts.each do |dict|
         dict.scan(input, idx) do |term|
@@ -119,7 +119,7 @@ class M1::MtCore
     extract_result(nodes)
   end
 
-  private def extract_result(nodes : Array(MtTerm))
+  private def extract_result(nodes : Array(MtDefn))
     idx = nodes.size &- 1
     cur = nodes[idx]
     idx -= cur.key.size

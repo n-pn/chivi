@@ -41,11 +41,8 @@ module MT::TlChap
     zh_ch += trash
     vi_ch += ':' unless title.empty?
 
-    node = AiWord.new(
-      epos: :LST, attr: :capn,
-      zstr: zh_ch.gsub('　', ""), body: vi_ch,
-      dnum: :autogen_1, from: 0,
-    )
+    defn = MtDefn.new(vstr: vi_ch, attr: :capn, dnum: :autogen_1, fpos: :LST)
+    node = AiTerm.new(body: defn, epos: :LST, zstr: zh_ch, from: 0)
 
     {title, node}
   end

@@ -2,7 +2,7 @@ require "./mt_base"
 require "./mt_term"
 
 class M1::MtList < M1::MtNode
-  getter list = [] of MtTerm | MtList
+  getter list = [] of MtDefn | MtList
 
   def initialize(
     head : MtNode,
@@ -49,7 +49,7 @@ class M1::MtList < M1::MtNode
     false
   end
 
-  def add_head!(node : MtTerm)
+  def add_head!(node : MtDefn)
     self.fix_prev!(node.prev?)
 
     if fold = TlRule.fold_left(@list.first, node)

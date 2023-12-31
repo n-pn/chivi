@@ -13,7 +13,7 @@ class MT::QtDict
 
   ###
 
-  def find(chars : Array(Char), start = 0) : {MtTerm, Int32, Int32}
+  def find(chars : Array(Char), start = 0) : {MtDefn, Int32, Int32}
     existed = @pdict.match(chars, start) || BASE_TRIE.match(chars, start)
 
     initial = init(chars, start)
@@ -25,7 +25,7 @@ class MT::QtDict
     first_char = chars.unsafe_fetch(start)
 
     unless CharUtil.fw_alnum?(first_char)
-      return {MtTerm.new(first_char), 1, 4}
+      return {MtDefn.new(first_char), 1, 4}
     end
 
     zstr = String::Builder.new
@@ -50,7 +50,7 @@ class MT::QtDict
       index &+= 1
     end
 
-    term = MtTerm.new(vstr: vstr.to_s, attr: attr, dnum: :autogen_0)
+    term = MtDefn.new(vstr: vstr.to_s, attr: attr, dnum: :autogen_0)
     {term, index &- start, 5}
   end
 end
