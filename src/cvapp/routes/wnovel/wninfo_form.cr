@@ -1,5 +1,7 @@
 # require "../../../wndata/models/zh_book"
 require "../../../_util/book_util"
+require "../../../_util/tran_util"
+
 require "../../../_data/wnovel/wninfo"
 
 class CV::WninfoForm
@@ -42,19 +44,11 @@ class CV::WninfoForm
   end
 
   def gen_vi_data!
-    link = "#{CV_ENV.m1_host}/_m1/qtran/tl_wnovel?wn_id=#{@wn_id}"
+    return unless wndata = TranUtil.tl_wndata(@btitle_zh, @author_zh, @intro_zh || "", wn_id: @wn_id)
 
-    headers = HTTP::Headers{"Content-Type" => "application/json"}
-    body = {btitle: @btitle_zh, author: @author_zh, bintro: @intro_zh || ""}
-
-    HTTP::Client.post(link, headers: headers, body: body.to_json) do |res|
-      return unless res.success?
-      data = ViData.from_json(res.body_io.gets_to_end)
-
-      @author_vi ||= data.author
-      @btitle_vi ||= data.btitle
-      @intro_vi ||= data.bintro
-    end
+    @author_vi ||= wndata.author
+    @btitle_vi ||= wndata.btitle
+    @intro_vi ||= wndata.bintro
   end
 
   def save!(_uname : String, _privi : Int32) : Wninfo

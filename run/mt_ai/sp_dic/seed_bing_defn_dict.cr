@@ -1,5 +1,5 @@
 require "sqlite3"
-require "../../src/mtapp/service/btran_api"
+require "../../../src/mt_sp/util/ms_tran"
 
 DIC = DB.open("sqlite3:var/dicts/hints/bing_dict.dic?journal_mode=WAL")
 at_exit { DIC.close }
@@ -26,7 +26,7 @@ def add_lookup(input : Array(String))
 
   stmt = "update defns set sense = $1, utime = $2 where word = $3"
 
-  SP::Btran.lookup(input).each_with_index do |output, i|
+  SP::MsTran.lookup(input).each_with_index do |output, i|
     DIC.exec stmt, output.translations.to_json, utime, input[i]
   end
 

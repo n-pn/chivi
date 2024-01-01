@@ -50,9 +50,12 @@ module TextUtil
   end
 
   # convert all halfwidth to fullwidth and group similar characters
-  def uniformize(input : String, upcase : Bool = false) : String
+  def to_canon(input : String, upcase : Bool = false) : String
     String.build do |io|
-      str.each_char { |char| io << CharUtil.uniformize(char, upcase: upcase) }
+      input.each_line do |line|
+        line = canon_clean(line)
+        io << line << '\n' unless line.empty?
+      end
     end
   end
 

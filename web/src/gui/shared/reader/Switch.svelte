@@ -4,8 +4,8 @@
   const all_descs: Mode = {
     qt: {
       qt_v1: 'Dịch thô bằng máy dịch phiên bản cũ',
-      baidu: 'Dịch thô bằng công cụ Baidu Fanyi',
-      bt_zv: 'Dịch thô bằng công cụ Bing Translator',
+      bd_zv: 'Dịch thô bằng công cụ Baidu Fanyi',
+      ms_zv: 'Dịch thô bằng công cụ Bing Translator',
     },
 
     mt: {
@@ -18,8 +18,8 @@
   const all_modes: Mode = {
     qt: {
       qt_v1: 'Dịch máy cũ',
-      baidu: 'Dịch bằng Baidu',
-      bt_zv: 'Dịch bằng Bing',
+      bd_zv: 'Dịch bằng Baidu',
+      ms_zv: 'Dịch bằng Bing',
     },
 
     mt: {

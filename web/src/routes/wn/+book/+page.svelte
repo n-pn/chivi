@@ -50,12 +50,12 @@
   let show_genres_more = false
 
   const tl_btitle = async (value: string) => {
-    const href = `/_m1/qtran/tl_btitle?btitle=${value}&wn_id=${data.id}`
+    const href = `/_m1/qtran/btitle?ztext=${value}&wn_id=${data.id}`
     form.btitle_vi = await fetch_text(href)
   }
 
   const tl_author = async (value: string) => {
-    const href = `/_m1/qtran/tl_author?author=${value}&wn_id=${data.id}`
+    const href = `/_m1/qtran/author?ztext=${value}`
     form.author_vi = await fetch_text(href)
   }
 

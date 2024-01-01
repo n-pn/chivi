@@ -12,25 +12,16 @@
     pdict: data.pdict || 'combine',
     rmode: 'mt',
     mt_rm: data.m_alg || 'mtl_2',
-    qt_rm: '',
+    qt_rm: 'bd_zv',
     wn_id: 0,
   }
 
-  $: ai_url = `/_ai/qtran?pdict=${ropts.pdict}&_algo=${ropts.mt_rm}&debug=true`
-
-  $: rpage = new Rdpage(ztext.split('\n'), ropts)
-  $: rinit = { body: ztext, method: 'POST' }
+  $: rpage = new Rdpage(ztext, ropts)
 
   const call_debug = async () => {
-    const hdata = await fetch('/_ai/hviet', rinit).then((r) => r.text())
-    rpage.hviet = hdata
-      .split('\n')
-      .map((x) => x.match(/[\s\u200b].[^\s\u200b]*/g))
-
-    const vdata = await fetch(ai_url, rinit).then((r) => r.json())
-    rpage.mt_ai = vdata.lines
-
-    navigator.clipboard.writeText(vdata.ztree[0])
+    await rpage.load_hviet(2)
+    await rpage.load_mtran(2)
+    vtform_ctrl.show(0)
   }
 
   const node_names = ['X-N', 'X-C', 'X-Z']
@@ -44,10 +35,7 @@
   }
 
   const on_vtform_close = async (changed = false) => {
-    if (changed) {
-      const vdata = await fetch(ai_url, rinit).then((r) => r.json())
-      rpage.mt_ai = vdata.lines
-    }
+    if (changed) await rpage.load_mtran(2)
   }
 </script>
 

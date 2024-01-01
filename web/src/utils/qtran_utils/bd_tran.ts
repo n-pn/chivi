@@ -1,5 +1,4 @@
-import { detitlize } from './qtran_util'
-import { send_vcache } from './shared'
+import { detitlize, send_vcache } from './shared'
 
 const api =
   'https://fetch.nipin.workers.dev?q=https://fanyi.baidu.com/ait/text/translate'

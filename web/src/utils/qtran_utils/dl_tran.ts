@@ -6,7 +6,7 @@ const tabs = [
 const headers = { 'content-type': 'text/plain' }
 const results = {}
 
-export async function deepl(text: string, tab = 0, no_cap = false) {
+export async function deepl_word(text: string, tab = 0, no_cap = false) {
   const key = `${text}-${tab}`
 
   const val = results[key]

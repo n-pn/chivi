@@ -30,6 +30,7 @@
 
   export let rpage: Rdpage
   export let rword: Rdword
+  export let ropts: CV.Rdopts
 
   export let state = 0
   export let l_idx = 0
@@ -65,12 +66,12 @@
   const load_mt_ai_data = async () => {
     stale = false
 
-    if (rpage.ropts.rmode == 'mt' || rpage.ropts.qt_rm == 'mt_ai') {
+    if (ropts.rmode == 'mt') {
       state = 1
     } else {
-      rpage.load_mt_ai(2)
-      rpage = rpage
       state = 0
+      await rpage.load_mtran(2, ropts.mt_rm, ropts.pdict)
+      rpage = rpage
     }
   }
 </script>
@@ -95,7 +96,7 @@
       data-tip="Xem các kết quả dịch"
       data-tip-loc="bottom"
       data-umami-event="line-overview"
-      data-umami-event-fpath={rpage.ropts.fpath}
+      data-umami-event-fpath={ropts.fpath}
       on:click={() => ($ctrl.panel = 'overview')}>
       <SIcon name="world" />
     </button>
@@ -107,7 +108,7 @@
       data-tip="Xem giải nghĩa từ"
       data-tip-loc="bottom"
       data-umami-event="line-glossary"
-      data-umami-event-fpath={rpage.ropts.fpath}
+      data-umami-event-fpath={ropts.fpath}
       on:click={() => ($ctrl.panel = 'glossary')}>
       <SIcon name="search" />
     </button>
@@ -119,7 +120,7 @@
       data-tip="Xem cây ngữ pháp"
       data-tip-loc="bottom"
       data-umami-event="line-analyis"
-      data-umami-event-fpath={rpage.ropts.fpath}
+      data-umami-event-fpath={ropts.fpath}
       on:click={() => ($ctrl.panel = 'analyis')}>
       <svg class="m-icon _analyze" viewBox="0 0 24 24">
         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -139,13 +140,15 @@
     bind:this={viewer}
     on:click={handle_click}
     on:contextmenu={handle_ctxmenu}>
-    {#if $ctrl.panel == 'overview'}
-      <Overview bind:rpage bind:rline />
-    {:else if $ctrl.panel == 'glossary'}
-      <Glossary {rline} {viewer} bind:rword />
-    {:else}
-      <Analysis {rpage} {rline} />
-    {/if}
+    {#key rline.ztext}
+      {#if $ctrl.panel == 'overview'}
+        <Overview bind:rline {ropts} />
+      {:else if $ctrl.panel == 'glossary'}
+        <Glossary {rline} {viewer} bind:rword />
+      {:else}
+        <Analysis {rpage} {rline} />
+      {/if}
+    {/key}
   </section>
 
   <Footer slot="foot">
@@ -158,7 +161,7 @@
         disabled={l_idx == 0}
         on:click={() => set_focus_line(l_idx - 1)}
         data-umami-event="prev-rdline"
-        data-umami-event-fpath={rpage.ropts.fpath}>
+        data-umami-event-fpath={ropts.fpath}>
         <SIcon name="arrow-up" />
         <span class="-txt">Trên</span>
       </button>
@@ -180,7 +183,7 @@
         data-kbd="↓"
         data-tip="Chuyển xuống dòng dưới"
         data-umami-event="next-rdline"
-        data-umami-event-fpath={rpage.ropts.fpath}
+        data-umami-event-fpath={ropts.fpath}
         on:click={() => set_focus_line(l_idx + 1)}>
         <SIcon name="arrow-down" />
         <span class="-txt">Dưới</span>

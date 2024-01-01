@@ -11,7 +11,6 @@ export function init_page(fpath: string, ztext: string, ropts: CV.Rdopts) {
     rpage = new Rdpage(ztext, ropts)
     rpages.set(fpath, rpage)
   } else {
-    if (rpage.ropts.mt_rm != ropts.mt_rm) rpage.state.mt_ai = 0
     rpage.ropts = ropts
     // TODO: invalidate mt_ai data if algorithm changed
   }

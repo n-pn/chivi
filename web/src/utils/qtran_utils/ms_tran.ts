@@ -1,22 +1,27 @@
-import { detitlize } from './qtran_util'
-import { send_vcache } from './shared'
+import { detitlize, send_vcache } from './shared'
 
-async function get_free_api_key() {
+let api_key = ''
+let api_exp = 0
+
+export async function ms_api_key() {
+  if (api_exp >= new Date().getTime()) return api_key
+  else api_key = ''
+
   const res = await fetch('https://edge.microsoft.com/translate/auth')
-  if (!res.ok) return { key: '', exp: new Date().getTime() }
-  return { key: await res.text(), exp: new Date().getTime() + 500_000 }
+  if (!res.ok) return api_key
+
+  api_exp = new Date().getTime() + 500_000
+  api_key = await res.text()
+
+  return api_key
 }
 
-let api_key = { key: '', exp: 0 }
 async function gen_headers() {
-  if (!api_key.key || api_key.exp < new Date().getTime()) {
-    api_key = await get_free_api_key()
-  }
-
-  if (!api_key.key) throw 'Không lấy được api key free!'
+  const api_key = ms_api_key()
+  if (!api_key) throw 'Không lấy được api key free!'
 
   return {
-    'Authorization': `Bearer ${api_key.key}`,
+    'Authorization': `Bearer ${api_key}`,
     'Content-type': 'application/json',
     'X-ClientTraceId': crypto.randomUUID(),
   }
@@ -24,6 +29,24 @@ async function gen_headers() {
 
 const api_url = 'https://api.cognitive.microsofttranslator.com'
 const tl_root = `${api_url}/translate?api-version=3.0&textType=plain`
+
+const word_cached = new Map<string, string[]>()
+
+export async function btran_word(text: string, sl = 'auto', keep_caps = false) {
+  const key = `${text}-${sl}`
+  let res = word_cached.get(key)
+
+  if (!res) {
+    res = await call_btran_word(text, sl)
+    if (res.length > 0) word_cached.set(key, res)
+  }
+
+  const res2 = res.map((x: string) => detitlize(x))
+  if (!keep_caps) res = res2
+  else res = res.concat(res2)
+
+  return [...new Set(res)]
+}
 
 async function call_btran_word(text: string, sl = 'auto') {
   const body = JSON.stringify([{ text }])
@@ -44,24 +67,6 @@ async function call_btran_word(text: string, sl = 'auto') {
     console.log(ex)
     return []
   }
-}
-
-const cached = new Map<string, string[]>()
-
-export async function btran_word(text: string, sl = 'auto', keep_caps = false) {
-  const key = `${text}-${sl}`
-  let res = cached.get(key)
-
-  if (!res) {
-    res = await call_btran_word(text, sl)
-    if (res.length > 0) cached.set(key, res)
-  }
-
-  const res2 = res.map((x: string) => detitlize(x))
-  if (!keep_caps) res = res2
-  else res = res.concat(res2)
-
-  return [...new Set(res)]
 }
 
 export async function btran_text(lines: string[]) {

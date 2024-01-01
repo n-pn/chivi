@@ -25,7 +25,7 @@
   $: label = rdata.p_max > 1 ? `[${rdata.p_idx}/${rdata.p_max}]` : ''
 
   let vdata: CV.Cvtree[] | string[] = []
-  $: load_vdata(rpage, true)
+  $: if (browser && state > 0) load_vdata(rpage, true)
 
   afterNavigate(() => {
     l_idx = -1
@@ -76,17 +76,20 @@
 
   const on_term_change = async (changed = false) => {
     if (!changed) return
-    rpage = await rpage.load_mt_ai(2, false)
+    vdata = await rpage.load_mtran(2)
   }
 
-  const load_vdata = async (rpage: Rdpage, force: boolean = true) => {
-    if (!browser) return []
-    // let vtran = rpage.get_vtran()
+  const load_vdata = async (rpage: Rdpage, redo: boolean = false) => {
+    if (ropts.rmode == 'mt') {
+      vdata = await rpage.load_mtran(redo ? 2 : 1, ropts.mt_rm, ropts.pdict)
+    } else {
+      let qtype = ropts.qt_rm
+      if (qtype == 'baidu') qtype = 'bd_zv'
+      else if (qtype == 'bt_zv') qtype = 'ms_zv'
+      vdata = await rpage.load_qtran(redo ? 2 : 1, qtype)
+    }
 
-    let vtran = await rpage.load_vtran(2, force)
     state = 0
-
-    if (vtran[0]) vdata = vtran
   }
 
   const gen_vdata = (cdata: CV.Cvtree | string, mode: number = 1) => {
@@ -204,6 +207,7 @@
     bind:rword
     bind:state
     bind:l_idx
+    {ropts}
     {l_max}
     {set_focus_line} />
 {/if}
@@ -211,7 +215,7 @@
 {#if $vtform_ctrl.actived}
   <Vtform
     rline={rpage.lines[l_idx]}
-    ropts={rpage.ropts}
+    {ropts}
     {rword}
     on_close={on_term_change} />
 {/if}

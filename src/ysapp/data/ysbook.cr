@@ -104,20 +104,18 @@ class YS::Ysbook
     author_zh, btitle_zh = BookUtil.fix_names(author: self.author, btitle: self.btitle)
     zintro = TextUtil.split_html(self.intro, true).join('\n')
 
-    if tl_data = TranUtil.tl_book(btitle_zh, author_zh, zintro)
-      btitle_vi, author_vi, vintro = tl_data
-    else
+    unless wndata = TranUtil.tl_wndata(btitle_zh, author_zh, zintro)
       raise "uknown translation error"
     end
 
-    Log.info { "create new book: #{btitle_vi} -- #{author_vi}".colorize.yellow }
+    Log.info { "create new book: #{wndata.btitle} -- #{wndata.author}".colorize.yellow }
 
-    author = CV::Author.upsert!(author_zh, author_vi)
-    btitle = CV::Btitle.upsert!(btitle_zh, btitle_vi)
+    author = CV::Author.upsert!(author_zh, wndata.author)
+    btitle = CV::Btitle.upsert!(btitle_zh, wndata.btitle)
     nvinfo = CV::Wninfo.upsert!(author_zh, btitle_zh, name_fixed: true)
 
     nvinfo.zintro = zintro
-    nvinfo.bintro = vintro
+    nvinfo.bintro = wndata.bintro
 
     zgenres = [self.genre].concat(self.btags)
     nvinfo.set_vgenres(CV::GenreMap.zh_to_vi(zgenres))

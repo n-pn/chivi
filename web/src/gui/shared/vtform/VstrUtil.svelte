@@ -29,15 +29,15 @@
 </script>
 
 <script lang="ts">
+  import { deepl_word } from '$utils/qtran_utils/dl_tran'
+  import { btran_word } from '$utils/qtran_utils/ms_tran'
+  import { gtran_word } from '$utils/qtran_utils/gg_tran'
+  import { baidu_word } from '$utils/qtran_utils/bd_tran'
+
   import { tooltip } from '$lib/actions'
   import type { Viform } from './viform'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-
-  import { deepl } from '$utils/qtran_utils'
-  import { btran_word } from '$utils/qtran_utils/btran_free'
-  import { gtran_word } from '$utils/qtran_utils/gtran_free'
-  import { baidu_word } from '$utils/qtran_utils/baidu_free'
 
   export let tform: Viform
   export let field: HTMLInputElement
@@ -241,7 +241,7 @@
         {/await}
 
         <img src="/icons/deepl.svg" alt="deepl" />
-        {#await deepl(tform.ztext, 0)}
+        {#await deepl_word(tform.ztext, 0)}
           <SIcon name="loader-2" spin={true} />
         {:then vstr}
           <span class="txt" class:_same={tform.vstr == vstr} data-vstr={vstr}>

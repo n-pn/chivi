@@ -1,6 +1,6 @@
 require "sqlite3"
 require "colorize"
-require "../../src/mtapp/service/btran_api"
+require "../../../src/mt_sp/util/ms_tran"
 
 DIR = "var/dicts/outer"
 
@@ -28,7 +28,7 @@ inputs.shuffle!
 inputs.each_slice(100) do |group|
   puts group.join("  ")
 
-  SP::Btran.translate(group, no_cap: true).each do |(zh, vi)|
+  SP::MsTran.translate(group, no_cap: true).each do |(zh, vi)|
     next unless cached[zh].add?(vi)
     File.open(out_path, "a", &.puts("#{zh}\t#{vi}"))
     puts "#{zh} => #{vi}".colorize.green

@@ -26,6 +26,7 @@
   }
 
   export async function show_lookup(panel = '') {
+    await rpage.load_hviet(1)
     lookup_ctrl.show(panel)
   }
 

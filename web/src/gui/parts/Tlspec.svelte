@@ -34,9 +34,9 @@
 </script>
 
 <script lang="ts">
-  import { gtran } from '$utils/qtran_utils'
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Dialog from '$gui/molds/Dialog.svelte'
+  import { gtran_text } from '$utils/qtran_utils/gg_tran'
 
   export let on_destroy = () => {}
   onDestroy(on_destroy)
@@ -135,7 +135,7 @@
   }
 
   async function apply_gtran() {
-    $entry.match = await gtran($ztext.substring(lower, upper), 1)
+    $entry.match = await gtran_text($ztext.substring(lower, upper), 1)[0]
     match_elem.focus()
   }
 </script>

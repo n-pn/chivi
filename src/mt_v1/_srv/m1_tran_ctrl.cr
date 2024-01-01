@@ -1,33 +1,10 @@
 require "./_m1_ctrl_base"
 require "./m1_tran_data"
-
+require "../../mt_ai/core/qt_core"
 require "../../rdapp/data/chinfo"
 
 class M1::TranCtrl < AC::Base
   base "/_m1/qtran"
-
-  # @[AC::Route::GET("/")]
-  # def qtran_file(fpath : String, wn_id : Int32 = 0)
-  #   start = Time.monotonic
-  #   mcore = MtCore.init(wn_id, user: _uname)
-
-  #   plain = false
-  #   lines = [] of String
-
-  #   RD::Chpart.new(fpath).read_raw do |line|
-  #     data = plain ? mcore.cv_plain(line) : mcore.cv_title(line)
-  #     lines << data.to_txt
-  #     plain = true
-  #   end
-
-  #   tspan = (Time.monotonic - start).total_milliseconds.round(2)
-  #   mtime = Time.utc.to_unix
-
-  #   cache_control 7.days
-  #   add_etag mtime.to_s
-
-  #   render json: {lines: lines, mtime: mtime, tspan: tspan}
-  # end
 
   @[AC::Route::POST("/")]
   def qtran_text(wn_id : Int32 = 0, title : Int32 = 1,
@@ -53,30 +30,30 @@ class M1::TranCtrl < AC::Base
     render json: {cvmtl: cvmtl, ztext: qtran.input, wn_id: wn_id}
   end
 
-  @[AC::Route::GET("/tl_btitle")]
-  def tl_btitle(btitle : String, wn_id : Int32 = 0)
-    guard_privi 0, "dùng máy dịch v1"
-
-    btitle_vi = TlUtil.tl_btitle(btitle, wn_id)
-    render text: btitle_vi
+  @[AC::Route::GET("/btitle")]
+  def btitle(btitle : String, wn_id : Int32 = 0)
+    vtext = TlUtil.tl_btitle(btitle, wn_id)
+    render text: vtext
   end
 
-  @[AC::Route::GET("/tl_author")]
-  def tl_author(author : String)
-    guard_privi 0, "dùng máy dịch v1"
+  @[AC::Route::GET("/author")]
+  def author(author : String)
+    vtext = TlUtil.tl_author(author)
+    render text: vtext
+  end
 
-    author_vi = TlUtil.tl_author(author)
-    render text: author_vi
+  @[AC::Route::GET("/hvname")]
+  def hvname(ztext : String)
+    vtext = MT::QtCore.tl_hvname(ztext)
+    render text: vtext
   end
 
   record WninfoForm, btitle : String, author : String, bintro : String do
     include JSON::Serializable
   end
 
-  @[AC::Route::POST("/tl_wnovel", body: :form)]
-  def tl_wnovel(form : WninfoForm, wn_id : Int32 = 0)
-    guard_privi 0, "dùng máy dịch v1"
-
+  @[AC::Route::POST("/wndata", body: :form)]
+  def wndata(form : WninfoForm, wn_id : Int32 = 0)
     cv_mt = MtCore.init(wn_id, user: _uname)
 
     intro = String.build do |io|

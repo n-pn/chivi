@@ -5,27 +5,21 @@
 
   export let title = ''
   export let wdata = ''
+  export let state = wdata ? 2 : 0
 
   export let loader: (rmode: number) => Promise<string> = undefined
-  export let loaded = !!wdata
 
   export let lines = 3
   export let _full = false
 
-  $: if (loader && !loaded && !_onload) {
+  $: if (loader && state == 0) {
+    state = 1
     do_reload(1)
   }
 
-  let _onload = false
-
   const do_reload = async (rmode = 1) => {
-    wdata = ''
-    _onload = true
-
     wdata = await loader(rmode)
-    if (wdata) loaded = true
-
-    _onload = false
+    state = wdata ? 2 : 3
   }
 </script>
 
@@ -52,7 +46,7 @@
           data-tip="Dịch lại nội dung"
           data-tip-loc="bottom"
           data-tip-pos="right"
-          disabled={_onload}
+          disabled={state == 1}
           on:click={() => do_reload(2)}>
           <SIcon name="refresh" />
         </button>
@@ -70,13 +64,13 @@
   </header>
 
   <div class="wbody" class:_full>
-    {#if wdata}
-      <slot>{wdata}</slot>
-    {:else if _onload || !loaded}
+    {#if state == 1}
       <div class="d-empty-xs">
-        <SIcon name="loader-2" spin={_onload} />
+        <SIcon name="loader-2" spin={true} />
         <em>Đang tải</em>
       </div>
+    {:else if wdata}
+      <slot>{wdata}</slot>
     {:else}
       <div class="d-empty-xs">
         <slot name="empty">Không có nội dung.</slot>
@@ -169,43 +163,4 @@
       max-height: initial;
     }
   }
-
-  //   &:global(._zh) {
-  //     $line: 1.5rem;
-  //     line-height: $line;
-
-  //     &._1 {
-  //       max-height: $line * 3 + 0.75rem;
-  //     }
-  //   }
-
-  //   &._mt {
-  //     $line: 1.25rem;
-  //     line-height: $line;
-  //     max-height: $line * 6 + 0.75rem;
-  //     font-size: rem(17px);
-  //   }
-
-  //   &._tl {
-  //     $line: 1.125rem;
-  //     line-height: $line;
-  //     max-height: $line * 5 + 0.75rem;
-  //     font-size: rem(15px);
-  //   }
-
-  //   &._ct {
-  //     $line: 1.25rem;
-  //     line-height: $line;
-  //     overflow-y: visible;
-
-  //     :global(x-n) {
-  //       color: var(--active);
-  //       font-weight: 450;
-  //       border: 0;
-  //       &:hover {
-  //         border-bottom: 1px solid var(--border);
-  //       }
-  //     }
-  //   }
-  // }
 </style>

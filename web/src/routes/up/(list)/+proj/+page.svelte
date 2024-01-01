@@ -27,7 +27,7 @@
   }
 
   const qt_hviet = async (ztext: string) => {
-    const res = await fetch(`/_sp/hname?input=${ztext}`)
+    const res = await fetch(`/_m1/qtran/hvname?ztext=${ztext}`)
     return await res.text()
   }
 

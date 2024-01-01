@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { gtran, btran, deepl } from '$utils/qtran_utils'
-
   import { hint, type CvtermForm } from './_shared'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
@@ -35,21 +33,6 @@
   var show_more = 0
   $: if (form) show_more = 0
 
-  async function run_gtran(tab = 0) {
-    form.val = '...'
-    form.val = await gtran(form.key, tab)
-  }
-
-  async function run_btran(tab = 0) {
-    form.val = '...'
-    form.val = await btran(form.key, tab, true)
-  }
-
-  async function run_deepl(tab = 0) {
-    form.val = '...'
-    form.val = await deepl(form.key, tab, false)
-  }
-
   $: init_val = form.init.val
 </script>
 
@@ -77,48 +60,6 @@
           ><SIcon name={show_more == 1 ? 'minus' : 'plus'} /></button>
       {/if}
     </div>
-
-    <span class="right">
-      <button
-        class="hint lang-btn"
-        data-kbd="5"
-        on:click={() => run_gtran(0)}
-        use:hint={'Dịch bằng Google từ Trung sang Việt'}>
-        <span class="lang-ico">
-          <SIcon name="brand-google" />
-          <span class="lang">🇻🇳</span>
-        </span>
-      </button>
-
-      <button
-        class="hint lang-btn"
-        data-kbd="6"
-        on:click={() => run_btran(0)}
-        use:hint={'Dịch bằng Bing từ Trung sang Việt'}>
-        <span class="lang-ico">
-          <SIcon name="brand-bing" />
-          <span class="lang">🇻🇳</span>
-        </span>
-      </button>
-
-      <button
-        class="hint lang-btn"
-        data-kbd="7"
-        on:click={() => run_deepl(0)}
-        use:hint={'Dịch bằng DeepL từ Trung sang Anh'}>
-        <span class="lang-ico">
-          <img src="/icons/deepl.svg" alt="deepl" />
-          <span class="lang">🇺🇸</span>
-        </span>
-      </button>
-
-      <button
-        class="hint _icon"
-        data-kbd="t"
-        on:click={() => trigger_show_more(2)}
-        use:hint={'Xem các lựa chọn dịch tự động khác'}
-        ><SIcon name={show_more == 2 ? 'minus' : 'plus'} /></button>
-    </span>
   </div>
 
   {#if show_more == 1}
@@ -129,65 +70,6 @@
           class:_prev={val == init_val}
           on:click={() => (form.val = val)}>{val}</button>
       {/each}
-    </div>
-  {/if}
-
-  {#if show_more == 2}
-    <div class="extra _right">
-      <button
-        class="hint lang-btn"
-        on:click={() => run_gtran(1)}
-        use:hint={'Dịch bằng Google từ Trung sang Anh'}>
-        <span class="lang-ico">
-          <SIcon name="brand-google" />
-          <span class="lang">🇺🇸</span>
-        </span>
-        <span class="lbl">Anh</span>
-      </button>
-
-      <button
-        class="hint lang-btn"
-        on:click={() => run_gtran(2)}
-        use:hint={'Dịch bằng Google từ Nhật sang Việt'}>
-        <span class="lang-ico">
-          <SIcon name="brand-google" />
-          <span class="lang">🇯🇵</span>
-        </span>
-        <span class="lbl">Nhật</span>
-      </button>
-
-      <button
-        class="hint lang-btn"
-        on:click={() => run_btran(1)}
-        use:hint={'Dịch bằng Bing từ Trung sang Anh'}>
-        <span class="lang-ico">
-          <SIcon name="brand-bing" />
-          <span class="lang">🇺🇸</span>
-        </span>
-        <span class="lbl">Anh</span>
-      </button>
-
-      <button
-        class="hint lang-btn"
-        on:click={() => run_btran(2)}
-        use:hint={'Dịch bằng Bing từ Nhật sang Việt'}>
-        <span class="lang-ico">
-          <SIcon name="brand-bing" />
-          <span class="lang">🇯🇵</span>
-        </span>
-        <span class="lbl">Nhật</span>
-      </button>
-
-      <button
-        class="hint lang-btn"
-        on:click={() => run_deepl(1)}
-        use:hint={'Dịch bằng DeepL từ Nhật sang Anh'}>
-        <span class="lang-ico">
-          <img src="/icons/deepl.svg" alt="deepl" />
-          <span class="lang">🇯🇵</span>
-        </span>
-        <span class="lbl">Nhật</span>
-      </button>
     </div>
   {/if}
 </div>

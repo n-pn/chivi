@@ -17,7 +17,7 @@ class SP::DefnCtrl < AC::Base
   end
 
   # FIXME: move this to somewhere else
-  BING_UPSERT_QUERY = <<-SQL
+  MS_DICT_UPSERT_QUERY = <<-SQL
     insert into defns (word, defn, mtime) values (?, ?, ?)
     on conflict do update set
       word = excluded.word,
@@ -33,10 +33,10 @@ class SP::DefnCtrl < AC::Base
       query = "select defn from defns where word = ? limit 1"
 
       if defn = db.query_one?(query, word, as: String)
-        Array(Btran::LookupOutput::Translation).from_json(defn)
+        Array(MsDict::Term::Tran).from_json(defn)
       else
-        defn = Btran.lookup([word]).first.translations
-        db.exec BING_UPSERT_QUERY, word, defn.to_json, Time.utc.to_unix
+        defn = MsDict.lookup([word]).first.translations
+        db.exec MS_DICT_UPSERT_QUERY, word, defn.to_json, Time.utc.to_unix
         defn
       end
     end

@@ -105,6 +105,26 @@ module HashUtil
     hash
   end
 
+  def hash_32(input : Array(String), sep_byte = 10) : String
+    hash = BASIS_32
+
+    input.each_with_index do |str, idx|
+      if idx > 0
+        hash ^= sep_byte
+        hash = hash &* PRIME_32
+        hash &= MASK_32
+      end
+
+      str.each_byte do |byte|
+        hash ^= byte
+        hash = hash &* PRIME_32
+        hash &= MASK_32
+      end
+    end
+
+    hash.to_s(base: 32)
+  end
+
   def fnv_1a_64(inp : String | Char, hash : UInt64 = BASIS_64) : UInt64
     inp.each_byte do |byte|
       hash ^= byte
@@ -131,7 +151,7 @@ module HashUtil
 
   def cksum_32(input : Array(String), sep_char = '\n')
     (1...input.size).reduce(fnv_1a(input[0])) do |h, i|
-      fnv_1a(input.unsafe_fetch(i), fnv_1a('\t', h))
+      fnv_1a(input.unsafe_fetch(i), fnv_1a(sep_char, h))
     end
   end
 
