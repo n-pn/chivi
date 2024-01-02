@@ -15,7 +15,7 @@
   </div>
 
   <div class="zsecd">
-    <span class="chdiv">Tên tập: <strong>{zdata.chdiv || 'N/A'}</strong></span>
+    <span class="chdiv">Tên tập: <strong>{zdata.chdiv || '--'}</strong></span>
 
     <span class="c_len u-right">
       Số chữ: <strong class="u-warn">{zdata.size}</strong>

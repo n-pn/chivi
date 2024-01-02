@@ -12,12 +12,10 @@
   export let lines = 3
   export let _full = false
 
-  $: if (loader && state == 0) {
-    state = 1
-    do_reload(1)
-  }
+  $: if (loader && state == 0) do_reload(1)
 
   const do_reload = async (rmode = 1) => {
+    state = 1
     wdata = await loader(rmode)
     state = wdata ? 2 : 3
   }

@@ -113,7 +113,7 @@
   }
 
   .body {
-    padding-bottom: var(--gutter);
     display: block;
+    margin-bottom: 0.5rem;
   }
 </style>

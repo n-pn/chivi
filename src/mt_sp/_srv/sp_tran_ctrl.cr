@@ -20,6 +20,8 @@ class SP::TranCtrl < AC::Base
   end
 
   private def do_translate(qdata : QtData, type : String, opts = "", redo = false)
+    sleep 10.milliseconds * (1 << (4 - self._privi))
+
     response.headers["ETag"] = qdata.fname
     response.content_type = "text/plain; charset=utf-8"
 

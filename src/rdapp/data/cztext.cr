@@ -39,11 +39,12 @@ class RD::Cztext
   ###
 
   CHAR_LIMIT = 2048
-  CHAR_UPPER = 3200
+  CHAR_UPPER = 3072
 
   @[AlwaysInline]
   def self.char_limit(char_count : Int32)
-    char_count < CHAR_UPPER ? CHAR_UPPER : char_count // (char_count / CHAR_LIMIT).round.to_i
+    return CHAR_UPPER if char_count <= CHAR_UPPER
+    char_count // (char_count / CHAR_LIMIT).round.to_i
   end
 
   def self.fix_raw(input : String, title : String = "")

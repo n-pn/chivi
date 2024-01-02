@@ -1,25 +1,23 @@
 import { fnv_1a_32 } from '$utils/hash_util'
 
 const CHAR_LIMIT = 2048
-const CHAR_UPPER = 3200
 
-function char_limit(char_count: number) {
-  if (char_count < CHAR_UPPER) return CHAR_UPPER
-  return (char_count / (char_count / CHAR_LIMIT)) | 0
+function calc_char_limit(lines: string[], char_limit: number) {
+  const char_upper = char_limit * 1.5
+  const char_count = lines.reduce((a, l) => a + l.length + 1, 0)
+
+  if (char_count <= char_upper) return char_upper
+  return Math.floor(char_count / Math.round(char_count / char_limit))
 }
 
-export function split_parts(lines: string[]) {
-  const [title, ...paras] = lines
+export function split_parts(lines: string[], max_chars = CHAR_LIMIT) {
+  const limit = calc_char_limit(lines, max_chars)
+  const parts = [] as string[]
 
-  const psize = paras.reduce((a, l) => a + l.length + 1, 0)
-  const limit = char_limit(psize)
-
-  const parts = []
-
-  let cpart = title
+  let cpart = ''
   let count = 0
 
-  for (const line of paras) {
+  for (const line of lines) {
     if (count > 0) cpart += '\n'
     cpart += line
 
@@ -27,13 +25,16 @@ export function split_parts(lines: string[]) {
     if (count < limit) continue
 
     parts.push(cpart)
-    cpart = title
+
+    cpart = ''
     count = 0
   }
 
-  if (count > 0) parts.push(cpart)
+  if (cpart) parts.push(cpart)
+
   return parts
 }
+
 export class Czdata {
   ch_no: number
   chdiv: string
@@ -43,7 +44,7 @@ export class Czdata {
 
   parts: string[]
 
-  constructor(ch_no: number, chdiv = '', lines = []) {
+  constructor(ch_no: number, chdiv = '', lines: string[] = []) {
     this.ch_no = ch_no
     this.chdiv = chdiv
     this.lines = lines
@@ -71,19 +72,101 @@ function scrub_text(text: string): string {
 }
 
 export class Cztext {
+  ztext: string
   lines: string[]
   start: number
   chdiv: string
 
-  constructor(input: string, start = 1, chdiv = '') {
-    this.lines = input.split('\n')
+  error: string
+
+  _opts: {
+    split_mode: number
+    div_marker: string // mode 1: split by marker
+    min_blanks: number // mode 2: split_slash
+    need_blank: boolean // mode 3
+    chdiv_labels: string //  mode 4
+    custom_regex: string //  mode 5
+    chunk_length: number //  mode 6
+  }
+
+  constructor(ztext: string, start = 1, chdiv = '') {
+    this.ztext = ztext
+    this.lines = ztext.split(/\r|\r?\n/)
     this.start = start
     this.chdiv = chdiv
+
+    this._opts = {
+      split_mode: 0,
+      // mode 1
+      div_marker: '///',
+      // mode 2
+      min_blanks: 2,
+      // mode 3
+      need_blank: false,
+      // mode 4
+      chdiv_labels: '章节回幕折集卷季',
+      // mode 5
+      custom_regex: `^第[\\d零〇一二两三四五六七八九十百千]+[章节回]`,
+      // mode 6
+      chunk_length: 2000,
+    }
+  }
+
+  valid_enough(chaps: Czdata[]) {
+    if (chaps.length == 0 || this.error) return false
+
+    for (const { title, chdiv } of chaps) {
+      if (chdiv.length > 50) {
+        this.error = `Lỗi: Tên bộ [${chdiv}] quá dài!`
+        return false
+      }
+      if (title.length > 50) {
+        this.error = `Lỗi: Tên chương [${title}] quá dài!`
+        return false
+      }
+    }
+
+    return true
+  }
+
+  split_text(mode = this._opts.split_mode) {
+    if (mode == 0 || mode == 1) {
+      const chaps = this.split_delim(this._opts.div_marker)
+      if (this.valid_enough(chaps) || mode == 1) return chaps
+    }
+
+    if (mode == 0 || mode == 2) {
+      const chaps = this.split_blank(this._opts.min_blanks)
+      if (this.valid_enough(chaps) || mode == 2) return chaps
+    }
+
+    if (mode == 0 || mode == 3) {
+      const chaps = this.split_block(this._opts.need_blank)
+      if (this.valid_enough(chaps) || mode == 3) return chaps
+    }
+
+    if (mode == 0 || mode == 4) {
+      const chaps = this.split_label(this._opts.chdiv_labels)
+      if (this.valid_enough(chaps) || mode == 4) return chaps
+    }
+
+    if (mode == 0 || mode == 5) {
+      const chaps = this.split_label(this._opts.chdiv_labels)
+      if (this.valid_enough(chaps) || mode == 5) return chaps
+    }
+
+    const parts = split_parts(this.lines.map((x) => x.trim()).filter(Boolean))
+
+    return parts.map((cpart, index) => {
+      return new Czdata(this.start + index, '', cpart.split('\n'))
+    })
   }
 
   // split text by adding `///` before each chapter
-  split_slash(repeat = 3) {
-    if (repeat < 2) repeat = 2
+  split_delim(div_marker = '///') {
+    this.error = ''
+
+    if (!this.ztext.includes(div_marker)) return []
 
     const input = this.lines.filter(Boolean)
     const chaps: Czdata[] = []
@@ -91,7 +174,7 @@ export class Cztext {
     let chdiv = this.chdiv
     let cbody: string[] = []
 
-    const regex = new RegExp(`^\/{${repeat},}(.*?)$`, 'u')
+    const regex = new RegExp(`^${div_marker}${div_marker[0]}*(.*?)$`, 'u')
     let found: RegExpMatchArray | null
 
     for (const line of input) {
@@ -113,6 +196,12 @@ export class Cztext {
   // split text by blank lines
   split_blank(min_blanks = 2) {
     if (min_blanks < 1) min_blanks = 1
+
+    // fast check if this method is valid
+    if (!this.ztext.includes('\n'.repeat(min_blanks))) {
+      return [] as Czdata[]
+    }
+
     let blank_count = min_blanks
 
     const is_title_fn = (line: string) => {
@@ -132,6 +221,11 @@ export class Cztext {
   // split text if chapter body is nested
   split_block(blank_before = false) {
     let prev_was_blank = true
+
+    // fast check if this method is valid
+    if (!/\n[\t\s　]/.test(this.ztext)) {
+      return [] as Czdata[]
+    }
 
     const is_title_fn = (line: string) => {
       if (line.match(/^[\t\s　]/)) {
@@ -164,6 +258,8 @@ export class Cztext {
   }
 
   do_split(is_title_fn: (line: string) => boolean) {
+    this.error = ''
+
     const chaps: Czdata[] = []
 
     let chdiv = this.chdiv
@@ -184,14 +280,16 @@ export class Cztext {
         cbody = [line_trim]
         prev_was_chdiv = false
       } else if (prev_was_chdiv) {
-        throw `Lỗi dòng #${line_no + 1} (${line}): Chương trước thiếu nội dung!`
-      } else if (!cbody[0]) {
-        cbody.push(line_trim)
+        this.error = `Lỗi dòng #${line_no + 1} (${line}): Chương trước trắng!`
+        cbody.push(line)
         prev_was_chdiv = false
-      } else {
+      } else if (cbody[0]) {
         chdiv = cbody[0]
         cbody[0] = line_trim
         prev_was_chdiv = true
+      } else {
+        cbody.push(line_trim)
+        prev_was_chdiv = false
       }
     }
 

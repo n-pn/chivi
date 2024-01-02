@@ -9,7 +9,6 @@ class M1::MtCore
     dicts = [MtDict.regular_main]
 
     dicts << MtDict.regular_user(user) unless user.empty?
-
     dicts << MtDict.regular_init if init
 
     dicts << MtDict.unique_main(udic)
@@ -33,14 +32,16 @@ class M1::MtCore
     data
   end
 
-  def cv_title_full(title : String) : MtData
-    title, chvol = TextUtil.format_title(title)
+  CHEAD_RE = /^\［(.+?)\］(.+)$/
 
-    mt_data = cv_title(title, offset: chvol.size)
-    return mt_data if chvol.empty?
+  def cv_chead(title : String) : MtData
+    return cv_title(title) unless match = CHEAD_RE.match(title)
+    _, chdiv, title = match
 
-    mt_data.add_head(MtDefn.new("", " - ", idx: chvol.size))
-    cv_title(chvol).concat(mt_data)
+    mt_data = cv_title(title, offset: chdiv.size)
+    mt_data.add_head(MtDefn.new("", "-", idx: chdiv.size))
+
+    cv_title(chdiv).concat(mt_data)
   end
 
   def cv_title(title : String, offset = 0) : MtData

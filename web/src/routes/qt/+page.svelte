@@ -51,8 +51,6 @@
 </script>
 
 <header>
-  <h1 class="h2">Dịch nhanh câu văn/cụm từ</h1>
-
   <form action="/qt" method="GET">
     <div class="input">
       <input

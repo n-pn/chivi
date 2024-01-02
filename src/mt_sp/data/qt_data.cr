@@ -1,5 +1,6 @@
 require "../../_util/hash_util"
 require "../../_util/text_util"
+require "../../cv_env"
 require "../util/*"
 
 class SP::QtData
@@ -24,7 +25,7 @@ class SP::QtData
   end
 
   def self.from_fname(fname : String)
-    lines = File.read_lines("#{DIR}/#{fname}-ztext.txt")
+    lines = File.read_lines("#{DIR}/#{fname}.ztext.txt")
     new(lines, fname)
   end
 
@@ -37,7 +38,7 @@ class SP::QtData
   def get_vtran(type : String, opts : String = "", redo : Bool = false)
     return "" if @lines.empty?
 
-    fpath = "#{DIR}/#{@fname}-#{type}.txt"
+    fpath = "#{DIR}/#{@fname}.#{type}.txt"
     return File.read(fpath) if !redo && File.file?(fpath)
 
     unless vtext = load_vtext(type, opts)
@@ -62,13 +63,13 @@ class SP::QtData
     when "qt_v1"
       call_qt_v1(opts)
     when "c_gpt"
-      call_c_gpt.join('\n')
+      call_c_gpt(@lines.join('\n'))
     else
       raise "Không hỗ trợ cách dịch nhanh [#{type}]"
     end
   end
 
-  QT_V1_API = "http://localhost:5111/_m1/qtran"
+  QT_V1_API = "#{CV_ENV.m1_host}/_m1/qtran"
 
   private def call_qt_v1(opts : String = "0,1", format = "txt")
     wn_id, _sep, title = opts.partition(':')
@@ -83,15 +84,13 @@ class SP::QtData
 
   HEADERS = HTTP::Headers{"Content-Type" => "application/json"}
 
-  private def call_c_gpt
-    @lines.compact_map do |line|
-      body = {test_key: line}.to_json
+  private def call_c_gpt(ztext : String)
+    body = {test_key: ztext}.to_json
 
-      HTTP::Client.post(C_GPT_API, headers: HEADERS, body: body) do |res|
-        body = res.body_io.gets_to_end
-        break unless res.status.success?
-        NamedTuple(result: String).from_json(body)[:result]
-      end
+    HTTP::Client.post(C_GPT_API, headers: HEADERS, body: body) do |res|
+      result = res.body_io.gets_to_end
+      break unless res.status.success?
+      NamedTuple(result: String).from_json(result)[:result]
     end
   end
 

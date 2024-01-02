@@ -27,16 +27,18 @@ lines = <<-TXT
 女友：/////w/////？？？？
 TXT
 
-text = ARGV[0]? || "苏简转头，今天的许陌陌穿着星黛露的ｃｏｓ服，看起来元气满满很是可爱。"
-book = ARGV[1]?.try(&.to_i?) || 139951
-user = ARGV[2]?
+# text = ARGV[0]? || "苏简转头，今天的许陌陌穿着星黛露的ｃｏｓ服，看起来元气满满很是可爱。"
+BOOK = ARGV[1]?.try(&.to_i?) || 139951
+USER = ARGV[2]? || ""
+
+MTL = M1::MtCore.init(udic: BOOK, user: USER)
 
 lines.each_line do |text|
   puts text
 
   time = Time.monotonic
-  mtl = M1::MtCore.init(udic: book, user: user || "")
-  res = mtl.cv_plain(text)
+
+  res = MTL.cv_plain(text)
 
   res.inspect(STDOUT)
   puts text.colorize.blue
@@ -50,3 +52,5 @@ lines.each_line do |text|
 
   puts "Total time used (including loading dicts): #{(Time.monotonic - time).total_milliseconds.round}ms".colorize.red
 end
+
+puts MTL.cv_chead("［第一卷］第1章　世纪初救世主传说").to_txt

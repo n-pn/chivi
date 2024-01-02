@@ -12,7 +12,7 @@ class M1::TranCtrl < AC::Base
     mcore = MtCore.init(wn_id, user: _uname)
     vtran = String.build do |io|
       self.each_body_line do |line|
-        data = title == 0 ? mcore.cv_plain(line) : mcore.cv_title(line)
+        data = title == 0 ? mcore.cv_plain(line) : mcore.cv_chead(line)
         format == "mtl" ? data.to_mtl(io) : data.to_txt(io)
         io << '\n'
         title &-= 1
@@ -116,7 +116,7 @@ class M1::TranCtrl < AC::Base
     cv_mt = MtCore.init(wn_id)
 
     vtran = Hash(String, String).new do |hash, zstr|
-      vstr = cv_mt.cv_title(TextUtil.normalize(zstr)).to_txt
+      vstr = cv_mt.cv_chead(TextUtil.normalize(zstr)).to_txt
       hash[zstr] = vstr
     end
 

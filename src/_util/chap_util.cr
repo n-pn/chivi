@@ -90,7 +90,7 @@ module ChapUtil
   end
 
   CHAR_LIMIT = 2048
-  CHAR_UPPER = 3200
+  CHAR_UPPER = 3072
 
   @[AlwaysInline]
   def char_limit(char_count : Int32)

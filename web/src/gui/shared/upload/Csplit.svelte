@@ -1,10 +1,12 @@
 <script context="module" lang="ts">
   const split_modes = [
-    [0, 'Phân thủ công bằng ///'],
-    [1, 'Phân bởi dòng trắng giữa chương'],
-    [2, 'Nội dung thụt vào so với tên chương'],
-    [3, 'Theo định dạng tên chương'],
-    [4, 'Theo regular expression tự nhập'],
+    [0, 'Tự động nhận dạng cách chia'],
+    [1, 'Phân thủ công bằng ///'],
+    [2, 'Phân bởi dòng trắng giữa chương'],
+    [3, 'Nội dung thụt vào so với tên chương'],
+    [4, 'Theo định dạng tên chương'],
+    [5, 'Theo regular expression tự nhập'],
+    [6, 'Chia văn bản theo số chữ mỗi phần'],
   ]
 </script>
 
@@ -16,61 +18,27 @@
 
   export let ztext: string = ''
 
-  export let ch_no: number = 0
+  export let ch_no: number = 1
   export let state: number = 0
 
   export let chaps: Czdata[] = []
   export let show_preview = false
 
-  let opts = {
-    split_mode: 0,
-    delimit_str: '///', // split by delimiter
-    min_blanks: 2, // split_slash
-    // split mode 2
-    need_blank: false,
-    // split mode 3
-    chdiv_labels: '章节回幕折集卷季',
-    //split mode 4
-    custom_regex: `^第[\\d零〇一二两三四五六七八九十百千]+[章节回]`,
-  }
-
   let error = ''
 
   $: zdata = new Cztext(ztext, ch_no)
 
-  $: if (opts) {
+  $: if (zdata._opts) {
     error = ''
-
-    try {
-      state = 1
-      chaps = split_text(zdata)
-      state = 0
-    } catch (ex) {
-      error = ex
-      state = 0
-      chaps = []
-      console.log({ error })
-    }
-  }
-
-  function split_text(zdata: Cztext) {
-    switch (opts.split_mode) {
-      case 1:
-        return zdata.split_blank(+opts.min_blanks)
-      case 2:
-        return zdata.split_block(opts.need_blank)
-      case 3:
-        return zdata.split_label(opts.chdiv_labels)
-      case 4:
-        return zdata.split_regex(opts.custom_regex)
-      default:
-        return zdata.split_slash(opts.delimit_str.length)
-    }
+    state = 1
+    chaps = zdata.split_text()
+    state = 0
+    error = zdata.error
   }
 </script>
 
 <div class="d-label">
-  <label class="x-label" for="split_mode" data-tip="Số thứ tự khi chèn chương"
+  <label for="split_mode" data-tip="Số thứ tự khi chèn chương"
     >Vị trí chương bắt đầu:</label>
   <input
     class="m-input _sm _fix u-right"
@@ -95,47 +63,68 @@
     name="split_mode"
     class="m-input"
     disabled={state > 0}
-    bind:value={opts.split_mode}>
+    bind:value={zdata._opts.split_mode}>
     {#each split_modes as [value, label]}
       <option {value}>{label}</option>
     {/each}
   </select>
 </div>
 
-<label hidden={opts.split_mode != 0}>
+<div class="d-label" hidden={zdata._opts.split_mode != 0}>
+  <p>Chương trình sẽ tự động thử các cách chia để tìm phương án hợp lý nhất</p>
+</div>
+
+<label class="d-label" hidden={zdata._opts.split_mode != 1}>
   <span>Đoạn ký tự phân tách:</span>
   <input
     class="m-input _sm _fix u-right"
-    name="delimit_str"
-    bind:value={opts.delimit_str} />
+    name="div_marker"
+    bind:value={zdata._opts.div_marker} />
 </label>
 
-<label hidden={opts.split_mode != 1}>
+<label class="d-label" hidden={zdata._opts.split_mode != 2}>
   <span>Số dòng trắng tối thiểu: </span>
   <input
     class="m-input _sm _fix u-right"
     type="number"
     name="min_blanks"
-    bind:value={opts.min_blanks}
+    bind:value={zdata._opts.min_blanks}
     min={1} />
 </label>
 
-<label hidden={opts.split_mode != 2}>
-  <input type="checkbox" name="need_blank" bind:checked={opts.need_blank} />
-  <span>Phía trước phải là dòng trắng</span>
+<label class="d-label" hidden={zdata._opts.split_mode != 3}>
+  <input
+    type="checkbox"
+    name="need_blank"
+    bind:checked={zdata._opts.need_blank} />
+  <span>Phía trên tên chương phải là dòng trắng</span>
 </label>
 
-<label hidden={opts.split_mode != 3}>
+<label class="d-label" hidden={zdata._opts.split_mode != 4}>
   <span>Đằng sau <code>第[số]+</code> là:</span>
-  <input class="m-input _sm" name="label" bind:value={opts.chdiv_labels} />
+  <input
+    class="m-input _sm"
+    name="label"
+    bind:value={zdata._opts.chdiv_labels} />
 </label>
 
-<label hidden={opts.split_mode != 4}>
-  <span class="x-label">Regex:</span>
+<label class="d-label" hidden={zdata._opts.split_mode != 5}>
+  <span>Regex:</span>
   <input
     class="m-input _sm _full u-right"
     name="regex"
-    bind:value={opts.custom_regex} />
+    bind:value={zdata._opts.custom_regex} />
+</label>
+
+<label class="d-label" hidden={zdata._opts.split_mode != 6}>
+  <span>Tổng số ký tự mỗi phần:</span>
+  <input
+    class="m-input _sm _fix u-right"
+    type="number"
+    name="chunk_length"
+    min={500}
+    max={3000}
+    bind:value={zdata._opts.chunk_length} />
 </label>
 
 {#if error}
