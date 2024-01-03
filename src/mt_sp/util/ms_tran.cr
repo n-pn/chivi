@@ -17,7 +17,7 @@ module SP::MsTran
     headers = MsUtil.subkey_headers(*key_data)
     self.call_api(input, headers, sl: sl, tl: tl)
   rescue ex
-    Log.warn { ex }
+    Log.warn { ex.message }
     raise ex unless MsUtil.sub_keys.pop?
     self.translate(input, sl: sl, tl: tl)
   end
@@ -28,6 +28,7 @@ module SP::MsTran
                     headers : HTTP::Headers,
                     sl : String = "zh", tl : String = "vi")
     sl = "zh-Hans" if sl == "zh"
+
     uri = URI.parse("#{API}&from=#{sl}&to=#{tl}")
 
     body = input.map { |text| {text: text} }.to_json
@@ -39,7 +40,7 @@ module SP::MsTran
     client.post(uri.request_target, headers: headers, body: body) do |res|
       raise res.body unless res.status.success?
       output = Array(Tran).from_json(res.body_io)
-      output.map(&.translations.first.text)
+      output.map(&.translations.map(&.text))
     end
   end
 

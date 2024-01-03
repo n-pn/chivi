@@ -1,11 +1,12 @@
 require "../../src/mt_ai/core/*"
 
 input = [
-  "“陈源哥哥，还记得高中时候的小瘸子吗？”",
-  "“钱芊雪除外。”",
+  # "“陈源哥哥，还记得高中时候的小瘸子吗？”",
+  # "“钱芊雪除外。”",
+  "第２７３８章京师（九十一）",
 ]
 
-ch_rm = 0
+ch_rm = 1
 cheads = [] of MT::AiTerm | Nil
 
 ch_rm.times do |index|

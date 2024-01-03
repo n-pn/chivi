@@ -52,14 +52,14 @@ class SP::QtData
   def load_vtext(type : String, opts : String)
     case type
     when "bd_zv" # baidu translator
-      vtran = BdTran.translate(@lines.join('\n'), sl: "zh", tl: "vie")
-      vtran.join('\n')
+      mdata = BdTran.translate(@lines.join('\n'), sl: "zh", tl: "vie")
+      mdata.join('\n')
     when "ms_zv" # microsoft transltor
-      vtran = MsTran.free_translate(@lines, token: opts, sl: "zh", tl: "vi")
-      vtran.join('\n')
+      mdata = MsTran.free_translate(@lines, token: opts, sl: "zh", tl: "vi")
+      mdata.join('\n', &.first)
     when "dl_zv"
-      vtran = Deepl.translate(@lines, source: "zh", target: "vi")
-      vtran.join('\n', &.[1])
+      mdata = Deepl.translate(@lines, source: "zh", target: "vi")
+      mdata.join('\n', &.[1])
     when "qt_v1"
       call_qt_v1(opts)
     when "c_gpt"

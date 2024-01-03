@@ -1,32 +1,29 @@
-ALTER TABLE btitles RENAME COLUMN zname TO name_zh;
+ALTER TABLE btitles RENAME COLUMN name_zh TO bt_zh;
 
-ALTER TABLE btitles RENAME COLUMN hname TO name_hv;
+ALTER TABLE btitles RENAME COLUMN name_vi TO bt_vi;
 
-ALTER TABLE btitles RENAME COLUMN vname TO name_vi;
+ALTER TABLE btitles RENAME COLUMN name_hv TO bt_hv;
 
-ALTER TABLE btitles
-  ADD COLUMN name_en text NOT NULL DEFAULT '';
+ALTER TABLE btitles RENAME COLUMN name_en TO bt_en;
 
-ALTER TABLE btitles
-  ADD COLUMN name_mt_v1 text NOT NULL DEFAULT '';
+ALTER TABLE btitles RENAME COLUMN name_mt_v1 TO vi_qt;
 
-ALTER TABLE btitles
-  ADD COLUMN name_mt_ai text NOT NULL DEFAULT '';
+ALTER TABLE btitles RENAME COLUMN name_mt_ai TO vi_uc;
 
-ALTER TABLE btitles
-  ADD COLUMN name_vi_ms text NOT NULL DEFAULT '';
+ALTER TABLE btitles RENAME COLUMN name_vi_ms TO vi_ms;
 
-ALTER TABLE btitles
-  ADD COLUMN name_vi_gg text NOT NULL DEFAULT '';
+ALTER TABLE btitles RENAME COLUMN name_vi_gg TO vi_gg;
 
-ALTER TABLE btitles
-  ADD COLUMN name_vi_bd text NOT NULL DEFAULT '';
+ALTER TABLE btitles RENAME COLUMN name_vi_bd TO vi_bd;
 
-ALTER TABLE btitles
-  ADD COLUMN name_en_ms text NOT NULL DEFAULT '';
+ALTER TABLE btitles RENAME COLUMN name_en_ms TO en_ms;
+
+ALTER TABLE btitles RENAME COLUMN name_en_dl TO en_dl;
+
+ALTER TABLE btitles RENAME COLUMN name_en_bd TO en_bd;
 
 ALTER TABLE btitles
-  ADD COLUMN name_en_dl text NOT NULL DEFAULT '';
+  ADD COLUMN en_uc text NOT NULL DEFAULT '';
 
 ALTER TABLE btitles
-  ADD COLUMN name_en_bd text NOT NULL DEFAULT '';
+  ADD COLUMN en_gg text NOT NULL DEFAULT '';

@@ -31,14 +31,14 @@ class M1::TranCtrl < AC::Base
   end
 
   @[AC::Route::GET("/btitle")]
-  def btitle(btitle : String, wn_id : Int32 = 0)
-    vtext = TlUtil.tl_btitle(btitle, wn_id)
+  def btitle(ztext : String, wn_id : Int32 = 0)
+    vtext = TlUtil.tl_btitle(ztext, wn_id)
     render text: vtext
   end
 
   @[AC::Route::GET("/author")]
-  def author(author : String)
-    vtext = TlUtil.tl_author(author)
+  def author(ztext : String)
+    vtext = TlUtil.tl_author(ztext)
     render text: vtext
   end
 

@@ -111,7 +111,7 @@ class YS::Ysbook
     Log.info { "create new book: #{wndata.btitle} -- #{wndata.author}".colorize.yellow }
 
     author = CV::Author.upsert!(author_zh, wndata.author)
-    btitle = CV::Btitle.upsert!(btitle_zh, wndata.btitle)
+    btitle = CV::Btitle.upsert!(btitle_zh, bt_vi: wndata.btitle)
     nvinfo = CV::Wninfo.upsert!(author_zh, btitle_zh, name_fixed: true)
 
     nvinfo.zintro = zintro

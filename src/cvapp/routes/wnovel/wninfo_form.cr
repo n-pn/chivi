@@ -53,7 +53,7 @@ class CV::WninfoForm
 
   def save!(_uname : String, _privi : Int32) : Wninfo
     Author.upsert!(@author_zh, @author_vi)
-    Btitle.upsert!(@btitle_zh, name_vi: @btitle_vi)
+    Btitle.upsert!(@btitle_zh, bt_vi: @btitle_vi)
 
     wninfo = Wninfo.upsert!(@author_zh, @btitle_zh, name_fixed: true)
 

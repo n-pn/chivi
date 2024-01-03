@@ -2,7 +2,7 @@ require "json"
 require "uuid"
 require "http/client"
 
-class SP::Deepl
+class SP::DlTran
   FREE_API = "https://api-free.deepl.com"
   PRO_API  = "https://api.deepl.com"
 
@@ -55,26 +55,26 @@ class SP::Deepl
 
   ####
 
-  class_getter clients : Array(Deepl) = begin
+  class_getter clients : Array(DlTran) = begin
     lines = {{ read_file("#{__DIR__}/deepl.tsv").split('\n') }}
 
-    lines.each_with_object([] of Deepl) do |line, list|
+    lines.each_with_object([] of DlTran) do |line, list|
       next if line.blank?
       auth_key = line.split('\t', 2).first
 
       next if auth_key.starts_with?('#')
-      list << Deepl.new(auth_key, free: auth_key.ends_with?(":fx"))
+      list << DlTran.new(auth_key, free: auth_key.ends_with?(":fx"))
     end
   end
 
   def self.translate(terms : Enumerable(String),
                      source = "zh", target = "en",
                      no_cap : Bool = false)
-    raise "no more available client" unless client = @@clients.first?
+    raise "no more available keys" unless client = @@clients.first?
     translate(client, terms, source: source, target: target, no_cap: no_cap)
   end
 
-  def self.translate(client : Deepl, terms : Enumerable(String),
+  def self.translate(client : DlTran, terms : Enumerable(String),
                      source = "zh", target = "en",
                      no_cap : Bool = false)
     client.translate(terms, source: source, target: target, no_cap: no_cap)
