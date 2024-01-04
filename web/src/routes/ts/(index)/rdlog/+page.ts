@@ -24,8 +24,8 @@ export const load = (async ({ url: { searchParams }, fetch }) => {
     _title: `Lịch sử đọc tryện`,
     _meta: {
       left_nav: [
-        nav_link(`/ts`, 'Đọc truyện', 'book', { show: 'ts' }),
-        nav_link('/ts/rdlog', 'Lịch sử đọc', 'history', { show: 'tm' }),
+        nav_link(`/ts`, 'Đọc truyện', 'book', { show: 'pl' }),
+        nav_link('/ts/rdlog', 'Lịch sử đọc', 'history'),
       ],
     },
   }

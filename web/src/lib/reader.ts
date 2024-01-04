@@ -28,10 +28,15 @@ const call_qtran = async (
     url += `&opts=${wn_id}:${title}`
   }
 
+  const start = performance.now()
+
   const res = await fetch(url, { method: 'POST', body })
   if (!res.ok) return []
-
   const vtran = await res.text()
+
+  const spent = performance.now() - start
+  console.log(`- ${type}: ${body.length} chars, ${spent} milliseconds`)
+
   return vtran.trim().split('\n')
 }
 

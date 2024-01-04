@@ -54,7 +54,7 @@
 
 <style lang="scss">
   .links {
-    margin-bottom: 1rem;
+    margin: 1rem 0;
 
     @include flex-ca($gap: 0.5rem);
     // flex-direction: column;

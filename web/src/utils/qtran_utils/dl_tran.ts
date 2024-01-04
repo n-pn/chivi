@@ -1,26 +1,15 @@
-const tabs = [
-  ['ZH', 'EN'],
-  ['JA', 'EN'],
-]
+const word_cached = new Map<string, string>()
 
-const headers = { 'content-type': 'text/plain' }
-const results = {}
-
-export async function deepl_word(text: string, tab = 0, no_cap = false) {
+export async function deepl_word(text: string, tab = 0) {
+  const url = tab == 0 ? `/_sp/qtran/dl_ze` : `/_sp/qtran/dl_je`
   const key = `${text}-${tab}`
 
-  const val = results[key]
-  if (val) return val
+  const cached = word_cached.get(key)
+  if (cached) return cached
 
-  const [sl, tl] = tabs[tab]
-  const url = `/_sp/deepl?sl=${sl}&tl=${tl}&no_cap=${no_cap}`
+  const res = await fetch(url, { method: 'POST', body: text })
+  const data = await res.text()
 
-  try {
-    const res = await fetch(url, { method: 'POST', body: text, headers })
-    results[key] = await res.text()
-    return results[key]
-  } catch (ex) {
-    console.log(ex)
-    return ''
-  }
+  if (res.ok) word_cached.set(key, data)
+  return data
 }

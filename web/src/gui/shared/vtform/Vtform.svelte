@@ -49,7 +49,7 @@
   let tform: Viform = new Viform(rword, init_tdata, '', '', $_user.privi)
 
   $: {
-    mlist = gen_mlist(rline.mt_ai, rword.from, rword.upto)
+    mlist = gen_mlist(rline.mtran[ropts.mt_rm], rword.from, rword.upto)
     tform = make_form(mlist, rword)
   }
 
@@ -129,7 +129,7 @@
 
   const submit_action = async () => {
     const headers = { 'Content-type': 'application/json' }
-    const body = tform.toJSON(ropts, rline.ctree_text)
+    const body = tform.toJSON(ropts, rline.ctree_text(ropts.mt_rm))
 
     const init = { body: JSON.stringify(body), method, headers }
     const res = await fetch(action, init)

@@ -28,7 +28,7 @@ async function gen_headers() {
 }
 
 const api_url = 'https://api.cognitive.microsofttranslator.com'
-const tl_root = `${api_url}/translate?api-version=3.0&textType=plain`
+const tl_root = `${api_url}/translate`
 
 const word_cached = new Map<string, string[]>()
 
@@ -53,10 +53,10 @@ async function call_btran_word(text: string, sl = 'auto') {
   const headers = await gen_headers()
 
   try {
-    let url = `${tl_root}&to=vi&to=en`
     if (sl == 'zh') sl = 'zh-Hans'
-    if (sl != 'auto') url += '&from=' + sl
+    let url = `${api_url}/translate?from=${sl}&to=vi&to=en&api-version=3.0&textType=plain`
     const res = await fetch(url, { method: 'POST', body, headers })
+    if (!res.ok) return []
 
     const [{ translations: data }] = await res.json()
     const tran = data.map(({ text }) => text) as string[]

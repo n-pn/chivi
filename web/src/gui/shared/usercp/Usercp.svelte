@@ -167,7 +167,7 @@
       {#await load_rdmemos()}
         <div class="d-empty-sm">Đang tải lịch sử đọc truyện.</div>
       {:then items}
-        <RdchapList {items} />
+        <RdchapList {items} aside={true} />
       {/await}
     </div>
   </section>

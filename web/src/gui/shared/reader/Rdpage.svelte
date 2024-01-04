@@ -76,7 +76,7 @@
 
   const on_term_change = async (changed = false) => {
     if (!changed) return
-    vdata = await rpage.load_mtran(2)
+    vdata = await rpage.load_mtran(2, ropts.mt_rm, ropts.pdict)
   }
 
   const load_vdata = async (rpage: Rdpage, redo: boolean = false) => {
