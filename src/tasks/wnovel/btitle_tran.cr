@@ -8,7 +8,8 @@ require "../../mt_sp/util/*"
 require "../../mt_v1/core/tl_util"
 
 def gen_names_from_hviet
-  inputs = PGDB.query_all "select id, bt_zh from btitles where bt_hv = ''", as: {Int32, String}
+  query = "select id, bt_zh from btitles where bt_hv = ''"
+  inputs = PGDB.query_all query, as: {Int32, String}
   return if inputs.empty?
 
   hvcore = MT::QtCore.hv_name
@@ -30,7 +31,8 @@ def gen_names_from_hviet
 end
 
 def gen_names_from_qt_v1
-  inputs = PGDB.query_all "select id, bt_zh from btitles where vi_qt = ''", as: {Int32, String}
+  query = "select id, bt_zh from btitles where vi_qt = ''"
+  inputs = PGDB.query_all query, as: {Int32, String}
   return if inputs.empty?
 
   inputs.each_slice(1000).with_index do |slice, index|
@@ -70,7 +72,7 @@ def gen_names_from_ms_tran
 
       slice.zip(trans).each do |(bt_id, bt_zh), tran|
         vi_ms, en_ms = tran
-        puts "#{bt_zh} (#{bt_id}) => #{vi_ms} | #{en_ms}"
+        puts "[#{bt_id}] #{bt_zh} => #{vi_ms} | #{en_ms}"
         db.exec update_sql, vi_ms, en_ms, bt_id
       end
     end
@@ -103,7 +105,7 @@ def gen_names_from_bd_tran
     PGDB.transaction do |tx|
       db = tx.connection
       trans.zip(slice).each do |vi_bd, (bt_id, bt_zh)|
-        puts "#{bt_zh} (#{bt_id}) => #{vi_bd}"
+        puts "[#{bt_id}] #{bt_zh} => #{vi_bd}"
         db.exec update_sql, vi_bd, bt_id
       end
     end
@@ -111,7 +113,6 @@ def gen_names_from_bd_tran
     sleep 1.seconds
   rescue ex
     Log.warn { ex.message.colorize.red }
-    Log.info { slice }
     sleep 3.seconds
   end
 
@@ -130,7 +131,7 @@ def gen_names_from_dl_tran
 
   puts "calling deepl: #{input.size}"
 
-  return if input.empty?
+  update_sql = "update btitles set en_dl = $1 where id = $2"
 
   input.each_slice(500).with_index(1) do |slice, index|
     words = slice.map(&.[1])
@@ -139,10 +140,8 @@ def gen_names_from_dl_tran
 
     PGDB.transaction do |tx|
       db = tx.connection
-      slice.zip(trans).each do |(bt_id, bt_zh), (_, en_dl)|
-        puts "#{bt_zh} (#{bt_id}) => #{en_dl}"
-
-        update_sql = "update btitles set en_dl = $1 where id = $2"
+      trans.zip(slice).each do |en_dl, (bt_id, bt_zh)|
+        puts "[#{bt_id}] #{bt_zh} => #{en_dl}"
         db.exec update_sql, en_dl, bt_id
       end
     end
@@ -151,17 +150,17 @@ def gen_names_from_dl_tran
     sleep 1.seconds
   rescue ex
     return if ex.message == "no more available keys"
-    puts ex
+    Log.warn { ex.message.colorize.red }
   end
 
   puts "- #{input.size} entries translated to eng by deepl"
 end
 
-# gen_names_from_hviet
-# gen_names_from_qt_v1
-# gen_names_from_ms_tran
-gen_names_from_bd_tran
-# gen_names_from_dl_tran
+gen_names_from_hviet
+gen_names_from_qt_v1
+gen_names_from_ms_tran
+# gen_names_from_bd_tran
+gen_names_from_dl_tran
 
 # btitles = ZR::Btitle.db.open_ro do |db|
 #   db.query_all "select * from btitles where name_vi = ''", as: ZR::Btitle

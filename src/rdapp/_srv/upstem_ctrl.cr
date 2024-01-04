@@ -95,7 +95,7 @@ class RD::UpstemCtrl < AC::Base
     ustem.zdesc = uform.zdesc
     ustem.vdesc = uform.vdesc
 
-    if ustem.img_og != uform.img_cv
+    if uform.img_og != ustem.img_og
       ustem.img_og = uform.img_og
       ustem.img_cv = ""
     end
@@ -117,19 +117,6 @@ class RD::UpstemCtrl < AC::Base
       ustem: ustem,
       crepo: crepo,
     }
-  end
-
-  @[AC::Route::PATCH("/:up_id", body: uform)]
-  def config(up_id : Int32, uform : Upstem)
-    ustem = get_ustem(up_id)
-    guard_owner ustem.owner, 1, "sửa sưu tầm cá nhân"
-
-    ustem.guard = uform.guard
-    ustem.wndic = uform.wndic
-    ustem.updated_at = Time.utc
-
-    saved = ustem.update!
-    render json: saved
   end
 
   @[AC::Route::DELETE("/:up_id")]

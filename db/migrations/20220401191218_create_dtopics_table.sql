@@ -30,20 +30,20 @@ CREATE TABLE dtopics(
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX cvpost_cvuser_idx ON cvposts(viuser_id);
+CREATE INDEX dtopic_cvuser_idx ON dtopics(viuser_id);
 
-CREATE INDEX cvpost_nvinfo_idx ON cvposts(nvinfo_id);
+CREATE INDEX dtopic_nvinfo_idx ON dtopics(nvinfo_id);
 
-CREATE INDEX cvpost_stars_idx ON cvposts(stars);
+CREATE INDEX dtopic_stars_idx ON dtopics(stars);
 
-CREATE INDEX cvpost_sorts_idx ON cvposts(_sort);
+CREATE INDEX dtopic_sorts_idx ON dtopics(_sort);
 
-CREATE INDEX cvpost_number_idx ON cvposts(ii);
+CREATE INDEX dtopic_number_idx ON dtopics(ii);
 
-CREATE INDEX cvpost_label_idx ON cvposts USING GIN(lslugs);
+CREATE INDEX dtopic_label_idx ON dtopics USING GIN(lslugs);
 
-CREATE INDEX cvpost_uslug_idx ON cvposts USING GIN(tslug gin_trgm_ops);
+CREATE INDEX dtopic_uslug_idx ON dtopics USING GIN(tslug gin_trgm_ops);
 
 -- +micrate Down
 -- SQL section 'Down' is executed when this migration is rolled back
-DROP TABLE IF EXISTS cvposts;
+DROP TABLE IF EXISTS dtopics;

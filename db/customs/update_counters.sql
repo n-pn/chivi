@@ -4,7 +4,7 @@ UPDATE
 SET
   repl_count =(
     SELECT
-      count(*)::int
+      coalesce(count(*), 0)::int
     FROM
       ysrepls
     WHERE
@@ -18,7 +18,7 @@ UPDATE
 SET
   book_count =(
     SELECT
-      count(*)::int
+      coalesce(count(*), 0)::int
     FROM
       yscrits
     WHERE
@@ -32,7 +32,7 @@ UPDATE
 SET
   crit_count =(
     SELECT
-      count(*)::int
+      coalesce(count(*), 0)::int
     FROM
       yscrits
     WHERE
@@ -46,7 +46,7 @@ UPDATE
 SET
   like_count =(
     SELECT
-      count(*)::int
+      coalesce(count(*), 0)::int
     FROM
       memoirs AS m
     WHERE
@@ -56,11 +56,11 @@ SET
       AND m.liked_at > 0);
 
 UPDATE
-  cvposts AS c
+  dtopics AS c
 SET
   like_count =(
     SELECT
-      count(*)::int
+      coalesce(count(*), 0)::int
     FROM
       memoirs AS m
     WHERE
@@ -75,7 +75,7 @@ UPDATE
 SET
   repl_count =(
     SELECT
-      count(*)
+      coalesce(count(*), 0)::int
     FROM
       gdrepls AS r
     WHERE
@@ -83,7 +83,7 @@ SET
 
 ---
 UPDATE
-  cvposts AS c
+  dtopics AS c
 SET
   repl_count =(
     SELECT
@@ -98,11 +98,10 @@ SET
 UPDATE
   vicrits AS c
 SET
-  repl_count =(
+  repl_count = coalesce((
     SELECT
       repl_count
-    FROM
-      gdroots AS h
+    FROM gdroots AS h
     WHERE
       h.kind = 22
-      AND h.ukey = c.id::text);
+      AND h.ukey = c.id::text), 0);

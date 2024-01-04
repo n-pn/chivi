@@ -1,5 +1,10 @@
-require "../src/_data/_data"
-require "../src/mtapp/service/deepl_api"
+require "colorize"
+
+ENV["CV_ENV"] ||= "production"
+require "../../src/_data/_data"
+
+require "../../src/mt_ai/core/*"
+require "../../src/mt_sp/util/*"
 
 record Input, yc_id : String, ztext : String do
   include DB::Serializable
@@ -24,9 +29,9 @@ inputs.each_with_index(1) do |input, idx|
   file_path = "#{dir_path}/#{input.yc_id}.txt"
   next if File.file?(file_path)
 
-  deepl = SP::Deepl.translate(input.ztext.split(/\R/))
-  File.write(file_path, deepl.map(&.[1]).join('\n'))
+  trans = SP::DlTran.translate(input.ztext.split(/\R/))
+  File.write(file_path, trans.join('\n'))
 
   puts "- <#{idx}/#{inputs.size}> #{input.yc_id} translated \
-          (total: #{translated} chars, remain keys: #{SP::Deepl.clients.size})"
+          (total: #{translated} chars, remain keys: #{SP::DlTran.api_keys.size})"
 end

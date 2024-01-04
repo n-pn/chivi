@@ -52,17 +52,25 @@ class SP::QtData
   def load_vtext(type : String, opts : String)
     case type
     when "bd_zv" # baidu translator
-      mdata = BdTran.translate(@lines.join('\n'), sl: "zh", tl: "vie")
+      mdata = BdTran.api_translate(@lines.join('\n'), sl: "zh", tl: "vie")
+      # TODO: add to cache
       mdata.join('\n')
     when "ms_zv" # microsoft transltor
       mdata = MsTran.free_translate(@lines, token: opts, sl: "zh", tl: "vi")
+      # TODO: add to cache
       mdata.join('\n', &.first)
-    when "dl_zv"
-      mdata = Deepl.translate(@lines, source: "zh", target: "vi")
-      mdata.join('\n', &.[1])
+    when "dl_ze"
+      mdata = DlTran.translate(@lines, sl: "ZH", tl: "EN")
+      # TODO: add to cache
+      mdata.join('\n')
+    when "dl_je"
+      mdata = DlTran.translate(@lines, sl: "JE", tl: "EN")
+      # TODO: add to cache
+      mdata.join('\n')
     when "qt_v1"
-      call_qt_v1(opts)
+      call_qt_v1(opts).gsub(/\n+/, '\n')
     when "c_gpt"
+      # TODO: add to cache
       call_c_gpt(@lines.join('\n'))
     else
       raise "Không hỗ trợ cách dịch nhanh [#{type}]"

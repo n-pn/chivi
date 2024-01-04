@@ -7,11 +7,15 @@ class CV::Author
   include Crorm::Model
   schema "authors", :postgres, strict: false
 
-  field zname : String
-  field vname : String
+  field au_zh : String
+  field au_vi : String
+  field au_hv : String
+  field au_en : String
 
   field vdesc : String = ""
   field book_count : Int32 = 0
+
+  field _flag : Int16 = 0
 
   timestamps
 
@@ -19,22 +23,26 @@ class CV::Author
 
   VNAMES = {} of String => String
 
-  def self.get_vname(zname : String) : String
-    VNAMES[zname] ||= begin
-      stmt = "select vname from authors where zname = $1 limit 1"
-      PGDB.query_one?(stmt, zname, as: String) || zname
+  def self.get_vname(au_zh : String) : String
+    VNAMES[au_zh] ||= begin
+      stmt = <<-SQL
+        select coalesce(nullif(au_vi, ''), au_hv)
+        from authors where au_zh = $1 limit 1
+        SQL
+      PGDB.query_one?(stmt, au_zh, as: String) || au_zh
     end
   end
 
-  def self.upsert!(zname : String, vname : String? = nil) : Author
-    xname = vname || MT::QtCore.tl_hvname(zname)
+  def self.upsert!(au_zh : String, au_vi : String? = nil) : Author
+    au_hv = MT::QtCore.tl_hvname(au_zh)
     ctime = Time.utc
 
-    PGDB.query_one <<-SQL, zname, xname, ctime, ctime, vname, as: Author
-      insert into authors(zname, vname, created_at, updated_at)
+    PGDB.query_one <<-SQL, au_zh, au_hv, au_vi || au_hv, ctime, au_vi, as: Author
+      insert into authors(au_zh, au_hv, au_vi, updated_at)
       values ($1, $2, $3, $4)
-      on conflict(zname) do update set
-        vname = coalesce($5, authors.vname),
+      on conflict(au_zh) do update set
+        au_hv = excluded.au_hv,
+        au_vi = coalesce($5, authors.au_vi),
         updated_at = excluded.updated_at
       returning *
       SQL
@@ -42,5 +50,5 @@ class CV::Author
 
   # puts upsert!("囧囧的白日梦").to_pretty_json
   # puts upsert!("剑士桐人０", "Kiếm Sĩ Đồng Nhân 0").to_pretty_json
-  # puts get_vname("剑士桐人０")
+  # puts get_au_vi("剑士桐人０")
 end
