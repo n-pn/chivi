@@ -55,7 +55,7 @@ end
 def add_wn_dicts
   inputs = DB.open(CV_ENV.database_url) do |db|
     query = <<-SQL
-    select id as wn_id, btitle_vi as vname
+    select id as wn_id, coalesce(nullif(btitle_vi, ''), btitle_hv) as vname
     from wninfos where id > 0 order by id asc
     SQL
     db.query_all(query, as: {Int32, String})
@@ -70,8 +70,10 @@ def add_wn_dicts
     dict.tap(&.set_label(bname))
   end
 
-  MT::ZvDict.db.transaction do |tx|
-    dicts.each(&.upsert!(db: tx.connection))
+  dicts.each_slice(2000) do |slice|
+    MT::ZvDict.db.transaction do |tx|
+      slice.each(&.upsert!(db: tx.connection))
+    end
   end
 end
 
@@ -97,6 +99,6 @@ def add_up_dicts
   end
 end
 
-add_fixtures
+# add_fixtures
 add_up_dicts
 add_wn_dicts

@@ -70,7 +70,7 @@ class MT::ZvDict
   #######
 
   def gen_brief(label : String)
-    "Từ điển riêng cho [#{label}] (#{Kind.new(@kind).vname})"
+    "Từ điển riêng cho [#{label}] (#{DictKind.new(@kind).vname})"
   end
 
   def set_label(@label, @brief = gen_brief(label))

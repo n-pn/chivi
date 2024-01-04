@@ -91,13 +91,6 @@ def gen_names_from_bd_tran
   input = PGDB.query_all(query, as: {Int32, String})
   return if input.empty?
 
-  # input.each_slice(200).with_index(1) do |slice, index|
-  #   zh_path = "tmp/bd_bt/#{index}.zh"
-  #   id_path = "tmp/bd_bt/#{index}.id"
-  #   File.write(id_path, slice.join('\n', &.[0]))
-  #   File.write(zh_path, slice.join('\n', &.[1]))
-  # end
-
   puts "calling baidu: #{input.size}"
   update_sql = "update btitles set vi_bd = $1 where id = $2"
 
@@ -118,6 +111,7 @@ def gen_names_from_bd_tran
     sleep 1.seconds
   rescue ex
     Log.warn { ex.message.colorize.red }
+    Log.info { slice }
     sleep 3.seconds
   end
 
