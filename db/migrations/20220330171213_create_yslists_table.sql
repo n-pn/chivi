@@ -12,6 +12,16 @@ CREATE TABLE yslists(
   zdesc text NOT NULL DEFAULT '',
   vdesc text NOT NULL DEFAULT '',
   --
+  vname_mt text compresssion lz4,
+  vname_bd text compresssion lz4,
+  ename_bd text compresssion lz4,
+  ename_dl text compresssion lz4,
+  --
+  vdesc_bd text compresssion lz4,
+  vdesc_mt text compresssion lz4,
+  edesc_bd text compresssion lz4,
+  edesc_dl text compresssion lz4,
+  --
   klass text NOT NULL DEFAULT 'male',
   --
   covers text[] NOT NULL DEFAULT '{}' ::text[],

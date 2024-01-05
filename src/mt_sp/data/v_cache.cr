@@ -1,77 +1,121 @@
-require "crorm"
+require "../../_data/zr_db"
 require "../../_util/hash_util"
+require "../../_util/time_util"
 
 class SP::VCache
-  VC_DIR = ENV.fetch("VC_DIR", "var/cache/vdata")
-  Dir.mkdir_p(VC_DIR)
+  enum Obj : Int16
+    Ztext = 0 # original text
+    Py_tm = 1 # pinyin with tone marks
+    Hviet = 5 # hanviet
 
-  class_getter init_sql : String = <<-SQL
+    Vi_lv = 10 # translation from lacviet
+    Vi_vp = 11 # translation from vietphrase dicts
 
-  create table vcache(
-    fnv int not null,
-    obj text not null default '',
-    val text not null default '',
+    Vi_qt = 15 # translated by old translator
+    Vi_mt = 16 # translated by new translator
 
-    mtime int not null default 0,
-    noted text not null default '',
+    Vi_uc = 20 # chivi user submitted content
 
-    primary key (fnv, obj, val)
-  ) strict, without rowid;
-  SQL
+    Ms_zv = 30 # translated by bing from zh to vi
+    Gg_zv = 31 # translated by google from zh to vi
+    Bd_zv = 32 # translated by baidu from zh to vi
+    C_gpt = 33 # translated by custom gpt model
 
-  DB_CACHE = {} of Char => Crorm::SQ3
+    Ms_ze = 50 # translated by bing from zh to en
+    Gg_ze = 51 # translated by google from zh to en
+    Bd_ze = 52 # translated by baidu from zh to en
+    Dl_ze = 53 # translated by deepl from zh to en
 
-  def self.load_db(char : Char)
-    DB_CACHE[char] ||= self.db(char)
-  end
-
-  def self.db_path(word : String)
-    "#{DIR}/#{word[0]}-vcache.db3"
-  end
-
-  def self.db_path(char : Char)
-    "#{DIR}/#{char}-vcache.db3"
+    def self.for_bd(tl : String = "vie")
+      tl == "vie" ? Bd_zv : Bd_ze
+    end
   end
 
   ###
+
+  class_getter db : DB::Database = ZR_DB
 
   include Crorm::Model
-  schema "vcache", :sqlite, multi: true
+  schema "vcache", :postgres, strict: false
 
-  field fnv : Int64, pkey: true  # fnv_1a checksum of input string
-  field obj : String, pkey: true # type of row
-  field val : String, pkey: true # value of row
+  field rid : Int64, pkey: true # fnv_1a checksum of input string
+  field obj : Int16, pkey: true # type of row
+  field vid : Int32, pkey: true # hash of val
 
-  field mtime : Int64 = 0   # last modified by
-  field noted : String = "" # additional info for tracking purpose
+  field val : String    # value of row
+  field mcv : Int32 = 0 # last modified by
 
-  def initialize(@fnv, @obj, @val = "", @mtime = Time.utc.to_unix, @noted = "")
+  def self.new(rid : Int64, obj : Obj, val = "", mcv = TimeUtil.cv_mtime)
+    new(rid, obj: obj.value, val: val, mcv: mcv)
+  end
+
+  def initialize(@rid, @obj, @val = "", @mcv = TimeUtil.cv_mtime)
+    @vid = HashUtil.fnv_1a(val).unsafe_as(Int32)
   end
 
   ###
 
-  def self.gen_fnv(raw : String)
+  def self.gen_rid(raw : String)
     HashUtil.fnv_1a_64(raw).unsafe_as(Int64)
   end
 
   def self.get_all(raw : String)
-    self.load_db(raw[0]).open_ro do |db|
-      db.query_all("select * from vcache where fnv = $1", gen_fnv(raw), as: self)
-    end
+    @@db.query_all("select * from vcache where rid = $1", gen_rid(raw), as: self)
   end
 
   def self.get_obj(raw : String, obj : String)
-    self.load_db(raw[0]).open_ro do |db|
-      db.query_all("select * from vcache where fnv = $1 and obj = $2", gen_fnv(raw), obj, as: self)
+    self.get_obj(raw, Obj.parse(obj))
+  end
+
+  def self.get_obj(raw : String, obj : Obj)
+    @@db.query_all("select * from vcache where rid = $1 and obj = $2", gen_rid(raw), obj.value, as: self)
+  end
+
+  def self.get_val(obj : Obj, raws : Array(String), mcv = TimeUtil.cv_fresh(2.weeks))
+    query = "select rid, val from vcache where obj = $1 and rid = any ($2)"
+
+    rids = raws.map { |raw| gen_rid(raw) }
+    hash = @@db.query_all(query, obj.value, rids, as: {Int64, String}).to_h
+
+    output = [] of String
+    blanks = [] of Int32
+
+    rids.each_with_index do |rid, idx|
+      if val = hash[rid]?
+        output << val
+      else
+        output << "<!>"
+        blanks << idx
+      end
+    end
+
+    {output, blanks}
+  end
+
+  def self.upsert!(raw : String, obj : String, val : String, mcv = TimeUtil.cv_mtime)
+    self.upsert!(raw, Obj.parse(obj))
+  end
+
+  def self.upsert!(raw : String, obj : Obj, val : String, mcv = TimeUtil.cv_mtime)
+    rid = gen_rid(raw)
+
+    @@db.transaction do |db|
+      new(rid, obj: :ztext, val: raw, mcv: 0).upsert!(db: db)
+      new(rid, obj: obj, val: val, mcv: mcv).upsert!(db: db)
     end
   end
 
-  def self.upsert!(raw : String, obj : String, val : String, mtime = Time.utc.to_unix, noted = "")
-    fnv = gen_fnv(raw)
+  def self.cache!(obj : Obj, raws : Array(String), vals : Array(String), mcv = TimeUtil.cv_mtime)
+    items = [] of self
 
-    self.load_db(raw[0]).open_tx do |db|
-      new(fnv, "zh", raw, mtime: 0, noted: 0).upsert!(db: db)
-      new(fnv, obj, val, mtime: mtime, noted: noted).upsert!(db: db)
+    vals.zip(raws).each do |val, raw|
+      rid = gen_rid(raw)
+      items << new(rid, obj: :ztext, val: raw, mcv: 0)
+      items << new(rid, obj: obj, val: val, mcv: mcv)
+    end
+
+    @@db.transaction do |tx|
+      items.each(&.upsert!(db: tx.connection))
     end
   end
 end

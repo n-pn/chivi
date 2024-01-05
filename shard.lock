@@ -61,6 +61,10 @@ shards:
     git: https://github.com/jgaskins/hot_topic.git
     version: 0.1.0+git.commit.c4577d949221d535f29162343bf503b578308954
 
+  http_proxy:
+    git: https://github.com/mamantoha/http_proxy.git
+    version: 0.10.1
+
   icu:
     git: https://github.com/olbat/icu.cr.git
     version: 0.1.0+git.commit.fdf870c29d02694cc6414563970cabe00da6544d
@@ -100,10 +104,6 @@ shards:
   tabkv:
     git: https://github.com/chi-vi/tabkv.git
     version: 0.2.0+git.commit.56cf3099f2bb0e58f5e9a3870fb7aec348c07020
-
-  wordsmith:
-    git: https://github.com/luckyframework/wordsmith.git
-    version: 0.4.0
 
   zstd:
     git: https://github.com/didactic-drunk/zstd.cr.git

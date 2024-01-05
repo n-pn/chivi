@@ -71,7 +71,7 @@
     } else {
       state = 0
       await rpage.load_mtran(2, ropts.mt_rm, ropts.pdict)
-      rpage = rpage
+      rline = rpage.lines[l_idx]
     }
   }
 </script>

@@ -6,7 +6,9 @@ mdesc: Chivi hiện không sống bằng quảng cáo, tiền ủng hộ của c
 <script>
   import { get_user } from '$lib/stores'
   const _user = get_user()
-  $: code = `CHIVI ${$_user.uname} ID ${$_user.vu_id}`
+
+  $: uname = $_user.uname.normalize("NFD").replace(/[\u0300-\u036f_]/g, "")
+  $: code = `CHIVI ${uname} ID ${$_user.vu_id}`
 </script>
 
 Chivi hiện không sống bằng quảng cáo, tiền ủng hộ của các bạn là đầu vào duy nhất để nuôi sống trang web.

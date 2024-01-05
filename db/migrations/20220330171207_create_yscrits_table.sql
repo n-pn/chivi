@@ -2,19 +2,22 @@
 CREATE TABLE yscrit(
   id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   yc_id bytea NOT NULL UNIQUE,
+  yl_id bytea,
   --
   ysbook_id int NOT NULL DEFAULT 0 REFERENCES ysbooks(id) ON UPDATE CASCADE ON DELETE CASCADE,
   nvinfo_id int NOT NULL DEFAULT 0 REFERENCES wninfos(id) ON UPDATE CASCADE ON DELETE CASCADE,
   ysuser_id int NOT NULL DEFAULT 0 REFERENCES ysusers(id) ON UPDATE CASCADE ON DELETE CASCADE,
-  --
-  yl_id bytea NOT NULL DEFAULT ''::bytea,
-  yslist_id int NOT NULL DEFAULT 0,
+  yslist_id int,
   --
   stars int NOT NULL DEFAULT 3,
   _sort int GENERATED ALWAYS AS (stars *(stars * like_count + repl_count)) STORED,
   --
   ztext text compresssion lz4 NOT NULL DEFAULT '',
   vhtml text compresssion lz4 NOT NULL DEFAULT '',
+  vi_mt text compresssion lz4,
+  vi_bd text compresssion lz4,
+  en_bd text compresssion lz4,
+  en_dl text compresssion lz4,
   --
   ztags text[] NOT NULL DEFAULT '{}' ::text[],
   vtags text[] NOT NULL DEFAULT '{}' ::text[],

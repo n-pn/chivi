@@ -23,7 +23,7 @@ struct YS::CritView
       jb.field "vtags", @data.vtags
 
       # @data.fix_vhtml(persist: true) if @data.vhtml.empty?
-      jb.field "vhtml", @data.vhtml
+      jb.field "vhtml", self.render_html
 
       jb.field "like_count", @data.like_count
       jb.field "repl_count", @data.repl_count
@@ -31,6 +31,21 @@ struct YS::CritView
       jb.field "ctime", @data.created_at.to_unix
       jb.field "utime", @data.updated_at.to_unix
     end
+  end
+
+  def render_html
+    if vi_bd = @data.vi_bd
+      to_html(vi_bd)
+    elsif !@data.vhtml.blank?
+      @data.vhtml
+    else
+      # TODO: call translation!
+      to_html(@data.ztext)
+    end
+  end
+
+  def to_html(input : String)
+    input.lines.join('\n') { |line| "<p>#{line.gsub('<', "&gt;")}</p>" }
   end
 
   def self.as_list(inp : Enumerable(Yscrit), full = false)

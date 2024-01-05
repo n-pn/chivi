@@ -90,17 +90,17 @@ def gen_names_from_bd_tran
     where bt_zh <> '' and vi_bd = ''
   SQL
 
-  input = PGDB.query_all(query, as: {Int32, String})
+  input = PGDB.query_all(query, as: {Int32, String}).shuffle!
   return if input.empty?
 
   puts "calling baidu: #{input.size}"
   update_sql = "update btitles set vi_bd = $1 where id = $2"
 
-  input.shuffle!.each_slice(200).with_index(1) do |slice, index|
-    puts "- #{index * 200} / #{input.size}"
+  input.each_slice(500).with_index(1) do |slice, index|
+    puts "- #{index * 500} / #{input.size}"
 
     words = slice.map(&.[1])
-    trans = SP::BdTran.web_translate(words.join('\n'), sl: "auto", tl: "vie", retry: true)
+    trans = SP::BdTran.api_translate(words.join('\n'), sl: "auto", tl: "vie", retry: true)
 
     PGDB.transaction do |tx|
       db = tx.connection
@@ -159,7 +159,7 @@ end
 gen_names_from_hviet
 gen_names_from_qt_v1
 gen_names_from_ms_tran
-# gen_names_from_bd_tran
+gen_names_from_bd_tran
 gen_names_from_dl_tran
 
 # btitles = ZR::Btitle.db.open_ro do |db|

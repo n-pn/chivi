@@ -4,6 +4,7 @@ require "../../_data/_data"
 PGDB.exec <<-SQL
   insert into btitles(bt_zh, bt_hv, bt_vi)
   select btitle_zh, btitle_hv, btitle_vi from wninfos
+  where id >= 10
   order by wninfos.id asc
   on conflict(bt_zh) do nothing
 SQL

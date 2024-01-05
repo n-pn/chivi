@@ -2,6 +2,8 @@ require "../_base"
 require "../../mt_ai/core/qt_core"
 
 class CV::Btitle
+  class_getter db : DB::Database = PGDB
+
   include Crorm::Model
   schema "btitles", :postgres, strict: false
 

@@ -9,12 +9,17 @@ interface YcritData {
   book?: CV.Crbook
   list?: CV.Yslist
 }
-export const load = (async ({ fetch, params: { crit } }) => {
+export const load = (async ({ url, fetch, params: { crit } }) => {
   const ycrit = await api_get<YcritData>(`/_ys/crits/${crit}`, fetch)
+
+  const pg = +url.searchParams.get('pg') || 1
+  const rpurl = `/_ys/repls/${crit}?pg=${pg}&lm=200`
+  const repls = await api_get<CV.Ysrepl[]>(rpurl, fetch)
 
   return {
     ycrit,
-    repls: api_get<CV.Ysrepl[]>(`/_ys/repls/${crit}`, fetch),
+    repls,
+
     _title: `Đánh giá [${crit}] - ${ycrit.book?.vtitle}`,
     _meta: {
       left_nav: [

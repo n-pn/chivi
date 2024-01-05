@@ -43,6 +43,10 @@ module TimeUtil
     ((rtime.to_unix &- CV_EPOCH) // 60).to_i
   end
 
+  def self.cv_fresh(tspan : Time::Span | Time::MonthSpan = 6.months)
+    self.cv_mtime(Time.utc - tspan)
+  end
+
   def self.cv_utime(mtime : Int32)
     mtime > 0 ? CV_EPOCH &+ mtime &* 60 : 0
   end

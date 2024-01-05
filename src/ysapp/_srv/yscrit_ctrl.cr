@@ -13,7 +13,7 @@ class YS::CritCtrl < AC::Base
             vtag : String? = nil)
     pg_no, limit, offset = _paginate(max: 24)
 
-    query = Yscrit.query.sort_by(sort).where("vhtml <> ''")
+    query = Yscrit.query.sort_by(sort)
 
     query.where("? = any(vtags)", vtag) if vtag
     query.where("ysuser_id = ?", user) if user
@@ -83,8 +83,12 @@ class YS::CritCtrl < AC::Base
 
     case type
     when "ztext" then text = ycrit.ztext
-    when "ms_vi" then text = ycrit.load_btran_from_disk
-    when "dl_en" then text = ycrit.load_deepl_from_disk
+    when "vi_mt" then text = ycrit.vi_mt || ycrit.ztext
+    when "vi_bd" then text = ycrit.vi_bd || ycrit.ztext
+    when "vi_ms" then text = ycrit.vi_ms || ycrit.ztext
+    when "en_dl" then text = ycrit.en_dl || ycrit.ztext
+    when "en_bd" then text = ycrit.en_bd || ycrit.ztext
+    when "en_ms" then text = ycrit.en_ms || ycrit.ztext
     else              text = ycrit.vhtml
     end
 

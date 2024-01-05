@@ -14,8 +14,8 @@ struct YS::YsreplPeek
   getter like_count : Int32
   getter repl_count : Int32
 
-  def self.fetch_all(yscrit_id : Int32)
-    PG_DB.query_all <<-SQL, yscrit_id, as: self
+  def self.fetch_all(yscrit_id : Int32, limit = 100, offset = 0)
+    PG_DB.query_all <<-SQL, yscrit_id, limit, offset, as: self
     select
       u.id as yu_id,
       u.vname as uname,
@@ -30,6 +30,7 @@ struct YS::YsreplPeek
     where r.yscrit_id = $1
       and r.vhtml <> ''
     order by r.created_at asc
+    limit $2 offset $3
     SQL
   end
 

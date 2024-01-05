@@ -23,6 +23,13 @@ class YS::Yscrit
   column ztext : String = ""
   column vhtml : String = ""
 
+  column vi_mt : String? = nil
+  column vi_bd : String? = nil
+  column vi_ms : String? = nil
+  column en_bd : String? = nil
+  column en_dl : String? = nil
+  column en_ms : String? = nil
+
   column stars : Int32 = 3 # voting 1 2 3 4 5 stars
   column vtags : Array(String) = [] of String
 
@@ -59,45 +66,45 @@ class YS::Yscrit
     "#{self.yc_id}.#{ext}"
   end
 
-  def load_btran_from_disk : String
-    load_htm_from_disk("bv", persist: true) { |ztext| TranUtil.btran(ztext) }
-  end
+  # def load_btran_from_disk : String
+  #   load_htm_from_disk("bv", persist: true) { |ztext| TranUtil.btran(ztext) }
+  # end
 
-  def load_deepl_from_disk : String
-    load_htm_from_disk("de", persist: true) { |ztext| TranUtil.deepl(ztext) }
-  end
+  # def load_deepl_from_disk : String
+  #   load_htm_from_disk("de", persist: true) { |ztext| TranUtil.deepl(ztext) }
+  # end
 
-  private def load_htm_from_disk(type : String, persist : Bool = true, &)
-    YsUtil.read_zip(self.zip_path(type), filename("htm")) do
-      ztext = self.ztext
+  # private def load_htm_from_disk(type : String, persist : Bool = true, &)
+  #   YsUtil.read_zip(self.zip_path(type), filename("htm")) do
+  #     ztext = self.ztext
 
-      if !ztext.empty? && (vtext = yield ztext)
-        html = "<p>#{vtext.gsub('\n', "</p><p>")}</p>"
-      else
-        html = "<p>$$$</p>"
-        persist = false
-      end
+  #     if !ztext.empty? && (vtext = yield ztext)
+  #       html = "<p>#{vtext.gsub('\n', "</p><p>")}</p>"
+  #     else
+  #       html = "<p>$$$</p>"
+  #       persist = false
+  #     end
 
-      save_data_to_disk(html, type: type, ext: "htm") if persist
-      html
-    end
-  rescue err
-    Log.error(exception: err) { "error loading #{type} html for #{yc_id} of #{ysbook_id}" }
-    "<p>$$$</p>"
-  end
+  #     save_data_to_disk(html, type: type, ext: "htm") if persist
+  #     html
+  #   end
+  # rescue err
+  #   Log.error(exception: err) { "error loading #{type} html for #{yc_id} of #{ysbook_id}" }
+  #   "<p>$$$</p>"
+  # end
 
-  def save_data_to_disk(data : String, type : String, ext : String) : Nil
-    dir_path = self.tmp_path(type)
-    Dir.mkdir_p(dir_path)
+  # def save_data_to_disk(data : String, type : String, ext : String) : Nil
+  #   dir_path = self.tmp_path(type)
+  #   Dir.mkdir_p(dir_path)
 
-    file_path = File.join(dir_path, filename(ext))
-    File.write(file_path, data)
+  #   file_path = File.join(dir_path, filename(ext))
+  #   File.write(file_path, data)
 
-    zip_path = self.zip_path(type)
-    YsUtil.zip_data(zip_path, dir_path)
+  #   zip_path = self.zip_path(type)
+  #   YsUtil.zip_data(zip_path, dir_path)
 
-    Log.debug { "save #{file_path} to #{zip_path}" }
-  end
+  #   Log.debug { "save #{file_path} to #{zip_path}" }
+  # end
 
   ###################
 
