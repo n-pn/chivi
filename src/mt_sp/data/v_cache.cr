@@ -26,6 +26,11 @@ class SP::VCache
     Bd_ze = 52 # translated by baidu from zh to en
     Dl_ze = 53 # translated by deepl from zh to en
 
+    Ms_je = 70 # translated by bing from ja to en
+    Gg_je = 71 # translated by google from ja to en
+    Bd_je = 72 # translated by baidu from ja to en
+    Dl_je = 73 # translated by deepl from ja to en
+
     def self.for_bd(tl : String = "vie")
       tl == "vie" ? Bd_zv : Bd_ze
     end
@@ -72,24 +77,30 @@ class SP::VCache
   end
 
   def self.get_val(obj : Obj, raws : Array(String), mcv = TimeUtil.cv_fresh(2.weeks))
-    query = "select rid, val from vcache where obj = $1 and rid = any ($2)"
+    query = "select rid, val, mcv from vcache where obj = $1 and rid = any ($2)"
 
     rids = raws.map { |raw| gen_rid(raw) }
-    hash = @@db.query_all(query, obj.value, rids, as: {Int64, String}).to_h
+    hash = {} of Int64 => {String, Int32}
 
-    output = [] of String
-    blanks = [] of Int32
+    @@db.query_each(query, obj.value, rids) do |rs|
+      hash[rs.read(Int64)] = rs.read(String, Int32)
+    end
+
+    cached = [] of String
+    remain = [] of Int32
+    mtime = TimeUtil.cv_mtime
 
     rids.each_with_index do |rid, idx|
-      if val = hash[rid]?
-        output << val
+      if found = hash[rid]?
+        cached << found[0]
+        mtime = found[1] if mtime > found[1]
       else
-        output << "<!>"
-        blanks << idx
+        cached << "<!>"
+        remain << idx
       end
     end
 
-    {output, blanks}
+    {cached, remain, TimeUtil.cv_utime(mtime)}
   end
 
   def self.upsert!(raw : String, obj : String, val : String, mcv = TimeUtil.cv_mtime)

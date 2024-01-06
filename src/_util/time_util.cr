@@ -47,8 +47,8 @@ module TimeUtil
     self.cv_mtime(Time.utc - tspan)
   end
 
-  def self.cv_utime(mtime : Int32)
-    mtime > 0 ? CV_EPOCH &+ mtime &* 60 : 0
+  def self.cv_utime(mtime : Int32) : Int64
+    mtime > 0 ? CV_EPOCH &+ mtime &* 60 : 0_i64
   end
 end
 

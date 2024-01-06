@@ -19,7 +19,7 @@ record Input, id : Int32, ztext : String, vi_bd : String do
 end
 
 SELECT_SQL = <<-SQL
-select id, ztext, vi_bd from yscrits
+select id, ztext, vi_bd from ysrepls
 where ztext <> '' and vi_bd is not null
 SQL
 
@@ -37,7 +37,7 @@ inputs.each_slice(100) do |slice|
 
     if raws.size != vals.size
       Log.warn { "#{input.id} has mismatch size! (#{raws.size}, #{vals.size})" }
-      File.open("var/zroot/yscrit-vi_bd-mismatch.log", "a", &.puts(input.id))
+      File.open("var/zroot/ysrepl-vi_bd-mismatch.log", "a", &.puts(input.id))
       next
     end
 

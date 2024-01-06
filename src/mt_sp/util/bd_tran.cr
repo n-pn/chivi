@@ -1,27 +1,14 @@
 require "colorize"
 require "./bd_util"
-require "../data/v_cache"
 
 module SP::BdTran
-  API_PATH    = "/ait/text/translate"
+  API_PATH = "/ait/text/translate"
+
   API_HEADERS = BdUtil.gen_headers("application/json")
 
-  def self.api_translate(input : Array(String), tl : String = "vie", retry = true, cache = true)
-    return api_translate(input.join('\n'), tl: tl, retry: retry, cache: cache) unless cache
-
-    output, blanks = VCache.get_val(VCache::Obj.for_bd(tl), input)
-    return output if blanks.empty?
-
-    ztext = blanks.join('\n') { |idx| input[idx] }
-    trans = api_translate(ztext, tl: tl, retry: retry, cache: cache)
-    trans.each_with_index { |tran, idx| output[blanks[idx]] = tran }
-
-    output
-  end
-
-  def self.api_translate(ztext : String, tl = "vie", retry : Bool = true, cache : Bool = true)
+  def self.api_translate(query : Array(String), tl = "vie", retry : Bool = true)
     body = {
-      query: ztext, from: "zh", to: tl,
+      query: query.join('\n'), from: "zh", to: tl,
       reference: "", corpusIds: [] of Int32, domain: "common",
       qcSettings: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"],
     }.to_json
@@ -31,9 +18,7 @@ module SP::BdTran
       res_body = BdUtil.client(proxy).post(API_PATH, headers: API_HEADERS, body: body, &.body_io.gets_to_end)
 
       if res_body.includes?("Translating")
-        trans = ApiData.parse(res_body).data.map(&.dst)
-        cache_result!(ztext, trans, tl: tl) if cache
-        return trans
+        return ApiData.parse(res_body).data.map(&.dst)
       end
 
       break res_body unless proxy || retry
@@ -88,9 +73,7 @@ module SP::BdTran
       res_body = res.body_io.gets_to_end
 
       if res_body.includes?("trans_result")
-        trans = WebData.from_json(res_body).trans_result.map(&.dst)
-        cache_result!(ztext, trans, tl)
-        trans
+        return WebData.from_json(res_body).trans_result.map(&.dst)
       elsif retry
         BdUtil.reset_auth!
         web_translate(ztext, tl: tl, retry: false)
@@ -111,10 +94,6 @@ module SP::BdTran
       include JSON::Serializable
       getter dst : String
     end
-  end
-
-  def self.cache_result!(ztext : String, trans : Array(String), tl = "vie")
-    spawn VCache.cache!(obj: VCache::Obj.for_bd(tl), vals: trans, raws: ztext.lines)
   end
 
   # puts api_translate "我的女儿"

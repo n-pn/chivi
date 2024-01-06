@@ -2,7 +2,7 @@ require "colorize"
 
 ENV["CV_ENV"] ||= "production"
 require "../../src/_data/_data"
-require "../../src/mt_sp/util/bd_tran"
+require "../../src/mt_sp/data/qt_data"
 
 record Input, id : Int32, ztext : String do
   include DB::Serializable
@@ -33,7 +33,8 @@ def split_text(crits : Array(Input))
   crits.each do |ycrit|
     ycrit.lines.each do |zline|
       texts.last << zline
-      total += zline.size
+      total += zline.size + 1
+
       next if total < limit
       texts << [] of String
       total = 0
@@ -49,6 +50,8 @@ crit_count = 0
 
 input = PGDB.query_all(SELECT_SQL, as: Input).shuffle!
 
+CACHE_DIR = "/2tb/zroot/ydata/yscrit"
+
 input.each_slice(200).with_index(1) do |crits, index|
   texts = split_text(crits)
   trans = [] of String
@@ -60,7 +63,11 @@ input.each_slice(200).with_index(1) do |crits, index|
     char_total += char_count
 
     Log.info { "<#{index}-#{index_2}> #{char_count} chars".colorize.cyan }
-    trans.concat SP::BdTran.api_translate(lines.join('\n'), tl: "vie", retry: false)
+
+    vtext, mtime = SP::QtData.from_ztext(lines, cache_dir: CACHE_DIR).get_vtran("bd_zv")
+    trans.concat(vtext)
+
+    Log.info { " cached at: #{Time.unix(mtime)}" }
     Log.info { " trans: #{trans.size}, total: #{char_total}".colorize.green }
   end
 

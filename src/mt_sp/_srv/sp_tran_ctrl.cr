@@ -21,11 +21,11 @@ class SP::TranCtrl < AC::Base
 
   private def do_translate(qdata : QtData, type : String, opts = "", redo = false)
     sleep 10.milliseconds * (1 << (4 - self._privi))
+    lines, mtime = qdata.get_vtran(type, opts: opts, redo: redo)
 
-    response.headers["ETag"] = qdata.fname
+    response.headers["ETag"] = mtime.to_s
     response.content_type = "text/plain; charset=utf-8"
 
-    vtext = qdata.get_vtran(type, opts: opts, redo: redo)
-    render text: vtext
+    render text: lines.join('\n')
   end
 end

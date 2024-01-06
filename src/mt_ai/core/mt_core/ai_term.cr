@@ -126,6 +126,9 @@ class MT::AiTerm
     when MtDefn
       io << ' ' << @zstr.colorize.dark_gray
       io << ' ' << body.vstr.colorize(COLORS[body.dnum.value % 10])
+    when AiTerm
+      io << (body.epos.inline_block? || body.body.is_a?(MtDefn) ? " " : "\n" + "  " * deep)
+      body.inspect(io: io, deep: deep &+ 1)
     else
       self.each_child do |term|
         io << (@epos.inline_block? ? " " : "\n" + "  " * deep)
