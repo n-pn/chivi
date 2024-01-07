@@ -1,19 +1,16 @@
 import type { PageLoad } from './$types'
 
 export const load = (async ({ url: { searchParams, pathname } }) => {
-  const ztext = searchParams.get('zh') || ''
-  const tmode = searchParams.get('tm') || 'mtl_2'
-
   const pdict = searchParams.get('pdict') || 'combine'
+  const tmode = searchParams.get('tmode') || 'mtl_2'
 
   return {
-    ztext,
-    tmode,
     pdict,
-    ontab: 'index',
+    tmode,
+    ontab: 'multi',
     _title: 'Dịch đoạn văn',
     _meta: {
-      left_nav: [{ text: 'Dịch đoạn văn', icon: 'language', href: pathname }],
+      left_nav: [{ text: 'Dịch nhanh', icon: 'bolt', href: pathname }],
     },
   }
 }) satisfies PageLoad

@@ -25,7 +25,7 @@ const call_qtran = async (
   } else if (type == 'qt_v1') {
     const wn_id = opts['wn_id'] || 0
     const title = opts['title'] || 1
-    url += `&opts=${wn_id}:${title}`
+    url += `&opts=${wn_id},${title}`
   }
 
   const start = performance.now()
@@ -38,6 +38,30 @@ const call_qtran = async (
   console.log(`- ${type}: ${body.length} chars, ${spent} milliseconds`)
 
   return vtran.trim().split('\n')
+}
+
+const call_mtran = async (
+  body: string,
+  type: string,
+  opts = {},
+  redo = false
+) => {
+  let url = `/_sp/qtran/${type}?redo=${redo}`
+
+  const pdict = opts['pdict'] || 'combine'
+  const title = opts['title'] || 1
+  url += `&opts=${pdict},${title}`
+
+  const start = performance.now()
+
+  const res = await fetch(url, { method: 'POST', body })
+  if (!res.ok) return { lines: [] }
+  const mdata = await res.json()
+
+  const spent = performance.now() - start
+  console.log(`- ${type}: ${body.length} chars, ${spent} milliseconds`)
+
+  return mdata
 }
 
 export class Rdword {
@@ -89,13 +113,10 @@ export class Rdline {
     if (rmode == 0 || (rmode == 1 && cached)) return cached
     this.mtran[mtype] = ['', '', 0, 0, '', '', 0]
 
-    const url = `/_ai/qtran?pdict=${pdict}&_algo=${mtype}`
-    const res = await fetch(url, { method: 'post', body: this.ztext })
-    if (!res.ok) return ['', '', 0, 0, '', '', 0]
+    const opts = { pdict, title: 0 }
+    const { lines } = await call_mtran(this.ztext, mtype, opts)
 
-    const { lines } = await res.json()
     this.mtran[mtype] = lines[0]
-
     return lines[0]
   }
 
@@ -229,10 +250,8 @@ export class Rdpage {
       return this.get_mtran(mtype)
     }
 
-    const url = `/_ai/qtran?pdict=${pdict}&_algo=${mtype}`
-    const res = await globalThis.fetch(url, this.gen_rinit(cache, 'POST'))
-
-    const { lines } = await res.json()
+    const opts = { pdict, title: 1 }
+    const { lines } = await call_mtran(this.ztext.join('\n'), mtype, opts)
 
     for (let i = 0; i < this.lines.length; i++) {
       this.lines[i].mtran[mtype] = lines[i]

@@ -40,32 +40,64 @@ class SP::QtData
   def initialize(@lines, @fbase, @cache = true)
   end
 
+  MULTP_MAP = {
+    "mtl_0" => 1,
+    "mtl_1" => 2,
+    "mtl_2" => 3,
+    "mtl_3" => 3,
+    "ms_zv" => 4,
+    "ms_ze" => 4,
+    "bd_zv" => 5,
+    "bd_ze" => 5,
+    "dl_ze" => 8,
+    "dl_je" => 8,
+    "c_gpt" => 10,
+  }
+
+  def quota_using(type : String, opts : String = "")
+    base = @lines.sum(&.size) + @lines.size
+    MULTP_MAP[type]?.try { |x| x * base } || base // 2
+  end
+
   def get_vtran(type : String, opts : String = "", redo : Bool = false)
-    return {[] of String, 0_i64} if @lines.empty?
+    return {"", 0_i64} if @lines.empty?
     fpath = "#{@fbase}.#{type}.txt"
 
     read_file(fpath, redo ? 5.minutes : 2.weeks) || begin
       mdata = load_vtext(type, opts)
       raise "Lỗi dịch nhanh với chế độ #{type}" unless mdata
-
-      File.write(fpath, mdata[0].join('\n')) if @cache
+      File.write(fpath, mdata[0]) if @cache
       mdata
     end
   end
 
-  def read_file(fpath : String, tspan = 2.weeks) : {Array(String), Int64}?
+  def read_file(fpath : String, tspan = 2.weeks) : {String, Int64}?
     return unless @cache && (info = File.info?(fpath))
     return unless info.modification_time >= Time.utc - tspan
 
-    {File.read_lines(fpath), info.modification_time.to_unix}
+    {File.read(fpath), info.modification_time.to_unix}
   end
 
-  def load_vtext(type : String, opts : String) : {Array(String), Int64}?
+  MT_AI_API = "#{CV_ENV.ai_host}/_ai/qtran"
+
+  def get_mtran(m_alg : String, opts : String = "combine,1", redo : Bool = false)
+    opts = opts.split(/[,:]/, remove_empty: true)
+    pdict = opts[0]? || "combine"
+    ch_rm = opts[1]? || "1"
+
+    url = "#{MT_AI_API}?_algo=#{m_alg}&pdict=#{pdict}&ch_rm=#{ch_rm}&force=#{redo}"
+    mdata = HTTP::Client.post(url, body: @lines.join('\n'), &.body_io.gets_to_end)
+
+    {mdata, Time.utc.to_unix}
+  end
+
+  def load_vtext(type : String, opts : String) : {String, Int64}?
     return {call_qt_v1(opts), Time.utc.to_unix} if type == "qt_v1"
+
     vobj = VCache::Obj.parse(type)
 
     cached, remain, mtime = VCache.get_val(obj: vobj, raws: @lines)
-    return {cached, mtime} if remain.empty?
+    return {cached.join('\n'), mtime} if remain.empty?
 
     missing = remain.map { |idx| @lines[idx] }
 
@@ -90,18 +122,18 @@ class SP::QtData
     VCache.cache!(obj: vobj, raws: missing, vals: vlines)
 
     vlines.each_with_index { |vtext, idx| cached[remain[idx]] = vtext }
-    {cached, mtime}
+    {cached.join('\n'), mtime}
   end
 
   QT_V1_API = "#{CV_ENV.m1_host}/_m1/qtran"
 
   private def call_qt_v1(opts : String = "0,1", format = "txt")
-    wn_id, _sep, title = opts.partition(':')
-    wn_id = "0" if wn_id.empty?
-    title = "1" if title.empty?
+    opts = opts.split(/[,:]/, remove_empty: true)
+    wn_id = opts[0]? || "0"
+    title = opts[1]? || "1"
 
     url = "#{QT_V1_API}?format=#{format}&wn_id=#{wn_id}&title=#{title}"
-    HTTP::Client.post(url, body: @lines.join('\n'), &.body_io.gets_to_end.lines)
+    HTTP::Client.post(url, body: @lines.join('\n'), &.body_io.gets_to_end)
   end
 
   C_GPT_API    = "http://184.174.38.115:9090"

@@ -1,4 +1,6 @@
 require "../../mt_ai/core/qt_core"
+require "../../_data/member/uquota"
+
 require "./_sp_ctrl_base"
 require "../util/*"
 
@@ -9,7 +11,10 @@ class SP::TranCtrl < AC::Base
 
   @[AC::Route::POST("/:type")]
   def tl_text(type : String, opts : String = "", redo : Bool = false)
-    qdata = QtData.from_ztext(self._read_body)
+    ztext = self._read_body
+    raise BadRequest.new("Nội dung dịch không hợp lệ!") if ztext.size > 5000
+
+    qdata = QtData.from_ztext(ztext)
     do_translate(qdata, type, opts, redo)
   end
 
@@ -21,11 +26,24 @@ class SP::TranCtrl < AC::Base
 
   private def do_translate(qdata : QtData, type : String, opts = "", redo = false)
     sleep 10.milliseconds * (1 << (4 - self._privi))
-    lines, mtime = qdata.get_vtran(type, opts: opts, redo: redo)
+
+    if type.starts_with?("mtl_")
+      vdata, mtime = qdata.get_mtran(type, opts: opts, redo: redo)
+    else
+      vdata, mtime = qdata.get_vtran(type, opts: opts, redo: redo)
+    end
+
+    quota = Uquota.load(self._vu_id)
+    quota.add_using!(qdata.quota_using(type, opts))
 
     response.headers["ETag"] = mtime.to_s
-    response.content_type = "text/plain; charset=utf-8"
+    response.headers["X-Quota"] = quota.quota_limit.to_s
+    response.headers["X-Using"] = quota.quota_using.to_s
 
-    render text: lines.join('\n')
+    response.content_type = "text/plain; charset=utf-8"
+    render text: vdata
+  rescue ex
+    Log.error(exception: ex) { ex.message }
+    render 500, text: ex.message
   end
 end

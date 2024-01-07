@@ -1,46 +1,92 @@
 require "log"
+require "yaml"
 require "colorize"
-require "compress/gzip"
+
+require "http/client"
+require "http_proxy"
+
+struct HttpProxy
+  include YAML::Serializable
+
+  getter host : String
+  getter port : Int32
+  getter user : String
+  getter pass : String
+
+  getter rotator = ""
+
+  def proxy_client
+    HTTP::Proxy::Client.new(@host, port: @port, username: @user, password: @pass)
+  end
+
+  def rotate_ip!(retry = 4)
+    return if @rotator.blank?
+
+    retry.times do |i|
+      Log.info { "reseting IP address (try: #{i})" }
+
+      res = HTTP::Client.get(@rotator)
+      break if res.status.success?
+
+      if @rotator.includes?("proxyxoay.net")
+        delay = res.body.match!(/\s(\d+)\s/)[1].to_i
+      else
+        delay = 10 * 2 << i
+      end
+
+      Log.info { "sleeping #{delay} seconds before retrying" }
+      sleep delay.seconds
+    end
+  end
+
+  class_getter all_entries : Array(self) do
+    Array(self).from_yaml(File.read("var/_conf/http-proxies.yml"))
+  rescue
+    [] of self
+  end
+
+  def self.pick_one
+    self.all_entries.last?
+  end
+end
 
 module HttpUtil
-  extend self
+  ENCODING = Hash(String, String).from_yaml({{ read_file(__DIR__ + "/fixed/encoding.yml") }})
 
-  UTF8 = {
-    "jx_la", "zxcs_me", "xswang",
-    "hetushu", "paoshu8", "zhwenpg",
-    "bxwxorg", "sdyfcm", "133txt",
-    "biqugse", "bqxs520", "uuks",
-    "yannuozw", "kanshu8",
-  }
-
-  def encoding_for(sname : String) : String
-    UTF8.includes?(sname) ? "UTF-8" : "GBK"
+  def self.encoding_for(hostname : String) : String
+    ENCODING[hostname]? || "GB18030"
   end
 
-  def cache(file : String, link : String,
-            ttl : Time::Span | Time::MonthSpan = 10.years,
-            encoding : String = "UTF-8")
-    return read_gzip(file) if fresh?(file, ttl)
-    fetch(link, encoding).tap { |data| save_gzip(file, data) }
-  rescue err
-    Log.error(exception: err) { link.colorize.red }
-    read_gzip(file)
+  def self.content_type(type : String)
+    case type
+    when "text" then "text/plain"
+    when "form" then "application/x-www-form-urlencoded"
+    when "json" then "application/json"
+    else             raise "invalid content type"
+    end
   end
 
-  private def fresh?(file : String, ttl)
-    return false unless info = File.info?(file)
-    Time.utc - ttl < info.modification_time
+  def self.make_headers(referer = "", cookie = "", content_type = "text/html")
+    HTTP::Headers{
+      "Origin"     => referer,
+      "Referer"    => referer,
+      "Cookie"     => cookie,
+      "User-Agent" => "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0",
+
+      "Content-Type" => content_type,
+      # "Accept-Encoding" => "gzip, deflate, br",
+    }
   end
 
-  def read_gzip(file : String)
-    File.open(file) { |io| Compress::Gzip::Reader.open(io, &.gets_to_end) }
+  def self.make_client(uri : URI, proxy : HttpProxy? = nil)
+    client = HTTP::Client.new(uri)
+    client.connect_timeout = 10
+    client.proxy = proxy.proxy_client if proxy
+    client
   end
 
-  def save_gzip(file : String, data : String)
-    File.open(file, "w") { |io| Compress::Gzip::Writer.open(io, &.print(data)) }
+  def self.get_text(uri : URI, use_proxy : Bool = false)
   end
-
-  USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"
 
   def fetch(url : String, encoding = "UTF-8") : String
     args = {"-H", "user-agent: #{USER_AGENT}", "-L", "-k", "-s", "-m", "10", url}

@@ -28,7 +28,7 @@
   {/each}
 </nav>
 
-<form class="qtran" action="/qt" method="GET">
+<form class="qtran" action="/qt/multi" method="GET">
   <input class="m-input" name="zh" placeholder="Dịch nhanh câu tiếng trung" />
   <button type="submit" class="m-btn _primary _fill">
     <SIcon name="bolt" />

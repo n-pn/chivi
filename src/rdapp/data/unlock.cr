@@ -1,5 +1,6 @@
 require "../../_data/_data"
 require "../../_data/member/xvcoin"
+require "../../_data/member/uquota"
 
 class RD::Unlock
   class_getter db : DB::Database = PGDB
@@ -40,14 +41,18 @@ class RD::Unlock
   def unlock!(db = @@db) : Int32
     return 414 if @ulkey.empty? || @zsize == 0
 
+    # TODO: convert vcoin to integer
+
     if @user_lost > 0
-      # TODO: convert vcoin to vnd
       remain = CV::Xvcoin.subtract(vu_id: @vu_id, value: @user_lost / 1000)
       return 415 unless remain && remain >= 0
+
+      uquota = Uquota.load(@vu_id)
+      uquota.add_karma!(@user_lost * 100)
     end
 
     if @owner > 0
-      spawn CV::Xvcoin.increase(vu_id: @owner, value: @owner_got / 1000)
+      CV::Xvcoin.increase(vu_id: @owner, value: @owner_got / 1000)
     end
 
     self.upsert!(db: db)

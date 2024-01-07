@@ -1,93 +1,26 @@
 require "json"
-require "yaml"
-require "http/client"
-require "http_proxy"
+require "../../_util/http_util"
 
-struct RotateProxy
-  include YAML::Serializable
-  getter host : String
-  getter port : Int32
-  getter user : String
-  getter pass : String
-
-  getter change_ip_api = ""
-
-  def proxy_client
-    HTTP::Proxy::Client.new(@host, port: @port, username: @user, password: @pass)
-  end
-
-  def change_ip!(retry = 4)
-    return if @change_ip_api.blank?
-
-    retry.times do |i|
-      Log.info { "reseting IP address (try: #{i})" }
-
-      res = HTTP::Client.get(@change_ip_api)
-      break if res.status.success?
-
-      if @change_ip_api.includes?("proxyxoay.net")
-        delay = res.body.match!(/\s(\d+)\s/)[1].to_i
-      else
-        delay = 10 * 2 << i
-      end
-
-      Log.info { "sleeping #{delay} seconds before retrying" }
-      sleep delay.seconds
-    end
-  end
-
-  class_getter all_entries : Array(self) do
-    Array(self).from_yaml(File.read("var/_conf/rotate-proxies.yml"))
-  end
-end
-
-module SP::BdUtil
+struct SP::BdAuth
+  # WEB_URL = "https://fetch.nipin.workers.dev?q=https://fanyi.baidu.com"
   WEB_URL = "https://fanyi.baidu.com"
   WEB_URI = URI.parse(WEB_URL)
 
-  def self.client(proxy : RotateProxy? = nil)
-    client = HTTP::Client.new(WEB_URI)
+  getter token : String = ""
+  getter gtk : String = ""
+  getter cookie : String = ""
 
-    client.connect_timeout = 5
-    client.read_timeout = 10
+  def initialize
+    @cookie = HttpUtil.make_client(WEB_URI).get("/", &.headers["Set-Cookie"])
 
-    client.proxy = proxy.proxy_client if proxy
-    client
+    headers = HttpUtil.make_headers(WEB_URL, cookie: @cookie)
+    res_body = HttpUtil.make_client(WEB_URI).get("/", headers: headers, &.body_io.gets_to_end)
+
+    @token = res_body.match!(/token: '(.+)'/)[1]
+    @gtk = res_body.match!(/window.gtk = ["'](.+)['"]/)[1]
   end
 
-  def self.reset_auth!(proxy : RotateProxy? = nil)
-    @@cookie = nil
-    @@auth = nil
-    proxy.change_ip! if proxy
-  end
-
-  class_getter cookie : String do
-    self.client.get("/", &.headers["Set-Cookie"])
-  end
-
-  def self.gen_headers(content_type = "application/x-www-form-urlencoded")
-    HTTP::Headers{
-      "Origin"       => WEB_URL,
-      "Referer"      => WEB_URL,
-      "User-Agent"   => "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0",
-      "Content-Type" => content_type,
-      "Cookie"       => self.cookie,
-    }
-  end
-
-  record Auth, token : String, gtk : String
-
-  class_getter auth : Auth do
-    self.client(true).get("/", headers: gen_headers) do |res|
-      body = res.body_io.gets_to_end
-      Auth.new(
-        token: body.match!(/token: '(.+)'/)[1],
-        gtk: body.match!(/window.gtk = ["'](.+)['"]/)[1]
-      )
-    end
-  end
-
-  def self.sign_query(query : String, gtk : String = self.auth.gtk)
+  def sign_query(query : String)
     chars = query.each_grapheme.to_a
 
     if chars.size > 30
@@ -98,7 +31,7 @@ module SP::BdUtil
       end
     end
 
-    m, s = gtk.split('.', 2).map(&.to_u32)
+    m, s = @gtk.split('.', 2).map(&.to_u32)
 
     x = query.each_byte.reduce(m) do |a, b|
       a &+= b
@@ -112,5 +45,33 @@ module SP::BdUtil
 
     x = (x ^ s) % 1_000_000
     "#{x}.#{x ^ m}"
+  end
+
+  def form(query : String, tl = "vie")
+    URI::Params.build do |form|
+      form.add "query", query
+      form.add "from", "zh"
+      form.add "to", tl
+      form.add "token", @token
+      form.add "sign", sign_query(query)
+      form.add "domain", "common"
+      form.add "simple_means_flag", "3"
+    end
+  end
+
+  def post_form(path : String, form : String)
+    headers = HttpUtil.make_headers(WEB_URL,
+      cookie: @cookie,
+      content_type: "application/x-www-form-urlencoded"
+    )
+
+    client = HttpUtil.make_client(WEB_URI)
+    client.post(path, headers: headers, body: form).body
+  end
+
+  class_getter alive : self { new }
+
+  def self.reset!
+    @@alive = nil
   end
 end

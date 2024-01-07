@@ -5,17 +5,11 @@
   $: $crumbs = [{ text: 'Dịch nhanh', href: `/qt` }]
 
   const tabs = [
-    { type: 'index', href: '/qt', icon: 'bolt', text: 'Dịch câu' },
-    {
-      type: 'multi',
-      href: '/qt/multi',
-      icon: 'article',
-      text: 'Dịch đoạn văn',
-    },
+    { type: 'index', href: '/qt', icon: 'language', text: 'Dịch đoạn văn' },
     {
       type: 'batch',
       href: '/qt/batch',
-      icon: 'language',
+      icon: 'article',
       text: 'Dịch văn bản',
     },
   ]

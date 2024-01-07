@@ -16,48 +16,9 @@
   import { onMount } from 'svelte'
 
   export let ztext = ''
-  export let state = 1
-
-  let history = {
-    items: [ztext],
-    h_idx: 0,
-    get text() {
-      return this.item[this.h_idx]
-    },
-
-    get has_prev() {
-      return this.h_idx > 0
-    },
-
-    undo() {
-      if (this.has_prev) this.h_idx -= 1
-      return this.text
-    },
-
-    get has_next() {
-      return this.h_idx < this.items.size
-    },
-
-    redo() {
-      if (this.has_next) this.h_idx += 1
-      return this.text
-    },
-
-    push(text: string) {
-      this.items.push(text)
-      this.h_idx += 1
-    },
-
-    apply(fn: (text: string) => string) {
-      this.push(fn(this.text))
-      return this.text
-    },
-
-    async apply_async(fn: (text: string) => Promise<string>) {
-      this.push(await fn(this.text))
-      return this.text
-    },
-  }
+  export let state = 0
+  export let limit = 1e7
+  export let error = ''
 
   let reader: FileReader
   let encoding = 'UTF-8'
@@ -72,7 +33,6 @@
       const decoder = new TextDecoder(encoding)
 
       ztext = decoder.decode(buffer)
-      history.push(ztext)
       state = 0
     }
   })
@@ -95,9 +55,11 @@
     ztext = await fn(ztext)
     state = 0
   }
+
+  $: error = ztext.length > limit ? `Số lượng chữ tối đa : ${limit}` : ''
 </script>
 
-<div class="ztext m-input">
+<div class="ztext m-input" class:invalid={error}>
   {#if state == 1}
     <div class="onload">
       <div class="loader"><SIcon name="loader-2" spin={true} /></div>
@@ -114,23 +76,18 @@
       <input type="file" bind:files accept=".txt" />
     </label>
 
-    <div class="v-field">
-      <span class="u-show-tm">Mã ký tự:</span>
-      <span>{encoding}</span>
-    </div>
-
-    <div class="u-right v-field">
-      <span>{ztext.length}</span>
-      <span class="u-show-pl">chữ</span>
+    <div class="u-right v-field" data-tip="Số lượng ký tự tối đa">
+      <span>{ztext.length} / {limit}</span>
     </div>
   </header>
 
   <textarea
     name="text"
     lang="zh"
-    bind:value={ztext}
+    maxlength={limit}
     disabled={state > 0}
-    on:change={() => history.push(ztext)} />
+    placeholder="Nhập văn bản tiếng Trung tại đây"
+    bind:value={ztext} />
 
   <footer>
     <button
@@ -168,24 +125,6 @@
       on:click={() => (ztext = '')}>
       <SIcon name="eraser" />
     </button>
-    <!--
-    <button
-      type="button"
-      class="m-btn _sm"
-      data-tip="Hoàn tác (Undo)"
-      disabled={state > 0 || !history.has_prev}
-      on:click={() => (ztext = history.undo())}>
-      <SIcon name="arrow-back-up" />
-    </button>
-
-    <button
-      type="button"
-      class="m-btn _sm"
-      data-tip="Làm lại (Redo)"
-      disabled={state > 0 || !history.has_next}
-      on:click={() => (ztext = history.redo())}>
-      <SIcon name="arrow-forward-up" />
-    </button> -->
 
     <button
       type="button"
@@ -247,6 +186,13 @@
     padding: 0.375rem 0.75rem;
     @include bgcolor(main);
     @include fgcolor(main);
+  }
+
+  .invalid {
+    border-color: color(harmful, 5);
+    .v-field {
+      color: color(harmful, 5);
+    }
   }
 
   footer {

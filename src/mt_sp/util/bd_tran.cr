@@ -1,36 +1,44 @@
+require "json"
 require "colorize"
+
 require "./bd_util"
+require "../../_util/http_util"
 
 module SP::BdTran
-  API_PATH = "/ait/text/translate"
+  WEB_URL = "https://fanyi.baidu.com"
+  WEB_URI = URI.parse(WEB_URL)
 
-  API_HEADERS = BdUtil.gen_headers("application/json")
+  def self.api_translate(query : Array(String), tl = "vie", retry : Int32 = 3)
+    api_translate(query.join('\n'), tl: tl, retry: retry)
+  end
 
-  def self.api_translate(query : Array(String), tl = "vie", retry : Bool = true)
+  def self.api_translate(query : String, tl = "vie", retry : Int32 = 3)
     body = {
-      query: query.join('\n'), from: "zh", to: tl,
+      query: query, from: "zh", to: tl,
       reference: "", corpusIds: [] of Int32, domain: "common",
       qcSettings: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"],
     }.to_json
 
-    error = (1..).each do |i|
-      proxy = RotateProxy.all_entries.last?
-      res_body = BdUtil.client(proxy).post(API_PATH, headers: API_HEADERS, body: body, &.body_io.gets_to_end)
+    headers = HttpUtil.make_headers(WEB_URL, content_type: "application/json")
 
-      if res_body.includes?("Translating")
-        return ApiData.parse(res_body).data.map(&.dst)
+    retry.times do |i|
+      proxy = HttpProxy.pick_one
+      client = HttpUtil.make_client(WEB_URI, proxy)
+
+      client.post("/ait/text/translate", headers: headers, body: body) do |res|
+        res_body = res.body_io.gets_to_end
+        ApiData.parse(res_body).try { |x| return x.data.map(&.dst) }
+
+        Log.warn { res_body }
+        sleep i.seconds
+        proxy.try(&.rotate_ip!)
+      rescue ex
+        raise ex unless ex.message.try(&.includes?("Connection refused"))
+        HttpProxy.all_entries.pop?
       end
-
-      break res_body unless proxy || retry
-      Log.warn { res_body.colorize.red }
-
-      sleep i.seconds
-      proxy.try(&.change_ip!)
-    rescue ex
-      RotateProxy.all_entries.pop? if ex.message.try(&.includes?("Connection refused"))
     end
 
-    raise error
+    raise "tried #{retry} with error, aborting!"
   end
 
   struct ApiData
@@ -50,33 +58,24 @@ module SP::BdTran
         return from_json(line.lchop("data: "))
       end
 
-      raise "invalid: #{input}"
+      nil
     end
   end
 
   def self.web_translate(ztext : String, tl = "vie", retry : Bool = true)
-    tl = "vie" if tl == "vi"
+    auth = BdAuth.alive
+    form = auth.form(ztext, tl)
 
-    body = URI::Params.build do |form|
-      form.add "query", ztext
-      form.add "from", "zh"
-      form.add "to", tl
-      form.add "token", BdUtil.auth.token
-      form.add "sign", BdUtil.sign_query(ztext)
-      form.add "domain", "common"
-      form.add "simple_means_flag", "3"
-    end
-
-    headers = BdUtil.gen_headers("application/x-www-form-urlencoded")
-
-    BdUtil.client(true).post("/v2transapi", headers: headers, body: body) do |res|
-      res_body = res.body_io.gets_to_end
+    while retry
+      res_body = BdAuth.alive.post_form("/v2transapi", form: form)
 
       if res_body.includes?("trans_result")
         return WebData.from_json(res_body).trans_result.map(&.dst)
-      elsif retry
-        BdUtil.reset_auth!
-        web_translate(ztext, tl: tl, retry: false)
+      end
+
+      if retry
+        BdAuth.reset!
+        retry = false
       else
         error = NamedTuple(errmsg: String).from_json(res_body)
         raise error[:errmsg]
@@ -97,5 +96,5 @@ module SP::BdTran
   end
 
   # puts api_translate "我的女儿"
-  # puts web_translate "数百名示威者聚集"
+  puts web_translate "数百名示威者聚集"
 end

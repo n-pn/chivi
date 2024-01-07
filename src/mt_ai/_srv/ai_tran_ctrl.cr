@@ -24,8 +24,6 @@ class MT::AiTranCtrl < AC::Base
             ch_rm : UInt32 = 1_u32, debug : Bool = false)
     ztext = self._read_body.lines(chomp: true)
     json = do_qtran(ztext, pdict, _algo, ch_rm: ch_rm, debug: debug)
-
-    cache_control 3.seconds
     render json: json
   rescue ex
     Log.error(exception: ex) { ztext }
