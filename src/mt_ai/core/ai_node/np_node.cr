@@ -86,44 +86,6 @@ class MT::NpNode
     end
   end
 
-  def z_each(&)
-    @orig.each { |node| yield node }
-  end
-
-  def v_each(&)
-    list = @data.empty? ? @orig : @data
-    list.each { |node| yield node }
-  end
-
-  def first
-    @orig.first
-  end
-
-  def last
-    @orig.last
-  end
-
-  ###
-
-  @[AlwaysInline]
-  def translate!(dict : AiDict, rearrange : Bool = true)
-    self.tl_whole!(dict: dict)
-    @orig.each(&.translate!(dict, rearrange: rearrange))
-    @data = rearrange!(dict) if rearrange
-  end
-
-  ###
-
-  @[AlwaysInline]
-  private def peak_node(_pos = @_pos)
-    @orig[_pos]
-  end
-
-  @[AlwaysInline]
-  private def read_node
-    @orig[@_pos].tap { @_pos &-= 1 }
-  end
-
   private def rearrange!(dict : AiDict) : Array(AiNode)
     list = Array(AiNode).new
     last = self.read_node if @orig.last.epos.lcp?

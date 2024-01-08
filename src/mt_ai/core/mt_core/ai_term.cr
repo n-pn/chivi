@@ -118,21 +118,32 @@ class MT::AiTerm
 
   COLORS = {:green, :yellow, :blue, :red, :cyan, :magenta, :light_gray}
 
-  def inspect(io : IO, deep : Int32 = 1) : Nil
+  def inspect(io : IO, deep : Int32 = 0) : Nil
     io << '('.colorize.dark_gray << @epos.colorize.bold
-    io << ' ' << @attr.colorize.light_gray unless @attr.none?
+
+    deep += @epos.to_s.size + 2
 
     case body = @body
     when MtDefn
+      io << ' ' << @attr.colorize.light_gray unless @attr.none?
       io << ' ' << @zstr.colorize.dark_gray
       io << ' ' << body.vstr.colorize(COLORS[body.dnum.value % 10])
     when AiTerm
-      io << (body.epos.inline_block? || body.body.is_a?(MtDefn) ? " " : "\n" + "  " * deep)
-      body.inspect(io: io, deep: deep &+ 1)
+      io << ' '
+      body.inspect(io: io, deep: deep)
+    when AiPair
+      io << ' '
+      body.head.inspect(io: io, deep: deep)
+      io << '\n'
+      deep.times { io << ' ' }
+      body.tail.inspect(io: io, deep: deep)
     else
-      self.each_child do |term|
-        io << (@epos.inline_block? ? " " : "\n" + "  " * deep)
-        term.inspect(io: io, deep: deep &+ 1)
+      io << ' '
+      body.first.inspect(io: io, deep: deep)
+      body[1..].each do |term|
+        io << '\n'
+        deep.times { io << ' ' }
+        term.inspect(io: io, deep: deep)
       end
     end
 

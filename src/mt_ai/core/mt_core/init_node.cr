@@ -35,13 +35,6 @@ class MT::AiCore
     @dicts.each { |d| d.any?(zstr).try { |x| return x.vstr } }
   end
 
-  private def init_pair(head : AiTerm, tail : AiTerm,
-                        epos : MtEpos, attr : MtAttr = tail.attr,
-                        zstr = "#{head.zstr}#{tail.zstr}", flip : Bool = false)
-    body = init_defn(zstr, epos, attr, mode: 0) || AiPair.new(head, tail, flip)
-    AiTerm.new(body: body, zstr: zstr, epos: epos, attr: attr, from: head.from)
-  end
-
   private def init_term(list : Array(AiTerm),
                         epos : MtEpos, attr : MtAttr = :none,
                         zstr = list.join(&.zstr), from = list[0].from)

@@ -3,10 +3,10 @@ require "./ai_term"
 class MT::AiCore
   def fix_np_term!(term : AiTerm, body = term.body)
     case body
-    when AiPair
-      term.body = fix_np_pair!(body)
     when MtDefn, AiTerm
       # Do nothing
+    when AiPair
+      term.body = fix_np_pair!(body)
     else
       term.body = fix_np_body!(body)
     end
@@ -77,13 +77,10 @@ class MT::AiCore
       when .cd?, .clp?
         noun = init_pair(head: node, tail: noun, epos: :NP, attr: attr, flip: false)
       when .dp?
-        # TODO: add dp to term
+        noun = init_dp_np_pair(np_term: noun, dp_term: node)
       when .qp?
-        # add_qp_to_list(list, node, noun)
-      when .adjp?
-        flip = !node.attr.at_h?
-        noun = init_pair(head: node, tail: noun, epos: :NP, attr: attr, flip: flip)
-      when .dnp?
+        noun = pair_noun_qp(np_term: noun, qp_term: node)
+      when .adjp?, .dnp?
         flip = !node.attr.at_h?
         noun = init_pair(head: node, tail: noun, epos: :NP, attr: attr, flip: flip)
       when .pn?
@@ -99,37 +96,11 @@ class MT::AiCore
     {noun, _pos}
   end
 
-  private def split_dp_term(term : AiTerm) : Array(AiTerm)
-    return term.body if term.is_a?(AiCons)
-
-    fchar = term.zstr[0]
-    return [term] of AiTerm if term.zstr.size == 1 || !fchar.in?('这', '那')
-
-    head = AiWord.new(
-      epos: :DT, attr: :none,
-      zstr: fchar.to_s, body: fchar == '这' ? "này" : "kia",
-      dnum: :fixture_2, from: term.from
-    )
-
-    zstr = term.zstr[1..]
-    defn = find_defn(zstr, :QP, mode: 2) || raise "invalid #{zstr}!"
-    tail = AiWord.new(defn, zstr: zstr, epos: :QP, from: term.from &+ 1)
-
-    [head, tail] of AiTerm
-  end
-
-  def fix_dnp!(list : Array(AiTerm), attr : MtAttr)
-    return {list, attr} unless list.size == 2
-    head, tail = list
-
-    if head.attr.at_h?
-      attr |= :at_h
-      return {list, attr}
+  private def pair_noun_qp(np_term : AiTerm, qp_term : AiTerm)
+    init_pair(head: qp_term, tail: np_term, epos: :NP, attr: np_term.attr) do
+      # TODO: split `OD`, fix `M` vstr
+      AiPair.new(qp_term, np_term, flip: qp_term.attr.at_t?)
     end
-  end
-
-  private def pron_at_head?(pron : AiTerm, noun : AiTerm)
-    true
   end
 
   private def add_qp_to_list(list, qp_node, nn_node) : Nil
@@ -151,5 +122,9 @@ class MT::AiCore
       # TODO: handle M3Node and MxNode
       list.unshift(qp_node)
     end
+  end
+
+  private def pron_at_head?(pron : AiTerm, noun : AiTerm)
+    true
   end
 end

@@ -1,26 +1,4 @@
-require "../ai_dict"
-
 module MT::AiNode
-  property zstr = ""
-  property vstr = ""
-
-  property epos = MtEpos::X
-  property attr = MtAttr::None
-
-  property dnum : DictEnum = DictEnum::Unknown_0
-  property _idx = 0
-
-  abstract def z_each(& : AiNode ->)
-  abstract def v_each(& : AiNode ->)
-  abstract def first
-  abstract def last
-
-  # def inc_idx!(val : Int32)
-  #   @_idx += val
-  #   return if self.is_a?(M0Node)
-  #   self.z_each(&.inc_idx!(val))
-  # end
-
   def tl_whole!(dict : AiDict)
     unless term = dict.get?(@zstr, @epos)
       term = dict.get_alt?(@zstr) if !self.is_a?(M1Node) && @epos.can_use_alt?
@@ -96,42 +74,6 @@ module MT::AiNode
 
   def same_attr?(other : self, attr : MtAttr)
     self.attr & other.attr & attr != MtAttr::None
-  end
-
-  ###
-
-  def inspect(io : IO)
-    io << '('.colorize.dark_gray
-    io << @epos.to_s.colorize.bold
-    # io << ':' << @_idx
-    inspect_inner(io) rescue puts self
-
-    io << ' ' << @attr unless @attr.none?
-    io << ')'.colorize.dark_gray
-  end
-
-  private def inspect_inner(io : IO)
-    self.z_each do |node|
-      io << ' '
-      node.inspect(io)
-    end
-  end
-
-  ###
-
-  def to_txt(cap : Bool = true, und : Bool = true)
-    String.build { |io| to_txt(io, cap: cap, und: und) }
-  end
-
-  def to_txt(io : IO, cap : Bool, und : Bool)
-    # pp [self]
-    if !@dnum.unknown_0? || self.is_a?(M0Node)
-      io << ' ' unless @attr.undent?(und: und)
-      @attr.render_vstr(io, @vstr, cap: cap, und: und)
-    else
-      self.v_each { |node| cap, und = node.to_txt(io, cap: cap, und: und) }
-      {cap, und}
-    end
   end
 
   def to_json

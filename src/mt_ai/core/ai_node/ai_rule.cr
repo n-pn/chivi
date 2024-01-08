@@ -24,28 +24,4 @@ module MT::AiRule
   #   end
   # end
 
-  PUNCT_MATCH_PAIR = {
-    '“' => '”',
-    '‘' => '’',
-    '〈' => '〉',
-    '（' => '）',
-  }
-
-  def find_matching_pu(list : Array(AiNode), head : AiNode,
-                       _idx = 0, _max = list.size)
-    return unless match_char = PUNCT_MATCH_PAIR[head.zstr[0]]?
-
-    while _idx < _max
-      node = list.unsafe_fetch(_idx)
-      _idx &+= 1
-      return {node, _idx} if node.epos.pu? && node.zstr[-1] == match_char
-    end
-  end
-
-  def fix_vnv_lhs!(node : AiNode) : Nil
-    case node.zstr
-    when "是" then node.set_vstr!("phải")
-    when "会" then node.set_vstr!("biết")
-    end
-  end
 end

@@ -74,35 +74,12 @@ class MT::VpNode
     @orig.each { |node| yield node }
   end
 
-  def v_each(&)
-    list = @data.empty? ? @orig : @data
-    list.each { |node| yield node }
-  end
-
-  def first
-    @orig.first
-  end
-
-  def last
-    @orig.last
-  end
-
   ###
 
   def translate!(dict : AiDict, rearrange : Bool = true) : Nil
     self.tl_whole!(dict: dict)
     @orig.each(&.translate!(dict, rearrange: rearrange))
     @data = read_vp!(dict) if rearrange
-  end
-
-  @[AlwaysInline]
-  private def peak_node(_pos = @_pos)
-    @orig[_pos]
-  end
-
-  @[AlwaysInline]
-  private def read_node
-    @orig[@_pos].tap { @_pos &+= 1 }
   end
 
   ##
