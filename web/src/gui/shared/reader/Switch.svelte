@@ -9,23 +9,23 @@
     },
 
     mt: {
-      mtl_1: 'HanLP Multi-task-learning với model ELECTRA SMALL',
-      mtl_2: 'HanLP Multi-task-learning với model ELECTRA BASE',
-      mtl_3: 'HanLP Multi-task-learning với model ERNIE GRAM',
+      mtl_1: 'Dịch với trợ giúp từ công cụ AI với model ELECTRA SMALL',
+      mtl_2: 'Dịch với trợ giúp từ công cụ AI với model ELECTRA BASE',
+      mtl_3: 'Dịch với trợ giúp từ công cụ AI với model ERNIE GRAM',
     },
   }
 
   const all_modes: Mode = {
     qt: {
       qt_v1: 'Dịch máy cũ',
-      bd_zv: 'Dịch bằng Baidu',
-      ms_zv: 'Dịch bằng Bing',
+      bd_zv: 'Dịch qua Baidu',
+      ms_zv: 'Dịch qua Bing',
     },
 
     mt: {
-      mtl_1: 'Electra Small',
-      mtl_2: 'Electra Base',
-      mtl_3: 'Ernie Gram',
+      mtl_1: 'Dịch máy AI 1',
+      mtl_2: 'Dịch máy AI 2',
+      mtl_3: 'Dịch máy AI 3',
     },
   }
 </script>

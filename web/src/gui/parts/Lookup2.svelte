@@ -30,7 +30,7 @@
 
   export let rpage: Rdpage
   export let rword: Rdword
-  export let ropts: CV.Rdopts
+  export let ropts: Partial<CV.Rdopts>
 
   export let state = 0
   export let l_idx = 0

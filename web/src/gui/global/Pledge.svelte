@@ -1,5 +1,13 @@
 <div class="app-vessel">
   <div class="pledge u-warn">
+    <strong>
+      Chivi là trang cung cấp tiện ích dịch thuật, chúng tôi không chịu trách
+      nhiệm về nội dung trong trang. Các bạn trả phí là cho dịch vụ dịch thuật,
+      không phải là phí đọc truyện.
+    </strong>
+  </div>
+
+  <div class="pledge u-warn">
     Trang đang phát triển. Nếu gặp lỗi hãy liên hệ qua kênh <a
       href="https://discord.gg/mdC3KQH"
       class="m-link"

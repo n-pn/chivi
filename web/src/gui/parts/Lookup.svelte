@@ -202,18 +202,16 @@
     }
   }
 
-  :global {
-    x-n {
-      --color: #{color(primary, 5)};
-      cursor: pointer;
+  :global(x-n) {
+    --color: #{color(primary, 5)};
+    cursor: pointer;
 
-      &:hover {
-        background: linear-gradient(to top, var(--color) 0.75px, transparent 0);
-      }
+    &:hover {
+      background: linear-gradient(to top, var(--color) 0.75px, transparent 0);
+    }
 
-      &.focus {
-        color: var(--color);
-      }
+    &.focus {
+      color: var(--color);
     }
   }
 

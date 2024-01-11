@@ -60,12 +60,6 @@
 </script>
 
 <div class="ztext m-input" class:invalid={error}>
-  {#if state == 1}
-    <div class="onload">
-      <div class="loader"><SIcon name="loader-2" spin={true} /></div>
-    </div>
-  {/if}
-
   <header>
     <label
       class="m-btn _xs _warning picker"
@@ -75,11 +69,13 @@
       <span class="-txt">Chọn tập tin</span>
       <input type="file" bind:files accept=".txt" />
     </label>
-
-    <div class="u-right v-field" data-tip="Số lượng ký tự tối đa">
-      <span>{ztext.length} / {limit}</span>
-    </div>
   </header>
+
+  {#if state == 1}
+    <div class="onload">
+      <div class="loader"><SIcon name="loader-2" spin={true} /></div>
+    </div>
+  {/if}
 
   <textarea
     name="text"
@@ -93,19 +89,19 @@
     <button
       type="button"
       class="m-btn _sm"
-      data-tip="Xóa hết khoảng trắng thừa"
+      data-tip="Chuyển đổi từ Phồn thể sang Giản thể"
       disabled={state > 0 || !ztext}
-      on:click={() => apply(trim_spaces)}>
-      <SIcon name="clear-all" />
+      on:click={() => apply_async(opencc)}>
+      <SIcon name="bolt" />
     </button>
 
     <button
       type="button"
       class="m-btn _sm"
-      data-tip="Chuyển đổi từ Phồn thể sang Giản thể"
+      data-tip="Xóa hết khoảng trắng thừa"
       disabled={state > 0 || !ztext}
-      on:click={() => apply_async(opencc)}>
-      <SIcon name="bolt" />
+      on:click={() => apply(trim_spaces)}>
+      <SIcon name="clear-all" />
     </button>
 
     <button
@@ -119,7 +115,7 @@
 
     <button
       type="button"
-      class="m-btn _sm u-right"
+      class="m-btn _sm"
       data-tip="Xóa sạch"
       disabled={state > 0 || !ztext}
       on:click={() => (ztext = '')}>
@@ -134,6 +130,10 @@
       on:click={() => copy_to_clipboard(ztext)}>
       <SIcon name="copy" />
     </button>
+
+    <span class="u-right v-field u-fg-mute" data-tip="Số lượng ký tự tối đa">
+      {ztext.length} / {limit}
+    </span>
   </footer>
 </div>
 
@@ -162,13 +162,9 @@
     padding: 0.25rem 0.5rem;
     @include border($loc: bottom);
 
-    div,
-    label {
-      @include flex-cy($gap: 0.25rem);
-    }
-
     label {
       cursor: pointer;
+      @include flex-cy($gap: 0.25rem);
     }
   }
 

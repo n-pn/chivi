@@ -38,21 +38,19 @@
     }
   }
 
-  :global {
-    z-n {
-      cursor: pointer;
+  :global(z-n) {
+    cursor: pointer;
 
-      &:hover {
-        border-bottom: 1px solid color(primary, 4);
-      }
+    &:hover {
+      border-bottom: 1px solid color(primary, 4);
+    }
 
-      &.hover {
-        @include fgcolor(primary, 5);
-      }
+    &.hover {
+      @include fgcolor(primary, 5);
+    }
 
-      &.focus {
-        @include bgcolor(primary, 5, 2);
-      }
+    &.focus {
+      @include bgcolor(primary, 5, 2);
     }
   }
 </style>

@@ -1,5 +1,6 @@
-import preprocess from 'svelte-preprocess'
 import adapter from '@sveltejs/adapter-node'
+// import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
+import preprocess from 'svelte-preprocess'
 
 import { mdsvex } from 'mdsvex'
 import breaks from 'remark-breaks'
@@ -37,6 +38,8 @@ export default {
   },
   onwarn: (warning, handler) => {
     if (warning.code.startsWith('a11y')) return
+    if (warning.code == 'vite-plugin-svelte-preprocess-many-dependencies')
+      return
     handler(warning)
   },
 }

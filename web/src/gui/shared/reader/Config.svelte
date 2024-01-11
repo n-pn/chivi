@@ -149,44 +149,8 @@
 </Slider>
 
 <style lang="scss">
-  .info {
-    @include flex-cy;
-
-    & + & {
-      margin-top: 0.25rem;
-    }
-
-    > div {
-      margin-right: 0.5rem;
-      @include ftsize(sm);
-      @include fgcolor(secd);
-    }
-
-    .lbl {
-      @include fgcolor(tert);
-    }
-
-    > button,
-    a {
-      margin-left: auto;
-    }
-
-    :global(svg) {
-      height: 1rem;
-      width: 1rem;
-      margin-bottom: 0.125rem;
-      margin-right: 0.075rem;
-    }
-  }
-
   .links {
     @include flex-ca($gap: 0.5rem);
-
-    // flex-direction: column;
-    .m-btn {
-      border-radius: 1rem;
-      padding: 0 0.5rem;
-    }
   }
 
   h4 {
@@ -383,15 +347,5 @@
     font-weight: 500;
     margin-bottom: 0.5rem;
     @include fgcolor(tert);
-
-    > a {
-      margin-left: auto;
-      color: inherit;
-      font-size: smaller;
-      font-weight: 400;
-      &:hover {
-        @include fgcolor(primary, 4);
-      }
-    }
   }
 </style>

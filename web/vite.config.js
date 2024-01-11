@@ -1,9 +1,10 @@
 // vite.config.js
 import { sveltekit } from '@sveltejs/kit/vite'
-import { loadEnv } from 'vite'
+import { loadEnv, defineConfig } from 'vite'
 
 import path from 'path'
 import { fileURLToPath } from 'url'
+
 const _cwd = path.dirname(fileURLToPath(import.meta.url))
 
 const dev = process.env['ENV'] == 'dev'
@@ -22,11 +23,24 @@ const proxy = {
   '/_ys': `http://127.0.0.1:${env.VITE_YS_PORT}`,
 }
 
-/** @type {import('vite').UserConfig} */
-const config = {
+export default defineConfig({
+  // css: {
+  //   preprocessorOptions: {
+  //     scss: {
+  //       additionalData: `
+  //         @use "sass:math";
+  //         @use "sass:list";
+  //         @use "essence" as *;
+  //         `,
+  //       includePaths: [path.resolve(_cwd, 'src/styles')],
+  //     },
+  //     postcss: true,
+  //   },
+  // },
   plugins: [sveltekit()],
   resolve: {
     alias: {
+      $src: path.resolve(_cwd, 'src'),
       $api: path.resolve(_cwd, 'src/api'),
       $gui: path.resolve(_cwd, 'src/gui'),
       $utils: path.resolve(_cwd, 'src/utils'),
@@ -35,6 +49,4 @@ const config = {
   },
   server: { host: 'localhost', proxy: dev && proxy },
   vitePlugin: { experimental: { prebundleSvelteLibraries: true } },
-}
-
-export default config
+})

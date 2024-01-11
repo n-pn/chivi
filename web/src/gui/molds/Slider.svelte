@@ -32,41 +32,43 @@
   class:_active={actived}
   class:_sticky={sticked}
   on:click={hide_slider}>
-  <div
-    class="slider-main {klass}"
-    class:_left={_slider == 'left'}
-    class:_right={_slider == 'right'}
-    class:_active={actived}
-    on:click={(e) => e.stopPropagation()}>
-    <header class="head">
-      <slot name="header-left" />
-      <slot name="header-right" />
+</div>
 
-      {#if _sticky}
-        <button
-          class="-btn"
-          class:_active={sticked}
-          on:click={() => (sticked = !sticked)}>
-          <SIcon name="pin" />
-        </button>
-      {/if}
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div
+  class="slider-main {klass}"
+  class:_left={_slider == 'left'}
+  class:_right={_slider == 'right'}
+  class:_active={actived}>
+  <header class="head">
+    <slot name="header-left" />
+    <slot name="header-right" />
 
+    {#if _sticky}
       <button
         class="-btn"
-        data-kbd="esc"
-        on:click={hide_slider}
-        data-tip="Đóng"
-        data-tip-loc="bottom">
-        <SIcon name="x" />
+        class:_active={sticked}
+        on:click={() => (sticked = !sticked)}>
+        <SIcon name="pin" />
       </button>
-    </header>
+    {/if}
 
-    <section class="body">
-      <slot />
-    </section>
+    <button
+      class="-btn"
+      data-kbd="esc"
+      on:click={hide_slider}
+      data-tip="Đóng"
+      data-tip-loc="bottom">
+      <SIcon name="x" />
+    </button>
+  </header>
 
-    <slot name="foot" />
-  </div>
+  <section class="body">
+    <slot />
+  </section>
+
+  <slot name="foot" />
 </div>
 
 <style lang="scss">

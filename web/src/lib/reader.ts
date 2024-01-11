@@ -1,6 +1,3 @@
-import { gtran_text } from '$utils/qtran_utils/gg_tran'
-import { ms_api_key } from '$utils/qtran_utils/ms_tran'
-
 import {
   gen_ztext_html,
   gen_hviet_text,
@@ -11,58 +8,7 @@ import {
   gen_ctree_text,
 } from '$lib/mt_data_2'
 
-const call_qtran = async (
-  body: string,
-  type: string,
-  opts = {},
-  redo = false
-) => {
-  if (type == 'gg_zv') return await gtran_text(body)
-  let url = `/_sp/qtran/${type}?redo=${redo}`
-
-  if (type.startsWith('ms')) {
-    url += `&opts=${await ms_api_key()}`
-  } else if (type == 'qt_v1') {
-    const wn_id = opts['wn_id'] || 0
-    const title = opts['title'] || 1
-    url += `&opts=${wn_id},${title}`
-  }
-
-  const start = performance.now()
-
-  const res = await fetch(url, { method: 'POST', body })
-  if (!res.ok) return []
-  const vtran = await res.text()
-
-  const spent = performance.now() - start
-  console.log(`- ${type}: ${body.length} chars, ${spent} milliseconds`)
-
-  return vtran.trim().split('\n')
-}
-
-const call_mtran = async (
-  body: string,
-  type: string,
-  opts = {},
-  redo = false
-) => {
-  let url = `/_sp/qtran/${type}?redo=${redo}`
-
-  const pdict = opts['pdict'] || 'combine'
-  const title = opts['title'] || 1
-  url += `&opts=${pdict},${title}`
-
-  const start = performance.now()
-
-  const res = await fetch(url, { method: 'POST', body })
-  if (!res.ok) return { lines: [] }
-  const mdata = await res.json()
-
-  const spent = performance.now() - start
-  console.log(`- ${type}: ${body.length} chars, ${spent} milliseconds`)
-
-  return mdata
-}
+import { call_mtran, call_qtran } from '$utils/qtran_utils'
 
 export class Rdword {
   from: number
@@ -114,7 +60,7 @@ export class Rdline {
     this.mtran[mtype] = ['', '', 0, 0, '', '', 0]
 
     const opts = { pdict, title: 0 }
-    const { lines } = await call_mtran(this.ztext, mtype, opts)
+    const [lines] = await call_mtran(this.ztext, mtype, opts)
 
     this.mtran[mtype] = lines[0]
     return lines[0]
@@ -125,7 +71,7 @@ export class Rdline {
     if (rmode == 0 || (rmode == 1 && cached)) return cached
     this.qtran[qtype] = '...'
 
-    const lines = await call_qtran(this.ztext, qtype, ropts)
+    const [lines] = await call_qtran(this.ztext, qtype, ropts)
     this.qtran[qtype] = lines[0] || 'Không có dữ liệu!'
 
     return this.qtran[qtype]
@@ -184,7 +130,8 @@ export class Rdpage {
   state: Record<string, boolean>
 
   constructor(ztext: string) {
-    this.lines = ztext.split('\n').map((x) => new Rdline(x))
+    let lines = ztext.split('\n').filter(Boolean)
+    this.lines = lines.map((x) => new Rdline(x.trim()))
     this.state = {}
   }
 
@@ -234,7 +181,7 @@ export class Rdpage {
       return this.get_qtran(qtype)
     }
 
-    const lines = await call_qtran(this.ztext.join('\n'), qtype, ropts)
+    const [lines] = await call_qtran(this.ztext.join('\n'), qtype, ropts)
     if (lines.length == 0) return
 
     for (let i = 0; i < this.lines.length; i++) {
@@ -251,7 +198,7 @@ export class Rdpage {
     }
 
     const opts = { pdict, title: 1 }
-    const { lines } = await call_mtran(this.ztext.join('\n'), mtype, opts)
+    const [lines] = await call_mtran(this.ztext.join('\n'), mtype, opts)
 
     for (let i = 0; i < this.lines.length; i++) {
       this.lines[i].mtran[mtype] = lines[i]

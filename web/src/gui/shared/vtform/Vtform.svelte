@@ -42,7 +42,7 @@
 
   export let rline: Rdline
   export let rword: Rdword
-  export let ropts: CV.Rdopts
+  export let ropts: Partial<CV.Rdopts>
   export let on_close = (changed = false) => console.log(changed)
 
   let mlist = []
