@@ -1,4 +1,5 @@
 require "./_shared"
+require "../enum/*"
 
 struct MT::RawCon
   include JSON::Serializable
@@ -126,9 +127,8 @@ struct MT::RawCon
   def to_s(io : IO) : Nil
     io << '(' << @cpos
 
-    body = @body
-
-    if body.is_a?(String)
+    case body = @body
+    when String
       io << ' ' << body
     else
       body.each do |child|
@@ -140,31 +140,21 @@ struct MT::RawCon
     io << ')'
   end
 
-  SINGLE_LINES = {
-    "VCD", "VRD", "VNV", "VPT", "VCP",
-    "VAS", "DVP", "QP", "DNP", "DP",
-    "CLP",
-  }
-
-  def inspect(io : IO, deep = 1) : Nil
+  def inspect(io : IO, pad = 1) : Nil
     io << '(' << @cpos
+    pad += @cpos.size + 2
 
-    body = @body
-
-    if body.is_a?(String)
+    case body = @body
+    when String
       io << ' ' << body
     else
-      on_line = body.size < 2 || @cpos.in?(SINGLE_LINES)
+      io << ' '
+      body.first.inspect(io, pad: pad)
 
-      body.each do |child|
-        if on_line
-          io << ' '
-        else
-          io << '\n'
-          deep.times { io << "  " }
-        end
-
-        child.inspect(io, deep &+ 1)
+      body[1..].each do |term|
+        io << '\n'
+        pad.times { io << ' ' }
+        term.inspect(io: io, pad: pad)
       end
     end
 
@@ -192,5 +182,4 @@ struct MT::RawCon
     in Array  then body.each(&.zstr(io))
     end
   end
-  ###
 end

@@ -1,7 +1,7 @@
 require "crorm"
 require "./zv_util"
 
-struct MT::ZvPair
+struct MT::PgPair
   DIR = "var/mtdic"
 
   class_getter db_path = "#{DIR}/zvpairs.db3"
@@ -68,7 +68,7 @@ struct MT::ZvPair
     SQL
 
   def self.fetch_each(dname : String, &)
-    ZvPair.db.open_ro do |db|
+    PgPair.db.open_ro do |db|
       db.query_each(FETCH_SQL, dname) do |rs|
         yield rs.read(self)
       end

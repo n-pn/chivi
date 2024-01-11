@@ -1,6 +1,6 @@
-require "./mt_ener"
+require "../enum/*"
 
-struct MT::WsTerm
+struct MT::MtWseg
   getter zstr : String
   getter prio : Int16
 
@@ -13,13 +13,13 @@ struct MT::WsTerm
   end
 
   def initialize(@zstr,
-                 @prio = WsTerm.calc_prio(zstr.size),
+                 @prio = WsegNode.calc_prio(zstr.size),
                  @bner = :none, @iner = :none, @oner = :none)
   end
 
   def initialize(cols : Array(String))
     @zstr = cols[0]
-    @prio = WsTerm.calc_prio(zstr.size, cols[1]?.try(&.to_i16?) || 3_i16)
+    @prio = WsegNode.calc_prio(zstr.size, cols[1]?.try(&.to_i16?) || 3_i16)
 
     return unless ners = cols[2]?
 

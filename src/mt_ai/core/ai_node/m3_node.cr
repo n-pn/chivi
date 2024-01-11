@@ -7,7 +7,7 @@ def rearrange!(dict : AiDict) : Nil
   end
 end
 
-def fix_vnv!
+def fix_vnv_3!
   AiRule.fix_vnv_lhs!(@lhsn)
 
   case @midn.zstr
@@ -17,6 +17,17 @@ def fix_vnv!
     @midn, @rhsn = @rhsn, @midn
   when "一"
     @midn.set_vstr!("thử")
+  end
+end
+
+def fix_vnv_2!
+  AiRule.fix_vnv_lhs!(@lhsn)
+
+  case @rhsn.zstr[0]
+  when '没', '不'
+    @rhsn.set_vstr!("hay không")
+  when '一'
+    @rhsn.set_vstr!("thử #{@lhsn.vstr}")
   end
 end
 

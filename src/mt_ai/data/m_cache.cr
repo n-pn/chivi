@@ -21,6 +21,8 @@ class MT::MCache
 
   field tok : Array(String)
   field con : RawCon = MT::RawCon.new("X"), converter: MT::RawCon
+  field pos : Array(Int16) = [] of Int16
+
   field dep : String = ""
   field ner : String = "" # msra + ontonotes
 
@@ -151,7 +153,9 @@ class MT::MCache
 
     raw_data.tok.each_with_index do |tok, idx|
       entry = new(ver: ver, tok: tok)
+
       entry.con = raw_data.con[idx]
+      entry.pos = raw_data.pos[idx].map { |pos| MtEpos.parse(pos).to_i16 }
 
       raw_data.dep[idx]?.try { |dep| entry.dep = dep }
       entry.ner = raw_data.ner_msra[idx].concat(raw_data.ner_onto[idx])

@@ -1,8 +1,8 @@
-require "./_shared"
+require "./_enum"
 
-@[Flags]
 # word peculiarity
 # sort by most common types
+@[Flags]
 enum MT::MtAttr : Int32
   # nominal characteristics
 

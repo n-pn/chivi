@@ -1,9 +1,10 @@
 require "crorm"
 
-require "./shared/*"
-require "./zv_term"
+require "../enum/*"
+require "./pg_term"
 
-struct MT::MtData
+# convert from postgresql database for faster loading
+struct MT::SqDefn
   class_getter init_sql = <<-SQL
     create table mtdata(
       d_id int not null,
@@ -44,7 +45,7 @@ struct MT::MtData
   field vstr : String
   field attr : MtAttr, converter: SQ3Enum(MT::MtAttr)
 
-  field dnum : DictEnum, converter: SQ3Enum(MT::DictEnum)
+  field dnum : Int32
   field fpos : MtEpos = MT::MtEpos::X, converter: SQ3Enum(MT::MtEpos)
 
   def initialize(zterm : ZvTerm)
@@ -57,12 +58,34 @@ struct MT::MtData
     @attr = MtAttr.parse_list(zterm.attr)
     @fpos = MtEpos.parse(zterm.fixp) unless zterm.fixp.empty?
 
-    @dnum = DictEnum.from(zterm.d_id, zterm.plock)
+    dtype = zterm.d_id % 10 < 4 ? 2_i8 : 1_i8
+    plock = zterm.plock.to_i8 > 0 ? 1_i8 : 0_i8
+    @dnum = Dnum.from(zterm.d_id, zterm.plock)
   end
 
   def initialize(@d_id, @epos, @zstr,
                  @vstr = TextUtil.normalize(zstr),
                  @attr = :none, @dnum = :unknown_0)
+  end
+
+  def self.query_each(d_id : Int32, & : (String, MtEpos, MtDefn) ->)
+    load_db(d_id).open_ro do |db|
+      query = "select zstr, epos, vstr, attr, dnum, fpos from mtdata where d_id = $1"
+
+      db.query_each(query, d_id) do |rs|
+        zstr = rs.read(String)
+        epos = MtEpos.from_value(rs.read(Int32))
+
+        vstr = rs.read(String)
+        attr = MtAttr.from_value(rs.read(Int32))
+        dnum = rs.read(Int32).to_i8
+        fpos = MtEpos.from_value(rs.read(Int32))
+
+        defn = MtDefn.new(vstr: vstr, attr: attr, dnum: dnum, fpos: fpos)
+
+        yield zstr, epos, defn
+      end
+    end
   end
 
   def save!

@@ -1,4 +1,9 @@
+require "json"
 require "../_raw/raw_con"
+require "../../../_util/char_util"
+require "../ai_dict"
+
+require "./ai_core/*"
 require "./mt_core/*"
 
 class MT::AiCore
@@ -46,6 +51,11 @@ class MT::AiCore
       return AiTerm.new(body: defn, zstr: zstr, epos: epos, attr: attr, from: from)
     elsif orig.is_a?(String)
       raise "invalid!"
+    end
+
+    case epos
+    when .lcp?
+      init_lcp_node(zstr: zstr, epos: epos, body: body, from: from)
     end
 
     body = init_body(orig, from)

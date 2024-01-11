@@ -1,12 +1,10 @@
-require "./mt_attr"
-require "./mt_epos"
-require "./dict_type"
+require "../enum/*"
 
 struct MT::MtDefn
   getter vstr : String
   getter attr : MtAttr
 
-  getter dnum : DictEnum = :autogen_0
+  getter dnum : Int8 = 0_i8
   getter fpos : MtEpos = MtEpos::X
 
   def self.calc_prio(size : Int32, prio : Int16 = 5_i16)
@@ -26,7 +24,7 @@ struct MT::MtDefn
   #   render(io, cap, und)
   # end
 
-  # def to_str(io : IO, cap : Bool, pad : Bool)
+  # def render_vstr(io : IO, cap : Bool, pad : Bool)
   #   case
   #   when @attr.hide?
   #     # do nothing
@@ -42,7 +40,4 @@ struct MT::MtDefn
 
   #   {cap, @attr.hide? ? pad : !@attr.padn?}
   # end
-
-  ###
-
 end

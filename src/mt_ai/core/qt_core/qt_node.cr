@@ -1,6 +1,6 @@
 # require "../shared/mt_output"
 require "json"
-require "../../data/shared/*"
+require "../../enum/*"
 
 struct MT::QtNode
   getter zstr : String

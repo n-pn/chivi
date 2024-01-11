@@ -39,17 +39,6 @@ class MT::M2Node
     end
   end
 
-  def fix_vnv!
-    AiRule.fix_vnv_lhs!(@lhsn)
-
-    case @rhsn.zstr[0]
-    when '没', '不'
-      @rhsn.set_vstr!("hay không")
-    when '一'
-      @rhsn.set_vstr!("thử #{@lhsn.vstr}")
-    end
-  end
-
   def fix_lcp!
     @flip = !rhsn.attr.at_t?
   end

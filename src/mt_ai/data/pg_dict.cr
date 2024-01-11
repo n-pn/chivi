@@ -1,5 +1,4 @@
-require "./zv_term"
-require "./mt_data"
+require "./pg_term"
 
 class MT::ZvDict
   class_getter db : ::DB::Database = ZR_DB
@@ -43,17 +42,17 @@ class MT::ZvDict
     @total += 1 if fresh
     @mtime = zterm.mtime
 
-    mdata = MtData.new(zterm)
-    spawn mdata.save!
+    # mdata = MtData.new(zterm)
+    # spawn mdata.save!
 
-    HashDict.add_term(@name, zterm.zstr, zterm.ipos, mdata.mt_term)
-    # TrieDict.add_term(@name, zterm.zstr, mdata.ws_term)
+    # HashDict.add_term(@name, zterm.zstr, zterm.ipos, mdata.mt_term)
+    # # TrieDict.add_term(@name, zterm.zstr, mdata.ws_term)
 
     self.upsert! if persist
   end
 
   def delete_term(zterm : ZvTerm, fresh : Bool = true, persist : Bool = true)
-    HashDict.delete_term(@name, zterm.zstr, zterm.ipos)
+    # HashDict.delete_term(@name, zterm.zstr, zterm.ipos)
     # TrieDict.delete_term(@name, zterm.zstr)
 
     return unless fresh
@@ -61,8 +60,8 @@ class MT::ZvDict
 
     return unless persist
 
-    MtData.delete(@d_id, zterm.ipos, zterm.zstr)
-    ZvTerm.delete(@d_id, zterm.ipos, zterm.zstr)
+    # MtData.delete(@d_id, zterm.ipos, zterm.zstr)
+    # ZvTerm.delete(@d_id, zterm.ipos, zterm.zstr)
 
     self.upsert!
   end

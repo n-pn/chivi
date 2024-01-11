@@ -1,7 +1,7 @@
-require "../../../_util/char_util"
-require "../../../_util/viet_util"
-require "../../../_util/time_util"
-require "../../../_util/text_util"
+require "../../_util/char_util"
+require "../../_util/viet_util"
+require "../../_util/time_util"
+require "../../_util/text_util"
 
 module SQ3Enum(T)
   def self.from_rs(rs : ::DB::ResultSet)

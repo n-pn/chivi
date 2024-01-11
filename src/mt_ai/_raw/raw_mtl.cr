@@ -8,11 +8,11 @@ require "./raw_ent"
 struct MT::RawMtl
   include JSON::Serializable
 
-  @[JSON::Field(key: "tok/fine")]
-  getter tok : Array(String) { @tok_coarse }
+  @[JSON::Field(key: "tok")]
+  getter tok : Array(String) { @tok_fine }
 
-  @[JSON::Field(key: "tok/coarse")]
-  getter tok_coarse : Array(String)
+  @[JSON::Field(key: "tok/fine")]
+  getter tok_fine : Array(String)
 
   @[JSON::Field(key: "con")]
   getter con : RawCon
@@ -20,8 +20,8 @@ struct MT::RawMtl
   @[JSON::Field(key: "dep")]
   getter dep : Array(RawDep)
 
-  # @[JSON::Field(key: "pos/ctb")]
-  # getter pos : Array(String) = [] of String
+  @[JSON::Field(key: "pos/ctb")]
+  getter pos : Array(String) = [] of String
 
   @[JSON::Field(key: "ner/msra")]
   getter ner_msra : Array(RawEnt) = [] of RawEnt
@@ -37,11 +37,11 @@ end
 struct MT::RawMtlBatch
   include JSON::Serializable
 
-  @[JSON::Field(key: "tok/fine")]
-  getter tok : Array(Array(String)) { @tok_coarse }
+  @[JSON::Field(key: "tok")]
+  getter tok : Array(Array(String)) { @tok_fine }
 
-  @[JSON::Field(key: "tok/coarse")]
-  getter tok_coarse = [] of Array(String)
+  @[JSON::Field(key: "tok/fine")]
+  getter tok_fine : Array(String)
 
   @[JSON::Field(key: "con")]
   getter con = [] of RawCon
@@ -49,8 +49,8 @@ struct MT::RawMtlBatch
   @[JSON::Field(key: "dep")]
   getter dep = [] of Array(RawDep)
 
-  # @[JSON::Field(key: "pos/ctb")]
-  # getter pos : Array(Array(String)) = [] of Array(String)
+  @[JSON::Field(key: "pos/ctb")]
+  getter pos : Array(Array(String)) = [] of Array(String)
 
   @[JSON::Field(key: "ner/msra")]
   getter ner_msra = [] of Array(RawEnt)
@@ -58,19 +58,19 @@ struct MT::RawMtlBatch
   @[JSON::Field(key: "ner/ontonotes")]
   getter ner_onto = [] of Array(RawEnt)
 
-  def to_mcache
-    self.tok.map_with_index do |tok, idx|
-      MCache.new(
-        rid: MCache.gen_rid(tok),
-        tok: tok.join('\t'),
-        con: @con[idx]?.try(&.to_json) || "",
-        dep: @dep[idx]?.try(&.to_json) || "[]",
-        msra: @ner_msra[idx]?.try(&.to_json) || "[]",
-        onto: @ner_onto[idx]?.try(&.to_json) || "[]",
-        uname: "", mtime: 0,
-      )
-    end
-  end
+  # def to_mcache
+  #   self.tok.map_with_index do |tok, idx|
+  #     MCache.new(
+  #       rid: MCache.gen_rid(tok),
+  #       tok: tok.join('\t'),
+  #       con: @con[idx]?.try(&.to_json) || "",
+  #       dep: @dep[idx]?.try(&.to_json) || "[]",
+  #       msra: @ner_msra[idx]?.try(&.to_json) || "[]",
+  #       onto: @ner_onto[idx]?.try(&.to_json) || "[]",
+  #       uname: "", mtime: 0,
+  #     )
+  #   end
+  # end
 
   ###
 

@@ -1,13 +1,15 @@
-require "../../_data/zr_db"
-require "./shared/*"
+require "crorm"
 
-class MT::ZvTerm
+require "../enum/*"
+require "./mt_wseg"
+
+class MT::SpWseg
   class_getter db : ::DB::Database = ZR_DB
 
   ###
 
   include Crorm::Model
-  schema "zvterm", :postgres, strict: false
+  schema "mt_wseg", :postgres
 
   field d_id : Int32, pkey: true
   field ipos : MtEpos, pkey: true, converter: MT::MtEpos
@@ -18,6 +20,12 @@ class MT::ZvTerm
 
   field vstr : String = ""
   field attr : String = ""
+
+  field toks : Array(Int32) = [] of Int32
+  field ners : Array(String) = [] of String
+
+  field segr : Int16 = 2_i16
+  field posr : Int16 = 2_i16
 
   field plock : Int16 = 0_i16
   field uname : String = ""
@@ -57,9 +65,10 @@ class MT::ZvTerm
     )
   end
 
-  def initialize(@d_id, @cpos, @zstr,
-                 @vstr = zstr, @ipos = MtEpos.parse(cpos),
-                 @attr = "", @plock = 0_i16)
+  def initialize(@d_id, @cpos, @zstr, @vstr = zstr,
+                 @ipos = MtEpos.parse(cpos),
+                 @attr = "", @toks = [zstr.size],
+                 @plock = 0_i16)
   end
 
   def add_track(@uname, @mtime = TimeUtil.cv_mtime)
@@ -70,7 +79,7 @@ class MT::ZvTerm
       vstr: vstr,
       attr: MtAttr.parse_list(@attr),
       dnum: DictEnum.from(dtype, @plock),
-      prio: MtDefn.calc_prio(@zstr.siz)
+      prio: MtDefn.calc_prio(@zstr.size)
     )
   end
 
@@ -94,6 +103,12 @@ class MT::ZvTerm
 
       jb.field "vstr", @vstr
       jb.field "attr", @attr
+
+      jb.field "toks", @toks
+      jb.field "ners", @ners
+
+      jb.field "segr", @segr
+      jb.field "posr", @posr
 
       jb.field "uname", @uname
       jb.field "mtime", TimeUtil.cv_utime(@mtime)
