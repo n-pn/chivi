@@ -32,6 +32,7 @@ class RD::Rmstem
 
   field intro_zh : String = ""
   field intro_vi : String = ""
+  field intro_vi_bd : String = ""
 
   field genre_zh : String = ""
   field genre_vi : String = ""

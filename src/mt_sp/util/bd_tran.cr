@@ -23,18 +23,27 @@ module SP::BdTran
 
     retry.times do |i|
       proxy = HttpProxy.pick_one
-      client = HttpUtil.make_client(WEB_URI, proxy)
+      client = HttpUtil.make_client(WEB_URI)
 
-      client.post("/ait/text/translate", headers: headers, body: body) do |res|
-        res_body = res.body_io.gets_to_end
-        ApiData.parse(res_body).try { |x| return x.data.map(&.dst) }
+      res = client.post("/ait/text/translate", headers: headers, body: body)
+      res_body = res.body
 
-        Log.warn { res_body }
-        sleep i.seconds
-        proxy.try(&.rotate_ip!)
-      rescue ex
-        raise ex unless ex.message.try(&.includes?("Connection refused"))
-        HttpProxy.all_entries.pop?
+      if res.status.success? && (res_json = ApiData.parse(res_body))
+        return res_json.data.map(&.dst)
+      end
+
+      Log.warn { res.body.colorize.magenta }
+      sleep (i + 1).seconds
+      proxy.try(&.rotate_ip!)
+    rescue ex
+      case ex.message || ""
+      when .includes?("Connection refused")
+        proxy = HttpProxy.all_entries.pop?
+        Log.info { "removing #{proxy.host}:#{proxy.port}" } if proxy
+
+        raise ex
+      else
+        Log.warn { ex.message.colorize.red }
       end
     end
 
@@ -96,5 +105,5 @@ module SP::BdTran
   end
 
   # puts api_translate "我的女儿"
-  puts web_translate "数百名示威者聚集"
+  # puts web_translate "数百名示威者聚集"
 end

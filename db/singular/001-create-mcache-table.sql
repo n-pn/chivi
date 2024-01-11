@@ -9,6 +9,7 @@ CREATE TABLE mcache(
   con jsonb NOT NULL DEFAULT '[]',
   dep text NOT NULL DEFAULT '',
   ner text NOT NULL DEFAULT '',
+  pos text[] NOT NULL DEFAULT '{}',
   --
   mtime int NOT NULL DEFAULT 0,
   --

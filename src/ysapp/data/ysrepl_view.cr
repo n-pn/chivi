@@ -8,8 +8,13 @@ struct YS::YsreplPeek
   getter uname : String
   getter u_pic : String
 
-  getter vhtml : String
   getter ctime : Int64
+  getter vhtml : String
+
+  @[JSON::Field(ignore: true)]
+  getter ztext : String
+  @[JSON::Field(ignore: true)]
+  getter vi_bd : String?
 
   getter like_count : Int32
   getter repl_count : Int32
@@ -20,7 +25,9 @@ struct YS::YsreplPeek
       u.id as yu_id,
       u.vname as uname,
       u.y_avatar as u_pic,
+      r.ztext,
       r.vhtml,
+      r.vi_bd,
       extract(epoch from r.created_at)::bigint as ctime,
       r.like_count,
       r.repl_count
@@ -28,10 +35,24 @@ struct YS::YsreplPeek
       inner join ysusers as u
       on u.id = r.ysuser_id
     where r.yscrit_id = $1
-      and r.vhtml <> ''
     order by r.created_at asc
     limit $2 offset $3
     SQL
+  end
+
+  def vhtml
+    if vi_bd = @data.vi_bd
+      to_html(vi_bd)
+    elsif !@vhtml.blank?
+      @vhtml
+    else
+      # TODO: call translation!
+      to_html(@ztext)
+    end
+  end
+
+  def to_html(input : String)
+    input.lines.join('\n') { |line| "<p>#{line.gsub('<', "&gt;")}</p>" }
   end
 
   def self.get_ztext(repl_id : Int32)

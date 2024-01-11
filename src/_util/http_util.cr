@@ -13,29 +13,36 @@ struct HttpProxy
   getter user : String
   getter pass : String
 
-  getter rotator = ""
+  getter rotate_url = ""
+  getter auth_token = ""
 
   def proxy_client
     HTTP::Proxy::Client.new(@host, port: @port, username: @user, password: @pass)
   end
 
   def rotate_ip!(retry = 4)
-    return if @rotator.blank?
+    Log.info { "reseting IP address using: #{@rotate_url}" }
+    return if @rotate_url.blank?
 
     retry.times do |i|
-      Log.info { "reseting IP address (try: #{i})" }
-
-      res = HTTP::Client.get(@rotator)
-      break if res.status.success?
-
-      if @rotator.includes?("proxyxoay.net")
-        delay = res.body.match!(/\s(\d+)\s/)[1].to_i
-      else
-        delay = 10 * 2 << i
-      end
-
+      return unless delay = call_rotator!(retry)
       Log.info { "sleeping #{delay} seconds before retrying" }
       sleep delay.seconds
+    end
+  end
+
+  def call_rotator!(retry = 1)
+    unless @auth_token.blank?
+      headers = HTTP::Headers{"Authentication" => "Bearer #{@auth_token}"}
+    end
+
+    res = HTTP::Client.get(@rotate_url, headers: headers)
+    return if res.status.success?
+
+    if @rotate_url.includes?("proxyxoay.net")
+      res.body.match!(/\s(\d+)\s/)[1].to_i
+    else
+      10 * 2 << retry
     end
   end
 
@@ -81,6 +88,7 @@ module HttpUtil
   def self.make_client(uri : URI, proxy : HttpProxy? = nil)
     client = HTTP::Client.new(uri)
     client.connect_timeout = 10
+    client.read_timeout = 20
     client.proxy = proxy.proxy_client if proxy
     client
   end
