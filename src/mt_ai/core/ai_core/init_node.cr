@@ -1,13 +1,15 @@
-require "./ai_term"
+require "../ai_term"
 
 class MT::AiCore
   def init_defn(zstr : String, epos : MtEpos,
                 attr : MtAttr = :none, mode : Int32 = 0)
-    @dicts.each { |d| d.get?(zstr, epos).try { |x| return x } }
+    @dicts.each { |d| d.get_defn?(zstr, epos).try { |x| return x } }
 
     return unless vstr = init_vstr(zstr, epos, mode: mode)
-    defn = MtDefn.new(vstr: vstr, attr: attr, dnum: :autogen_0, fpos: epos)
-    @dicts.last.add(zstr, epos, defn)
+    defn = MtDefn.new(vstr: vstr, attr: attr, dnum: :auto0, fpos: epos)
+    @dicts.last[zstr].add_data(epos, defn) { MtWseg.new(zstr) }
+
+    defn
   end
 
   # modes: 0 => return if not found, 1: search for any values, 2: translate by any mean!
@@ -32,7 +34,7 @@ class MT::AiCore
   end
 
   def get_any_defn?(zstr : String)
-    @dicts.each { |d| d.any?(zstr).try { |x| return x.vstr } }
+    @dicts.each { |d| d.any_defn?(zstr).try { |x| return x.vstr } }
   end
 
   private def init_term(list : Array(AiTerm),

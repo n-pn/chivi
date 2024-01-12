@@ -13,13 +13,13 @@ struct MT::MtWseg
   end
 
   def initialize(@zstr,
-                 @prio = WsegNode.calc_prio(zstr.size),
+                 @prio = MtWseg.calc_prio(zstr.size),
                  @bner = :none, @iner = :none, @oner = :none)
   end
 
   def initialize(cols : Array(String))
     @zstr = cols[0]
-    @prio = WsegNode.calc_prio(zstr.size, cols[1]?.try(&.to_i16?) || 3_i16)
+    @prio = MtWseg.calc_prio(zstr.size, cols[1]?.try(&.to_i16?) || 3_i16)
 
     return unless ners = cols[2]?
 

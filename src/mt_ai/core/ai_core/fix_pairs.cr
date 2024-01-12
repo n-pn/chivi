@@ -1,5 +1,3 @@
-require "./ai_term"
-
 class MT::AiCore
   # def init_dnp_term(list : Array(AiTerm))
   #   attr = MtAttr::None

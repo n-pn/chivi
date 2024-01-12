@@ -67,7 +67,7 @@ enum MT::MtDtyp : Int16
       when .starts_with?("wn") then 10 * dname[2..].to_i + Wnovel.value
       when .starts_with?("up") then 10 * dname[2..].to_i + Userpj.value
       when .starts_with?("qt") then 10 * dname[2..].to_i + Userqt.value
-      when .starts_with?("tm") then 10 * dname[2..].to_i + Themes.value
+      when .starts_with?("dm") then 10 * dname[2..].to_i + Domain.value
       when .starts_with?("pd") then 10 * dname[2..].to_i + Public.value
       else                          raise "invalid dname #{dname}"
       end

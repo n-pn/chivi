@@ -12,7 +12,7 @@ class MT::MtTrie
 
   CACHE = {} of Int32 => self
 
-  def self.load!(name : Int32) : self
+  def self.load!(name : String) : self
     d_id = MtDtyp.map_id(name)
     CACHE[d_id] ||= init!(d_id, name)
   end
@@ -20,35 +20,24 @@ class MT::MtTrie
   def self.init!(d_id : Int32, name : String)
     root = self.new
     time = Time.monotonic
+    size = 0
 
     SqDefn.query_each(d_id) do |zstr, epos, defn|
+      size &+= 1
       root[zstr].add_data(epos, defn) { MtWseg.new(zstr) }
     end
 
-    tsv_file = "var/mtdic/wseg/#{dname}.tsv"
-    return root unless File.file?(tsv_file)
+    tsv_file = "var/mtdic/wseg/#{name}.tsv"
 
-    File.each_line(tsv_file) do |line|
-      cols = line.split('\t')
-      root[term.zstr] = MtWseg.new(cols) unless cols.empty?
+    if File.file?(tsv_file)
+      File.each_line(tsv_file) do |line|
+        cols = line.split('\t')
+        root[cols[0]].wseg = MtWseg.new(cols) unless cols.empty?
+      end
     end
-
-    root = load_wseg_from_tsv!(name, root)
 
     time = Time.monotonic - time
-    Log.info { "loading #{dname} trie: #{time.total_milliseconds}" }
-
-    root
-  end
-
-  def self.load_wseg_from_tsv!(dname : String, root = self.new)
-    tsv_file = "var/mtdic/wseg/#{dname}.tsv"
-    return root unless File.file?(tsv_file)
-
-    File.each_line(tsv_file) do |line|
-      cols = line.split('\t')
-      root[term.zstr] = MtWseg.new(cols) unless cols.empty?
-    end
+    Log.info { "loading #{name} trie: #{time.total_milliseconds}ms, entries: #{size}" }
 
     root
   end
@@ -65,7 +54,6 @@ class MT::MtTrie
 
   property succ = {} of Char => MtTrie
   property vals : Hash(MtEpos, MtDefn)? = nil
-
   property defn : MtDefn? = nil
   property wseg : MtWseg? = nil
 
@@ -86,7 +74,7 @@ class MT::MtTrie
     node
   end
 
-  def add_data(epos : MtEpos, defn : MtDefn, & : MtWseg? ->)
+  def add_data(epos : MtEpos, defn : MtDefn, & : MtWseg? ->) : Nil
     vals = @vals ||= {} of MtEpos => MtDefn
     vals[epos] = defn
 
@@ -100,7 +88,7 @@ class MT::MtTrie
 
     start.upto(input.size &- 1) do |idx|
       char = input.unsafe_fetch(idx)
-      char = CharUtil.to_canon(char, true)
+      # char = CharUtil.to_canon(char, true)
 
       break unless node = node.succ[char]?
       next unless wseg = node.wseg
@@ -116,7 +104,7 @@ class MT::MtTrie
 
   @[AlwaysInline]
   def get_defn?(zstr : String, epos : MtEpos)
-    self[zstr]?.try(&.vals[epos]?)
+    self[zstr]?.try(&.vals).try(&.[epos]?)
   end
 
   def any_defn?(zstr : String)

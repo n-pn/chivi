@@ -14,9 +14,9 @@ module MT::TlUnit
     return unless zstr[0] == '一' && zstr[1] == zstr[2]
 
     qzstr = zstr[-1].to_s
-    qnode = HashDict.nqnt_vi.any?(qzstr) || HashDict.essence.any?(qzstr)
+    qdefn = MtTrie.nqnt_vi.any_defn?(qzstr) || MtTrie.essence.any_defn?(qzstr)
 
-    qvstr = qnode.try(&.vstr) || qzstr
+    qvstr = qdefn.try(&.vstr) || qzstr
     "từng #{qvstr} từng #{qvstr}"
   end
 

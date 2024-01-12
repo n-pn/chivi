@@ -78,7 +78,7 @@ struct MT::SqDefn
 
         vstr = rs.read(String)
         attr = MtAttr.from_value(rs.read(Int32))
-        dnum = rs.read(Int32).to_i8
+        dnum = MtDnum.from_value(rs.read(Int32))
         fpos = MtEpos.from_value(rs.read(Int32))
 
         defn = MtDefn.new(vstr: vstr, attr: attr, dnum: dnum, fpos: fpos)

@@ -1,5 +1,9 @@
 require "json"
-require "../ai_dict"
+
+require "../data/mt_defn"
+require "../data/mt_pair"
+
+# require "../ai_dict"
 
 struct MT::AiPair(T)
   getter head : T

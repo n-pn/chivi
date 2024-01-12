@@ -23,7 +23,7 @@ end
 # do_test("!hetushu", 1640, 1099716, reset: false)
 # do_test("!uukanshu", 514, 4531, reset: false)
 
-# do_test("!69shu", 30494, 22578503, reset: false)
+do_test("!69shuba.com", 46957, 36687119, reset: false)
 # do_test("!ptwxz", 1806, 803058, reset: false)
 
 # # do_test("!rengshu", 4243, 1408503, reset: false)
@@ -40,7 +40,7 @@ end
 # do_test("!biqu5200", 139731, 174666986, reset: false)
 # do_test("!tasim", 2777, 1, reset: false)
 # do_test("!piaotian.com", 15296, 10909391, reset: false)
-do_test("!piaotian.com", 15303, 10691634, reset: false)
+do_test("!piaotia.com", 15303, 10691634, reset: false)
 
 # do_test("!shubaow", 150092, 32706021, reset: false)
 # do_test("!biqugee", 33775, 18804401, reset: false)

@@ -41,7 +41,7 @@ struct MT::RawMtlBatch
   getter tok : Array(Array(String)) { @tok_fine }
 
   @[JSON::Field(key: "tok/fine")]
-  getter tok_fine : Array(String)
+  getter tok_fine : Array(Array(String))
 
   @[JSON::Field(key: "con")]
   getter con = [] of RawCon

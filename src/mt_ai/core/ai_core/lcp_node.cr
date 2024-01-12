@@ -1,4 +1,4 @@
-require "./ai_term"
+# require "./ai_term"
 
 class MT::AiCore
   def init_lcp_term(orig : String, attr : MtAttr, from = 0)

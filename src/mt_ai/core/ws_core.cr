@@ -1,4 +1,5 @@
 require "bit_array"
+require "./mt_trie"
 
 class MT::WsCore
   CACHE = {} of String => self
@@ -11,26 +12,26 @@ class MT::WsCore
   end
 
   def initialize(*dnames : String)
-    @dicts = [] of TrieDict
-    dnames.each { |dname| @dicts << TrieDict.load!(dname) }
-    @dicts << TrieDict.essence
-    @dicts << TrieDict.new # cache fresh terms
+    @dicts = [] of MtTrie
+    dnames.each { |dname| @dicts << MtTrie.load!(dname) }
+    @dicts << MtTrie.essence
+    @dicts << MtTrie.new # cache fresh terms
   end
 
   def parse!(input : String)
     chars = input.chars
 
-    best_terms = [] of WsTerm
+    best_terms = [] of MtWseg
     best_costs = Array(Int16).new(chars.size + 1, 0)
 
     table = chars.map_with_index do |char, i|
-      best_terms << WsTerm.new(char.to_s)
+      best_terms << MtWseg.new(char.to_s)
 
       skips = BitArray.new(chars.size - i + 1, false) # tracking for overriding
-      terms = [] of WsTerm
+      terms = [] of MtWseg
 
       @dicts.each do |dict|
-        dict.scan(chars, start: i) do |size, term|
+        dict.scan_wseg(chars, start: i) do |size, term|
           next if skips[size]                 # skip if this term existed in higher dict
           skips[size] = true                  # mark term as existed
           terms << term unless term.prio == 0 # skip terms marks as deleted
@@ -66,7 +67,7 @@ class MT::WsCore
 
     # TODO: apply ner
 
-    tokens = [] of WsTerm
+    tokens = [] of MtWseg
     cursor = 0
 
     while cursor < chars.size
@@ -89,7 +90,7 @@ class MT::WsCore
         new_bner = term.bner & tail.iner
         next if new_bner.none?
 
-        new_term = WsTerm.new(
+        new_term = MtWseg.new(
           zstr: "#{term.zstr}#{tail.zstr}",
           bner: new_bner,
           iner: term.iner,

@@ -1,4 +1,4 @@
-require "./ai_term"
+# require "./ai_term"
 
 class MT::AiCore
   private def init_pair(head : AiTerm, tail : AiTerm,

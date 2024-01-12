@@ -1,7 +1,7 @@
 require "json"
 require "../_raw/raw_con"
-require "../../../_util/char_util"
-require "../ai_dict"
+require "../../_util/char_util"
+# require "../ai_dict"
 
 require "./ai_core/*"
 require "./mt_core/*"
@@ -13,14 +13,14 @@ class MT::AiCore
     CACHE[pdict] ||= new(pdict.sub("book", "wn").tr(":/", ""))
   end
 
-  @dicts : {HashDict, HashDict, HashDict, HashDict}
+  @dicts : {MtTrie, MtTrie, MtTrie, MtTrie}
 
   def initialize(@pdict : String)
     @dicts = {
-      HashDict.load!(pdict),
-      HashDict.regular,
-      HashDict.essence,
-      HashDict.suggest,
+      MtTrie.load!(pdict),
+      MtTrie.regular,
+      MtTrie.essence,
+      MtTrie.suggest,
     }
 
     @name_qt = QtCore.new(pdict, "name_hv")
@@ -53,10 +53,10 @@ class MT::AiCore
       raise "invalid!"
     end
 
-    case epos
-    when .lcp?
-      init_lcp_node(zstr: zstr, epos: epos, body: body, from: from)
-    end
+    # case epos
+    # when .lcp?
+    #   init_lcp_node(zstr: zstr, epos: epos, body: body, from: from)
+    # end
 
     body = init_body(orig, from)
     term = AiTerm.new(body, zstr: zstr, epos: epos, attr: attr, from: from)

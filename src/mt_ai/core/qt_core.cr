@@ -25,10 +25,10 @@ class MT::QtCore
 
   def initialize(*dnames : String)
     @wseg = WsCore.load!(*dnames)
-    @dicts = [] of HashDict
-    dnames.each { |dname| @dicts << HashDict.load!(dname) }
-    @dicts << HashDict.essence
-    # @dicts <<  HashDict.new
+    @dicts = [] of MtTrie
+    dnames.each { |dname| @dicts << MtTrie.load!(dname) }
+    @dicts << MtTrie.essence
+    # @dicts <<  MtTrie.new
   end
 
   def translate(str : String, cap : Bool = true)
@@ -47,7 +47,7 @@ class MT::QtCore
       size = zstr.size
 
       found = @dicts.each_with_index(1) do |dict, _dic|
-        next unless defn = dict.any?(zstr)
+        next unless defn = dict.any_defn?(zstr)
         output << QtNode.new(zstr, defn.vstr, defn.attr, _idx: _idx, _dic: _dic)
         _idx &+= size
         break true

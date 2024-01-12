@@ -4,7 +4,7 @@ struct MT::MtDefn
   getter vstr : String
   getter attr : MtAttr
 
-  getter dnum : Int8 = 0_i8
+  getter dnum : MtDnum = MtDnum::Unkn0
   getter fpos : MtEpos = MtEpos::X
 
   def self.calc_prio(size : Int32, prio : Int16 = 5_i16)
@@ -16,7 +16,7 @@ struct MT::MtDefn
     @attr = MtAttr.parse(char)
   end
 
-  def initialize(@vstr, @attr = :none, @dnum = :unknown_0, @fpos = :X)
+  def initialize(@vstr, @attr = :none, @dnum = :unkn0, @fpos = :X)
   end
 
   # def to_txt(io : IO, cap : Bool, und : Bool)

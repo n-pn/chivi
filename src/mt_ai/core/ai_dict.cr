@@ -1,7 +1,7 @@
 # require "../util/*"
 require "../data/*"
 require "./qt_core"
-require "./mt_core/tl_unit"
+require "./ai_core/tl_unit"
 
 class MT::AiDict
   CACHE = {} of String => self
@@ -10,14 +10,14 @@ class MT::AiDict
     CACHE[pdict] ||= new(pdict.sub("book", "wn").tr(":/", ""))
   end
 
-  @dicts : {HashDict, HashDict, HashDict, HashDict}
+  @dicts : {MtTrie, MtTrie, MtTrie, MtTrie}
 
   def initialize(pdict : String = "combined")
     @dicts = {
-      HashDict.load!(pdict),
-      HashDict.regular,
-      HashDict.essence,
-      HashDict.suggest,
+      MtTrie.load!(pdict),
+      MtTrie.regular,
+      MtTrie.essence,
+      MtTrie.suggest,
     }
   end
 

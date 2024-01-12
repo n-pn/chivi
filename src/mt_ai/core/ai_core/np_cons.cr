@@ -1,4 +1,4 @@
-require "./ai_term"
+# require "./ai_term"
 
 class MT::AiCore
   def fix_np_term!(term : AiTerm, body = term.body)

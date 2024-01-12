@@ -1,4 +1,4 @@
-require "./ai_term"
+# require "./ai_term"
 
 class MT::AiCore
   private def init_dp_np_pair(np_term : AiTerm, dp_term : AiTerm)
@@ -23,7 +23,7 @@ class MT::AiCore
     fchar = term.zstr[0]
     return {term, nil} if term.zstr.size == 1 || !fchar.in?('这', '那')
 
-    dt_body = MtDefn.new(vstr: fchar == '这' ? "này" : "kia", dnum: :fixture_2)
+    dt_body = MtDefn.new(vstr: fchar == '这' ? "này" : "kia", dnum: :root2)
     dt_term = AiTerm.new(epos: :DT, attr: :none, zstr: fchar.to_s, body: dt_body, from: term.from)
 
     qp_zstr = term.zstr[1..]
