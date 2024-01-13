@@ -1,4 +1,5 @@
 require "log"
+require "icu"
 require "yaml"
 require "colorize"
 
@@ -75,13 +76,12 @@ module HttpUtil
 
   def self.make_headers(referer = "", cookie = "", content_type = "text/html")
     HTTP::Headers{
-      "Origin"     => referer,
-      "Referer"    => referer,
-      "Cookie"     => cookie,
-      "User-Agent" => "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0",
-
-      "Content-Type" => content_type,
-      # "Accept-Encoding" => "gzip, deflate, br",
+      "Origin"          => referer,
+      "Referer"         => referer,
+      "Cookie"          => cookie,
+      "User-Agent"      => "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0",
+      "Content-Type"    => content_type,
+      "Accept-Encoding" => "gzip, deflate, br",
     }
   end
 
@@ -93,52 +93,43 @@ module HttpUtil
     client
   end
 
-  def self.get_text(uri : URI, use_proxy : Bool = false)
+  def self.get_html(url : String,
+                    headers : HTTP::Headers = nil,
+                    encoding : String? = nil,
+                    use_proxy : Bool = false)
+    get_html(URI.parse(url), headers, encoding, use_proxy)
   end
 
-  def fetch(url : String, encoding = "UTF-8") : String
-    args = {"-H", "user-agent: #{USER_AGENT}", "-L", "-k", "-s", "-m", "10", url}
-    retry = 0
-
-    loop do
-      Log.debug { "[GET: #{url.colorize.magenta} {#{encoding}} (retry: #{retry})]" }
-
-      Process.run("curl", args: args) do |proc|
-        proc.output.set_encoding(encoding)
-        html = proc.output.gets_to_end
-        return html.sub(/(?<==|")#{encoding}(?=;|")/i, "utf-8") unless html.empty?
+  def self.get_html(uri : URI,
+                    headers : HTTP::Headers = nil,
+                    encoding : String? = nil,
+                    use_proxy : Bool = false)
+    proxy = HttpProxy.pick_one if use_proxy
+    make_client(uri, proxy).get(uri.request_target, headers: headers) do |res|
+      case res.status
+      when .success?
+        read_res_html(res.body_io, uri.hostname.as(String), encoding)
+      when .redirection?
+        location = res.headers["location"]
+        get_html(location, headers: headers, encoding: encoding, use_proxy: use_proxy)
+      else
+        raise "http error: #{res.status_code}"
       end
-
-      raise "[GET: #{url} failed after #{retry} attempts.]" if retry > 2
-      retry += 1
     end
   end
 
-  # def get_by_curl(url : String, encoding : String) : String
-  #   cmd = "curl -L -k -s -f -m 30 '#{url}'"
-  #   cmd += " | iconv -c -f #{encoding} -t UTF-8" if encoding != "UTF-8"
-  #   `#{cmd}`
-  # end
+  CSDET = ICU::CharsetDetector.new
 
-  # def crystal_get(url : String, encoding : String = "UTF-8")
-  #   HTTP::Client.get(url) do |res|
-  #     res.body_io.set_encoding(encoding, invalid: :skip)
-  #     res.body_io.gets_to_end.lstrip
-  #   end
-  # end
-
-  def fetch_file(url : String, file : String, lbl = "1/1") : Nil
-    try = 0
-
-    loop do
-      puts "- <#{lbl.colorize.magenta}> [GET: #{url.colorize.magenta}, (try: #{try})]"
-
-      `curl -L -k -s -f -m 200 '#{url}' -o '#{file}'`
-      return if File.exists?(file)
-    ensure
-      try += 1
-      sleep 500.milliseconds * try
-      raise "[DL: #{url} failed after 3 attempts.]" if try > 2
+  def self.read_res_html(body : IO, hostname : String, encoding : String? = nil)
+    if encoding ||= ENCODING[hostname]?
+      html = body.tap(&.set_encoding(encoding, invalid: :skip)).gets_to_end
+    else
+      blob = body.getb_to_end
+      text = String.new(blob[0..1000])
+      encoding = ENCODING[hostname] = CSDET.detect(text).name
+      html = String.new(blob, encoding: encoding, invalid: :skip)
     end
+
+    encoding == "UTF-8" ? html : html.sub(/#{encoding}|gbk|gb2312/i, "utf-8")
   end
 end

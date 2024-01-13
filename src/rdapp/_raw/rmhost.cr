@@ -1,6 +1,7 @@
 require "log"
 require "yaml"
-require "http/client"
+
+require "../../_util/http_util"
 
 require "./rmpage"
 require "./rmutil"
@@ -219,22 +220,11 @@ class Rmhost
 
   ###
 
-  def save_page(href : String, save_path : String,
-                http_client : HTTP::Client = self.http_client) : String
+  def save_page(href : String, save_path : String) : String
     # raise "source is dead" if @seedtype.in?(2, 4)
 
-    http_client.get(href, headers: self.get_headers(href)) do |res|
-      if res.status.success?
-        html = res.body_io.tap(&.set_encoding(@encoding, invalid: :skip)).gets_to_end
-        html = html.sub(/#{@encoding}|gb2312/i, "utf-8") unless @encoding == "UTF-8"
-        html.tap { |data| File.write(save_path, data) rescue "can't write to file!" }
-      elsif res.status == :not_found
-        File.write("#{save_path}.404", res.body_io.gets_to_end)
-        raise "404 not found!"
-      else
-        raise "http error: #{res.status_code}"
-      end
-    end
+    html = HttpUtil.get_html(self.full_url(href), headers: self.get_headers(href), encoding: @encoding)
+    html.tap { |data| File.write(save_path, data) rescue "can't write to file!" }
   end
 
   def load_page(href : String, save_path : String,
