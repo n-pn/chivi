@@ -5,7 +5,7 @@ require "./mt_node/mt_term"
 class M1::MtTrie
   alias HashCT = Hash(Char, self)
 
-  property term : MtDefn? = nil
+  property term : ZvDefn? = nil
   property trie : HashCT? = nil
 
   def find!(input : String) : self
@@ -140,7 +140,7 @@ class M1::MtDict
         tag = PosTag.map_ctb(tags.split(' ')[0], key)
 
         node = @trie.find!(key)
-        node.term = MtDefn.new(key, val, tag: tag, dic: @lbl, prio: 1)
+        node.term = ZvDefn.new(key, val, tag: tag, dic: @lbl, prio: 1)
       end
     end
 
@@ -158,7 +158,7 @@ class M1::MtDict
       node.term = nil
     else
       val = val.split(/[ǀ|\t]/).first
-      node.term = MtDefn.new(key, val, dic: @lbl, ptag: ptag, prio: prio)
+      node.term = ZvDefn.new(key, val, dic: @lbl, ptag: ptag, prio: prio)
     end
   end
 

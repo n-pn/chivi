@@ -1,14 +1,15 @@
 require "../data/sq_defn"
-require "../data/sq_wseg"
-require "../data/mt_defn"
-require "../data/mt_wseg"
+# require "../data/sq_wseg"
+require "./mt_data/*"
 
 class MT::MtTrie
   class_getter essence : self { load!("essence") }
   class_getter regular : self { load!("regular") }
-
   class_getter suggest : self { load!("suggest") }
+
   class_getter nqnt_vi : self { load!("nqnt_vi") }
+  class_getter hv_word : self { load!("hv_word") }
+  class_getter hv_name : self { load!("hv_name") }
 
   CACHE = {} of Int32 => self
 
@@ -52,49 +53,36 @@ class MT::MtTrie
 
   ####
 
-  property succ = {} of Char => MtTrie
-  property vals : Hash(MtEpos, MtDefn)? = nil
-  property defn : MtDefn? = nil
+  property succ : Hash(Char, self)? = nil
+  property vals : Hash(MtEpos, ZvDefn)? = nil
+  property defn : ZvDefn? = nil
   property wseg : MtWseg? = nil
-
-  # def []=(zstr : String, term : MtWseg?)
-  #   self[zstr].term = term
-  # end
 
   def [](zstr : String)
     zstr.each_char.reduce(self) do |node, char|
       # char = CharUtil.to_canon(char, true)
-      node.succ[char] ||= MtTrie.new
+      succ = node.succ ||= {} of Char => MtTrie
+      succ[char] ||= MtTrie.new
     end
   end
 
   def []?(zstr : String)
     node = self
-    zstr.each_char { |char| break unless node = node.succ[char]? }
+
+    zstr.each_char do |char|
+      return unless succ = node.succ
+      return unless node = succ[char]?
+    end
+
     node
   end
 
-  def add_data(epos : MtEpos, defn : MtDefn, & : MtWseg? ->) : Nil
-    vals = @vals ||= {} of MtEpos => MtDefn
+  def add_data(epos : MtEpos, defn : ZvDefn, & : MtWseg? ->) : Nil
+    vals = @vals ||= {} of MtEpos => ZvDefn
     vals[epos] = defn
+    @defn = defn if epos.x? || !defn
 
-    @defn = defn if epos.x? || !@defn
     @wseg = yield @wseg
-  end
-
-  def scan_wseg(input : Array(Char), start : Int32 = 0, &)
-    node = self
-    size = 0
-
-    start.upto(input.size &- 1) do |idx|
-      char = input.unsafe_fetch(idx)
-      # char = CharUtil.to_canon(char, true)
-
-      break unless node = node.succ[char]?
-      next unless wseg = node.wseg
-
-      yield idx &- start &+ 1, wseg
-    end
   end
 
   @[AlwaysInline]
@@ -109,5 +97,18 @@ class MT::MtTrie
 
   def any_defn?(zstr : String)
     self[zstr]?.try(&.defn)
+  end
+
+  def scan_wseg(input : Array(Char), start : Int32 = 0, &)
+    node = self
+    size = 0
+
+    start.upto(input.size &- 1) do |idx|
+      char = input.unsafe_fetch(idx)
+      # char = CharUtil.to_canon(char, true)
+      break unless node = node.succ.try(&.[char]?)
+      next unless wseg = node.wseg
+      yield idx &- start &+ 1, wseg
+    end
   end
 end

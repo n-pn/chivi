@@ -92,7 +92,7 @@ abstract class M1::MtNode
   end
 
   def space_before?(prev : MtNode)
-    return !prev.popens? unless prev.is_a?(MtDefn)
+    return !prev.popens? unless prev.is_a?(ZvDefn)
     return space_before?(prev.prev?) if prev.val.empty?
     !(prev.val.blank? || prev.popens?)
   end

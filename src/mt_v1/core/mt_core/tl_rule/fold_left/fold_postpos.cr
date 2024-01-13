@@ -15,7 +15,7 @@ module M1::TlRule
     "色"   => {"màu", PosTag::Nattr, true},
   }
 
-  def fold_suffix!(suff : MtDefn, left : MtNode) : MtList?
+  def fold_suffix!(suff : ZvDefn, left : MtNode) : MtList?
     return unless left.nominal? || left.adjective? || left.verbal?
     return if left.v_shi? || left.v_you?
 

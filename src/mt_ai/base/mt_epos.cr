@@ -1,4 +1,4 @@
-require "./attr"
+require "./mt_attr"
 
 enum MT::MtEpos : Int8
   X = 0 # match any

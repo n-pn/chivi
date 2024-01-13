@@ -7,7 +7,7 @@ module M1::TlRule
     "重" => "nặng",
   }
 
-  def fold_adjt_measure(adjt : MtDefn, succ = adjt.succ?)
+  def fold_adjt_measure(adjt : ZvDefn, succ = adjt.succ?)
     return unless succ
 
     if succ.numeral?
@@ -15,7 +15,7 @@ module M1::TlRule
       return fold!(adjt, succ, PosTag::Aform, dic: 7)
     end
 
-    return unless succ.is_a?(MtDefn) && (tail = succ.succ?) && tail.numeral?
+    return unless succ.is_a?(ZvDefn) && (tail = succ.succ?) && tail.numeral?
     return unless succ_val = PRE_NUM_APPROS[succ.key]?
     succ.val = succ_val
 
@@ -25,7 +25,7 @@ module M1::TlRule
 
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_adjts!(adjt : MtNode, prev : MtNode? = nil) : MtNode
-    if adjt.is_a?(MtDefn) && MEASURES.has_key?(adjt.key)
+    if adjt.is_a?(ZvDefn) && MEASURES.has_key?(adjt.key)
       fold_adjt_measure(adjt).try { |x| return x }
     end
 
@@ -48,7 +48,7 @@ module M1::TlRule
       when .adjt?
         adjt = fold!(adjt, succ, PosTag::Adjt, dic: 4)
       when .vdir?
-        adjt = SpDict.fix_verbs.fix!(adjt) if adjt.is_a?(MtDefn)
+        adjt = SpDict.fix_verbs.fix!(adjt) if adjt.is_a?(ZvDefn)
         return fold_verbs!(adjt)
       when .verb?
         break unless succ.key == "到"
@@ -113,7 +113,7 @@ module M1::TlRule
     node = fold!(nega, node, node.tag, dic: 4) if nega
     return node if !(succ = node.succ?) || succ.ends?
 
-    if succ.is_a?(MtDefn) && succ.polysemy?
+    if succ.is_a?(ZvDefn) && succ.polysemy?
       succ = heal_mixed!(succ, prev: node)
     end
 

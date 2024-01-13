@@ -108,7 +108,7 @@ module M1::TlRule
         node.val = "muốn"
       end
     else
-      if succ.vdirs? || (succ.is_a?(MtDefn) && SpDict.v_rescom.fix_vcompl(succ))
+      if succ.vdirs? || (succ.is_a?(ZvDefn) && SpDict.v_rescom.fix_vcompl(succ))
         node.set!("nhớ") if succ.succ?(&.human?)
       end
     end

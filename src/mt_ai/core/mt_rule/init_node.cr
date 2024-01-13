@@ -6,7 +6,7 @@ class MT::AiCore
     @dicts.each { |d| d.get_defn?(zstr, epos).try { |x| return x } }
 
     return unless vstr = init_vstr(zstr, epos, mode: mode)
-    defn = MtDefn.new(vstr: vstr, attr: attr, dnum: :auto0, fpos: epos)
+    defn = ZvDefn.new(vstr: vstr, attr: attr, dnum: :auto0, fpos: epos)
     @dicts.last[zstr].add_data(epos, defn) { MtWseg.new(zstr) }
 
     defn

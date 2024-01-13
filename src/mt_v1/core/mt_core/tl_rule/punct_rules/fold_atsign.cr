@@ -26,7 +26,7 @@
 
 #     tag = PosTag::Person
 
-#     MtDefn.new(key, "@#{val}", tag, dic: 2, idx: head.idx).tap do |new_node|
+#     ZvDefn.new(key, "@#{val}", tag, dic: 2, idx: head.idx).tap do |new_node|
 #       new_node.fix_prev!(head.prev?)
 #       new_node.fix_succ!(tail.succ?)
 #     end

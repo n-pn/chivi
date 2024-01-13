@@ -50,7 +50,7 @@ module M1::TlRule
   end
 
   def fold_day?(num : MtNode?) : MtNode?
-    return unless num && (day = num.succ?) && num.is_a?(MtDefn)
+    return unless num && (day = num.succ?) && num.is_a?(ZvDefn)
     return unless num.numbers? && day.key == "日" || day.key == "号"
 
     case day.key

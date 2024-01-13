@@ -1,6 +1,6 @@
 module M1::TlRule
   def fold_nhanzi!(node : MtNode, prev : MtNode? = nil) : MtNode
-    return node unless (succ = node.succ?) && succ.is_a?(MtDefn)
+    return node unless (succ = node.succ?) && succ.is_a?(ZvDefn)
 
     case succ.key
     when "点"  then fold_nhanzi_dian!(node, succ, prev)
@@ -23,11 +23,11 @@ module M1::TlRule
   end
 
   def keep_pure_numeral?(node : MtNode?) : Bool | MtNode
-    return false unless node && node.is_a?(MtDefn)
+    return false unless node && node.is_a?(ZvDefn)
     return true if node.key == "半" || node.key == "前后"
 
     return false unless node.numbers?
-    return node unless (succ = node.succ?) && succ.is_a?(MtDefn)
+    return node unless (succ = node.succ?) && succ.is_a?(ZvDefn)
     succ.key == "分" || succ.key == "分钟" ? true : node
   end
 end

@@ -1,4 +1,4 @@
-require "./_enum"
+require "./_shared"
 
 # word peculiarity
 # sort by most common types

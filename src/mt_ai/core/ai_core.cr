@@ -3,8 +3,10 @@ require "../_raw/raw_con"
 require "../../_util/char_util"
 # require "../ai_dict"
 
-require "./ai_core/*"
-require "./mt_core/*"
+require "./mt_rule/*"
+require "./mt_data/*"
+
+# require "./mt_core/*"
 
 class MT::AiCore
   CACHE = {} of String => self

@@ -36,7 +36,7 @@ module M1::TlRule
   # end
 
   def fold_什么_noun!(prev : MtNode, node : MtNode)
-    succ = MtDefn.new("么", "gì", prev.tag, 1, prev.idx + 1)
+    succ = ZvDefn.new("么", "gì", prev.tag, 1, prev.idx + 1)
 
     prev.key = "什"
     prev.val = "cái"

@@ -1,5 +1,4 @@
-require "bit_array"
-require "./mt_trie"
+require "./mt_dict"
 
 class MT::WsCore
   CACHE = {} of String => self
@@ -7,15 +6,11 @@ class MT::WsCore
   class_getter word_hv : self { load!("word_hv") }
   class_getter name_hv : self { load!("name_hv") }
 
-  def self.load!(*dnames : String) : self
-    CACHE[dnames.first] ||= new(*dnames)
+  def self.load!(pdict : String) : self
+    CACHE[pdict] ||= new(MtDict.for_qt(pdict))
   end
 
-  def initialize(*dnames : String)
-    @dicts = [] of MtTrie
-    dnames.each { |dname| @dicts << MtTrie.load!(dname) }
-    @dicts << MtTrie.essence
-    @dicts << MtTrie.new # cache fresh terms
+  def initialize(@dict : MtDict)
   end
 
   def parse!(input : String)
@@ -26,19 +21,7 @@ class MT::WsCore
 
     table = chars.map_with_index do |char, i|
       best_terms << MtWseg.new(char.to_s)
-
-      skips = BitArray.new(chars.size - i + 1, false) # tracking for overriding
-      terms = [] of MtWseg
-
-      @dicts.each do |dict|
-        dict.scan_wseg(chars, start: i) do |size, term|
-          next if skips[size]                 # skip if this term existed in higher dict
-          skips[size] = true                  # mark term as existed
-          terms << term unless term.prio == 0 # skip terms marks as deleted
-        end
-      end
-
-      terms
+      @dict.all_wsegs(chars, start: i)
     end
 
     (chars.size - 1).downto(0) do |i|

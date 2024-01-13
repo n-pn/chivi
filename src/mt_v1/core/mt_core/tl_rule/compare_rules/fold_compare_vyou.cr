@@ -62,11 +62,11 @@ module M1::TlRule
       head.fix_prev!(vyou.prev?)
       head.fix_succ!(vyou)
     else
-      head = MtDefn.new("没", "không", PosTag::AdvBu4, 1, vyou.idx)
+      head = ZvDefn.new("没", "không", PosTag::AdvBu4, 1, vyou.idx)
       head.fix_prev!(vyou.prev?)
       head.fix_succ!(tail)
 
-      temp = MtDefn.new("有", "như", PosTag::VYou, 1, vyou.idx + 1)
+      temp = ZvDefn.new("有", "như", PosTag::VYou, 1, vyou.idx + 1)
       temp.fix_prev!(tail)
       temp.fix_succ!(noun)
     end

@@ -1,6 +1,6 @@
-require "../enum/*"
+require "../../base/*"
 
-struct MT::MtDefn
+struct MT::ZvDefn
   getter vstr : String
   getter attr : MtAttr
 

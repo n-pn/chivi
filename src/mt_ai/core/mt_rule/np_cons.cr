@@ -3,7 +3,7 @@
 class MT::AiCore
   def fix_np_term!(term : AiTerm, body = term.body)
     case body
-    when MtDefn, AiTerm
+    when ZvDefn, AiTerm
       # Do nothing
     when AiPair
       term.body = fix_np_pair!(body)

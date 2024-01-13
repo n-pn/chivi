@@ -19,11 +19,11 @@ class MT::AiCore
     {dt_node, qp_node}
   end
 
-  private def split_dp_term(term : AiTerm, body : MtDefn | AiTerm)
+  private def split_dp_term(term : AiTerm, body : ZvDefn | AiTerm)
     fchar = term.zstr[0]
     return {term, nil} if term.zstr.size == 1 || !fchar.in?('这', '那')
 
-    dt_body = MtDefn.new(vstr: fchar == '这' ? "này" : "kia", dnum: :root2)
+    dt_body = ZvDefn.new(vstr: fchar == '这' ? "này" : "kia", dnum: :root2)
     dt_term = AiTerm.new(epos: :DT, attr: :none, zstr: fchar.to_s, body: dt_body, from: term.from)
 
     qp_zstr = term.zstr[1..]

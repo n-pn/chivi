@@ -1,111 +1,160 @@
-# require "./mt_term"
-# require "./shared/*"
+require "bit_array"
+require "./mt_trie"
 
-# class MT::MtDict
-#   getter data = {} of String => Hash(Int8, MtDefn)
+class MT::MtDict
+  def self.for_qt(pdict : String)
+    new([MtTrie.load!(pdict), MtTrie.essence, MtTrie.new])
+  end
 
-#   getter name : String
-#   getter type : MtDtyp
+  def self.for_mt(pdict : String)
+    new([MtTrie.load!(pdict), MtTrie.regular, MtTrie.essence, MtTrie.suggest])
+  end
 
-#   delegate size, to: @data
+  def initialize(@data : Array(MtTrie))
+  end
 
-#   def initialize(@name : String, @type : MtDtyp = :primary)
-#   end
+  def get_defn?(zstr : String)
+    @data.each do |trie|
+      next unless node = trie[zstr]?
+      defn = node.defn
+      return defn if defn
+    end
+  end
 
-#   @[AlwaysInline]
-#   def get?(zstr : String, epos : MtEpos)
-#     @data[zstr]?.try(&.[epos.value]?)
-#   end
+  def get_defn?(zstr : String, epos : MtEpos)
+    got = alt = nil
 
-#   @[AlwaysInline]
-#   def any?(zstr : String)
-#     return unless entry = @data[zstr]?
-#     entry.fetch(0_i8) { entry.first_value? }.try(&.as_temp)
-#   end
+    @data.each do |trie|
+      next unless node = trie[zstr]?
+      got = node.vals.try(&.[epos]?)
+      return got, alt if got
+      alt ||= node.defn
+    end
 
-#   ####
+    return got, alt
+  end
 
-#   @[AlwaysInline]
-#   def add(zstr : String, epos : MtEpos, vstr : String, attr : MtAttr, lock = 0_i8) : MtDefn
-#     dnum = MtDnum.from(dtype: @type, plock: lock)
-#     add(zstr: zstr, epos: epos, term: MtDefn.new(vstr, attr: attr, dnum: dnum))
-#   end
+  def all_wsegs(input : Array(Char), start : Int32 = 0)
+    wsegs = [] of MtWseg
+    skips = BitArray.new(input.size &- start &+ 1, false) # tracking for overriding
 
-#   @[AlwaysInline]
-#   def add(zstr : String, cpos : String, term : MtDefn) : MtDefn
-#     add(zstr: zstr, epos: MtEpos.parse(cpos), term: term)
-#   end
+    @data.each do |trie|
+      trie.scan_wseg(input, start: start) do |size, wseg|
+        next if skips[size]    # skip if this wseg existed in higher dict
+        skips[size] = true     # mark wseg as existed
+        next if wseg.prio == 0 # skip wseg marks as deleted
+        wsegs << wseg
+      end
+    end
 
-#   def add(zstr : String, epos : MtEpos, term : MtDefn) : MtDefn
-#     entry = @data[zstr] ||= {} of Int8 => MtDefn
-#     entry[epos.value] = term
-#   end
+    wsegs
+  end
 
-#   def del(zstr : String, epos : MtEpos)
-#     @data[zstr]?.try(&.delete(epos.value))
-#   end
+  # # ameba:disable Metrics/CyclomaticComplexity
+  # def init(zstr : String, epos : MtEpos) : ZvDefn
+  #   case epos
+  #   when .pu?
+  #     vstr = CharUtil.normalize(zstr)
+  #     add_temp(zstr, epos, vstr, MtAttr.parse_punct(zstr))
+  #   when .em?
+  #     add_temp(zstr, epos, zstr, MtAttr[Asis, Capx])
+  #   when .url?
+  #     add_temp(zstr, epos, CharUtil.normalize(zstr), MtAttr[Asis])
+  #   when .od?
+  #     add_temp(zstr, epos, init_od(zstr), :none)
+  #   when .cd?
+  #     add_temp(zstr, epos, init_cd(zstr), :none)
+  #   when .vv?
+  #     get_alt?(zstr) || add_temp(zstr, epos, init_vv(zstr), :none)
+  #   when .nt?
+  #     vstr, attr = init_nt(zstr)
+  #     add_temp(zstr, epos, vstr, attr)
+  #   when .nr?
+  #     get_alt?(zstr) || add_temp(zstr, epos, init_nr(zstr), :none)
+  #   else
+  #     get_alt?(zstr) || add_temp(zstr, epos, QtCore.tl_hvword(zstr), :none)
+  #   end
+  # end
 
-#   def load_tsv!(name : String = @name)
-#     db_path = ViTerm.db_path(name, "tsv")
-#     return self unless File.file?(db_path)
+  # @[AlwaysInline]
+  # def add_temp(zstr : String, epos : MtEpos, vstr : String, attr : MtAttr = :none)
+  #   # TODO: Add to pdict directly?
+  #   term = ZvDefn.new(vstr: vstr, attr: attr, dnum: :autogen_0, fpos: epos)
+  #   @dicts.last.add(zstr, epos, term)
+  # end
 
-#     File.each_line(db_path) do |line|
-#       cols = line.split('\t')
-#       next if cols.size < 2
+  # NT_RE = /^([\d零〇一二两三四五六七八九十百千]+)(.*)/
 
-#       zstr = cols[0]
-#       epos = MtEpos.parse?(cols[1]) || MtEpos::X
+  # def init_nt(zstr : String)
+  #   return {CharUtil.normalize(zstr), MtAttr::Ntmp} unless zstr.matches?(/\p{Han}/)
 
-#       vstr = cols[2]? || ""
-#       attr = MtAttr.parse_list(cols[3]?)
+  #   unless match = NT_RE.match(zstr)
+  #     vstr = get_alt?(zstr).try(&.vstr) || QtCore.tl_hvname(zstr)
+  #     return {vstr, MtAttr::Ntmp}
+  #   end
 
-#       if vstr.empty? && !attr.hide?
-#         self.del(zstr: zstr, epos: epos)
-#       else
-#         lock = cols[6]?.try(&.to_i8?) || 1_i8
-#         self.add(zstr: zstr, epos: epos, vstr: vstr, attr: attr, lock: lock)
-#       end
-#     end
+  #   _, digits, suffix = match
+  #   numstr = TlUnit.translate(digits)
 
-#     self
-#   end
+  #   at_t = MtAttr[At_t, Ntmp]
+  #   ntmp = MtAttr::Ntmp
 
-#   def load_db3!(name : String = @name)
-#     ViTerm.db(name).open_ro do |db|
-#       query = "select zstr, ipos, vstr, iatt from #{ViTerm.schema.table}"
+  #   case suffix
+  #   when "年"       then {"năm #{numstr}", ntmp}
+  #   when "月"       then {"tháng #{numstr}", ntmp}
+  #   when "日"       then {"ngày #{numstr}", ntmp}
+  #   when "号"       then {"#{digits.size > 1 ? "ngày" : "mồng"} #{numstr}", ntmp}
+  #   when "点", "时"  then {"#{numstr} giờ", at_t}
+  #   when "分", "分钟" then {"#{numstr} phút", at_t}
+  #   when "秒", "秒钟" then {"#{numstr} giây", at_t}
+  #   when "半"       then {"#{numstr} rưỡi", at_t}
+  #   else
+  #     vstr = suffix.empty? ? numstr : "#{numstr} #{get(suffix, :NT).vstr}"
+  #     {numstr, ntmp}
+  #   end
+  # end
 
-#       db.query_each(query) do |rs|
-#         zstr, ipos, vstr, iatt = rs.read(String, Int32, String, Int32)
+  # def init_nr(zstr : String)
+  #   # TODO: call special name translation engine
 
-#         epos = MtEpos.new(ipos.to_i8)
+  #   fname, pchar, lname = zstr.partition(/\p{P}+/)
+  #   return QtCore.tl_hvname(zstr) if pchar.empty?
 
-#         # TODO: rebuild iattr enum
-#         attr = MtAttr.new(iatt)
+  #   fname_vstr = get?(fname, :NR).try(&.vstr) || QtCore.tl_hvname(fname)
+  #   lname_vstr = get?(lname, :NR).try(&.vstr) || QtCore.tl_hvname(lname)
 
-#         self.add(zstr, epos: epos, vstr: vstr, attr: attr)
-#       end
-#     end
+  #   pchar = MAP_PCHAR[pchar[0]]? || pchar
 
-#     self
-#   rescue ex
-#     self
-#   end
+  #   "#{fname_vstr}#{pchar}#{lname_vstr}"
+  # end
 
-#   ###
+  # MAP_PCHAR = {
+  #   "、" => ", ",
+  #   "､" => ", ",
+  #   "･" => " ",
+  #   "‧" => " ",
+  # }
 
-#   # class_getter special : self { new("special", :essence).load_tsv! }
-#   class_getter regular : self { new("regular", :regular).load_db3!.load_tsv! }
-#   class_getter suggest : self { new("suggest", :hintreg).load_db3! }
+  # def init_cd_dedup(zstr : String)
+  #   return unless zstr.size == 3
+  #   return unless zstr[0] == '一' && zstr[1] == zstr[2]
 
-#   # @@expire = {} of String => Time
-#   ENTRIES = {} of String => self
+  #   get?(zstr, :QP).try(&.vstr) || begin
+  #     qzstr = zstr[-1].to_s
+  #     qnode = get?(qzstr, :M) || get_alt?(qzstr)
+  #     qvstr = qnode.try(&.vstr) || qzstr
 
-#   def self.load(name : String, dtyp : MtDtyp = :primary)
-#     # @@expire[name] = Time.utc + 10.minutes
-#     ENTRIES[name] ||= new(name, dtyp).load_db3!.load_tsv!
-#   end
+  #     "từng #{qvstr} từng #{qvstr}"
+  #   end
+  # end
 
-#   def self.get?(name : String)
-#     name == "regular" ? @@regular : ENTRIES[name]?
-#   end
-# end
+  # DECIMAL_SEP = {
+  #   '点' => " chấm ",
+  #   '．' => ".",
+  #   '／' => "/",
+  # }
+
+  # def init_vv(zstr : String) : String
+  #   QtCore.tl_hvword(zstr)
+  # end
+end

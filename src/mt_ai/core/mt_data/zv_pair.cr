@@ -1,6 +1,6 @@
-require "../enum/*"
+require "../../base/*"
 
-struct MT::MtPair
+struct MT::ZvPair
   getter a_vstr : String
   getter a_attr : MtAttr?
 

@@ -1,4 +1,4 @@
-require "../enum/*"
+require "../../base/*"
 
 struct MT::MtWseg
   getter zstr : String

@@ -1,5 +1,5 @@
 require "../../_data/zr_db"
-require "../enum/*"
+require "../base/*"
 
 class MT::PgTerm
   class_getter db : ::DB::Database = ZR_DB

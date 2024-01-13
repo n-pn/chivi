@@ -39,24 +39,24 @@ struct MT::SqDefn
   schema "mtdata", :sqlite, multi: true, strict: false
 
   field d_id : Int32, pkey: true
-  field epos : MtEpos, pkey: true, converter: SQ3Enum(MT::MtEpos)
+  field epos : Int32, pkey: true
   field zstr : String, pkey: true
 
   field vstr : String
-  field attr : MtAttr, converter: SQ3Enum(MT::MtAttr)
+  field attr : Int32
 
   field dnum : Int32
-  field fpos : MtEpos = MT::MtEpos::X, converter: SQ3Enum(MT::MtEpos)
+  field fpos : Int32 = 0
 
   def initialize(zterm : ZvTerm)
     @d_id = zterm.d_id
-    @epos = @fpos = MtEpos.parse(zterm.cpos)
+    @epos = @fpos = MtEpos.parse(zterm.cpos).to_i
 
     @zstr = zterm.zstr
     @vstr = zterm.vstr
 
-    @attr = MtAttr.parse_list(zterm.attr)
-    @fpos = MtEpos.parse(zterm.fixp) unless zterm.fixp.empty?
+    @attr = MtAttr.parse_list(zterm.attr).to_i
+    @fpos = MtEpos.parse(zterm.fixp).to_i unless zterm.fixp.empty?
 
     dtype = zterm.d_id % 10 < 4 ? 2_i8 : 1_i8
     plock = zterm.plock.to_i8 > 0 ? 1_i8 : 0_i8
@@ -68,7 +68,7 @@ struct MT::SqDefn
                  @attr = :none, @dnum = :unknown_0)
   end
 
-  def self.query_each(d_id : Int32, & : (String, MtEpos, MtDefn) ->)
+  def self.query_each(d_id : Int32, & : (String, MtEpos, ZvDefn) ->)
     load_db(d_id).open_ro do |db|
       query = "select zstr, epos, vstr, attr, dnum, fpos from mtdata where d_id = $1"
 
@@ -81,26 +81,18 @@ struct MT::SqDefn
         dnum = MtDnum.from_value(rs.read(Int32))
         fpos = MtEpos.from_value(rs.read(Int32))
 
-        defn = MtDefn.new(vstr: vstr, attr: attr, dnum: dnum, fpos: fpos)
+        defn = ZvDefn.new(vstr: vstr, attr: attr, dnum: dnum, fpos: fpos)
 
         yield zstr, epos, defn
       end
     end
   end
 
-  def save!
-    db = self.class.load_db(@d_id)
-    spawn File.open(db.db_path.sub(".db3", ".log"), "a", &.puts(self.to_json))
-    self.upsert!(db: db)
-  end
-
-  def mt_term
-    MtDefn.new(vstr: @vstr, attr: @attr, dnum: @dnum)
-  end
-
-  def ws_term
-    WsTerm.new(zstr: zstr)
-  end
+  # def save!
+  #   db = self.class.load_db(@d_id)
+  #   spawn File.open(db.db_path.sub(".db3", ".log"), "a", &.puts(self.to_json))
+  #   self.upsert!(db: db)
+  # end
 
   def self.fetch(d_id : Int32, &)
     self.load_db(d_id).open_ro do |db|

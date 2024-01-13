@@ -1,6 +1,6 @@
 # require "../shared/mt_output"
 require "json"
-require "../../enum/*"
+require "../../base/*"
 
 struct MT::QtNode
   getter zstr : String
@@ -8,9 +8,9 @@ struct MT::QtNode
   getter attr : MtAttr
 
   getter _idx : Int32
-  getter _dic : Int32 = 0
+  getter _dic : Int8 = 0_i8
 
-  def initialize(@zstr, @vstr, @attr, @_idx, @_dic = 0)
+  def initialize(@zstr, @vstr, @attr, @_idx, @_dic = 0_i8)
   end
 
   def to_txt(io : IO, cap : Bool, und : Bool)

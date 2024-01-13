@@ -1,13 +1,7 @@
-require "../../_util/char_util"
-
 require "./qt_core/*"
 require "./ws_core"
 
 class MT::QtCore
-  class_getter hv_word : self { new("word_hv") }
-  class_getter hv_name : self { new("name_hv") }
-  class_getter pin_yin : self { new("pin_yin") }
-
   def self.tl_hvname(str : String)
     return CharUtil.normalize(str) unless str.matches?(/\p{Han}/)
     self.hv_name.translate(str, cap: true)
@@ -23,12 +17,12 @@ class MT::QtCore
     self.pin_yin.translate(str, cap: cap)
   end
 
-  def initialize(*dnames : String)
-    @wseg = WsCore.load!(*dnames)
-    @dicts = [] of MtTrie
-    dnames.each { |dname| @dicts << MtTrie.load!(dname) }
-    @dicts << MtTrie.essence
-    # @dicts <<  MtTrie.new
+  class_getter hv_word : self { new(MtDict.for_qt("word_hv")) }
+  class_getter hv_name : self { new(MtDict.for_qt("name_hv")) }
+  class_getter pin_yin : self { new(MtDict.for_qt("pin_yin")) }
+
+  def initialize(@dict : MtDict)
+    @wseg_core = WsCore.new(dict)
   end
 
   def translate(str : String, cap : Bool = true)
@@ -42,21 +36,16 @@ class MT::QtCore
   def parse!(input : String, _idx = 0)
     output = QtData.new
 
-    @wseg.parse!(input).each do |token|
+    @wseg_core.parse!(input).each do |token|
       zstr = token.zstr
       size = zstr.size
 
-      found = @dicts.each_with_index(1) do |dict, _dic|
-        next unless defn = dict.any_defn?(zstr)
-        output << QtNode.new(zstr, defn.vstr, defn.attr, _idx: _idx, _dic: _dic)
-        _idx &+= size
-        break true
+      if defn = @dict.get_defn?(zstr)
+        output << QtNode.new(zstr, defn.vstr, defn.attr, _idx: _idx, _dic: defn.dnum.value)
+      else
+        vstr, attr = init_data(token.zstr, token.bner)
+        output << QtNode.new(zstr, vstr, attr, _idx: _idx, _dic: 0)
       end
-
-      next if found
-
-      vstr, attr = init_data(token.zstr, token.bner)
-      output << QtNode.new(zstr, vstr, attr, _idx: _idx, _dic: -1)
 
       _idx += size
     end

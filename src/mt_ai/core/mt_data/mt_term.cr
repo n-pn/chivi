@@ -1,31 +1,27 @@
 require "json"
+require "./zv_defn"
 
-require "../data/mt_defn"
-require "../data/mt_pair"
+class MT::MtTerm
+  struct MtPair
+    getter head : MtTerm
+    getter tail : MtTerm
+    property flip : Bool
 
-# require "../ai_dict"
+    def initialize(@head, @tail, @flip = false)
+    end
 
-struct MT::AiPair(T)
-  getter head : T
-  getter tail : T
-  property flip : Bool
-
-  def initialize(@head, @tail, @flip = false)
-  end
-
-  def each(& : T ->)
-    if @flip
-      yield @tail
-      yield @head
-    else
-      yield @head
-      yield @tail
+    def each(& : T ->)
+      if @flip
+        yield @tail
+        yield @head
+      else
+        yield @head
+        yield @tail
+      end
     end
   end
-end
 
-class MT::AiTerm
-  property body : MtDefn | self | AiPair(self) | Array(self)
+  property body : ZvDefn | self | MtPair | Array(self)
   property zstr : String = ""
 
   property epos = MtEpos::X
@@ -36,24 +32,24 @@ class MT::AiTerm
 
   def initialize(@body, @zstr, @epos, @attr : MtAttr = :none, @from = 0)
     case body
-    when MtDefn
+    when ZvDefn
       @epos = body.fpos unless body.fpos.x?
       @attr |= body.attr
-    when AiTerm
+    when MtTerm
       @attr |= body.attr
     end
   end
 
   def prepend!(term : self) : self
     case body = @body
-    in MtDefn
-      frag = AiTerm.new(body, zstr: @zstr, epos: :FRAG, from: @from)
-      @body = AiPair.new(term, frag)
-    in AiTerm
-      @body = AiPair.new(term, body)
-    in AiPair
+    in ZvDefn
+      frag = MtTerm.new(body, zstr: @zstr, epos: :FRAG, from: @from)
+      @body = MtPair.new(term, frag)
+    in MtTerm
+      @body = MtPair.new(term, body)
+    in MtPair
       @body = [term, body.head, body.tail]
-    in Array(AiTerm)
+    in Array(MtTerm)
       body.unshift(term)
     end
 
@@ -68,9 +64,9 @@ class MT::AiTerm
 
   def each_child(& : self ->)
     case body = @body
-    when AiTerm
+    when MtTerm
       yield body
-    when Array, AiPair
+    when Array, MtPair
       body.each { |term| yield term }
     end
   end
@@ -83,10 +79,10 @@ class MT::AiTerm
   @[AlwaysInline]
   def to_txt(io : IO, cap : Bool, und : Bool)
     case body = @body
-    when MtDefn
+    when ZvDefn
       io << ' ' unless @attr.undent?(und: und)
       @attr.render_vstr(io, body.vstr, cap: cap, und: und)
-    when AiTerm
+    when MtTerm
       body.to_txt(io, cap: cap, und: und)
     else
       self.each_child { |term| cap, und = term.to_txt(io, cap: cap, und: und) }
@@ -111,7 +107,7 @@ class MT::AiTerm
       jb.number self.upto
 
       case body = @body
-      when MtDefn
+      when ZvDefn
         jb.string body.vstr
         jb.number body.dnum.value
       else
@@ -128,14 +124,14 @@ class MT::AiTerm
     deep += @epos.to_s.size + 2
 
     case body = @body
-    when MtDefn
+    when ZvDefn
       io << ' ' << @attr.colorize.light_gray unless @attr.none?
       io << ' ' << @zstr.colorize.dark_gray
       io << ' ' << body.vstr.colorize(COLORS[body.dnum.value % 10])
-    when AiTerm
+    when MtTerm
       io << ' '
       body.inspect(io: io, deep: deep)
-    when AiPair
+    when MtPair
       io << ' '
       body.head.inspect(io: io, deep: deep)
       io << '\n'
