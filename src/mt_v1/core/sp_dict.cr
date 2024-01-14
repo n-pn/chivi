@@ -50,7 +50,7 @@ class M1::SpDict
     self
   end
 
-  def fix!(node : ZvDefn) : ZvDefn
+  def fix!(node : MtDefn) : MtDefn
     if term = @hash[node.key]?
       node.set!(term[0], term[1])
     else
@@ -58,13 +58,13 @@ class M1::SpDict
     end
   end
 
-  def fix_uzhi(node : ZvDefn) : PosTag?
+  def fix_uzhi(node : MtDefn) : PosTag?
     return unless term = @hash[node.key]?
     node.val = term[0]
     term[1]
   end
 
-  def fix_vcompl(node : ZvDefn)
+  def fix_vcompl(node : MtDefn)
     return unless term = @hash[node.key]?
     node.set!(term[0], term[1])
   end
@@ -74,7 +74,7 @@ class M1::SpDict
     node.set!(term[0])
   end
 
-  def self.fix_quanti!(node : ZvDefn) : ZvDefn
+  def self.fix_quanti!(node : MtDefn) : MtDefn
     dicts = {self.qt_nouns, self.qt_verbs, self.qt_times}
     dicts.reduce(node) { |memo, dict| dict.fix_quanti(memo) }
   end

@@ -1,21 +1,31 @@
 require "bit_array"
-require "./mt_trie"
+require "./mt_data/*"
 
 class MT::MtDict
   def self.for_qt(pdict : String)
-    new([MtTrie.load!(pdict), MtTrie.essence, MtTrie.new])
+    new([TrieDict.load!(pdict), TrieDict.essence, TrieDict.new(pdict)])
   end
 
   def self.for_mt(pdict : String)
-    new([MtTrie.load!(pdict), MtTrie.regular, MtTrie.essence, MtTrie.suggest])
+    new([TrieDict.load!(pdict), TrieDict.regular, TrieDict.essence, TrieDict.suggest])
   end
 
-  def initialize(@data : Array(MtTrie))
+  def self.hv_name(pdict : String)
+    new([TrieDict.load!(pdict), TrieDict.name_hv])
+  end
+
+  def initialize(@data : Array(TrieDict))
+  end
+
+  def add_temp(zstr, vstr, attr, epos)
+    defn = MtDefn.new(vstr: vstr, attr: attr, dnum: :auto0, fpos: epos)
+    @data.last.root[zstr].add_data(epos, defn) { MtWseg.new(zstr) }
+    defn
   end
 
   def get_defn?(zstr : String)
     @data.each do |trie|
-      next unless node = trie[zstr]?
+      next unless node = trie.root[zstr]?
       defn = node.defn
       return defn if defn
     end
@@ -25,7 +35,7 @@ class MT::MtDict
     got = alt = nil
 
     @data.each do |trie|
-      next unless node = trie[zstr]?
+      next unless node = trie.root[zstr]?
       got = node.vals.try(&.[epos]?)
       return got, alt if got
       alt ||= node.defn
@@ -51,7 +61,7 @@ class MT::MtDict
   end
 
   # # ameba:disable Metrics/CyclomaticComplexity
-  # def init(zstr : String, epos : MtEpos) : ZvDefn
+  # def init(zstr : String, epos : MtEpos) : MtDefn
   #   case epos
   #   when .pu?
   #     vstr = CharUtil.normalize(zstr)
@@ -79,7 +89,7 @@ class MT::MtDict
   # @[AlwaysInline]
   # def add_temp(zstr : String, epos : MtEpos, vstr : String, attr : MtAttr = :none)
   #   # TODO: Add to pdict directly?
-  #   term = ZvDefn.new(vstr: vstr, attr: attr, dnum: :autogen_0, fpos: epos)
+  #   term = MtDefn.new(vstr: vstr, attr: attr, dnum: :autogen_0, fpos: epos)
   #   @dicts.last.add(zstr, epos, term)
   # end
 

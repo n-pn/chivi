@@ -1,6 +1,6 @@
 require "./pg_term"
 
-class MT::ZvDict
+class MT::PgDict
   class_getter db : ::DB::Database = ZR_DB
 
   ######
@@ -20,7 +20,7 @@ class MT::ZvDict
   field mtime : Int32 = 0
   field users : Array(String) = [] of String
 
-  def initialize(@name, kind : DictKind, d_id : Int32)
+  def initialize(@name, kind : MtDtyp, d_id : Int32)
     @kind = kind.value
     @d_id = d_id * 10 + @kind
 

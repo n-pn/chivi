@@ -1,15 +1,16 @@
-require "../ai_term"
+require "../mt_data/*"
+require "../mt_util/*"
+require "../mt_dict"
 
 class MT::AiCore
   def init_defn(zstr : String, epos : MtEpos,
                 attr : MtAttr = :none, mode : Int32 = 0)
-    @dicts.each { |d| d.get_defn?(zstr, epos).try { |x| return x } }
+    match, fuzzy = @mt_dict.get_defn?(zstr, epos)
+    return match if match
+    return fuzzy if fuzzy && mode > 1
 
     return unless vstr = init_vstr(zstr, epos, mode: mode)
-    defn = ZvDefn.new(vstr: vstr, attr: attr, dnum: :auto0, fpos: epos)
-    @dicts.last[zstr].add_data(epos, defn) { MtWseg.new(zstr) }
-
-    defn
+    @mt_dict.add_temp(zstr, vstr, attr, epos)
   end
 
   # modes: 0 => return if not found, 1: search for any values, 2: translate by any mean!
@@ -27,27 +28,21 @@ class MT::AiCore
     when epos.nr?
       @name_qt.translate(zstr, cap: true)
     when mode == 2
-      get_any_defn?(zstr) || QtCore.tl_hvword(zstr)
-    when mode == 1
-      get_any_defn?(zstr)
+      QtCore.tl_hvword(zstr)
     end
   end
 
-  def get_any_defn?(zstr : String)
-    @dicts.each { |d| d.any_defn?(zstr).try { |x| return x.vstr } }
-  end
-
-  private def init_term(list : Array(AiTerm),
+  private def init_term(list : Array(MtTerm),
                         epos : MtEpos, attr : MtAttr = :none,
                         zstr = list.join(&.zstr), from = list[0].from)
     body = init_defn(zstr, epos, attr, mode: 0) || begin
       case list.size
       when 1 then list[0]
-      when 2 then AiPair.new(list[0], list[1])
+      when 2 then MtPair.new(list[0], list[1])
       else        list
       end
     end
 
-    AiTerm.new(body: body, zstr: zstr, epos: epos, attr: attr, from: from)
+    MtTerm.new(body: body, zstr: zstr, epos: epos, attr: attr, from: from)
   end
 end

@@ -1,11 +1,11 @@
 # require "./ai_term"
 
 class MT::AiCore
-  def fix_np_term!(term : AiTerm, body = term.body)
+  def fix_np_term!(term : MtTerm, body = term.body)
     case body
-    when ZvDefn, AiTerm
+    when MtDefn, MtTerm
       # Do nothing
-    when AiPair
+    when MtPair
       term.body = fix_np_pair!(body)
     else
       term.body = fix_np_body!(body)
@@ -14,8 +14,8 @@ class MT::AiCore
     term
   end
 
-  def fix_np_body!(orig : Array(AiTerm))
-    body = [] of AiTerm
+  def fix_np_body!(orig : Array(MtTerm))
+    body = [] of MtTerm
     _pos = orig.size &- 1
 
     while term = orig[_pos]?
@@ -32,7 +32,7 @@ class MT::AiCore
     body
   end
 
-  def init_nn_term(orig : Array(AiTerm), noun : AiTerm, _pos = orig.size - 2)
+  def init_nn_term(orig : Array(MtTerm), noun : MtTerm, _pos = orig.size - 2)
     attr = noun.attr.turn_off(MtAttr[Sufx, Undb])
 
     while node = orig[_pos]?
@@ -67,7 +67,7 @@ class MT::AiCore
     {noun, _pos}
   end
 
-  def init_np_term(orig : Array(AiTerm), noun : AiTerm, _pos : Int32 = orig.size - 2)
+  def init_np_term(orig : Array(MtTerm), noun : MtTerm, _pos : Int32 = orig.size - 2)
     attr = noun.attr.turn_off(MtAttr[Sufx, Undb])
 
     while node = orig[_pos]?
@@ -96,10 +96,10 @@ class MT::AiCore
     {noun, _pos}
   end
 
-  private def pair_noun_qp(np_term : AiTerm, qp_term : AiTerm)
+  private def pair_noun_qp(np_term : MtTerm, qp_term : MtTerm)
     init_pair(head: qp_term, tail: np_term, epos: :NP, attr: np_term.attr) do
       # TODO: split `OD`, fix `M` vstr
-      AiPair.new(qp_term, np_term, flip: qp_term.attr.at_t?)
+      MtPair.new(qp_term, np_term, flip: qp_term.attr.at_t?)
     end
   end
 
@@ -124,7 +124,7 @@ class MT::AiCore
     end
   end
 
-  private def pron_at_head?(pron : AiTerm, noun : AiTerm)
+  private def pron_at_head?(pron : MtTerm, noun : MtTerm)
     true
   end
 end

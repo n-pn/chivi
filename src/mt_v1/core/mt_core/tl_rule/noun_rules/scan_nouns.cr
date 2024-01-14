@@ -17,7 +17,7 @@ module M1::TlRule
     end
 
     while node
-      node = heal_mixed!(node) if node.is_a?(ZvDefn) && node.polysemy?
+      node = heal_mixed!(node) if node.is_a?(MtDefn) && node.polysemy?
 
       case node
       when .pro_per?

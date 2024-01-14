@@ -4,7 +4,7 @@ require "../pos_tag"
 require "../mt_core/mt_util"
 require "../../../_util/text_util"
 
-class M1::ZvDefn < M1::MtNode
+class M1::MtDefn < M1::MtNode
   def self.cost(size : Int32, prio : Int32 = 0)
     return 0 if prio < 1
 
@@ -46,7 +46,7 @@ class M1::ZvDefn < M1::MtNode
   end
 
   def clone!(idx : Int32 = @idx) : self
-    ZvDefn.new(
+    MtDefn.new(
       key: @key, val: @val,
       tag: @tag, dic: @dic,
       idx: idx
@@ -121,7 +121,7 @@ class M1::ZvDefn < M1::MtNode
     end
   end
 
-  def space_before?(prev : ZvDefn) : Bool
+  def space_before?(prev : MtDefn) : Bool
     return false if @val.blank? || prev.val == " "
     return space_before?(prev.prev?) if prev.val.empty?
 

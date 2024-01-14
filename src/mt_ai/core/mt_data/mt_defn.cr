@@ -1,6 +1,6 @@
 require "../../base/*"
 
-struct MT::ZvDefn
+struct MT::MtDefn
   getter vstr : String
   getter attr : MtAttr
 

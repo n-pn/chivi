@@ -37,17 +37,17 @@ CORE = {
 }
 
 def add_fixtures
-  saved = MT::ZvDict.fetch_all(:wnovel, limit: 999999).to_h { |x| {x.d_id // 10, x} }
+  saved = MT::PgDict.fetch_all(:wnovel, limit: 999999).to_h { |x| {x.d_id // 10, x} }
 
   dicts = CORE.map do |name, kind, d_id, label, brief|
     kind = MT::DictKind.new(kind.to_i16)
-    dict = MT::ZvDict.find(name) || MT::ZvDict.new(name, kind, d_id)
+    dict = MT::PgDict.find(name) || MT::PgDict.new(name, kind, d_id)
     dict.tap(&.set_label(label, brief))
   end
 
   puts "core dicts: #{dicts.size}"
 
-  MT::ZvDict.db.transaction do |db|
+  MT::PgDict.db.transaction do |db|
     dicts.each(&.upsert!(db: db.connection))
   end
 end
@@ -63,15 +63,15 @@ def add_wn_dicts
 
   puts "wn dicts: #{inputs.size}"
 
-  saved = MT::ZvDict.fetch_all(:wnovel, limit: 999999).to_h { |x| {x.d_id // 10, x} }
+  saved = MT::PgDict.fetch_all(:wnovel, limit: 999999).to_h { |x| {x.d_id // 10, x} }
 
   dicts = inputs.map do |wn_id, bname|
-    dict = saved[wn_id]? || MT::ZvDict.new("wn#{wn_id}", kind: :wnovel, d_id: wn_id)
+    dict = saved[wn_id]? || MT::PgDict.new("wn#{wn_id}", kind: :wnovel, d_id: wn_id)
     dict.tap(&.set_label(bname))
   end
 
   dicts.each_slice(2000) do |slice|
-    MT::ZvDict.db.transaction do |tx|
+    MT::PgDict.db.transaction do |tx|
       slice.each(&.upsert!(db: tx.connection))
     end
   end
@@ -87,14 +87,14 @@ def add_up_dicts
   end
 
   puts "up dicts: #{inputs.size}"
-  saved = MT::ZvDict.fetch_all(:userpj, limit: 999999).to_h { |x| {x.d_id // 10, x} }
+  saved = MT::PgDict.fetch_all(:userpj, limit: 999999).to_h { |x| {x.d_id // 10, x} }
 
   dicts = inputs.map do |up_id, bname|
-    dict = saved[up_id]? || MT::ZvDict.new("up#{up_id}", kind: :userpj, d_id: up_id)
+    dict = saved[up_id]? || MT::PgDict.new("up#{up_id}", kind: :userpj, d_id: up_id)
     dict.tap(&.set_label(bname))
   end
 
-  MT::ZvDict.db.transaction do |tx|
+  MT::PgDict.db.transaction do |tx|
     dicts.each(&.upsert!(db: tx.connection))
   end
 end

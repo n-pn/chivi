@@ -71,56 +71,39 @@ function scrub_text(text: string): string {
   return text.replace(/\t/g, '  ').replace(/[!-~]/g, to_full).trim()
 }
 
+export interface Czopts {
+  split_mode: number
+  div_marker: string // mode 1: split by marker
+  min_blanks: number // mode 2: split_slash
+  need_blank: boolean // mode 3
+  chdiv_labels: string //  mode 4
+  custom_regex: string //  mode 5
+  chunk_length: number //  mode 6
+}
+
 export class Cztext {
   ztext: string
   lines: string[]
   start: number
   chdiv: string
-
   error: string
-
-  _opts: {
-    split_mode: number
-    div_marker: string // mode 1: split by marker
-    min_blanks: number // mode 2: split_slash
-    need_blank: boolean // mode 3
-    chdiv_labels: string //  mode 4
-    custom_regex: string //  mode 5
-    chunk_length: number //  mode 6
-  }
 
   constructor(ztext: string, start = 1, chdiv = '') {
     this.ztext = ztext
     this.lines = ztext.split(/\r|\r?\n/)
     this.start = start
     this.chdiv = chdiv
-
-    this._opts = {
-      split_mode: 0,
-      // mode 1
-      div_marker: '///',
-      // mode 2
-      min_blanks: 2,
-      // mode 3
-      need_blank: false,
-      // mode 4
-      chdiv_labels: '章节回幕折集卷季',
-      // mode 5
-      custom_regex: `^第[\\d零〇一二两三四五六七八九十百千]+[章节回]`,
-      // mode 6
-      chunk_length: 2000,
-    }
   }
 
   valid_enough(chaps: Czdata[]) {
     if (chaps.length == 0 || this.error) return false
 
     for (const { title, chdiv } of chaps) {
-      if (chdiv.length > 50) {
+      if (chdiv.length > 60) {
         this.error = `Lỗi: Tên bộ [${chdiv}] quá dài!`
         return false
       }
-      if (title.length > 50) {
+      if (title.length > 60) {
         this.error = `Lỗi: Tên chương [${title}] quá dài!`
         return false
       }
@@ -129,29 +112,30 @@ export class Cztext {
     return true
   }
 
-  split_text(mode = this._opts.split_mode) {
+  split_text(opts: Czopts) {
+    const mode = opts.split_mode
     if (mode == 0 || mode == 1) {
-      const chaps = this.split_delim(this._opts.div_marker)
+      const chaps = this.split_delim(opts.div_marker)
       if (this.valid_enough(chaps) || mode == 1) return chaps
     }
 
     if (mode == 0 || mode == 2) {
-      const chaps = this.split_blank(this._opts.min_blanks)
+      const chaps = this.split_blank(opts.min_blanks)
       if (this.valid_enough(chaps) || mode == 2) return chaps
     }
 
     if (mode == 0 || mode == 3) {
-      const chaps = this.split_block(this._opts.need_blank)
+      const chaps = this.split_block(opts.need_blank)
       if (this.valid_enough(chaps) || mode == 3) return chaps
     }
 
     if (mode == 0 || mode == 4) {
-      const chaps = this.split_label(this._opts.chdiv_labels)
+      const chaps = this.split_label(opts.chdiv_labels)
       if (this.valid_enough(chaps) || mode == 4) return chaps
     }
 
     if (mode == 0 || mode == 5) {
-      const chaps = this.split_label(this._opts.chdiv_labels)
+      const chaps = this.split_label(opts.chdiv_labels)
       if (this.valid_enough(chaps) || mode == 5) return chaps
     }
 

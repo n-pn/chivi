@@ -21,19 +21,19 @@ module M1::TlRule
     return prepos unless tail = scan_adjt!(noun.succ?)
     return prepos unless tail.adjective? || tail.verb_object?
 
-    output = ZvDefn.new("", "", PosTag::Unkn, dic: 1, idx: prepos.idx)
+    output = MtDefn.new("", "", PosTag::Unkn, dic: 1, idx: prepos.idx)
     output.fix_prev!(prepos.prev?)
     output.fix_succ!(tail.succ?)
 
     noun.fix_succ!(nil)
 
     if prepos.key == "不比"
-      adv_bu = ZvDefn.new("不", "không", PosTag::AdvBu4, 1, prepos.idx)
+      adv_bu = MtDefn.new("不", "không", PosTag::AdvBu4, 1, prepos.idx)
 
       adv_bu.fix_succ!(prepos.succ?)
       adv_bu.fix_prev!(prepos.prev?)
 
-      prepos = ZvDefn.new("比", "bằng", PosTag::PreBi3, 1, prepos.idx + 1)
+      prepos = MtDefn.new("比", "bằng", PosTag::PreBi3, 1, prepos.idx + 1)
 
       prepos.fix_succ!(tail.succ?)
       tail.fix_succ!(prepos)

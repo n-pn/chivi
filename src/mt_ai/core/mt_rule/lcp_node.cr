@@ -6,5 +6,6 @@ class MT::AiCore
   end
 
   def init_lcp_term(orig : Array(RawCon), attr : MtAttr, from = 0)
+    raise "todo!"
   end
 end

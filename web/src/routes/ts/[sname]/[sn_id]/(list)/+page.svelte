@@ -84,8 +84,8 @@
       <strong>nguồn ngoài</strong>
     </a>
     khoảng <strong class="u-warn"><RTime mtime={crepo.mtime} /></strong>. Bấm
-    biểu tượng <SIcon name={'refresh'} spin={_onload} /> phía trên để cập nhật lại
-    nếu thấy cần thiết.
+    biểu tượng <SIcon name={'refresh'} /> phía trên để cập nhật lại nếu thấy cần
+    thiết.
   </div>
 {/if}
 

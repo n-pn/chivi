@@ -1,6 +1,6 @@
-require "../../src/mt_ai/data/zv_dict"
+require "../../src/mt_ai/data/pg_dict"
 
-d_id = MT::ZvDict.load!("regular").d_id
+d_id = MT::PgDict.load!("regular").d_id
 
 query = "select * from zvterm where d_id ipos = $1"
 terms = MT::ZvTerm.db.query_all query, MT::MtEpos::JJ.to_i, as: MT::ZvTerm

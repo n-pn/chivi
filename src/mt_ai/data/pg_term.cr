@@ -1,7 +1,7 @@
 require "../../_data/zr_db"
 require "../base/*"
 
-class MT::PgTerm
+class MT::PgDefn
   class_getter db : ::DB::Database = ZR_DB
 
   ###

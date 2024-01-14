@@ -1,7 +1,7 @@
 require "./_mt_ctrl_base"
 require "../data/vi_term"
 
-class MT::ZvDictCtrl < AC::Base
+class MT::PgDictCtrl < AC::Base
   base "/_ai/dicts"
 
   @[AC::Route::GET("/")]
@@ -9,12 +9,12 @@ class MT::ZvDictCtrl < AC::Base
     pg_no, limit, offset = _paginate(min: 10, max: 50)
     limit = 999 if kind.empty?
 
-    dicts = ZvDict.fetch_all(kind, limit, offset)
+    dicts = PgDict.fetch_all(kind, limit, offset)
 
     if dicts.size < limit
       total = offset &+ dicts.size
     else
-      total = ZvDict.count(kind)
+      total = PgDict.count(kind)
     end
 
     output = {
@@ -30,7 +30,7 @@ class MT::ZvDictCtrl < AC::Base
   @[AC::Route::GET("/:dname")]
   def show(dname : String)
     dname = dname.sub("book:", "wn").sub(":", "")
-    dinfo = ZvDict.load!(dname)
+    dinfo = PgDict.load!(dname)
     json = {dinfo: dinfo, users: dinfo.users}
     render json: json
   end

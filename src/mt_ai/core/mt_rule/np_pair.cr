@@ -1,7 +1,7 @@
 # require "./ai_term"
 
 class MT::AiCore
-  def fix_np_pair!(body : AiPair)
+  def fix_np_pair!(body : MtPair)
     head, tail = body.head, body.tail
 
     if !head.epos.noun?
@@ -13,7 +13,7 @@ class MT::AiCore
     body
   end
 
-  def flip_noun_pair?(head : AiTerm, tail : AiTerm)
+  def flip_noun_pair?(head : MtTerm, tail : MtTerm)
     return true unless tail.attr.sufx?
     return tail.attr.at_h? unless tail.attr.nper?
 

@@ -1,8 +1,8 @@
 require "json"
-require "./zv_defn"
+require "./mt_defn"
 
 class MT::MtTerm
-  struct MtPair
+  struct ::MT::MtPair
     getter head : MtTerm
     getter tail : MtTerm
     property flip : Bool
@@ -10,7 +10,7 @@ class MT::MtTerm
     def initialize(@head, @tail, @flip = false)
     end
 
-    def each(& : T ->)
+    def each(& : MtTerm ->)
       if @flip
         yield @tail
         yield @head
@@ -21,7 +21,7 @@ class MT::MtTerm
     end
   end
 
-  property body : ZvDefn | self | MtPair | Array(self)
+  property body : MtDefn | self | MtPair | Array(self)
   property zstr : String = ""
 
   property epos = MtEpos::X
@@ -32,7 +32,7 @@ class MT::MtTerm
 
   def initialize(@body, @zstr, @epos, @attr : MtAttr = :none, @from = 0)
     case body
-    when ZvDefn
+    when MtDefn
       @epos = body.fpos unless body.fpos.x?
       @attr |= body.attr
     when MtTerm
@@ -42,7 +42,7 @@ class MT::MtTerm
 
   def prepend!(term : self) : self
     case body = @body
-    in ZvDefn
+    in MtDefn
       frag = MtTerm.new(body, zstr: @zstr, epos: :FRAG, from: @from)
       @body = MtPair.new(term, frag)
     in MtTerm
@@ -79,7 +79,7 @@ class MT::MtTerm
   @[AlwaysInline]
   def to_txt(io : IO, cap : Bool, und : Bool)
     case body = @body
-    when ZvDefn
+    when MtDefn
       io << ' ' unless @attr.undent?(und: und)
       @attr.render_vstr(io, body.vstr, cap: cap, und: und)
     when MtTerm
@@ -107,7 +107,7 @@ class MT::MtTerm
       jb.number self.upto
 
       case body = @body
-      when ZvDefn
+      when MtDefn
         jb.string body.vstr
         jb.number body.dnum.value
       else
@@ -124,7 +124,7 @@ class MT::MtTerm
     deep += @epos.to_s.size + 2
 
     case body = @body
-    when ZvDefn
+    when MtDefn
       io << ' ' << @attr.colorize.light_gray unless @attr.none?
       io << ' ' << @zstr.colorize.dark_gray
       io << ' ' << body.vstr.colorize(COLORS[body.dnum.value % 10])

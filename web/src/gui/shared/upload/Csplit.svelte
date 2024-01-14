@@ -26,12 +26,27 @@
 
   let error = ''
 
-  $: zdata = new Cztext(ztext, ch_no)
+  let xopts = {
+    split_mode: 0,
+    // mode 1
+    div_marker: '///',
+    // mode 2
+    min_blanks: 2,
+    // mode 3
+    need_blank: false,
+    // mode 4
+    chdiv_labels: '章节回幕折集卷季',
+    // mode 5
+    custom_regex: `^第[\\d零〇一二两三四五六七八九十百千]+[章节回]`,
+    // mode 6
+    chunk_length: 2000,
+  }
 
-  $: if (zdata._opts) {
+  $: zdata = new Cztext(ztext, ch_no)
+  $: if (xopts) {
     error = ''
     state = 1
-    chaps = zdata.split_text()
+    chaps = zdata.split_text(xopts)
     state = 0
     error = zdata.error
   }
@@ -63,60 +78,54 @@
     name="split_mode"
     class="m-input"
     disabled={state > 0}
-    bind:value={zdata._opts.split_mode}>
+    bind:value={xopts.split_mode}>
     {#each split_modes as [value, label]}
       <option {value}>{label}</option>
     {/each}
   </select>
 </div>
 
-<div class="d-label" hidden={zdata._opts.split_mode != 0}>
+<div class="d-label" hidden={xopts.split_mode != 0}>
   <p>Chương trình sẽ tự động thử các cách chia để tìm phương án hợp lý nhất</p>
 </div>
 
-<label class="d-label" hidden={zdata._opts.split_mode != 1}>
+<label class="d-label" hidden={xopts.split_mode != 1}>
   <span>Đoạn ký tự phân tách:</span>
   <input
     class="m-input _sm _fix u-right"
     name="div_marker"
-    bind:value={zdata._opts.div_marker} />
+    bind:value={xopts.div_marker} />
 </label>
 
-<label class="d-label" hidden={zdata._opts.split_mode != 2}>
+<label class="d-label" hidden={xopts.split_mode != 2}>
   <span>Số dòng trắng tối thiểu: </span>
   <input
     class="m-input _sm _fix u-right"
     type="number"
     name="min_blanks"
-    bind:value={zdata._opts.min_blanks}
+    bind:value={xopts.min_blanks}
     min={1} />
 </label>
 
-<label class="d-label" hidden={zdata._opts.split_mode != 3}>
-  <input
-    type="checkbox"
-    name="need_blank"
-    bind:checked={zdata._opts.need_blank} />
+<label class="d-label" hidden={xopts.split_mode != 3}>
+  <input type="checkbox" name="need_blank" bind:checked={xopts.need_blank} />
   <span>Phía trên tên chương phải là dòng trắng</span>
 </label>
 
-<label class="d-label" hidden={zdata._opts.split_mode != 4}>
+<label class="d-label" hidden={xopts.split_mode != 4}>
   <span>Đằng sau <code>第[số]+</code> là:</span>
-  <input
-    class="m-input _sm"
-    name="label"
-    bind:value={zdata._opts.chdiv_labels} />
+  <input class="m-input _sm" name="label" bind:value={xopts.chdiv_labels} />
 </label>
 
-<label class="d-label" hidden={zdata._opts.split_mode != 5}>
+<label class="d-label" hidden={xopts.split_mode != 5}>
   <span>Regex:</span>
   <input
     class="m-input _sm _full u-right"
     name="regex"
-    bind:value={zdata._opts.custom_regex} />
+    bind:value={xopts.custom_regex} />
 </label>
 
-<label class="d-label" hidden={zdata._opts.split_mode != 6}>
+<label class="d-label" hidden={xopts.split_mode != 6}>
   <span>Tổng số ký tự mỗi phần:</span>
   <input
     class="m-input _sm _fix u-right"
@@ -124,7 +133,7 @@
     name="chunk_length"
     min={500}
     max={3000}
-    bind:value={zdata._opts.chunk_length} />
+    bind:value={xopts.chunk_length} />
 </label>
 
 {#if error}
@@ -216,9 +225,6 @@
 
   .x-field {
     @include flex-cy($gap: 0.5rem);
-    .x-label {
-      margin-left: auto;
-    }
   }
 
   .m-input.m-input {

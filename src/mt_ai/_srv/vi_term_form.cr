@@ -1,7 +1,6 @@
 require "json"
 
-require "../data/vi_term"
-require "../data/zv_dict"
+require "../data/pg_dict"
 
 require "../../_util/char_util"
 require "../../_util/viet_util"
@@ -60,7 +59,7 @@ class MT::ViTermForm
   getter? on_delete : Bool { @vstr.empty? && !@attr.includes?("Hide") }
 
   def save!(uname : String = "", privi = 4, persist : Bool = true)
-    zdict = ZvDict.load!(@dname.sub("book", "wn").tr("/:", ""))
+    zdict = PgDict.load!(@dname.sub("book", "wn").tr("/:", ""))
 
     zterm = zdict.load_term(cpos: @cpos, zstr: @zstr)
     p_min = zdict.p_min + zterm.plock

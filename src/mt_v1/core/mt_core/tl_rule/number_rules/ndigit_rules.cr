@@ -1,7 +1,7 @@
 module M1::TlRule
   # ameba:disable Metrics/CyclomaticComplexity
   def fold_ndigit!(node : MtNode, prev : MtNode? = nil)
-    return node unless (succ = node.succ?) && succ.is_a?(ZvDefn)
+    return node unless (succ = node.succ?) && succ.is_a?(MtDefn)
     return fold_ndigit_nhanzi!(node, succ) if succ.nhanzi?
 
     if prev && (succ.key == "点" || succ.key == "时")
@@ -9,7 +9,7 @@ module M1::TlRule
     end
 
     return node unless (succ_2 = succ.succ?) && succ_2.ndigit?
-    return node unless succ_2.is_a?(ZvDefn)
+    return node unless succ_2.is_a?(MtDefn)
 
     case succ.tag
     when .pdeci? # case 1.2
@@ -45,7 +45,7 @@ module M1::TlRule
     while succ.tag == match_tag
       key_io << succ.key
       val_io << " " << succ.val
-      break unless (succ = succ.succ?) && succ.is_a?(ZvDefn)
+      break unless (succ = succ.succ?) && succ.is_a?(MtDefn)
       match_tag = PosTag::Ndigit
     end
 

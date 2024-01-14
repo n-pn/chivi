@@ -1,7 +1,5 @@
 require "crorm"
-
-require "../enum/*"
-require "./pg_term"
+require "../base/*"
 
 # convert from postgresql database for faster loading
 struct MT::SqDefn
@@ -60,7 +58,7 @@ struct MT::SqDefn
 
     dtype = zterm.d_id % 10 < 4 ? 2_i8 : 1_i8
     plock = zterm.plock.to_i8 > 0 ? 1_i8 : 0_i8
-    @dnum = Dnum.from(zterm.d_id, zterm.plock)
+    @dnum = MtDnum.from(zterm.d_id, zterm.plock).to_i
   end
 
   def initialize(@d_id, @epos, @zstr,
@@ -68,7 +66,7 @@ struct MT::SqDefn
                  @attr = :none, @dnum = :unknown_0)
   end
 
-  def self.query_each(d_id : Int32, & : (String, MtEpos, ZvDefn) ->)
+  def self.query_each(d_id : Int32, & : (String, MtEpos, MtDefn) ->)
     load_db(d_id).open_ro do |db|
       query = "select zstr, epos, vstr, attr, dnum, fpos from mtdata where d_id = $1"
 
@@ -81,7 +79,7 @@ struct MT::SqDefn
         dnum = MtDnum.from_value(rs.read(Int32))
         fpos = MtEpos.from_value(rs.read(Int32))
 
-        defn = ZvDefn.new(vstr: vstr, attr: attr, dnum: dnum, fpos: fpos)
+        defn = MtDefn.new(vstr: vstr, attr: attr, dnum: dnum, fpos: fpos)
 
         yield zstr, epos, defn
       end

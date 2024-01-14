@@ -17,7 +17,7 @@ module M1::TlRule
       fold!(node, succ.set!("phải"), PosTag::Adverb, dic: 4)
     when .key_is?("住")
       succ.val = ""
-      node = SpDict.fix_verbs.fix!(node) if node.is_a?(ZvDefn)
+      node = SpDict.fix_verbs.fix!(node) if node.is_a?(MtDefn)
       fold!(node, tail.set!("nổi"), PosTag::Verb, dic: 5)
     when .verbal?
       node = fold!(node, succ.set!("phải"), PosTag::Adverb, dic: 4)

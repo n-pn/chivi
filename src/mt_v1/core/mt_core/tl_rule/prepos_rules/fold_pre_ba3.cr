@@ -9,7 +9,7 @@ module M1::TlRule
 
   BA3_HANDLERS = {'剑', '刀', '枪'}
 
-  def guess_pre_ba3_defn(noun : ZvDefn) : String?
+  def guess_pre_ba3_defn(noun : MtDefn) : String?
     noun.key.each_char do |char|
       return "thanh" if BA3_HANDLERS.includes?(char)
       return "nắm" if BA3_IN_HANDS.includes?(char)

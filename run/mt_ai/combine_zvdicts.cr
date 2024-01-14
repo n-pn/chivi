@@ -1,9 +1,7 @@
 INP = "/2tb/app.chivi/var/mt_db/mt_ai"
 ENV["MT_DIR"] ||= "/2tb/app.chivi/var/mt_db"
 
-require "../../src/mt_ai/data/vi_term"
-require "../../src/mt_ai/data/zv_term"
-require "../../src/mt_ai/data/zv_dict"
+require "../../src/mt_ai/data/pg_dict"
 
 def make_zvterm(term, d_id)
   zterm = MT::ZvTerm.new(
@@ -29,7 +27,7 @@ def merge_wn_a(db_file : String)
   puts "#{db_file}: #{terms.size} entries"
   return if terms.size == 0
 
-  dict = MT::ZvDict.load!("wn#{d_id}")
+  dict = MT::PgDict.load!("wn#{d_id}")
   dict.total = terms.size
 
   dict.mtime = terms.max_of(&.mtime)
@@ -42,7 +40,7 @@ end
 
 def merge_up_a(db_file : String)
   d_id = File.basename(db_file, ".db3")
-  dict = MT::ZvDict.load!("up#{d_id}")
+  dict = MT::PgDict.load!("up#{d_id}")
 
   terms = DB.open("sqlite3:#{db_file}?immutable=1") do |db|
     db.query_all "select * from terms where mtime > $1", MTIME, as: MT::ViTerm
@@ -70,7 +68,7 @@ def merge_essence
   end
 
   puts "essence: #{terms.size} entries"
-  dict = MT::ZvDict.load!("essence")
+  dict = MT::PgDict.load!("essence")
 
   dict.total = terms.size
   dict.mtime = terms.max_of(&.mtime)
@@ -88,7 +86,7 @@ def merge_name_hv
 
   puts "name_hv: #{terms.size} entries"
 
-  dict = MT::ZvDict.load!("name_hv")
+  dict = MT::PgDict.load!("name_hv")
   dict.total = terms.size
   dict.mtime = terms.max_of(&.mtime)
   dict.users = terms.map(&.uname).uniq!.reject!(&.empty?)
@@ -101,7 +99,7 @@ end
 MTIME = TimeUtil.cv_mtime - 60
 
 def merge_regular
-  dict = MT::ZvDict.load!("regular")
+  dict = MT::PgDict.load!("regular")
 
   terms = DB.open("sqlite3:#{INP}/regular.db3?immutable=1") do |db|
     db.query_all "select * from terms where mtime > $1", MTIME, as: MT::ViTerm
@@ -119,7 +117,7 @@ def merge_regular
 end
 
 def merge_combine
-  dict = MT::ZvDict.load!("combine")
+  dict = MT::PgDict.load!("combine")
 
   terms = DB.open("sqlite3:#{INP}/combine.db3?immutable=1") do |db|
     db.query_all "select * from terms where mtime > $1", MTIME, as: MT::ViTerm
@@ -144,6 +142,6 @@ merge_regular
 Dir.glob("#{INP}/up/*.db3").each { |file| merge_up_a(file) }
 Dir.glob("#{INP}/wn/*.db3").each { |file| merge_wn_a(file) }
 
-MT::ZvDict.db.transaction do |db|
-  MT::ZvDict::DB_CACHE.each_value(&.upsert!(db: db.connection))
+MT::PgDict.db.transaction do |db|
+  MT::PgDict::DB_CACHE.each_value(&.upsert!(db: db.connection))
 end

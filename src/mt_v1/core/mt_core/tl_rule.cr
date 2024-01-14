@@ -19,7 +19,7 @@ module M1::TlRule
   def fold_left!(right : MtNode, left : MtNode) : MtNode?
     case right
     when .suffixes?
-      fold_suffix!(suff: right, left: left) if right.is_a?(ZvDefn)
+      fold_suffix!(suff: right, left: left) if right.is_a?(MtDefn)
     when .postpos?
       return unless right.is_a?(MtList)
 

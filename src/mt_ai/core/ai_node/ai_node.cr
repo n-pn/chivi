@@ -47,7 +47,7 @@
 #   def set_epos!(@epos : MtEpos) : Nil
 #   end
 
-#   def set_term!(term : ZvDefn) : Nil
+#   def set_term!(term : MtDefn) : Nil
 #     @vstr = term.vstr
 #     @attr |= term.attr
 #     @dnum = term.dnum

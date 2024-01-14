@@ -3,32 +3,22 @@ require "../_raw/raw_con"
 require "../../_util/char_util"
 # require "../ai_dict"
 
+require "./mt_dict"
 require "./mt_rule/*"
-require "./mt_data/*"
-
-# require "./mt_core/*"
 
 class MT::AiCore
   CACHE = {} of String => self
 
   def self.load(pdict : String)
-    CACHE[pdict] ||= new(pdict.sub("book", "wn").tr(":/", ""))
+    CACHE[pdict] ||= new(pdict)
   end
 
-  @dicts : {MtTrie, MtTrie, MtTrie, MtTrie}
-
-  def initialize(@pdict : String)
-    @dicts = {
-      MtTrie.load!(pdict),
-      MtTrie.regular,
-      MtTrie.essence,
-      MtTrie.suggest,
-    }
-
-    @name_qt = QtCore.new(pdict, "name_hv")
+  def initialize(pdict : String)
+    @mt_dict = MtDict.for_mt(pdict)
+    @name_qt = QtCore.new(MtDict.hv_name(pdict))
   end
 
-  def translate!(data : RawCon, prfx : AiTerm)
+  def translate!(data : RawCon, prfx : MtTerm)
     root = init_node(data, from: prfx.upto)
     root.prepend!(prfx)
   end
@@ -37,7 +27,7 @@ class MT::AiCore
     init_node(data, from: 0)
   end
 
-  private def init_node(data : RawCon, from : Int32 = 0) : AiTerm
+  private def init_node(data : RawCon, from : Int32 = 0) : MtTerm
     zstr, orig = data.zstr, data.body
     epos, attr = MtEpos.parse_ctb(data.cpos, zstr)
 
@@ -50,7 +40,7 @@ class MT::AiCore
     end
 
     if defn = init_defn(zstr, epos, attr, mode: init_mode)
-      return AiTerm.new(body: defn, zstr: zstr, epos: epos, attr: attr, from: from)
+      return MtTerm.new(body: defn, zstr: zstr, epos: epos, attr: attr, from: from)
     elsif orig.is_a?(String)
       raise "invalid!"
     end
@@ -61,7 +51,7 @@ class MT::AiCore
     # end
 
     body = init_body(orig, from)
-    term = AiTerm.new(body, zstr: zstr, epos: epos, attr: attr, from: from)
+    term = MtTerm.new(body, zstr: zstr, epos: epos, attr: attr, from: from)
 
     case epos
     when .np? then fix_np_term!(term, body)
@@ -83,7 +73,7 @@ class MT::AiCore
 
   private def init_body(orig : Array(RawCon), from : Int32 = 0)
     prev_upto = from
-    stack = [{[] of AiTerm, '\0'}]
+    stack = [{[] of MtTerm, '\0'}]
 
     prev_upto = from
 
@@ -114,12 +104,12 @@ class MT::AiCore
 
     case list.size
     when 1 then list[0]
-    when 2 then AiPair.new(list[0], list[1])
+    when 2 then MtPair.new(list[0], list[1])
     else        list
     end
   end
 
-  private def init_pu_term(list : Array(AiTerm))
+  private def init_pu_term(list : Array(MtTerm))
     # else, generate new list
     if list[-2].epos.pu?
       epos = MtEpos::IP

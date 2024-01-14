@@ -5,7 +5,7 @@ class M1::MtData
   getter head : MtNode
   getter tail : MtNode
 
-  @nestable = [] of ZvDefn
+  @nestable = [] of MtDefn
 
   def initialize(@head)
     @tail = head
@@ -20,22 +20,22 @@ class M1::MtData
     self
   end
 
-  def add_head(node : ZvDefn)
+  def add_head(node : MtDefn)
     @head.fix_prev!(node)
     @head = node
   end
 
-  def add_tail(node : ZvDefn)
+  def add_tail(node : MtDefn)
     node.fix_prev!(@tail)
     @tail = node
   end
 
-  def add_node(node : ZvDefn)
+  def add_node(node : MtDefn)
     if can_nest?(node)
       @nestable << node
       add_head(node)
       return
-    elsif @head.is_a?(ZvDefn) && can_meld?(node, @head)
+    elsif @head.is_a?(MtDefn) && can_meld?(node, @head)
       @head.val = join_val(node, @head)
       @head.key = node.key + head.key
       @head.idx = node.idx
@@ -52,7 +52,7 @@ class M1::MtData
     end
   end
 
-  private def can_nest?(node : ZvDefn)
+  private def can_nest?(node : MtDefn)
     return unless node.puncts?
 
     case node.tag
@@ -64,7 +64,7 @@ class M1::MtData
     end
   end
 
-  private def can_meld?(left : ZvDefn, right : ZvDefn) : Bool
+  private def can_meld?(left : MtDefn, right : MtDefn) : Bool
     case right.tag
     when .puncts? then left.tag == right.tag
     when .nhanzi?
@@ -77,7 +77,7 @@ class M1::MtData
     end
   end
 
-  private def can_meld?(left : ZvDefn, right : MtNode) : Bool
+  private def can_meld?(left : MtDefn, right : MtNode) : Bool
     false
   end
 
@@ -141,7 +141,7 @@ class M1::MtData
   end
 
   def fix_grammar!
-    head = ZvDefn.new("", tag: PosTag::None, dic: 0, idx: @head.idx)
+    head = MtDefn.new("", tag: PosTag::None, dic: 0, idx: @head.idx)
     add_head(head)
 
     resolve_nested!(@nestable.size - 1, 0) if @nestable.size > 1

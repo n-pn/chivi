@@ -5,7 +5,7 @@ module M1::TlRule
     return true if !succ || succ.starts_with?('不')
 
     head.each do |node|
-      next unless node.is_a?(ZvDefn)
+      next unless node.is_a?(MtDefn)
       next unless char = node.key[0]?
       return true if {'来', '去', '到', '有', '上', '想', '出'}.includes?(char)
     end
@@ -66,7 +66,7 @@ module M1::TlRule
     node.list.any? { |x| need_2_objects?(x) }
   end
 
-  def need_2_objects?(node : ZvDefn)
+  def need_2_objects?(node : MtDefn)
     need_2_objects?(node.key)
   end
 

@@ -2,10 +2,10 @@
 # require "colorize"
 require "./mt_node/mt_term"
 
-class M1::MtTrie
+class M1::ZvTrie
   alias HashCT = Hash(Char, self)
 
-  property term : ZvDefn? = nil
+  property term : MtDefn? = nil
   property trie : HashCT? = nil
 
   def find!(input : String) : self
@@ -13,7 +13,7 @@ class M1::MtTrie
 
     input.each_char do |char|
       trie = node.trie ||= HashCT.new
-      node = trie[char] ||= MtTrie.new
+      node = trie[char] ||= ZvTrie.new
     end
 
     node
@@ -85,7 +85,7 @@ class M1::MtDict
     USERS["#{wn_id}@#{uname}"] ||= new(8).load_user!(wn_id, uname)
   end
 
-  getter trie = MtTrie.new
+  getter trie = ZvTrie.new
   delegate scan, to: @trie
 
   def initialize(@lbl : Int32)
@@ -140,7 +140,7 @@ class M1::MtDict
         tag = PosTag.map_ctb(tags.split(' ')[0], key)
 
         node = @trie.find!(key)
-        node.term = ZvDefn.new(key, val, tag: tag, dic: @lbl, prio: 1)
+        node.term = MtDefn.new(key, val, tag: tag, dic: @lbl, prio: 1)
       end
     end
 
@@ -158,7 +158,7 @@ class M1::MtDict
       node.term = nil
     else
       val = val.split(/[ǀ|\t]/).first
-      node.term = ZvDefn.new(key, val, dic: @lbl, ptag: ptag, prio: prio)
+      node.term = MtDefn.new(key, val, dic: @lbl, ptag: ptag, prio: prio)
     end
   end
 

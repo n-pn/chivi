@@ -1,5 +1,6 @@
 # require "./_utils"
 require "./tl_unit"
+require "../mt_data/mt_term"
 
 module MT::TlChap
   LBLS = {
@@ -41,8 +42,8 @@ module MT::TlChap
     zh_ch += trash
     vi_ch += ':' unless title.empty?
 
-    defn = ZvDefn.new(vstr: vi_ch, attr: :capn, dnum: :root2, fpos: :LST)
-    node = AiTerm.new(body: defn, epos: :LST, zstr: zh_ch, from: 0)
+    defn = MtDefn.new(vstr: vi_ch, attr: :capn, dnum: :root2, fpos: :LST)
+    node = MtTerm.new(body: defn, epos: :LST, zstr: zh_ch, from: 0)
 
     {title, node}
   end

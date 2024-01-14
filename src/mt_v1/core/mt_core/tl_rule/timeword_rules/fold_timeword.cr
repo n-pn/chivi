@@ -38,7 +38,7 @@ module M1::TlRule
   end
 
   def fold_time_appro!(node : MtNode)
-    return node unless (succ = node.succ?) && succ.is_a?(ZvDefn)
+    return node unless (succ = node.succ?) && succ.is_a?(MtDefn)
     case succ.key
     when "前后"
       fold!(node, succ.set!("tầm"), PosTag::Ntime, dic: 2, flip: true)
@@ -54,7 +54,7 @@ module M1::TlRule
   def fold_number_hour!(node : MtNode, succ : MtNode) : MtNode
     node = fold!(node, succ.set!("giờ"), PosTag::Ntime, dic: 1)
 
-    return node unless (succ = node.succ?) && succ.is_a?(ZvDefn)
+    return node unless (succ = node.succ?) && succ.is_a?(MtDefn)
 
     case succ.key
     when "半"
@@ -70,16 +70,16 @@ module M1::TlRule
     fold!(node, second.set!("giây"), PosTag::Ntime, dic: 1)
   end
 
-  def read_minute_quanti?(node : MtNode?) : ZvDefn?
+  def read_minute_quanti?(node : MtNode?) : MtDefn?
     return unless node && node.numbers?
-    return unless (succ = node.succ?) && succ.is_a?(ZvDefn)
+    return unless (succ = node.succ?) && succ.is_a?(MtDefn)
 
     succ.key == "分" || succ.key == "分钟" ? succ : nil
   end
 
-  def read_second_quanti?(node : MtNode?) : ZvDefn?
+  def read_second_quanti?(node : MtNode?) : MtDefn?
     return unless node && node.numbers?
-    return unless (succ = node.succ?) && succ.is_a?(ZvDefn)
+    return unless (succ = node.succ?) && succ.is_a?(MtDefn)
 
     succ.key == "秒" || succ.key == "秒钟" ? succ : nil
   end

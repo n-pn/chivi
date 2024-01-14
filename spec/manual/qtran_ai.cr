@@ -1,4 +1,5 @@
 require "../../src/mt_ai/core/*"
+require "../../src/mt_ai/data/*"
 
 input = [
   "“陈源哥哥，还记得高中时候的小瘸子吗？”",
@@ -8,7 +9,7 @@ input = [
 ]
 
 ch_rm = 1
-cheads = [] of MT::AiTerm | Nil
+cheads = [] of MT::MtTerm | Nil
 
 ch_rm.times do |index|
   title, split = MT::TlChap.split(input[index])

@@ -4,7 +4,7 @@ struct CV::XvcoinForm
   include JSON::Serializable
 
   getter target : String
-  getter reason : String
+  getter reason : String = ""
   getter amount : Float64
 
   def after_initialize
