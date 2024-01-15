@@ -1,7 +1,3 @@
-pragma journal_mode = WAL;
-
-pragma synchronous = normal;
-
 CREATE TABLE specs(
   id integer PRIMARY KEY,
   --

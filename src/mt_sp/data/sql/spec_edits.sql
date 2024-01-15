@@ -1,8 +1,4 @@
-pragma journal_mode = WAL;
-
-pragma synchronous = normal;
-
-CREATE TABLE edits (
+CREATE TABLE edits(
   id integer PRIMARY KEY,
   --
   spec_id integer NOT NULL,
@@ -21,6 +17,6 @@ CREATE TABLE edits (
   mtime integer NOT NULL DEFAULT 0
 );
 
-CREATE UNIQUE INDEX edits_uniq_idx ON edits (spec_id, edit_no);
+CREATE UNIQUE INDEX edits_uniq_idx ON edits(spec_id, edit_no);
 
-CREATE INDEX edits_user_idex ON edits (uname);
+CREATE INDEX edits_user_idex ON edits(uname);
