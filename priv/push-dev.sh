@@ -16,7 +16,7 @@ do
   then
     cp -f "src/mt_ai/hanlp-srv.py" /2tb/dev.chivi/bin
   else
-    crystal build -s --release src/$target/$target-srv.cr -o /2tb/dev.chivi/bin/$target-srv
+    crystal build -s --release --mcpu native src/$target/$target-srv.cr -o /2tb/dev.chivi/bin/$target-srv
   fi
 
   echo restarting $target-dev service

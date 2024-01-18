@@ -16,7 +16,7 @@ do
   then
     cp -f src/hanlp/hanlp-srv.py $OUT/bin
   else
-    crystal build -s --release src/$target/$target-srv.cr -o $OUT/bin/$target-srv
+    crystal build -s --release --mcpu native src/$target/$target-srv.cr -o $OUT/bin/$target-srv
   fi
 
   echo restarting $target service
