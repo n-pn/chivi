@@ -1,5 +1,6 @@
 require "./_ys_ctrl_base"
 require "../data/ysbook"
+require "./yscrit_view"
 
 class YS::CritCtrl < AC::Base
   base "/_ys/crits"
@@ -14,6 +15,7 @@ class YS::CritCtrl < AC::Base
     pg_no, limit, offset = _paginate(max: 24)
 
     query = Yscrit.query.sort_by(sort)
+    query.where("ztext <> ''")
 
     query.where("? = any(vtags)", vtag) if vtag
     query.where("ysuser_id = ?", user) if user

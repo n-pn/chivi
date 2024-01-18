@@ -1,7 +1,8 @@
 require "json"
 
-require "../../data/yscrit"
-require "../../../_util/hash_util"
+require "../data/yscrit"
+require "../../_util/hash_util"
+require "../../_util/tran_util"
 
 struct YS::CritView
   def initialize(@data : Yscrit, @full = false)
@@ -33,19 +34,17 @@ struct YS::CritView
     end
   end
 
-  def render_html
-    if vi_bd = @data.vi_bd
-      to_html(vi_bd)
-    elsif !@data.vhtml.blank?
-      @data.vhtml
-    else
-      # TODO: call translation!
-      to_html(@data.ztext)
-    end
-  end
+  ERR_MESSAGE = "<p><em>Có lỗi dịch đánh giá, mời liên hệ ban quản trị</em></p>"
 
-  def to_html(input : String)
-    input.lines.join('\n') { |line| "<p>#{line.gsub('<', "&gt;")}</p>" }
+  def render_html
+    unless vi_bd = @data.vi_bd
+      vi_bd = TranUtil.call_api(@data.ztext, "bd_zv")
+      return ERR_MESSAGE unless vi_bd
+      @data.vi_bd = vi_bd
+      spawn Yscrit.set_vi_bd(vi_bd, @data.id)
+    end
+
+    TranUtil.txt_to_htm(vi_bd || @data.ztext)
   end
 
   def self.as_list(inp : Enumerable(Yscrit), full = false)

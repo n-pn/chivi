@@ -119,4 +119,8 @@ class YS::Yscrit
   def self.get_id(yc_id : Bytes)
     PG_DB.query_one("select id from yscrits where yc_id = $1", yc_id, as: Int32)
   end
+
+  def self.set_vi_bd(vi_bd : String, id : Int32)
+    PG_DB.exec "update yscrits set vi_bd = $1 where id = $2", vi_bd, id
+  end
 end

@@ -1,42 +1,29 @@
 require "log"
 require "json"
 require "http/client"
+
 require "../cv_env"
 
 module TranUtil
   extend self
 
-  CVMTL_URL = "#{CV_ENV.m1_host}/_m1/qtran"
+  JSON_HEADERS = HTTP::Headers{"Content-Type" => "application/json"}
+  TEXT_HEADERS = HTTP::Headers{"Content-Type" => "text/plain"}
 
-  BTRAN_URL = "#{CV_ENV.sp_host}/_sp/btran"
-  DEEPL_URL = "#{CV_ENV.sp_host}/_sp/deepl"
+  QTRAN_URL = "#{CV_ENV.sp_host}/_sp/qtran"
 
-  BTRAN_NO_CAP = "#{CV_ENV.sp_host}/_sp/qtran?no_cap=true"
-  DEEPL_NO_CAP = "#{CV_ENV.sp_host}/_sp/deepl?no_cap=true"
+  def call_api(body : String, type : String = "qt_v1", opts : String = "")
+    url = "#{QTRAN_URL}/#{type}"
+    url += "?opts=#{opts}" unless opts.empty?
 
-  JSON_HEADER = HTTP::Headers{"Content-Type" => "application/json"}
-  TEXT_HEADER = HTTP::Headers{"Content-Type" => "text/plain"}
-
-  def qtran(input : String, wn_id : Int32 = 0, format = "mtl") : String?
-    url = "#{CVMTL_URL}?wn_id=#{wn_id}&format=#{format}"
-    call_api(url, TEXT_HEADER, input)
-  end
-
-  def btran(input : String, no_cap : Bool = false) : String?
-    call_api(no_cap ? BTRAN_NO_CAP : BTRAN_URL, TEXT_HEADER, input)
-  end
-
-  def deepl(input : String, no_cap : Bool = false) : String?
-    call_api(no_cap ? DEEPL_NO_CAP : DEEPL_URL, TEXT_HEADER, input)
-  end
-
-  private def call_api(url : String, headers : HTTP::Headers, body : String) : String?
-    HTTP::Client.post(url, headers: headers, body: body) do |res|
+    HTTP::Client.post(url, headers: TEXT_HEADERS, body: body) do |res|
       text = res.body_io.gets_to_end
       return text if res.status.success?
       Log.error { "<#{url}> <#{body}>: #{text}".colorize.red }
     end
   end
+
+  CVMTL_URL = "#{CV_ENV.m1_host}/_m1/qtran"
 
   record Wndata, btitle : String, author : String, bintro : String do
     include JSON::Serializable
@@ -46,7 +33,7 @@ module TranUtil
     url = "#{CVMTL_URL}/wnovel?wn_id=#{wn_id}"
     body = {btitle: btitle, author: author, bintro: bintro}
 
-    HTTP::Client.post(url, headers: JSON_HEADER, body: body.to_json) do |res|
+    HTTP::Client.post(url, headers: JSON_HEADERS, body: body.to_json) do |res|
       return unless res.success?
       Wndata.from_json(res.body_io)
     end
@@ -75,7 +62,9 @@ module TranUtil
 
   def txt_to_htm(input : String)
     String.build do |io|
-      input.split('\n').join(io, '\n') { |x| io << "<p>" << x << "</p>" }
+      input.each_line do |line|
+        io << "<p>" << line.gsub('<', "&gt;") << "</p>" << '\n'
+      end
     end
   end
 end

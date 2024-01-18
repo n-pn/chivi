@@ -70,12 +70,12 @@ class YS::Yslist
   end
 
   def fix_vname(zname : String)
-    self.vname = TranUtil.qtran(zname, -5, "txt").as(String)
+    self.vname = TranUtil.call_api(zname, type: "qt_v1", opts: "-5,0").as(String)
     self.vslug = "-" + TextUtil.slugify(vname).gsub(/[^\p{L}\p{N}]/, '-')
   end
 
   def fix_vdesc(zdesc : String)
-    self.vdesc = TranUtil.qtran(zdesc, -5, "txt") || ""
+    self.vdesc = TranUtil.call_api(zname, type: "qt_v1", opts: "-5,0") || ""
   end
 
   ##################
