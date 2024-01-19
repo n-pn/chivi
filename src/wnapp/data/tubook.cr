@@ -3,7 +3,7 @@ require "crorm"
 require "../../_util/book_util"
 require "../_raw/raw_tubook"
 
-class RD::Tubook
+class WN::Tubook
   class_getter db_path = "var/zroot/tubooks.db3"
 
   class_getter init_sql = <<-SQL

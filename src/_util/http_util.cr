@@ -6,7 +6,7 @@ require "colorize"
 require "http/client"
 require "http_proxy"
 
-struct HttpProxy
+class HttpProxy
   include YAML::Serializable
 
   getter host : String
@@ -16,6 +16,9 @@ struct HttpProxy
 
   getter rotate_url = ""
   getter auth_token = ""
+
+  property success_count = 0
+  property failure_count = 0
 
   def proxy_client
     HTTP::Proxy::Client.new(@host, port: @port, username: @user, password: @pass)
@@ -74,7 +77,7 @@ module HttpUtil
     end
   end
 
-  def self.make_headers(referer = "", cookie = "", content_type = "text/html")
+  def self.gen_headers(referer = "", cookie = "", content_type = "text/html")
     HTTP::Headers{
       "Origin"          => referer,
       "Referer"         => referer,
@@ -85,7 +88,7 @@ module HttpUtil
     }
   end
 
-  def self.make_client(uri : URI, proxy : HttpProxy? = nil)
+  def self.http_client(uri : URI, proxy : HttpProxy? = nil)
     client = HTTP::Client.new(uri)
     client.connect_timeout = 10
     client.read_timeout = 20
@@ -93,26 +96,24 @@ module HttpUtil
     client
   end
 
-  def self.get_html(url : String,
-                    headers : HTTP::Headers = nil,
-                    encoding : String? = nil,
-                    use_proxy : Bool = false)
-    get_html(URI.parse(url), headers, encoding, use_proxy)
+  def self.fetch(url : String, headers : HTTP::Headers? = nil,
+                 encoding : String? = "UTF-8", use_proxy : Bool = false)
+    proxy = HttpProxy.pick_one if use_proxy
+    fetch(URI.parse(url), headers, encoding, proxy: proxy)
   end
 
-  def self.get_html(uri : URI,
-                    headers : HTTP::Headers = nil,
-                    encoding : String? = nil,
-                    use_proxy : Bool = false)
-    proxy = HttpProxy.pick_one if use_proxy
-    make_client(uri, proxy).get(uri.request_target, headers: headers) do |res|
+  def self.fetch(uri : URI, headers : HTTP::Headers? = nil,
+                 encoding : String? = "UTF-8", proxy : HttpProxy? = nil)
+    http_client(uri, proxy).get(uri.request_target, headers: headers) do |res|
       case res.status
       when .success?
-        read_res_html(res.body_io, uri.hostname.as(String), encoding)
+        proxy.success_count += 1 if proxy
+        gets_to_end(res.body_io, uri.hostname.as(String), encoding)
       when .redirection?
-        location = res.headers["location"]
-        get_html(location, headers: headers, encoding: encoding, use_proxy: use_proxy)
+        location = URI.parse(res.headers["location"])
+        fetch(location, headers: headers, encoding: encoding, proxy: proxy)
       else
+        proxy.failure_count += 1 if proxy
         raise "http error: #{res.status_code}"
       end
     end
@@ -120,13 +121,13 @@ module HttpUtil
 
   CSDET = ICU::CharsetDetector.new
 
-  def self.read_res_html(body : IO, hostname : String, encoding : String? = nil)
+  def self.gets_to_end(body : IO, hostname : String, encoding : String? = nil)
     if encoding ||= ENCODING[hostname]?
       html = body.tap(&.set_encoding(encoding, invalid: :skip)).gets_to_end
     else
       blob = body.getb_to_end
-      text = String.new(blob[0..1000])
-      encoding = ENCODING[hostname] = CSDET.detect(text).name
+      sample = String.new(blob[0..1000])
+      encoding = ENCODING[hostname] = CSDET.detect(sample).name
       html = String.new(blob, encoding: encoding, invalid: :skip)
     end
 

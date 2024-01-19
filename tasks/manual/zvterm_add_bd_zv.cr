@@ -23,7 +23,7 @@ def gen_names_from_bd_tran
     char_total += char_count
 
     Log.info { "- <#{index}> (#{words.size} entries)".colorize.green }
-    trans = SP::BdTran.api_translate(words.join('\n'), sl: "zh", tl: "vie", retry: true)
+    trans = SP::BdTran.api_translate(words)
     Log.info { "  count: #{char_count}, total: #{char_total}".colorize.green }
 
     ZR_DB.transaction do |tx|
