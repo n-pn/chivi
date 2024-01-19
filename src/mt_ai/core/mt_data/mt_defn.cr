@@ -19,6 +19,10 @@ struct MT::MtDefn
   def initialize(@vstr, @attr = :none, @dnum = :unkn0, @fpos = :X)
   end
 
+  def as_any(fpos : MtEpos = @fpos)
+    MtDefn.new(vstr: @vstr, attr: :none, dnum: @dnum.as_any, fpos: fpos)
+  end
+
   # def to_txt(io : IO, cap : Bool, und : Bool)
   #   io << ' ' if und && !(@attr.hide? || @attr.padb?)
   #   render(io, cap, und)

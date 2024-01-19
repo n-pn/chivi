@@ -39,7 +39,7 @@ class MT::AiCore
       case node.epos
       when .noun?
         flip = flip_noun_pair?(head: node, tail: noun)
-        noun = init_pair(head: node, tail: noun, epos: :NP, attr: attr, flip: flip)
+        noun = init_pair(head: node, tail: noun, epos: :NN, attr: attr, flip: flip)
         _pos &-= 1
       when .adjp?
         # if current node is short modifier
@@ -48,7 +48,7 @@ class MT::AiCore
 
         # combine the noun list for phrase translation
         flip = !node.attr.at_h?
-        noun = init_pair(head: node, tail: noun, epos: :NP, attr: attr, flip: flip)
+        noun = init_pair(head: node, tail: noun, epos: :NN, attr: attr, flip: flip)
       when .pu?
         # FIXME: check error in this part
         break if _pos == 0 || node.zstr[0] != '、'
@@ -58,7 +58,8 @@ class MT::AiCore
         _pos &-= 1
 
         prev, _pos = init_nn_term(orig, prev, _pos) if _pos >= 0
-        noun = init_term([prev, node, noun], epos: :NP, attr: attr)
+        epos = prev.epos == noun.epos ? noun.epos : MtEpos::NP
+        noun = init_term([prev, node, noun], epos: epos, attr: attr)
       else
         break
       end
@@ -94,34 +95,6 @@ class MT::AiCore
     end
 
     {noun, _pos}
-  end
-
-  private def pair_noun_qp(np_term : MtTerm, qp_term : MtTerm)
-    init_pair(head: qp_term, tail: np_term, epos: :NP, attr: np_term.attr) do
-      # TODO: split `OD`, fix `M` vstr
-      MtPair.new(qp_term, np_term, flip: qp_term.attr.at_t?)
-    end
-  end
-
-  private def add_qp_to_list(list, qp_node, nn_node) : Nil
-    m_node = qp_node.find_by_epos(:M) || qp_node
-    MtPair.m_n_pair.fix_if_match!(m_node, nn_node)
-
-    unless qp_node.first.epos.od?
-      list.unshift(qp_node)
-      return
-    end
-
-    case qp_node
-    when M1Node
-      list.push(qp_node)
-    when M2Node
-      list.push(qp_node.lhsn)
-      list.unshift(qp_node.rhsn)
-    else
-      # TODO: handle M3Node and MxNode
-      list.unshift(qp_node)
-    end
   end
 
   private def pron_at_head?(pron : MtTerm, noun : MtTerm)

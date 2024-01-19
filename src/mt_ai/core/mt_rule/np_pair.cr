@@ -19,9 +19,9 @@ class MT::AiCore
 
     tail.epos = MtEpos::NH
 
-    if defn = init_defn(tail.zstr, :NH, mode: 0)
-      tail.body = defn
+    if defn = init_defn(tail.zstr, :NH)
       tail.attr = defn.attr
+      tail.body = defn
     end
 
     tail.attr.at_h?

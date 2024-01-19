@@ -3,18 +3,7 @@ require "../mt_util/*"
 require "../mt_dict"
 
 class MT::AiCore
-  def init_defn(zstr : String, epos : MtEpos,
-                attr : MtAttr = :none, mode : Int32 = 0)
-    match, fuzzy = @mt_dict.get_defn?(zstr, epos)
-    return match if match
-    return fuzzy if fuzzy && mode > 1
-
-    return unless vstr = init_vstr(zstr, epos, mode: mode)
-    @mt_dict.add_temp(zstr, vstr, attr, epos)
-  end
-
-  # modes: 0 => return if not found, 1: search for any values, 2: translate by any mean!
-  def init_vstr(zstr : String, epos : MtEpos, mode = 0) : String?
+  def translate_str(zstr : String, epos : MtEpos) : String
     case
     when epos.em? then zstr
     when epos.pu?, epos.url?
@@ -24,25 +13,13 @@ class MT::AiCore
     when epos.cd?
       TlUnit.translate_od(zstr)
     when epos.qp?
-      TlUnit.translate_mq(zstr)
+      TlUnit.translate_mq(zstr) || QtCore.tl_hvword(zstr)
     when epos.nr?
       @name_qt.translate(zstr, cap: true)
-    when mode == 2
+    else
+      # TODO: change to fast translation mode
+      # TODO: handle verb/noun/adjt translation
       QtCore.tl_hvword(zstr)
     end
-  end
-
-  private def init_term(list : Array(MtTerm),
-                        epos : MtEpos, attr : MtAttr = :none,
-                        zstr = list.join(&.zstr), from = list[0].from)
-    body = init_defn(zstr, epos, attr, mode: 0) || begin
-      case list.size
-      when 1 then list[0]
-      when 2 then MtPair.new(list[0], list[1])
-      else        list
-      end
-    end
-
-    MtTerm.new(body: body, zstr: zstr, epos: epos, attr: attr, from: from)
   end
 end

@@ -27,7 +27,7 @@ class MT::AiCore
     dt_term = MtTerm.new(epos: :DT, attr: :none, zstr: fchar.to_s, body: dt_body, from: term.from)
 
     qp_zstr = term.zstr[1..]
-    qp_body = init_defn(qp_zstr, :QP, mode: 2) || raise "invalid #{qp_zstr}!"
+    qp_body = init_defn(qp_zstr, :QP) || raise "invalid #{qp_zstr}!"
     qp_term = MtTerm.new(body: qp_body, zstr: qp_zstr, epos: :QP, from: term.from &+ 1)
 
     {dt_term, qp_term}

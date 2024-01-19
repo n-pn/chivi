@@ -25,8 +25,40 @@ enum MT::MtDnum : Int8
   Auto2 = 25
   Root2 = 26
 
+  # as_any
+
+  Unkn0x = 100
+  User0x = 101
+  Main0x = 102
+  Core0x = 103
+  Base0x = 104
+  Auto0x = 105
+  Root0x = 106
+
+  # plock = 1
+  Unkn1x = 110
+  User1x = 111
+  Main1x = 112
+  Core1x = 113
+  Base1x = 114
+  Auto1x = 115
+  Root1x = 116
+
+  # plock = 2
+  Unkn2x = 120
+  User2x = 121
+  Main2x = 122
+  Core2x = 123
+  Base2x = 124
+  Auto2x = 125
+  Root2x = 126
+
   def on_primary_dict?
     self.to_i8 % 10 % 2 == 1
+  end
+
+  def as_any
+    MtDnum.new(self.value + 100)
   end
 
   @[AlwaysInline]
