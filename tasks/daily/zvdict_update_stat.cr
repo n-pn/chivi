@@ -1,3 +1,4 @@
+ENV["CV_ENV"] ||= "production"
 require "../../src/mt_ai/data/pg_dict"
 
 update_query = <<-SQL

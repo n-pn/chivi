@@ -1,35 +1,38 @@
-require "./shared"
+require "./yousuu_shared"
 
 TABLE = "ysrepls"
 
 SELECT_SQL = <<-SQL
 select id, ztext from #{TABLE}
-where ztext <> '' and vi_bd is null
-limit 100
+where ztext <> '' and en_bd is null
+limit 200
 SQL
 
-UPDATE_SQL = "update #{TABLE} set vi_bd = $1 where id = $2"
+UPDATE_SQL = "update #{TABLE} set en_bd = $1 where id = $2"
 
 CACHE_DIR = "/2tb/zroot/ydata/ysrepl"
 
 def translate_one(input : Input)
   char_count = input.ztext.size
-  trans, mtime = SP::QtData.from_ztext(input.lines, cache_dir: CACHE_DIR).get_vtran("bd_zv")
 
-  if trans.size == input.lines.size
+  qdata = SP::QtData.from_ztext(input.lines, cache_dir: CACHE_DIR)
+  trans, mtime = qdata.get_vtran("bd_zv")
+  trans_size = trans.lines.size
+
+  if trans_size == input.lines.size
     PGDB.exec UPDATE_SQL, trans, input.id
   else
-    Log.warn { "size mismatch!!" }
+    Log.warn { "size mismatch!! #{trans_size} vs #{input.lines.size}" }
   end
 
   Log.info { " cached at: #{Time.unix(mtime)}" }
-  Log.info { "- #{trans.size} lines".colorize.green }
+  Log.info { "- #{trans_size} lines".colorize.green }
 
   char_count
 end
 
 def translate_batch(input : Array(Input), loop_index = 1, char_total = 0)
-  trans, char_total = Input.translate_batch(input, "bd_zv", loop_index, char_total, "ysrepl")
+  trans, char_total = Input.translate_batch(input, "bd_ze", loop_index, char_total, "ysrepl")
 
   orig_size = input.sum(&.lines.size)
   raise "size mismatch #{trans.size} #{orig_size}" if trans.size != orig_size
@@ -37,8 +40,8 @@ def translate_batch(input : Array(Input), loop_index = 1, char_total = 0)
   start = 0
   input.each do |entry|
     count = entry.lines.size
-    vi_bd = trans[start, count]
-    PGDB.exec UPDATE_SQL, vi_bd.join('\n'), entry.id
+    en_bd = trans[start, count]
+    PGDB.exec UPDATE_SQL, en_bd.join('\n'), entry.id
     start += count
   end
 
@@ -56,7 +59,7 @@ loop do
   loop_index += 1
   item_count += input.size
 
-  large, small = input.partition(&.ztext.size.> 3000)
+  large, small = input.partition(&.ztext.size.in?(3000..6000))
   large.each { |entry| char_total += translate_one(entry) }
   char_total = translate_batch(small, loop_index, char_total)
 rescue ex

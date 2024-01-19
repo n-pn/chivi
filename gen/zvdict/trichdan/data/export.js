@@ -10,4 +10,4 @@ for (const [hanzi, hanviet] of names) {
   data.push([hanzi, ...viets].join('\t'))
 }
 
-fs.writeFileSync('run/trichdan/hanzi.tsv', data.join('\n'))
+fs.writeFileSync('gen/zvdict/trichdan/hanzi.tsv', data.join('\n'))

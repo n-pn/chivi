@@ -1,4 +1,4 @@
-require "./shared"
+require "./yousuu_shared"
 
 TABLE = "yslists"
 

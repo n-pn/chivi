@@ -1,8 +1,6 @@
 ENV["CV_ENV"] ||= "production"
-# ENV["MT_DIR"] ||= "/2tb/app.chivi/var/mt_db"
-
 require "../../src/_data/_data"
-require "../../src/mt_ai/data/zv_dict"
+require "../../src/mt_ai/data/pg_dict"
 
 CORE = {
   {"essence", 0, 1, "Nền Tảng", "Các từ cơ bản như dấu câu, chữ latin, emoji, phiên âm từ đơn Hán Việt..."},

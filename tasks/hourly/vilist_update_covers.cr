@@ -1,11 +1,7 @@
-require "pg"
-require "colorize"
-require "../../src/cv_env"
+ENV["CV_ENV"] ||= "production"
+require "../../src/_data/_data"
 
-PG_DB = DB.open(CV_ENV.database_url)
-at_exit { PG_DB.close }
-
-PG_DB.exec <<-SQL
+PGDB.exec <<-SQL
 update vilists set covers = array(
   select bcover from wninfos
   where bcover <> ''
