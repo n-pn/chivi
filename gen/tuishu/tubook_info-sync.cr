@@ -68,7 +68,7 @@ puts "MIN: #{min_id}, MAX: #{max_id}"
 
 threads = 1 if threads < 1
 
-ctask = TubookReload.new("tuishu/tubooks")
+ctask = TubookReload.new("tuishu/tubooks", tspan: 1.weeks, use_proxy: false)
 b_ids = TubookReload.book_ids_to_crawl(min_id, max_id)
 queue = ctask.gen_queue(b_ids, cr_mode)
 ctask.crawl_all(queue, threads: threads)

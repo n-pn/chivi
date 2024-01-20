@@ -22,7 +22,7 @@ pages.each do |page|
     Log.info { "<#{page}/#{page_count}> [#{fpath}] existed, skipping" }
   else
     flink = "#{URL}&page=#{page}&pageSize=#{page_limit}"
-    File.write(fpath, HttpUtil.fetch(flink, encoding: "UTF-8", use_proxy: true))
+    File.write(fpath, HttpUtil.fetch(flink, encoding: "UTF-8", use_proxy: false))
     Log.info { "<#{page}/#{page_count}> [#{fpath}] saved".colorize.green }
   end
 end

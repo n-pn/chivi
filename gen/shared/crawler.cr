@@ -90,8 +90,10 @@ abstract class CrawlTask
     results = Channel(CrawlItem?).new(threads)
     pending = Channel(CrawlItem).new(queue.size)
 
-    threads.times do
+    threads.times do |i|
       spawn do
+        sleep (i * 10).milliseconds
+
         loop do
           break unless item = pending.receive?
           results.send(crawl_one(item))

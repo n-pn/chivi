@@ -5,7 +5,7 @@ class MT::MtTerm
   struct ::MT::MtPair
     getter head : MtTerm
     getter tail : MtTerm
-    property flip : Bool
+    property? flip : Bool
 
     def initialize(@head, @tail, @flip = false)
     end
