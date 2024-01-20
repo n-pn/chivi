@@ -1,6 +1,12 @@
 require "../../base/*"
 
 struct MT::MtDefn
+  DEG0 = new(vstr: "", attr: MtAttr[Hide, At_t], dnum: :Root2, fpos: :DEG)
+  DEG1 = new(vstr: "của", attr: :at_t, dnum: :Root2, fpos: :DEG)
+  DEG2 = new(vstr: "do", attr: :at_t, dnum: :Root2, fpos: :DEG)
+
+  ###
+
   getter vstr : String
   getter attr : MtAttr
 

@@ -44,7 +44,7 @@ class MT::ViTermCtrl < AC::Base
 
   @[AC::Route::GET("/find")]
   def show(d_id : Int32, zstr : String, cpos : String)
-    term = ZvTerm.find(d_id: d_id, zstr: zstr, cpos: cpos)
+    term = PgDefn.find(d_id: d_id, zstr: zstr, cpos: cpos)
 
     if term
       render json: term

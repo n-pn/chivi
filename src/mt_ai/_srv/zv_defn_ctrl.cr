@@ -1,5 +1,5 @@
 require "./_mt_ctrl_base"
-require "../data/vi_term"
+require "../data/pg_dict"
 
 class MT::PgDictCtrl < AC::Base
   base "/_ai/dicts"

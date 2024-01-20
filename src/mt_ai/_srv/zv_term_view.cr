@@ -1,4 +1,4 @@
-require "../data/zv_dict"
+require "../data/pg_dict"
 
 class MT::ZvtermView
   def self.fetch_all(
@@ -56,13 +56,13 @@ class MT::ZvtermView
       sql << " offset $" << args.size
     end
 
-    terms = ZvTerm.db.query_all("select * from zvterm #{where_stmt}", args: args, as: ZvTerm)
+    terms = PgDefn.db.query_all("select * from zvterm #{where_stmt}", args: args, as: PgDefn)
 
     if terms.size < args[-2].as(Int32)
       count = terms.size
     else
       args[-2] = limit &* 3
-      count = ZvTerm.db.query_all("select d_id from zvterm #{where_stmt}", args: args, as: Int32).size
+      count = PgDefn.db.query_all("select d_id from zvterm #{where_stmt}", args: args, as: Int32).size
     end
 
     {terms, offset &+ count}

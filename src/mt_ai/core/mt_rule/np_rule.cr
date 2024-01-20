@@ -1,17 +1,52 @@
 # require "./ai_term"
 
 class MT::AiCore
-  def fix_np_term!(term : MtTerm, body = term.body)
-    case body
-    when MtDefn, MtTerm
-      # Do nothing
-    when MtPair
-      term.body = fix_np_pair!(body)
-    else
-      term.body = fix_np_body!(body)
+  def fix_np_term!(term : MtTerm, body = term.body) : Nil
+    return if body.is_a?(MtDefn) || body.is_a?(MtTerm)
+
+    if body.is_a?(MtPair)
+      if body.head.epos.nr?
+        body.flip = flip_noun_pair?(body.head, body.tail)
+        return
+      else
+        body = [body.head, body.tail]
+      end
     end
 
-    term
+    new_body = fix_np_body!(body)
+
+    if new_body.size > 1 || !new_body.first.epos.np?
+      term.body = new_body
+    else
+      term.attr |= new_body.first.attr
+      term.body = new_body.first
+    end
+  end
+
+  # def fix_np_pair!(body : MtPair)
+  #   head, tail = body.head, body.tail
+
+  #   if !head.epos.noun?
+  #     body.flip = !head.attr.at_h?
+  #   elsif head.epos.nr?
+  #     body.flip = flip_noun_pair?(head, tail)
+  #   end
+
+  #   body
+  # end
+
+  private def flip_noun_pair?(head : MtTerm, tail : MtTerm)
+    return true unless tail.attr.sufx?
+    return tail.attr.at_h? unless tail.attr.nper?
+
+    tail.epos = MtEpos::NH
+
+    if defn = init_defn(tail.zstr, :NH)
+      tail.attr = defn.attr
+      tail.body = defn
+    end
+
+    tail.attr.at_h?
   end
 
   def fix_np_body!(orig : Array(MtTerm))
@@ -80,7 +115,7 @@ class MT::AiCore
       when .dp?
         noun = init_dp_np_pair(np_term: noun, dp_term: node)
       when .qp?
-        noun = pair_noun_qp(np_term: noun, qp_term: node)
+        noun = init_qp_np_pair(np_term: noun, qp_term: node)
       when .adjp?, .dnp?
         flip = !node.attr.at_h?
         noun = init_pair(head: node, tail: noun, epos: :NP, attr: attr, flip: flip)

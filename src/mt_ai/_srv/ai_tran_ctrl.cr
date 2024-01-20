@@ -1,4 +1,5 @@
 require "./_mt_ctrl_base"
+require "../data/m_cache"
 
 class MT::AiTranCtrl < AC::Base
   base "/_ai"
@@ -32,7 +33,7 @@ class MT::AiTranCtrl < AC::Base
 
   private def do_qtran(input : Array(String), pdict : String, m_alg : String, ch_rm : UInt32, debug = false)
     start = Time.monotonic
-    heads = [] of AiWord | Nil
+    heads = [] of MtTerm | Nil
 
     ch_rm.times do |index|
       title, split = TlChap.split(input[index])

@@ -1,8 +1,12 @@
 # require "./ai_term"
 
 class MT::AiCore
-  private def pair_noun_qp(np_term : MtTerm, qp_term : MtTerm)
+  private def init_qp_np_pair(np_term : MtTerm, qp_term : MtTerm)
     init_pair(head: qp_term, tail: np_term, epos: :NP, attr: np_term.attr) do
+      m_term = qp_term.find_by_epos(:M) || qp_term
+      pp [m_term, qp_term, np_term]
+      PairDict.m_n_pair.fix_if_match!(m_term, np_term)
+
       # TODO: split `OD`, fix `M` vstr
       MtPair.new(qp_term, np_term, flip: qp_term.attr.at_t?)
     end

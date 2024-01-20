@@ -2,7 +2,7 @@ require "json"
 require "./mt_defn"
 
 class MT::MtTerm
-  struct ::MT::MtPair
+  class ::MT::MtPair
     getter head : MtTerm
     getter tail : MtTerm
     property? flip : Bool
@@ -40,6 +40,10 @@ class MT::MtTerm
     end
   end
 
+  def body=(vstr : String)
+    @body = MtDefn.new(vstr, dnum: :Root2)
+  end
+
   def prepend!(term : self) : self
     case body = @body
     in MtDefn
@@ -62,11 +66,35 @@ class MT::MtTerm
     @from &+ @zstr.size
   end
 
+  def find_by_epos(epos : MtEpos)
+    case body = @body
+    in MtDefn
+      return self if epos == @epos
+    in MtTerm
+      body.epos == epos ? body : body.find_by_epos(epos)
+    in Array(MtTerm), MtPair
+      body.each do |child|
+        return child if child.epos == @epos
+        child.find_by_epos(epos).try { |found| return found }
+      end
+    end
+  end
+
+  ###
+
   def each_child(& : self ->)
     case body = @body
     when MtTerm
       yield body
-    when Array, MtPair
+    when MtPair
+      if body.flip?
+        yield body.tail
+        yield body.head
+      else
+        yield body.head
+        yield body.tail
+      end
+    when Array
       body.each { |term| yield term }
     end
   end

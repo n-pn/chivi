@@ -1,4 +1,4 @@
-require "./pg_term"
+require "./pg_defn"
 
 class MT::PgDict
   class_getter db : ::DB::Database = ZR_DB
@@ -33,12 +33,12 @@ class MT::PgDict
 
   @[AlwaysInline]
   def load_term(cpos : String, zstr : String)
-    ZvTerm.init(d_id: @d_id, cpos: cpos, zstr: zstr)
+    PgDefn.init(d_id: @d_id, cpos: cpos, zstr: zstr)
   end
 
   #######
 
-  def add_term(zterm : ZvTerm, fresh : Bool = true, persist : Bool = true)
+  def add_term(zterm : PgDefn, fresh : Bool = true, persist : Bool = true)
     @total += 1 if fresh
     @mtime = zterm.mtime
 
@@ -51,7 +51,7 @@ class MT::PgDict
     self.upsert! if persist
   end
 
-  def delete_term(zterm : ZvTerm, fresh : Bool = true, persist : Bool = true)
+  def delete_term(zterm : PgDefn, fresh : Bool = true, persist : Bool = true)
     # HashDict.delete_term(@name, zterm.zstr, zterm.ipos)
     # TrieDict.delete_term(@name, zterm.zstr)
 
@@ -61,7 +61,7 @@ class MT::PgDict
     return unless persist
 
     # MtData.delete(@d_id, zterm.ipos, zterm.zstr)
-    # ZvTerm.delete(@d_id, zterm.ipos, zterm.zstr)
+    # PgDefn.delete(@d_id, zterm.ipos, zterm.zstr)
 
     self.upsert!
   end
@@ -131,17 +131,17 @@ class MT::PgDict
   def self.count(kind : String) : Int32
     case kind
     when "wn"
-      query = "#{COUNT_SQL} where kind = #{DictKind::Wnovel.value}"
+      query = "#{COUNT_SQL} where kind = #{MtDtyp::Wnovel.value}"
     when "up"
-      query = "#{COUNT_SQL} where kind = #{DictKind::Userpj.value}"
+      query = "#{COUNT_SQL} where kind = #{MtDtyp::Userpj.value}"
     when "pd"
-      query = "#{COUNT_SQL} where kind = #{DictKind::Public.value}"
+      query = "#{COUNT_SQL} where kind = #{MtDtyp::Public.value}"
     when "qt"
-      query = "#{COUNT_SQL} where kind = #{DictKind::Userqt.value}"
-    when "tm"
-      query = "#{COUNT_SQL} where kind = #{DictKind::Themes.value}"
+      query = "#{COUNT_SQL} where kind = #{MtDtyp::Userqt.value}"
+    when "dm"
+      query = "#{COUNT_SQL} where kind = #{MtDtyp::Domain.value}"
     else
-      query = "#{COUNT_SQL} where kind < #{DictKind::Themes.value}"
+      query = "#{COUNT_SQL} where kind < #{MtDtyp::Domain.value}"
     end
 
     @@db.query_one(query, as: Int32)
@@ -153,19 +153,19 @@ class MT::PgDict
     when "up" then fetch_all(:userpj, limit, offset)
     when "qt" then fetch_all(:userqt, limit, offset)
     when "gd" then fetch_all(:public, limit, offset)
-    when "tm" then fetch_all(:themes, limit, offset)
+    when "dm" then fetch_all(:domain, limit, offset)
     else           fetch_all_core()
     end
   end
 
-  def self.fetch_all(kind : DictKind, limit = 50, offset = 0)
+  def self.fetch_all(kind : MtDtyp, limit = 50, offset = 0)
     self.get_all kind.value, limit, offset do |sql|
       sql << " where kind = $1 order by mtime desc, total desc limit $2 offset $3"
     end
   end
 
   def self.fetch_all_core
-    self.get_all(&.<< " where kind < #{DictKind::Themes.value} order by d_id asc")
+    self.get_all(&.<< " where kind < #{MtDtyp::Domain.value} order by d_id asc")
   end
 
   def self.init_wn_dict!(wn_id : Int32, bname : String, db = self.db)

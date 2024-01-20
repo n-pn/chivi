@@ -4,7 +4,7 @@ class MT::AiCore
   private def init_dp_np_pair(np_term : MtTerm, dp_term : MtTerm)
     init_pair(head: dp_term, tail: np_term, epos: :NP) do
       dt_term, qp_term = split_dp_term(dp_term, body: dp_term.body)
-      np_term = pair_noun_qp(np_term: np_term, qp_term: qp_term) if qp_term
+      np_term = init_qp_np_pair(np_term: np_term, qp_term: qp_term) if qp_term
       MtPair.new(dt_term, np_term, flip: !dt_term.attr.at_h?)
     end
   end

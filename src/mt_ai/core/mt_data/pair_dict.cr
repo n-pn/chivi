@@ -64,19 +64,18 @@ class MT::PairDict
 
     b_list.each do |b_zstr|
       next unless found = entry[b_zstr]?
-
-      a_node.set_vstr!(found.a_vstr)
+      a_node.body = found.a_vstr
 
       if a_attr = found.a_attr
-        a_node.set_attr!(a_attr)
+        a_node.attr = a_attr
       end
 
       if b_vstr = found.b_vstr
-        b_node.set_vstr!(b_vstr) if b_zstr == b_node.zstr
+        a_node.body = b_vstr if b_zstr == b_node.zstr
       end
 
       if b_attr = found.b_attr
-        b_node.add_attr!(b_attr)
+        b_node.attr |= b_attr
       end
 
       break
