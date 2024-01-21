@@ -1,98 +1,57 @@
-# require "crorm"
+require "crorm"
+require "../../_util/text_util"
 
-# require "../../rdapp/_raw/raw_rmchap"
+class ZR::Chinfo
+  class_getter init_sql = <<-SQL
+    CREATE TABLE IF NOT EXISTS chinfos(
+      ch_no int not null PRIMARY KEY,
+      ---
+      rlink text NOT NULL DEFAULT '',
+      spath text NOT NULL DEFAULT '',
+      --
+      ztitle text NOT NULL DEFAULT '',
+      zchdiv text NOT NULL DEFAULT '',
+      --
+      cksum text NOT NULL DEFAULT ''
+    );
+    SQL
 
-# class WN::OldChap
-#   include DB::Serializable
-#   include DB::Serializable::NonStrict
+  def self.db_path(sname : String, sn_id : String | Int32)
+    "var/zroot/chinfo/#{sname}/#{sn_id}.db3"
+  end
 
-#   property ch_no : Int32 # chaper index number
-#   property s_cid : Int32 # chapter fname in disk/remote
+  ###
 
-#   property title : String = "" # chapter title
-#   property chdiv : String = "" # volume name
+  include Crorm::Model
+  schema "chinfos", :sqlite, multi: true
 
-#   property vtitle : String = "" # translated title
-#   property vchdiv : String = "" # translated volume name
+  field ch_no : Int32, pkey: true
 
-#   property mtime : Int64 = 0   # last modification time
-#   property uname : String = "" # last modified by username
+  field rlink : String = "" # full remote chapter url
+  field spath : String = "" # "#{sname}/#{sn_id}/#{sc_id}"
 
-#   property c_len : Int32 = 0 # chars count
-#   property p_len : Int32 = 0 # parts count
+  field ztitle : String = "" # chapter title name
+  field zchdiv : String = "" # chapter chdivision (volume) name
 
-#   property _path : String = "" # file locator
-#   property _flag : Int32 = 0   # marking states
+  field cksum : String = "" # checksum when saved
 
-# end
+  def initialize(@ch_no, @rlink, @spath, @ztitle, @zchdiv)
+  end
 
-# class WN::Chinfo
-#   OLDER_DIR = "/2tb/app.chivi/var/zchap/infos"
+  def create!(db)
+    query = @@schema.upsert_stmt(keep_fields: %w[ch_no, rlink, spath, ztitle zchdiv])
+    self.upsert(query, db: db)
+  end
 
-#   def self.import_old!(repo, sname : String, sn_id : String) : Bool
-#     db_paths = {
-#       "#{OLDER_DIR}/#{sname}/#{sn_id}.db",
-#       "#{OLDER_DIR}/#{sname}/#{sn_id}.db.old",
-#       "#{OLDER_DIR}/#{sname}/#{sn_id}-infos.db",
-#       "#{OLDER_DIR}/#{sname}/#{sn_id}-infos.db.old",
-#     }
+  def inspect(io : IO)
+    {@ch_no, @spath, @ztitle, @zchdiv, @rlink}.join(io, '\t')
+  end
 
-#     db_paths.each do |db_path|
-#       next unless File.file?(db_path)
+  def txt_path
+    "var/zroot/rawtxt/#{@spath}-#{@cksum}-#{@ch_no}.txt"
+  end
 
-#       old_chaps = DB.open("sqlite3:#{db_path}?immutable=1") do |db|
-#         query = "select * from chaps where ch_no > 0 order by ch_no asc"
-#         db.query_all(query, as: OldChap)
-#       end
-
-#       next if old_chaps.empty?
-
-#       new_chaps = old_chaps.map { |old_chap| self.from(old_chap, sname, sn_id) }
-#       repo.open_tx { |db| new_chaps.each(&.upsert!(db: db)) }
-
-#       break
-#     end
-
-#     true
-#   end
-
-#   def self.from(old_chap : OldChap, sname : String, sn_id : String)
-#     new_chap = Chinfo.new(ch_no: old_chap.ch_no)
-#     new_chap.mtime = old_chap.mtime
-#     new_chap.uname = old_chap.uname
-
-#     new_chap.ztitle = CharUtil.to_canon(old_chap.title)
-#     new_chap.zchdiv = CharUtil.to_canon(old_chap.chdiv)
-
-#     new_chap.vtitle = old_chap.vtitle
-#     new_chap.vchdiv = old_chap.vchdiv
-
-#     case xpath = old_chap._path
-#     when ""
-#       if Rmhost.remote?(sname)
-#         new_chap.spath = "#{sname}/#{sn_id}/#{old_chap.s_cid}"
-#         new_chap.rlink = Rmhost.chap_url(sname, sn_id, old_chap.s_cid)
-#       end
-#     when .starts_with?('!')
-#       sname, sn_id, s_cid = xpath.split(/[\/:]/)
-#       sname = SeedUtil.fix_sname(sname)
-
-#       new_chap.spath = "#{sname}/#{sn_id}/#{s_cid}"
-#       new_chap.rlink = Rmhost.chap_url(sname, sn_id, s_cid) if Rmhost.remote?(sname)
-#     when .starts_with?('/')
-#       new_chap.spath = "#{sname}/#{sn_id}/#{old_chap.s_cid}"
-#       new_chap.rlink = Rmhost.chap_url(sname, sn_id, old_chap.s_cid)
-#     when .starts_with?("http")
-#       uri = URI.parse(xpath)
-#       host = Rmhost.from_host!(uri.host.as(String)) rescue nil
-
-#       if host
-#         new_chap.rlink = xpath
-#         sn_id, s_cid = host.extract_ids(uri.path.as(String))
-#         new_chap.spath = "#{host.seedname}/#{sn_id}/#{s_cid}"
-#       end
-#     end
-
-#     new_chap
-#   end
-# end
+  def saved?
+    File.file?(txt_path)
+  end
+end

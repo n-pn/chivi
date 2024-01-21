@@ -1,7 +1,7 @@
 require "sqlite3"
 require "crorm/model"
 
-class ZR::Author
+class WN::Author
   class_getter db_path = "var/zroot/global/authors.db3"
 
   class_getter init_sql = <<-SQL

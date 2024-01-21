@@ -6,7 +6,7 @@
 
 # require "../_raw/raw_rmbook"
 
-# class RD::Rmbook
+# class WN::Rmbook
 #   class_getter init_sql = <<-SQL
 #     CREATE TABLE rmbooks(
 #       id text NOT NULL PRIMARY KEY,

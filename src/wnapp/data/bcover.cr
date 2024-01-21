@@ -2,9 +2,9 @@ require "http/client"
 require "crorm"
 
 # require "../_util/r2_client"
-require "../_util/hash_util"
+require "../../_util/hash_util"
 
-class ZR::Bcover
+class WN::Bcover
   class_getter db_path = "var/zroot/global/bcovers.db3"
 
   class_getter init_sql = <<-SQL

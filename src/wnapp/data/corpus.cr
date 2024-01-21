@@ -1,8 +1,8 @@
 require "crorm"
-require "../_util/hash_util"
-require "../_util/char_util"
+require "../../_util/hash_util"
+require "../../_util/char_util"
 
-class ZR::Corpus
+class WN::Corpus
   @[AlwaysInline]
   def self.line_cksum(line : String | Char, prev : UInt64 = HashUtil::BASIS_64)
     HashUtil.fnv_1a_64(line, prev)

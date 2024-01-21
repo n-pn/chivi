@@ -6,7 +6,7 @@ require "../_raw/raw_ysbook"
 # require "./author"
 # require "./btitle"
 
-class RD::Ysbook
+class WN::Ysbook
   class_getter db_path = "var/zroot/ysbooks.db3"
 
   class_getter init_sql = <<-SQL
