@@ -74,7 +74,7 @@ class MT::AiCore
       case node.epos
       when .noun?
         flip = flip_noun_pair?(head: node, tail: noun)
-        noun = init_pair(head: node, tail: noun, epos: :NN, attr: attr, flip: flip)
+        noun = init_pair_node(head: node, tail: noun, epos: :NN, attr: attr, flip: flip)
         _pos &-= 1
       when .adjp?
         # if current node is short modifier
@@ -83,7 +83,7 @@ class MT::AiCore
 
         # combine the noun list for phrase translation
         flip = !node.attr.at_h?
-        noun = init_pair(head: node, tail: noun, epos: :NN, attr: attr, flip: flip)
+        noun = init_pair_node(head: node, tail: noun, epos: :NN, attr: attr, flip: flip)
       when .pu?
         # FIXME: check error in this part
         break if _pos == 0 || node.zstr[0] != '、'
@@ -109,19 +109,19 @@ class MT::AiCore
     while node = orig[_pos]?
       case node.epos
       when .od?, .cp?, .ip?, .lcp?
-        noun = init_pair(head: node, tail: noun, epos: :NP, attr: attr, flip: true)
+        noun = init_pair_node(head: node, tail: noun, epos: :NP, attr: attr, flip: true)
       when .cd?, .clp?
-        noun = init_pair(head: node, tail: noun, epos: :NP, attr: attr, flip: false)
+        noun = init_pair_node(head: node, tail: noun, epos: :NP, attr: attr, flip: false)
       when .dp?
         noun = init_dp_np_pair(np_term: noun, dp_term: node)
       when .qp?
         noun = init_qp_np_pair(np_term: noun, qp_term: node)
       when .adjp?, .dnp?
         flip = !node.attr.at_h?
-        noun = init_pair(head: node, tail: noun, epos: :NP, attr: attr, flip: flip)
+        noun = init_pair_node(head: node, tail: noun, epos: :NP, attr: attr, flip: flip)
       when .pn?
         at_h = pron_at_head?(pron: node, noun: noun)
-        noun = init_pair(head: node, tail: noun, epos: :NP, attr: attr, flip: !at_h)
+        noun = init_pair_node(head: node, tail: noun, epos: :NP, attr: attr, flip: !at_h)
       else
         break
       end

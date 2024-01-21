@@ -2,9 +2,9 @@
 
 class MT::AiCore
   private def init_qp_np_pair(np_term : MtNode, qp_term : MtNode)
-    init_pair(head: qp_term, tail: np_term, epos: :NP, attr: np_term.attr) do
+    init_pair_node(head: qp_term, tail: np_term, epos: :NP, attr: np_term.attr) do
       m_term = qp_term.find_by_epos(:M) || qp_term
-      pp [m_term, qp_term, np_term]
+      # pp [m_term, qp_term, np_term]
       PairDict.m_n_pair.fix_if_match!(m_term, np_term)
 
       # TODO: split `OD`, fix `M` vstr

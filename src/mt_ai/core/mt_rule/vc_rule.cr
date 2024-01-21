@@ -3,12 +3,10 @@
 class MT::AiCore
   def fix_dvp_node!(node : MtNode, body : MtPair)
     # TODO
-    # pp [lhsn, rhsn]
   end
 
   def fix_dvp_pair!(node : MtNode, body : MtPair)
     # TODO
-    # pp [lhsn, rhsn]
   end
 
   def fix_vcd_pair!(node : MtNode, body : MtPair)
