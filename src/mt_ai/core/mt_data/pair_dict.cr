@@ -1,6 +1,6 @@
 require "../../base/*"
 require "../../data/pg_pair"
-require "./mt_term"
+require "./mt_node"
 
 class MT::PairDict
   struct Item
@@ -53,7 +53,7 @@ class MT::PairDict
     b_list.each { |b_zstr| entry[b_zstr]?.try { |x| return x } }
   end
 
-  def fix_if_match!(a_node : MtTerm, b_node : MtTerm, b_stem = b_node.zstr) : Nil
+  def fix_if_match!(a_node : MtNode, b_node : MtNode, b_stem = b_node.zstr) : Nil
     return unless entry = @hash[a_node.zstr]?
 
     if b_stem.size > 1

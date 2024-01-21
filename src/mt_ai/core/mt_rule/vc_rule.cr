@@ -1,31 +1,35 @@
-# require "./ai_term"
+# require "./ai_node"
 
 class MT::AiCore
-  def fix_dvp_pair!(term : MtTerm, body : MtPair)
+  def fix_dvp_node!(node : MtNode, body : MtPair)
     # TODO
     # pp [lhsn, rhsn]
   end
 
-  def fix_vcd_pair!(term : MtTerm, body : MtPair)
+  def fix_dvp_pair!(node : MtNode, body : MtPair)
+    # TODO
+    # pp [lhsn, rhsn]
+  end
+
+  def fix_vcd_pair!(node : MtNode, body : MtPair)
     head, tail = body.head, body.tail
     PairDict.v_v_pair.fix_if_match!(tail, head)
   end
 
-  def fix_vcp_pair!(term : MtTerm, body : MtPair)
+  def fix_vcp_pair!(node : MtNode, body : MtPair)
     head, tail = body.head, body.tail
 
     PairDict.v_c_pair.fix_if_match!(tail, head)
   end
 
-  def fix_vrd_pair!(term : MtTerm, body : MtPair)
+  def fix_vrd_pair!(node : MtNode, body : MtPair)
     head, tail = body.head, body.tail
 
     # head.find_by_epos(:AS).try(&.add_attr!(MtAttr[Asis, Hide]))
     PairDict.v_c_pair.fix_if_match!(tail, head)
   end
 
-
-  def fix_vnv_pair!(term : MtTerm, body : MtPair)
+  def fix_vnv_pair!(node : MtNode, body : MtPair)
     head, tail = body.head, body.tail
     fix_vnv_head!(head)
 
@@ -37,7 +41,7 @@ class MT::AiCore
     end
   end
 
-  def fix_vnv_term!(term : MtTerm, body : Array(MtTerm))
+  def fix_vnv_node!(node : MtNode, body : Array(MtNode))
     return unless body.size > 2
     head, infix, tail = body
 
@@ -47,21 +51,21 @@ class MT::AiCore
     when "没", "不"
       infix.body = "không"
       tail.body = "hay"
-      term.body = [head, tail, infix]
+      node.body = [head, tail, infix]
     when "一"
       infix.vstr = "thử"
     end
   end
 
-
-  def fix_vnv_head!(head : MtTerm) : Nil
+  def fix_vnv_head!(head : MtNode) : Nil
     case head.zstr
     when "是" then head.body = "phải"
     when "会" then head.body = "biết"
     end
   end
 
-
-
-
+  def fix_vpt_node!(node : MtNode, body : Array(MtNode))
+    return unless tail = body[2]?
+    tail.body = "nổi" if tail.zstr == "住"
+  end
 end

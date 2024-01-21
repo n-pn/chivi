@@ -18,7 +18,7 @@ class MT::AiCore
     @name_qt = QtCore.new(MtDict.hv_name(pdict))
   end
 
-  def translate!(data : RawCon, prfx : MtTerm)
+  def translate!(data : RawCon, prfx : MtNode)
     root = init_node(data, from: prfx.upto)
     root.prepend!(prfx)
   end

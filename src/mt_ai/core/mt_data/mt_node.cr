@@ -1,16 +1,16 @@
 require "json"
 require "./mt_defn"
 
-class MT::MtTerm
+class MT::MtNode
   class ::MT::MtPair
-    getter head : MtTerm
-    getter tail : MtTerm
+    getter head : MtNode
+    getter tail : MtNode
     property? flip : Bool
 
     def initialize(@head, @tail, @flip = false)
     end
 
-    def each(& : MtTerm ->)
+    def each(& : MtNode ->)
       if @flip
         yield @tail
         yield @head
@@ -35,7 +35,7 @@ class MT::MtTerm
     when MtDefn
       @epos = body.fpos unless body.fpos.x?
       @attr |= body.attr
-    when MtTerm
+    when MtNode
       @attr |= body.attr
     end
   end
@@ -47,13 +47,13 @@ class MT::MtTerm
   def prepend!(term : self) : self
     case body = @body
     in MtDefn
-      frag = MtTerm.new(body, zstr: @zstr, epos: :FRAG, from: @from)
+      frag = MtNode.new(body, zstr: @zstr, epos: :FRAG, from: @from)
       @body = MtPair.new(term, frag)
-    in MtTerm
+    in MtNode
       @body = MtPair.new(term, body)
     in MtPair
       @body = [term, body.head, body.tail]
-    in Array(MtTerm)
+    in Array(MtNode)
       body.unshift(term)
     end
 
@@ -70,9 +70,9 @@ class MT::MtTerm
     case body = @body
     in MtDefn
       return self if epos == @epos
-    in MtTerm
+    in MtNode
       body.epos == epos ? body : body.find_by_epos(epos)
-    in Array(MtTerm), MtPair
+    in Array(MtNode), MtPair
       body.each do |child|
         return child if child.epos == @epos
         child.find_by_epos(epos).try { |found| return found }
@@ -84,7 +84,7 @@ class MT::MtTerm
 
   def each_child(& : self ->)
     case body = @body
-    when MtTerm
+    when MtNode
       yield body
     when MtPair
       if body.flip?
@@ -110,7 +110,7 @@ class MT::MtTerm
     when MtDefn
       io << ' ' unless @attr.undent?(und: und)
       @attr.render_vstr(io, body.vstr, cap: cap, und: und)
-    when MtTerm
+    when MtNode
       body.to_txt(io, cap: cap, und: und)
     else
       self.each_child { |term| cap, und = term.to_txt(io, cap: cap, und: und) }
@@ -156,7 +156,7 @@ class MT::MtTerm
       io << ' ' << @attr.colorize.light_gray unless @attr.none?
       io << ' ' << @zstr.colorize.dark_gray
       io << ' ' << body.vstr.colorize(COLORS[body.dnum.value % 10])
-    when MtTerm
+    when MtNode
       io << ' '
       body.inspect(io: io, deep: deep)
     when MtPair

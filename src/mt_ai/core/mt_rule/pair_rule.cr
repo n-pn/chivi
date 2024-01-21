@@ -1,7 +1,7 @@
 # require "./ai_term"
 
 class MT::AiCore
-  private def fix_mt_pair!(term : MtTerm, body : MtPair) : Nil
+  private def fix_mt_pair!(term : MtNode, body : MtPair) : Nil
     case term.epos
     when .dnp? then fix_dnp_pair!(term, body)
     when .dvp? then fix_dvp_pair!(term, body)
@@ -17,7 +17,7 @@ class MT::AiCore
     end
   end
 
-  def fix_vp_pair!(term : MtTerm, body : MtPair) : Nil
+  def fix_vp_pair!(term : MtNode, body : MtPair) : Nil
     head, tail = body.head, body.tail
 
     case tail.epos
@@ -29,7 +29,7 @@ class MT::AiCore
     end
   end
 
-  def fix_qp_pair!(term : MtTerm, body : MtPair) : Nil
+  def fix_qp_pair!(term : MtNode, body : MtPair) : Nil
     head, tail = body.head, body.tail
     body.flip = head.epos.od? || tail.zstr.includes?('之')
   end

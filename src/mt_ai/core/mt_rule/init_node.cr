@@ -1,29 +1,29 @@
 require "./_base"
 
 class MT::AiCore
-  private def init_node(data : RawCon, from : Int32 = 0) : MtTerm
+  private def init_node(data : RawCon, from : Int32 = 0) : MtNode
     zstr, orig = data.zstr, data.body
     epos, attr = MtEpos.parse_ctb(data.cpos, zstr)
 
     match_pos, match_any = @mt_dict.get_defn?(zstr, epos)
 
     if match_pos
-      return MtTerm.new(body: match_pos, zstr: zstr, epos: epos, attr: attr, from: from)
+      return MtNode.new(body: match_pos, zstr: zstr, epos: epos, attr: attr, from: from)
     end
 
     if match_any && (orig.is_a?(String) || (orig.size > 1 && epos.can_use_alt?))
       body = match_any.as_any
-      return MtTerm.new(body: body, zstr: zstr, epos: epos, attr: attr, from: from)
+      return MtNode.new(body: body, zstr: zstr, epos: epos, attr: attr, from: from)
     end
 
     if orig.is_a?(String)
       vstr = translate_str(zstr, epos)
       body = @mt_dict.add_temp(zstr, vstr, attr, epos)
-      return MtTerm.new(body: body, zstr: zstr, epos: epos, attr: attr, from: from)
+      return MtNode.new(body: body, zstr: zstr, epos: epos, attr: attr, from: from)
     end
 
     body = init_body(epos: epos, orig: orig, from: from)
-    term = MtTerm.new(body, zstr: zstr, epos: epos, attr: attr, from: from)
+    term = MtNode.new(body, zstr: zstr, epos: epos, attr: attr, from: from)
 
     case
     when epos.np?
@@ -37,14 +37,14 @@ class MT::AiCore
     term
   end
 
-  private def init_pair(head : MtTerm, tail : MtTerm,
+  private def init_pair(head : MtNode, tail : MtNode,
                         epos : MtEpos, attr : MtAttr = tail.attr,
                         zstr = "#{head.zstr}#{tail.zstr}", &)
     body = init_defn(zstr, epos: epos, attr: attr) || yield
-    MtTerm.new(body: body, zstr: zstr, epos: epos, attr: attr, from: head.from)
+    MtNode.new(body: body, zstr: zstr, epos: epos, attr: attr, from: head.from)
   end
 
-  private def init_pair(head : MtTerm, tail : MtTerm,
+  private def init_pair(head : MtNode, tail : MtNode,
                         epos : MtEpos, attr : MtAttr = tail.attr,
                         zstr = "#{head.zstr}#{tail.zstr}", flip : Bool = false)
     init_pair(head: head, tail: tail, epos: epos, attr: attr, zstr: zstr) do
@@ -52,7 +52,7 @@ class MT::AiCore
     end
   end
 
-  private def init_term(list : Array(MtTerm),
+  private def init_term(list : Array(MtNode),
                         epos : MtEpos, attr : MtAttr = :none,
                         zstr = list.join(&.zstr), from = list[0].from)
     body = init_defn(zstr, epos, attr) || begin
@@ -63,7 +63,7 @@ class MT::AiCore
       end
     end
 
-    MtTerm.new(body: body, zstr: zstr, epos: epos, attr: attr, from: from)
+    MtNode.new(body: body, zstr: zstr, epos: epos, attr: attr, from: from)
   end
 
   def init_defn(zstr : String, epos : MtEpos, attr : MtAttr = :none)
@@ -85,7 +85,7 @@ class MT::AiCore
       return MtPair.new(head, tail)
     end
 
-    list = [] of MtTerm
+    list = [] of MtNode
     _idx = 0
     _max = orig.size
 
@@ -104,7 +104,7 @@ class MT::AiCore
       if _idx == _max && list.empty?
         list = inner_list
       else
-        node = MtTerm.new(
+        node = MtNode.new(
           body: inner_list,
           zstr: inner_list.join(&.zstr),
           epos: inner_list[1].epos,
@@ -133,14 +133,14 @@ class MT::AiCore
   }
 
   @[AlwaysInline]
-  private def get_pu_match(node : MtTerm)
+  private def get_pu_match(node : MtNode)
     return unless node.epos.pu?
     MATCH_PUNCT[node.zstr[0]]?
   end
 
-  private def group_pu_match(orig : Array(RawCon), head : MtTerm,
+  private def group_pu_match(orig : Array(RawCon), head : MtNode,
                              epos : MtEpos, match_pu : Char, _idx = 1)
-    inner_list = [] of MtTerm
+    inner_list = [] of MtNode
 
     from = head.upto
     _max = orig.size
@@ -163,7 +163,7 @@ class MT::AiCore
       zstr = inner_list.join(&.zstr)
       epos = MtEpos::IP if inner_list.last.epos.pu?
       defn, dalt = @mt_dict.get_defn?(zstr, epos)
-      inner = MtTerm.new(body: defn || dalt || inner_list, zstr: zstr, epos: epos, from: inner_list.first.from)
+      inner = MtNode.new(body: defn || dalt || inner_list, zstr: zstr, epos: epos, from: inner_list.first.from)
     else
       inner = inner_list.first
     end

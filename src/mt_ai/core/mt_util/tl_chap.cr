@@ -1,6 +1,6 @@
 # require "./_utils"
 require "./tl_unit"
-require "../mt_data/mt_term"
+require "../mt_data/mt_node"
 
 module MT::TlChap
   LBLS = {
@@ -43,7 +43,7 @@ module MT::TlChap
     vi_ch += ':' unless title.empty?
 
     defn = MtDefn.new(vstr: vi_ch, attr: :capn, dnum: :root2, fpos: :LST)
-    node = MtTerm.new(body: defn, epos: :LST, zstr: zh_ch, from: 0)
+    node = MtNode.new(body: defn, epos: :LST, zstr: zh_ch, from: 0)
 
     {title, node}
   end

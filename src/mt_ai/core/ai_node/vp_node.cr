@@ -1,5 +1,3 @@
-require "./ai_node"
-
 class MT::VpNode
   include AiNode
 

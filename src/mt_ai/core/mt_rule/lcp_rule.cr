@@ -1,7 +1,7 @@
 # require "./ai_term"
 
 class MT::AiCore
-  def fix_lcp_pair!(term : MtTerm, body : MtPair) : Nil
+  def fix_lcp_pair!(term : MtNode, body : MtPair) : Nil
     head, tail = body.head, body.tail
 
     case tail.zstr

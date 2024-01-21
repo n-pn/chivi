@@ -1,8 +1,8 @@
 # require "./ai_term"
 
 class MT::AiCore
-  def fix_np_term!(term : MtTerm, body = term.body) : Nil
-    return if body.is_a?(MtDefn) || body.is_a?(MtTerm)
+  def fix_np_term!(term : MtNode, body = term.body) : Nil
+    return if body.is_a?(MtDefn) || body.is_a?(MtNode)
 
     if body.is_a?(MtPair)
       if body.head.epos.nr?
@@ -35,7 +35,7 @@ class MT::AiCore
   #   body
   # end
 
-  private def flip_noun_pair?(head : MtTerm, tail : MtTerm)
+  private def flip_noun_pair?(head : MtNode, tail : MtNode)
     return true unless tail.attr.sufx?
     return tail.attr.at_h? unless tail.attr.nper?
 
@@ -49,8 +49,8 @@ class MT::AiCore
     tail.attr.at_h?
   end
 
-  def fix_np_body!(orig : Array(MtTerm))
-    body = [] of MtTerm
+  def fix_np_body!(orig : Array(MtNode))
+    body = [] of MtNode
     _pos = orig.size &- 1
 
     while term = orig[_pos]?
@@ -67,7 +67,7 @@ class MT::AiCore
     body
   end
 
-  def init_nn_term(orig : Array(MtTerm), noun : MtTerm, _pos = orig.size - 2)
+  def init_nn_term(orig : Array(MtNode), noun : MtNode, _pos = orig.size - 2)
     attr = noun.attr.turn_off(MtAttr[Sufx, Undb])
 
     while node = orig[_pos]?
@@ -103,7 +103,7 @@ class MT::AiCore
     {noun, _pos}
   end
 
-  def init_np_term(orig : Array(MtTerm), noun : MtTerm, _pos : Int32 = orig.size - 2)
+  def init_np_term(orig : Array(MtNode), noun : MtNode, _pos : Int32 = orig.size - 2)
     attr = noun.attr.turn_off(MtAttr[Sufx, Undb])
 
     while node = orig[_pos]?
@@ -132,7 +132,7 @@ class MT::AiCore
     {noun, _pos}
   end
 
-  private def pron_at_head?(pron : MtTerm, noun : MtTerm)
+  private def pron_at_head?(pron : MtNode, noun : MtNode)
     true
   end
 end

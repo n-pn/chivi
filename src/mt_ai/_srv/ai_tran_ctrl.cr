@@ -33,7 +33,7 @@ class MT::AiTranCtrl < AC::Base
 
   private def do_qtran(input : Array(String), pdict : String, m_alg : String, ch_rm : UInt32, debug = false)
     start = Time.monotonic
-    heads = [] of MtTerm | Nil
+    heads = [] of MtNode | Nil
 
     ch_rm.times do |index|
       title, split = TlChap.split(input[index])

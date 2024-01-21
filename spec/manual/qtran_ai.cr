@@ -9,7 +9,7 @@ input = [
 ]
 
 ch_rm = 1
-cheads = [] of MT::MtTerm | Nil
+cheads = [] of MT::MtNode | Nil
 
 ch_rm.times do |index|
   title, split = MT::TlChap.split(input[index])

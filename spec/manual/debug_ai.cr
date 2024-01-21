@@ -19,7 +19,7 @@ def debug(text : String, dict = "combine")
   # puts data.to_json.colorize.cyan
 end
 
-text = ARGV[0]? || "(TOP (IP (NP (NP (OD 第１０３) (CLP (M 章)) (NP (NR 长河)))) (VP (VV 决堤))))"
+text = ARGV[0]? || "(TOP (NP (QP (CD 两) (CLP (M 个))) (NP (NN 手掌)))))"
 dict = ARGV[1]? || "up1234"
 
 debug(text, dict)

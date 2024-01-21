@@ -1,7 +1,7 @@
 # require "./ai_term"
 
 class MT::AiCore
-  def fix_dnp_pair!(term : MtTerm, body : MtPair)
+  def fix_dnp_pair!(term : MtNode, body : MtPair)
     head, tail = body.head, body.tail
 
     if head.attr.at_h?
