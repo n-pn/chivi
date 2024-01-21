@@ -55,8 +55,9 @@ class SP::QtData
   }
 
   def quota_using(type : String, opts : String = "")
-    base = @lines.sum(&.size) + @lines.size
-    MULTP_MAP[type]?.try { |x| x * base } || base // 2
+    wcount = @lines.sum(&.size) + @lines.size
+    charge = MULTP_MAP[type]?.try { |x| x * wcount } || wcount // 2
+    {wcount, charge}
   end
 
   def get_vtran(type : String, opts : String = "", redo : Bool = false)

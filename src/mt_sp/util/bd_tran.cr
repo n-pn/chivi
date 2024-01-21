@@ -19,11 +19,11 @@ module SP::BdTran
       qcSettings: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"],
     }.to_json
 
-    headers = HttpUtil.make_headers(WEB_URL, content_type: "application/json")
+    headers = HttpUtil.gen_headers(WEB_URL, content_type: "application/json")
 
     retry.times do |i|
       proxy = HttpProxy.pick_one
-      client = HttpUtil.make_client(WEB_URI)
+      client = HttpUtil.http_client(WEB_URI)
 
       res = client.post("/ait/text/translate", headers: headers, body: body)
       res_body = res.body

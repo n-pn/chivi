@@ -1,5 +1,6 @@
 require "../../mt_ai/core/qt_core"
 require "../../_data/member/uquota"
+require "../../_data/member/xquota"
 
 require "./_sp_ctrl_base"
 require "../util/*"
@@ -24,8 +25,16 @@ class SP::TranCtrl < AC::Base
     do_translate(qdata, type, opts, redo)
   end
 
+  LOG_DIR = "var/ulogs/xquota"
+  Dir.mkdir_p(LOG_DIR)
+
   private def do_translate(qdata : QtData, type : String, opts = "", redo = false)
     sleep 10.milliseconds * (1 << (4 - self._privi))
+
+    wcount, charge = qdata.quota_using(type, opts)
+
+    quota = Uquota.load(self._vu_id)
+    quota.add_using!(wcount)
 
     if type.starts_with?("mtl_")
       vdata, mtime = qdata.get_mtran(type, opts: opts, redo: redo)
@@ -33,8 +42,25 @@ class SP::TranCtrl < AC::Base
       vdata, mtime = qdata.get_vtran(type, opts: opts, redo: redo)
     end
 
-    quota = Uquota.load(self._vu_id)
-    quota.add_using!(qdata.quota_using(type, opts))
+    spawn do
+      time_now = Time.local
+      log_file = "#{LOG_DIR}/#{time_now.to_s("%F")}.log"
+      File.open(log_file, "a") do |file|
+        JSON.build(file) do |jb|
+          jb.object do
+            jb.field "uname", self._uname
+            jb.field "vu_ip", self.client_ip
+            jb.field "mtime", time_now.to_unix
+            jb.field "charge", charge
+            jb.field "wcount", wcount
+            jb.field "type", type
+            jb.field "orig", request.headers["Referer"]? || ""
+          end
+        end
+
+        file.puts
+      end
+    end
 
     response.headers["ETag"] = mtime.to_s
     response.headers["X-Quota"] = quota.quota_limit.to_s
