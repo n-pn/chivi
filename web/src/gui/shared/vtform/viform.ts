@@ -147,7 +147,7 @@ export class Viform {
   //   return req_privi(this.dic, this.tab)
   // }
 
-  toJSON(ropts: CV.Rdopts, vtree: string) {
+  toJSON(ropts: Partial<CV.Rdopts>, vtree: string) {
     return {
       zstr: this.zstr,
       vstr: this.vstr,

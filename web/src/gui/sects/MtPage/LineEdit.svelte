@@ -175,6 +175,7 @@
         {@html render_rawtxt(newtxt)}
       </div>
 
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
       <text-area
         class="overlay"
         bind:this={overlay}

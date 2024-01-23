@@ -1,3 +1,5 @@
+declare const Buffer
+
 const BASIS_32 = 0x811c9dc5n
 const PRIME_32 = 16777619n
 const MASK_32 = 4294967295n

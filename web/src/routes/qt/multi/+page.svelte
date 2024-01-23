@@ -136,10 +136,6 @@
     margin: 0.75rem 0;
   }
 
-  h1 {
-    margin-bottom: 0.75rem;
-  }
-
   .input {
     @include flex;
     // gap: 0.5rem;

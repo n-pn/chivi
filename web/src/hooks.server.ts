@@ -39,8 +39,6 @@ export const handleFetch = (({ event, request, fetch }) => {
   url.host = host
   url.protocol = 'http'
 
-  // request.headers.delete('connection')
-  // return fetch(new Request(url, request))
   const { method, headers, body } = request
 
   headers.set('cookie', event.request.headers.get('cookie'))
@@ -56,8 +54,23 @@ export const handleError = (({ event, error }) => {
 
 const session_url = `http://${api_hosts._db}/_db/_self`
 
+const cached_users = new Map<string, App.CurrentUser>()
+
 async function getSession(event: RequestEvent): Promise<App.CurrentUser> {
-  const req_init = { headers: { cookie: event.request.headers.get('cookie') } }
+  const cookie = event.request.headers.get('cookie')
+  const cached_user = cached_users.get(cookie)
+
+  if (cached_user && cached_user.until > new Date().getTime() / 1000) {
+    return cached_user
+  }
+
+  const req_init = { headers: { cookie } }
   const response = await globalThis.fetch(session_url, req_init)
-  return (await response.json()) as App.CurrentUser
+
+  const user = (await response.json()) as App.CurrentUser
+  const max_until = Math.floor(new Date().getTime() / 1000) + 1800
+  if (!user.until || user.until > max_until) user.until = max_until
+
+  cached_users.set(cookie, user)
+  return user
 }

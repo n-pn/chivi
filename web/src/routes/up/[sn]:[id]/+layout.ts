@@ -8,12 +8,11 @@ interface UpstemShow {
   rmemo: CV.Rdmemo
 }
 
-export const load = (async ({ fetch, params, depends }) => {
+export const load = (async ({ fetch, params }) => {
   const sname = params.sn
   const up_id = +params.id
 
   const sroot = `/up/${sname}:${up_id}`
-  depends(sroot)
 
   const rdurl = `/_rd/tsrepos/up${sname}/${up_id}`
   const { xstem: ustem, rmemo, crepo } = await api_get<UpstemShow>(rdurl, fetch)

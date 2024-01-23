@@ -139,11 +139,13 @@
 
   <section class="input" bind:this={viewer}>
     <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="input-nav _zh" on:click={handle_click} lang="zh">
       {@html zh_html}
     </div>
 
     <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="input-nav _hv" on:click={handle_click}>
       {@html hv_html}
     </div>
@@ -210,7 +212,7 @@
       background: linear-gradient(to top, var(--color) 0.75px, transparent 0);
     }
 
-    &.focus {
+    &:global(.focus) {
       color: var(--color);
     }
   }

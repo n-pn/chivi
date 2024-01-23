@@ -135,7 +135,7 @@
   }
 
   async function apply_gtran() {
-    $entry.match = await gtran_text($ztext.substring(lower, upper), 1)[0]
+    $entry.match = await gtran_text($ztext.substring(lower, upper))[0]
     match_elem.focus()
   }
 </script>
@@ -202,6 +202,7 @@
       <tlspec-hanzi bind:this={hanzi_elem}>
         {#each Array.from($ztext) as char, index}
           <!-- svelte-ignore a11y-click-events-have-key-events -->
+          <!-- svelte-ignore a11y-no-static-element-interactions -->
           <x-z
             class:active={index >= lower && index < upper}
             on:click={() => change_focus(index)}>{char}</x-z>

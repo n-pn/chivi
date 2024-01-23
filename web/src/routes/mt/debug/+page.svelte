@@ -16,7 +16,7 @@
     wn_id: 0,
   }
 
-  $: rpage = new Rdpage(ztext, ropts)
+  $: rpage = new Rdpage(ztext)
 
   const call_debug = async () => {
     await rpage.load_hviet(2)
@@ -82,7 +82,7 @@
 
       <div class="cdata debug _hv">
         {#each rpage.lines || [] as rline}
-          {@html rline.mt_ai_html}
+          {@html rline.mtran_html(ropts.mt_rm)}
         {/each}
       </div>
 
@@ -179,7 +179,6 @@
     // display: flex;
     gap: 0.75rem;
 
-    input,
     textarea {
       width: 100%;
     }

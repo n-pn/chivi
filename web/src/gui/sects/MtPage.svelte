@@ -265,9 +265,4 @@
       }
     }
   }
-
-  .v2 {
-    // margin-top: -1rem;
-    @include fgcolor(teal, 6);
-  }
 </style>

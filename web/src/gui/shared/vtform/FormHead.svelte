@@ -173,10 +173,6 @@
       @include border(--bd-soft, $loc: right);
     }
 
-    &._hide {
-      @include bps(display, none, $pl: inline-block);
-    }
-
     &:hover {
       // @include bgcolor(tert);
       @include fgcolor(primary, 5);

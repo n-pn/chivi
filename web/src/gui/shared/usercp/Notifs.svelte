@@ -56,20 +56,6 @@
 </Slider>
 
 <style lang="scss">
-  .label {
-    @include flex-cy();
-    gap: 0.25rem;
-
-    // padding-left: 0.25rem;
-    margin-bottom: 0.75rem;
-    // margin: 0.25rem 0;
-
-    // line-height: 2.25rem;
-    font-weight: 500;
-
-    @include fgcolor(tert);
-  }
-
   .notif {
     font-size: rem(15px);
     padding: 0.5rem;

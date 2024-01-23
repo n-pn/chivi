@@ -189,16 +189,8 @@
     align-items: center;
     @include fgcolor(tert);
 
-    & + & {
-      margin-left: 0.25rem;
-    }
-
     &._active {
       @include fgcolor(primary);
-    }
-
-    input[type='radio'] {
-      margin-right: 0.25rem;
     }
   }
 

@@ -107,10 +107,6 @@
     }
   }
 
-  .-type {
-    margin-right: 0.5rem;
-  }
-
   .-time {
     margin-left: auto;
   }

@@ -154,7 +154,6 @@
     // display: flex;
     gap: 0.75rem;
 
-    input,
     textarea {
       width: 100%;
     }

@@ -45,12 +45,8 @@
       border-bottom: 1px solid color(primary, 4);
     }
 
-    &.hover {
+    &:global(.focus) {
       @include fgcolor(primary, 5);
-    }
-
-    &.focus {
-      @include bgcolor(primary, 5, 2);
     }
   }
 </style>

@@ -7,7 +7,7 @@
   export let pg_no = 1
 
   export let sname = ''
-  export let sn_id = 0
+  // export let sn_id = 0
 
   let repos: Array<CV.Tsrepo> = []
   $: chivi = repos.find((x) => x.sname == '~avail' && x.sn_id == wn_id) || {

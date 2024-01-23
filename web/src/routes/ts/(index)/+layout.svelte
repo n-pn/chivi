@@ -41,13 +41,4 @@
   .nav-list {
     margin: 1.5rem 0 0.75rem;
   }
-
-  .list {
-    margin: 0.75rem 0;
-    padding-bottom: 1.5rem;
-
-    &:not(:last-child) {
-      @include border(--bd-soft, $loc: bottom);
-    }
-  }
 </style>

@@ -71,12 +71,7 @@
   }
 
   .chdiv,
-  .c_len,
-  .ch_no {
+  .c_len {
     @include fgcolor(tert);
-  }
-
-  .ch_no {
-    @include ftsize(sm);
   }
 </style>

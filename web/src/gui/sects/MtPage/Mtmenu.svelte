@@ -212,7 +212,7 @@
 
   function move_left(shift = false, delay = 0) {
     if (focused.length == 0) change_focus(null, l_focus, null, 1000)
-    let node = prev_elem(focused[0], true)
+    let node = prev_elem(focused[0])
 
     let max_scan = 3
     let focus = l_focus

@@ -4,7 +4,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ ustem } = data)
+  $: ({ crepo } = data)
   let from_ch = 1
   let upto_ch = 10
 
@@ -32,18 +32,18 @@
       msg_text = ex.message
     }
 
-    const fname = `[${ustem.sname}_${ustem.id}]${from_ch}-${upto_ch}.raw.txt`
+    const fname = `[${crepo.sname}_${crepo.sn_id}]${from_ch}-${upto_ch}.raw.txt`
     send_file(to_half_width(full_text), fname)
   }
 
   const load_raw_chap = async (ch_no: number) => {
     const first = await load_raw_part(ch_no, 1)
-    let ctext = first.zname + '\n\n' + first.ztext.join('\n')
+    let ctext = first.zname + '\n\n' + first.ztext
 
     if (first.p_max > 1) {
       for (let p_idx = 2; p_idx <= first.p_max; p_idx++) {
         const cpart = await load_raw_part(ch_no, p_idx)
-        ctext += '\n\n' + cpart.ztext.join('\n')
+        ctext += '\n\n' + cpart.ztext
       }
     }
 
@@ -51,20 +51,20 @@
   }
 
   const load_raw_part = async (ch_no: number, p_idx: number) => {
-    const url = `/_rd/cdata/up/${ustem.sname}/${ustem.id}/${ch_no}/${p_idx}?force=${auto_unlock}`
+    const url = `/_rd/cdata/${crepo.sname}/${crepo.sn_id}/${ch_no}/${p_idx}?force=${auto_unlock}`
     const res = await fetch(url)
 
     if (!res.ok) throw await res.text()
     const cpart: CV.Chpart = await res.json()
 
     if (cpart.error == 414) {
-      cpart.ztext = ['Chương hiện tại chưa có trên hệ thống!']
+      cpart.ztext = 'Chương hiện tại chưa có trên hệ thống!'
     } else if (cpart.error == 413) {
-      cpart.ztext = ['Bạn chưa mở khóa cho chương!']
+      cpart.ztext = 'Bạn chưa mở khóa cho chương!'
     } else if (cpart.error == 415) {
-      cpart.ztext = ['Bạn chưa đủ vcoin để mở khóa chương!']
+      cpart.ztext = 'Bạn chưa đủ vcoin để mở khóa chương!'
     } else {
-      cpart.ztext.shift()
+      cpart.ztext = cpart.ztext.replace(/.+\n/, '')
     }
 
     return cpart

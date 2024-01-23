@@ -3,7 +3,7 @@ import { merge_query, api_get } from '$lib/api_call'
 import type { PageLoad } from './$types'
 
 interface JsonData extends CV.Paginate {
-  items: CV.Rdmemo[]
+  items: Array<CV.Rdmemo & CV.Tsrepo>
 }
 
 export const load = (async ({ url: { searchParams }, fetch }) => {

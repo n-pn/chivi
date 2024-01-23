@@ -237,13 +237,13 @@
   //   }
   // }
 
-  .hints {
-    font-style: italic;
-    @include ftsize(sm);
-    @include fgcolor(tert);
-    line-height: 1rem;
-    margin-top: 0.5rem;
-  }
+  // .hints {
+  //   font-style: italic;
+  //   @include ftsize(sm);
+  //   @include fgcolor(tert);
+  //   line-height: 1rem;
+  //   margin-top: 0.5rem;
+  // }
 
   .action {
     @include flex-cy();

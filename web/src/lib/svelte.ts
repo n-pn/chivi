@@ -4,9 +4,9 @@ export function debounce(
 ) {
   let timer: number // | string | NodeJS.Timeout
   return (...args: any) => {
-    clearTimeout(timer)
+    window.clearTimeout(timer)
     // prettier-ignore
-    timer = setTimeout(() => { func.apply(this, args) }, timeout)
+    timer = window.setTimeout(() => { func.apply(this, args) }, timeout)
   }
 }
 

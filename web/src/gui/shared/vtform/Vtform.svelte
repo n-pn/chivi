@@ -249,7 +249,6 @@
       privi={$_user.privi}
       uname={$_user.uname}
       bind:tform
-      bind:show_log
       bind:show_dfn />
   </form>
 

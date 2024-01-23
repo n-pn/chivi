@@ -146,7 +146,7 @@
       {:else if $ctrl.panel == 'glossary'}
         <Glossary {rline} {viewer} bind:rword />
       {:else}
-        <Analysis {rpage} {rline} />
+        <Analysis {rline} {ropts} />
       {/if}
     {/key}
   </section>

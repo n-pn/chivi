@@ -62,10 +62,6 @@
       border-radius: 1rem;
       padding: 0 0.5rem;
     }
-
-    .right {
-      margin-left: auto;
-    }
   }
 
   footer {

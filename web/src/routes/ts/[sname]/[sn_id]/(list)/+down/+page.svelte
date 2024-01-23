@@ -23,20 +23,16 @@
   let timer: number
 
   $: if (browser && from > 0 && upto >= from) {
-    clearTimeout(timer)
-    timer = setTimeout(() => {
-      caculate_cost(nvinfo.id, ustem.sname, from, upto)
+    window.clearTimeout(timer)
+    timer = window.setTimeout(() => {
+      caculate_cost(from, upto)
     }, 300)
   }
 
-  async function caculate_cost(
-    wn_id: number,
-    sname: string,
-    from: number,
-    upto: number
-  ) {
+  async function caculate_cost(from: number, upto: number) {
     _onload = true
-    const url = `/_wn/seeds/${wn_id}/${sname}/word_count?from=${from}&upto=${upto}`
+    const { sname, sn_id } = crepo
+    const url = `/_wn/seeds/$${sname}/${sn_id}/word_count?from=${from}&upto=${upto}`
     const res = await fetch(url)
     if (!res.ok) alert(await res.text())
 
@@ -51,8 +47,8 @@
     const url = '/_db/dlcvs'
 
     const body = {
-      wn_id: nvinfo.id,
-      sname: ustem.sname,
+      sname: crepo.sname,
+      sn_id: crepo.sn_id,
       from,
       upto,
       texsmart_pos: false,
@@ -91,7 +87,7 @@
           bind:value={from}
           disabled={_onload}
           min={1}
-          max={ustem.chmax} />
+          max={crepo.chmax} />
       </span>
 
       <span class="field">
@@ -103,7 +99,7 @@
           bind:value={upto}
           disabled={_onload}
           min={from}
-          max={ustem.chmax} />
+          max={crepo.chmax} />
       </span>
     </div>
 

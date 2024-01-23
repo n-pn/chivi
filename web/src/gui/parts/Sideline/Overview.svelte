@@ -3,7 +3,7 @@
   import Wpanel from '$gui/molds/Wpanel.svelte'
 
   export let rline: Rdline
-  export let ropts: CV.Rdopts
+  export let ropts: Partial<CV.Rdopts>
 
   let mtype = ropts.mt_rm || 'mtl_1'
 

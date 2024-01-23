@@ -355,8 +355,4 @@
       margin-left: 0.25rem;
     }
   }
-
-  .sep {
-    margin-left: 0.25rem;
-  }
 </style>

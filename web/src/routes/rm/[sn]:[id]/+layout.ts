@@ -8,12 +8,11 @@ interface RmstemShow {
   rmemo: CV.Rdmemo
 }
 
-export const load = (async ({ fetch, params, depends }) => {
+export const load = (async ({ fetch, params }) => {
   const sname = params.sn
   const sn_id = params.id
 
   const sroot = `/rm/${sname}:${sn_id}`
-  depends(sroot)
 
   const rdurl = `/_rd/tsrepos/rm${sname}/${sn_id}`
   const { xstem: rstem, crepo, rmemo } = await api_get<RmstemShow>(rdurl, fetch)

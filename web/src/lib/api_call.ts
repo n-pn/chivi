@@ -1,5 +1,5 @@
 // import { browser } from '$app/environment'
-import { error, redirect } from '@sveltejs/kit'
+import { error, redirect, type NumericRange } from '@sveltejs/kit'
 
 type REDIRECT_CODES = 300 | 301 | 302 | 303 | 304 | 305 | 306 | 307 | 308
 
@@ -13,7 +13,8 @@ export const do_fetch = async (
   const data = type.includes('json') ? await resp.json() : await resp.text()
 
   if (resp.status < 300) return data
-  if (resp.status > 308) throw error(resp.status, data)
+  if (resp.status >= 400)
+    throw error(resp.status as NumericRange<400, 599>, data)
   throw redirect(resp.status as REDIRECT_CODES, data)
 }
 

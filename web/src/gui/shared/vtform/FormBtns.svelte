@@ -33,8 +33,8 @@
   export let uname: string
   export let privi: number
 
-  export let show_log = false
   export let show_dfn = false
+  // export let show_log = false
 
   $: dict_choice = dict_choices[tform.local ? 't' : 'f']
 

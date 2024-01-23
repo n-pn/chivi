@@ -333,15 +333,5 @@
     font-weight: 500;
     margin-bottom: 0.5rem;
     @include fgcolor(tert);
-
-    > a {
-      margin-left: auto;
-      color: inherit;
-      font-size: smaller;
-      font-weight: 400;
-      &:hover {
-        @include fgcolor(primary, 4);
-      }
-    }
   }
 </style>

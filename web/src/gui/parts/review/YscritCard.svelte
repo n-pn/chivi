@@ -175,19 +175,19 @@
     @include bp-min(tl) { --line: 6; }
   }
 
-  .loading {
-    @include flex-ca;
-    gap: 0.25rem;
+  // .loading {
+  //   @include flex-ca;
+  //   gap: 0.25rem;
 
-    width: 100%;
-    height: 10em;
-    font-style: italic;
-    @include ftsize(lg);
-    @include fgcolor(mute);
-    span {
-      font-size: 0.9em;
-    }
-  }
+  //   width: 100%;
+  //   height: 10em;
+  //   font-style: italic;
+  //   @include ftsize(lg);
+  //   @include fgcolor(mute);
+  //   span {
+  //     font-size: 0.9em;
+  //   }
+  // }
 
   footer {
     @include flex($gap: 0.375rem);

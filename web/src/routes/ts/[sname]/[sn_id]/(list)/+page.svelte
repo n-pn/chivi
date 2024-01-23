@@ -51,8 +51,7 @@
   <RepoList
     wn_id={crepo.wn_id}
     pg_no={+$page.url.searchParams.get('pg')}
-    sname={crepo.sname}
-    sn_id={crepo.sn_id} />
+    sname={crepo.sname} />
 {/if}
 
 <header class="pinfo">
@@ -164,12 +163,12 @@
     @include bps(font-size, 13px, 14px);
   }
 
-  .sname {
-    padding-left: 0.375rem;
-    @include label();
-    @include fgcolor(tert);
-    @include border(primary, 5, $width: 3px, $loc: left);
-  }
+  // .sname {
+  //   padding-left: 0.375rem;
+  //   @include label();
+  //   @include fgcolor(tert);
+  //   @include border(primary, 5, $width: 3px, $loc: left);
+  // }
 
   .rstat {
     font-style: italic;
@@ -179,9 +178,6 @@
       content: '·';
       padding: 0 0.25rem;
     }
-  }
-  a.rstat:hover {
-    @include fgcolor(primary, 5);
   }
 
   btn-group {

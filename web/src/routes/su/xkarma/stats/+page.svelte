@@ -121,14 +121,14 @@
     @include fgcolor(tert);
   }
 
-  .check {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.125rem;
-    @include ftsize(xs);
-    @include fgcolor(success, 5);
-    // text-transform: uppercase;
-  }
+  // .check {
+  //   display: inline-flex;
+  //   align-items: center;
+  //   gap: 0.125rem;
+  //   @include ftsize(xs);
+  //   @include fgcolor(success, 5);
+  //   // text-transform: uppercase;
+  // }
 
   .value {
     display: flex;

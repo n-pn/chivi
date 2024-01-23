@@ -162,11 +162,11 @@
     }
   }
 
-  .empty {
-    @include fgcolor(mute);
-    @include flex-ca;
-    font-style: italic;
-    grid-column: 1/-1;
-    height: 5rem;
-  }
+  // .empty {
+  //   @include fgcolor(mute);
+  //   @include flex-ca;
+  //   font-style: italic;
+  //   grid-column: 1/-1;
+  //   height: 5rem;
+  // }
 </style>

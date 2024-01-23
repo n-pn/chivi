@@ -26,7 +26,7 @@
     return input <= unit ? 1 : Math.floor(input / unit)
   }
 
-  async function load_rdmemos(): Promise<Array<CV.Rdmemo>> {
+  async function load_rdmemos(): Promise<Array<CV.Rdmemo & CV.Tsrepo>> {
     const res = await fetch(`/_rd/rdmemos?rtype=rdlog&lm=10`)
     if (!res.ok) return []
     const { items } = await res.json()
@@ -193,7 +193,6 @@
       @include fgcolor(tert);
     }
 
-    > button,
     a {
       margin-left: auto;
     }
@@ -256,11 +255,6 @@
 
   .-btn._hl {
     @include fgcolor(warning, 5);
-  }
-
-  .-btn._active {
-    // @include bgcolor(primary, 1, 5);
-    @include fgcolor(primary, 5);
   }
 
   .body {

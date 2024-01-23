@@ -184,11 +184,11 @@
     }
   }
 
-  .action {
-    @include flex($gap: 0.75rem);
-    padding: 0.75rem 0;
-    justify-content: right;
-  }
+  // .action {
+  //   @include flex($gap: 0.75rem);
+  //   padding: 0.75rem 0;
+  //   justify-content: right;
+  // }
 
   ._multp {
     width: 3rem;
