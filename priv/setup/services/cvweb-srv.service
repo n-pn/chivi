@@ -1,17 +1,23 @@
 [Unit]
 Description=chivi webapp
-After=network.target cvapp-srv.service wnapp-srv.service mt_v1-srv.service mt_sp-srv.service ysapp-srv.service
-StartLimitIntervalSec=0
+Requires=network.target postgresql.service
+After=network.target cvapp-srv.service
+
+StartLimitIntervalSec=400
+StartLimitBurst=20
 
 [Service]
 Type=simple
 Restart=always
-RestartSec=5
+RestartSec=15
+TimeoutSec=600
+
 User=nipin
 Environment=PORT=5000
 Environment=NODE_ENV=production
 WorkingDirectory=/2tb/app.chivi/web
 ExecStart=/usr/bin/node index.js
+
 StandardOutput=file:/2tb/app.chivi/log/cvweb-srv.log
 StandardError=append:/2tb/app.chivi/log/cvweb-err.log
 

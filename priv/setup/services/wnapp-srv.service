@@ -1,17 +1,25 @@
 [Unit]
 Description=wnapp server
-After=network.target
-StartLimitIntervalSec=0
+Requires=network.target postgresql.service
+After=postgresql.service
+AllowIsolate=yes
+
+StartLimitIntervalSec=400
+StartLimitBurst=20
+StartLimitAction=reboot
 
 [Service]
 Type=simple
 Restart=always
-RestartSec=5
+RestartSec=15
+TimeoutSec=600
+
 User=nipin
 Environment=PORT=5020
 Environment=CV_ENV=production
 WorkingDirectory=/2tb/app.chivi
 ExecStart=/2tb/app.chivi/bin/wnapp-srv
+
 StandardOutput=file:/2tb/app.chivi/log/wnapp-srv.log
 StandardError=append:/2tb/app.chivi/log/wnapp-err.log
 
