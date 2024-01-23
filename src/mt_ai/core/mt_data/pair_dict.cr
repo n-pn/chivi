@@ -53,8 +53,8 @@ class MT::PairDict
     b_list.each { |b_zstr| entry[b_zstr]?.try { |x| return x } }
   end
 
-  def fix_if_match!(a_node : MtNode, b_node : MtNode, b_stem = b_node.zstr) : Nil
-    return unless entry = @hash[a_node.zstr]?
+  def fix_if_match!(a_node : MtNode, b_node : MtNode, b_stem = b_node.zstr) : Bool
+    return false unless entry = @hash[a_node.zstr]?
 
     if b_stem.size > 1
       b_list = {b_stem, "*#{b_stem[-1]}", "#{b_stem[0]}*", "*"}
@@ -78,8 +78,10 @@ class MT::PairDict
         b_node.attr |= b_attr
       end
 
-      break
+      return true
     end
+
+    false
   end
 
   getter match_sufx : Regex {

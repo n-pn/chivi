@@ -27,7 +27,7 @@ class MT::AiCore
 
     case
     when epos.np?
-      fix_np_term!(term, body)
+      term = fix_np_node!(term, body)
     when epos.vp?
       term = fix_vp_node!(term, body)
     when body.is_a?(MtPair)

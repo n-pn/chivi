@@ -7,6 +7,7 @@ class MT::AiCore
     fix_vp_node!(vp_node, [vp_body.head, vp_body.tail])
   end
 
+  # ameba:disable Metrics/CyclomaticComplexity
   def fix_vp_node!(vp_node : MtNode, vp_body : Array(MtNode)) : MtNode
     if vp_body.last.zstr == "了"
       vp_body.last.body = "rồi"
@@ -37,6 +38,11 @@ class MT::AiCore
     end
 
     return vp_node unless vv_node
+
+    if vv_node.epos.vnv?
+      # TODO: split vnv
+    end
+
     vp_node = vv_node
 
     while pos < max
@@ -44,16 +50,18 @@ class MT::AiCore
       case node.epos
       when .is?(:AS)
         vp_node = init_pair_node(vp_node, node, epos: :VAS, attr: vv_node.attr, flip: false)
+        pos &+= 1
       when .np?
         vp_node = init_vp_np_pair(vp_node, np_node: node, vv_node: vv_node)
+        pos &+= 1
       when .vv?, .ip?, .vp?, .pp?
         # TODO: handle join
-        vp_node = init_pair_node(vp_node, node, epos: :VP, attr: :none, flip: false)
+        vp_node = init_vp_ip_pair(vp_node, ip_node: node, vv_node: vv_node)
+        pos &+= 1
+        break
       else
         break
       end
-
-      pos &+= 1
     end
 
     preps.reverse_each do |prep|
@@ -70,8 +78,13 @@ class MT::AiCore
     while pos < max
       node = vp_body.unsafe_fetch(pos)
       pos &+= 1
-      # TODO: handle qp
-      vp_node = init_pair_node(vp_node, node, epos: :VP, attr: :none, flip: false)
+
+      case node.epos
+      when .qp?
+        vp_node = init_vp_qp_pair(vp_node, qp_node: node, vv_node: vv_node)
+      else
+        vp_node = init_pair_node(vp_node, node, epos: :VP, attr: :none, flip: false)
+      end
     end
 
     vp_node
@@ -104,8 +117,54 @@ class MT::AiCore
     init_pair_node(vp_node, np_node, epos: :VP, attr: :none) do
       # TODO: extract nn_node from np_node
 
-      PairDict.v_n_pair.fix_if_match!(vv_node, np_node)
+      unless PairDict.v_n_pair.fix_if_match!(vv_node, np_node)
+        case vv_node.zstr
+        when "想"
+          vv_node.body = "nhớ"
+        when "不想"
+          vv_node.body = "không nhớ"
+        when "会"
+          vv_node.body = "biết"
+        when "不会"
+          vv_node.body = "không biết"
+        end
+      end
+
       MtPair.new(vp_node, np_node, flip: false)
+    end
+  end
+
+  private def init_vp_ip_pair(vp_node, ip_node, vv_node)
+    init_pair_node(vp_node, ip_node, epos: :VP, attr: :none) do
+      unless PairDict.v_v_pair.fix_if_match!(vv_node, ip_node)
+        case vv_node.zstr
+        when "想"
+          vv_node.body = "muốn"
+        when "不想"
+          vv_node.body = "không muốn"
+        when "会"
+          vv_node.body = "sẽ"
+        when "不会"
+          vv_node.body = "sẽ không"
+        end
+      end
+
+      MtPair.new(vp_node, ip_node, flip: false)
+    end
+  end
+
+  private def init_vp_qp_pair(vp_node, qp_node, vv_node)
+    init_pair_node(vp_node, qp_node, epos: :VP, attr: :none) do
+      unless (m_node = qp_node.find_by_epos(:M)) && PairDict.v_c_pair.fix_if_match!(vv_node, m_node)
+        case vv_node.zstr
+        when "会"
+          vv_node.body = "sẽ"
+        when "不会"
+          vv_node.body = "sẽ không"
+        end
+      end
+
+      MtPair.new(vp_node, qp_node, flip: false)
     end
   end
 end
