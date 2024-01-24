@@ -17,20 +17,16 @@ class RD::UpstemCtrl < AC::Base
 
     case qmode
     when "owner"
-      guard = 4
       uname = self._uname
     when "liked"
-      guard = 4
       liked = self._vu_id
-    else
-      guard = self._privi
     end
 
     query, args = Upstem.build_select_sql(
-      guard: guard, uname: uname,
-      wn_id: wn_id, label: label,
+      uname: uname, wn_id: wn_id,
+      label: label, liked: liked,
       title: title, au_vi: au_vi,
-      liked: liked, order: order,
+      order: order,
     )
 
     args << limit << offset

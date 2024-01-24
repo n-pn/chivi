@@ -52,10 +52,14 @@
   Lỗi: Chương {ch_no} phần {p_idx} cần thiết mở khóa bằng vcoin.
 </h1>
 
-{#if $_user.privi < 0}
+{#if $_user.uname == 'Khách'}
   <p>
-    <em>Bạn chưa đăng nhập. Bấm vào <a href="/_auth/login">đây</a></em> để đăng nhập
-    hoặc đăng ký tài khoản mới.
+    <em
+      >Bạn chưa đăng nhập. Nếu bạn đã có tài khoản, đăng nhập tại đây: <a
+        href="/_u/login">Đăng nhập</a>
+      . Nếu chưa có tài khoản, hãy đăng ký mới tại đây:
+      <a href="/_u/signup">Đăng ký tài khoản mới</a>
+    </em>
   </p>
 {:else}
   <p>

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { get_user } from '$lib/stores'
+  const _user = get_user()
+
   import Notext from './errors/Notext.svelte'
   import Unlock from './errors/Unlock.svelte'
 
@@ -8,7 +11,17 @@
 </script>
 
 <section class="reader">
-  {#if rdata.error == 403}
+  {#if $_user.uname == 'Khách'}
+    <h1 class="u-warn">Lỗi: Chưa đủ quyền hạn xem chương</h1>
+    <p>
+      <em
+        >Bạn chưa đăng nhập. Nếu bạn đã có tài khoản, đăng nhập tại đây: <a
+          href="/_u/login">Đăng nhập</a>
+        . Nếu chưa có tài khoản, hãy đăng ký mới tại đây:
+        <a href="/_u/signup">Đăng ký tài khoản mới</a>
+      </em>
+    </p>
+  {:else if rdata.error == 403}
     <div class="d-empty">
       <h1 class="u-warn">
         Lỗi: Bạn cần thiết quyền hạn tối thiểu là {rdata.plock} để xem nội dung chương!

@@ -35,10 +35,14 @@
 <section class="notext">
   <h1 class="u-warn">Lỗi: Chương tiết không có nội dung.</h1>
 
-  {#if $_user.privi < -1}
+  {#if $_user.uname == 'Khách'}
     <p class="u-warn">
-      Bạn chưa đăng nhập! Chức năng tự tải chương tiết từ nguồi ngoài chỉ được
-      áp dụng cho người dùng đã đăng nhập vào hệ thống!
+      <em
+        >Bạn chưa đăng nhập. Nếu bạn đã có tài khoản, đăng nhập tại đây: <a
+          href="/_u/login">Đăng nhập</a>
+        . Nếu chưa có tài khoản, hãy đăng ký mới tại đây:
+        <a href="/_u/signup">Đăng ký tài khoản mới</a>
+      </em>
     </p>
   {:else if $_user.privi == -1}
     <p class="u-warn">

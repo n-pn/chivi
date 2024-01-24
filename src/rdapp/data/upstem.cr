@@ -110,16 +110,15 @@ class RD::Upstem
   end
 
   def self.build_select_sql(
-    guard : Int32 = 4, uname : String? = nil,
-    wn_id : Int32? = nil, label : String? = nil,
+    uname : String? = nil, wn_id : Int32? = nil,
+    label : String? = nil, liked : Int32? = nil,
     title : String? = nil, au_vi : String? = nil,
-    liked : Int32? = nil,
     order : String = "mtime"
   )
-    args = [guard] of String | Int32
+    args = [] of String | Int32
 
     query = String.build do |sql|
-      sql << "select * from #{@@schema.table} where guard <= $1"
+      sql << "select * from #{@@schema.table} where 1 = 1"
 
       if uname
         args << uname
