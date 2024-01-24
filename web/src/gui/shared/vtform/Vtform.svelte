@@ -100,10 +100,11 @@
     })
 
     if (vnode) {
-      const dnum = vnode[6]
+      tdata.attr = vnode[1]
       tdata.cpos = vnode[0]
       tdata.vstr = gen_mt_ai_text(vnode, { cap: false, und: true })
-      tdata.attr = vnode[5]
+
+      const dnum = vnode[5]
       tdata.plock = Math.floor(dnum / 10)
       tdata.local = dnum % 2 == 1
     }

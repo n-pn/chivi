@@ -34,13 +34,10 @@ declare namespace CV {
 
   export type Cvtree = [
     string, // cpos
-    string | Array<Cvtree>, // zstr or children
-
+    string, // attr
     number, // from
     number, // upto
-
-    string, // vstr
-    string, // attr
+    string | Array<Cvtree>, // vstr or children
     number // dnum
   ]
 }

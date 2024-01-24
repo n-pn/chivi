@@ -21,7 +21,7 @@ export function gen_ztext_text(input: CV.Cvtree) {
     const node = stack.pop()
     if (!node) break
 
-    const body = node[1]
+    const body = node[4]
 
     if (Array.isArray(body)) {
       const orig = body.slice().sort(sort)
@@ -69,7 +69,9 @@ export function gen_hviet_html(input: string[], cap = true) {
 }
 
 export function gen_ctree_text(node: CV.Cvtree, level = 0, on_nl = false) {
-  const [cpos, body] = node
+  const cpos = node[0]
+  const body = node[4]
+
   let text = ''
 
   if (on_nl) {
@@ -109,7 +111,7 @@ const same_level_tags = [
 ]
 
 export function gen_ctree_html(node: CV.Cvtree, level = 0, on_nl = false) {
-  const [cpos, body, from, upto, vstr, _attr, dnum] = node
+  const [cpos, _attr, from, upto, body, dnum] = node
   const dpos = dnum % 10
   // const lock = Math.floor(dnum / 10)
 
@@ -135,10 +137,9 @@ export function gen_ctree_html(node: CV.Cvtree, level = 0, on_nl = false) {
       html += ' ' + gen_ctree_html(child, level + 1, child_on_nl)
     }
   } else {
-    const zesc = escape_htm(body)
-    const vesc = escape_htm(vstr)
+    const vesc = escape_htm(body)
     html += ` <x-n d=${dpos} data-b=${from} data-e=${upto} data-c=${cpos}>${vesc}</x-n>`
-    html += ` <x-z d=${dpos} data-b=${from} data-e=${upto} data-c=${cpos}>${zesc}</x-z>`
+    // html += ` <x-z d=${dpos} data-b=${from} data-e=${upto} data-c=${cpos}>${zesc}</x-z>`
   }
 
   html += '</x-g>'
@@ -168,12 +169,12 @@ function render_mtl(vstr: string, cpos: string) {
 // - last element is some punctuation, this marks the end of sentence (without proper quote enclosure)
 function should_add_cap(list: Array<CV.Cvtree>) {
   const head = list[0]
-  if (head[0] != 'PU' || !is_quote_start(head[5])) return false
+  if (head[0] != 'PU' || !is_quote_start(head[1])) return false
 
   const tail = list[list.length - 1]
   if (tail[0] != 'PU') return false
 
-  return !is_quote_final(tail[5]) || list[list.length - 2][0] == 'PU'
+  return !is_quote_final(tail[1]) || list[list.length - 2][0] == 'PU'
 }
 
 export function gen_mt_ai_html(
@@ -185,7 +186,7 @@ export function gen_mt_ai_html(
   opts.und ??= true
   opts._qc ??= 0
 
-  const [cpos, body, from, upto, vstr, attr, dnum] = node
+  const [cpos, attr, from, upto, body, dnum = 0] = node
   if (attr.includes('Hide')) return ''
 
   let html = ''
@@ -197,9 +198,9 @@ export function gen_mt_ai_html(
       html += gen_mt_ai_html(body[i], opts, _lvl + 1)
     }
   } else {
-    if (vstr.charAt(0) == '⟨') {
+    if (body.charAt(0) == '⟨') {
       html += '<cite>'
-    } else if (is_quote_start(vstr)) {
+    } else if (is_quote_start(body)) {
       html += '<em>'
       opts._qc += 1
     }
@@ -208,9 +209,9 @@ export function gen_mt_ai_html(
     opts.und = attr.includes('Undn')
 
     const asis = /Capx|Asis/.test(attr)
-    let vesc = escape_htm(vstr)
+    let vesc = escape_htm(body)
 
-    if (opts.cap && !asis) vesc = capitalize(vstr)
+    if (opts.cap && !asis) vesc = capitalize(body)
     opts.cap = (opts.cap && asis) || attr.includes('Capn')
 
     if (opts.mode == 2) {
@@ -225,9 +226,9 @@ export function gen_mt_ai_html(
       html += vesc
     }
 
-    if (vstr.charAt(0) == '⟩') {
+    if (body.charAt(0) == '⟩') {
       html += '</cite>'
-    } else if (is_quote_final(vstr)) {
+    } else if (is_quote_final(body)) {
       html += '</em>'
       opts._qc -= 1
     }
@@ -254,8 +255,9 @@ export function gen_mt_ai_text(
   _raw = false
 ) {
   if (!node) return ''
-  const [_pos, body, _from, _upto, vstr, attr] = node
-  if (attr.includes('Hide')) return _raw ? vstr : ''
+  console.log(node)
+  const [_pos, attr, _from, _upto, body] = node
+  if (attr.includes('Hide')) return _raw ? body.toString() : ''
 
   let text = ''
 
@@ -271,7 +273,7 @@ export function gen_mt_ai_text(
 
     const asis = /Capx|Asis/.test(attr)
 
-    text += opts.cap && !asis ? capitalize(vstr) : vstr
+    text += opts.cap && !asis ? capitalize(body) : body
     opts.cap = (opts.cap && asis) || attr.includes('Capn')
   }
 

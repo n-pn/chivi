@@ -40,8 +40,16 @@ class MT::MtNode
     end
   end
 
+  def body=(@body : MtDefn)
+    @attr = body.attr
+  end
+
   def body=(vstr : String)
     @body = MtDefn.new(vstr, dnum: :Root2)
+  end
+
+  def attr_off(attr : MtAttr)
+    @attr = @attr & ~attr
   end
 
   def prepend!(term : self) : self
@@ -139,7 +147,9 @@ class MT::MtNode
         jb.string body.vstr
         jb.number body.dnum.value
       else
-        self.each_child(&.to_json(jb: jb))
+        jb.array do
+          self.each_child(&.to_json(jb: jb))
+        end
       end
     end
   end

@@ -15,10 +15,12 @@ class MT::AiCore
     case
     when head.attr.any?(MtAttr[Ndes, Ntmp])
       tail.body = MtDefn::DEG0
+    when head.epos.noun?
+      tail.body = MtDefn::DEG1
     when head.epos.ip? && dnp_head_is_sv_ip?(head.body)
       tail.body = MtDefn::DEG2
     else
-      tail.body = MtDefn::DEG1
+      tail.body = MtDefn::DEG0
     end
 
     term.attr = :at_t

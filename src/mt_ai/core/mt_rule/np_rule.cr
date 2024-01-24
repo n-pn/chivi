@@ -20,14 +20,13 @@ class MT::AiCore
       new_body.unshift(node)
     end
 
-    # if new_body.size > 1 || !new_body.first.epos.np?
-    #   term.body = new_body
-    # else
-    #   term.attr |= new_body.first.attr
-    #   term.body = new_body.first
-    # end
+    if new_body.size > 1 || !new_body.first.epos.np?
+      term.body = new_body
+    else
+      term.attr |= new_body.first.attr
+      term.body = new_body.first
+    end
 
-    term.body = new_body
     term
   end
 
@@ -61,17 +60,17 @@ class MT::AiCore
         # combine the noun list for phrase translation
         flip = !node.attr.at_h?
         noun = init_pair_node(head: node, tail: noun, epos: :NN, attr: attr, flip: flip)
-        # when .pu?
-        #   # FIXME: check error in this part
-        #   break if _pos == 0 || node.zstr[0] != '、'
-        #   _pos &-= 1
+      when .pu?
+        # FIXME: check error in this part
+        break if _pos == 0 || node.zstr[0] != '、'
+        _pos &-= 1
 
-        #   break unless (prev = orig[_pos - 1]?) && prev.epos.noun?
-        #   _pos &-= 1
+        break unless (prev = orig[_pos - 1]?) && prev.epos.noun?
+        _pos &-= 1
 
-        #   prev, _pos = init_nn_term(orig, prev, _pos) if _pos >= 0
-        #   epos = prev.epos == noun.epos ? noun.epos : MtEpos::NP
-        #   noun = init_term([prev, node, noun], epos: epos, attr: attr)
+        prev, _pos = init_nn_term(orig, prev, _pos) if _pos >= 0
+        epos = prev.epos == noun.epos ? noun.epos : MtEpos::NP
+        noun = init_term([prev, node, noun], epos: epos, attr: attr)
       else
         break
       end
@@ -120,7 +119,6 @@ class MT::AiCore
       when .adjp?, .dnp?
         flip = !node.attr.at_h?
         noun = init_pair_node(head: node, tail: noun, epos: :NP, attr: attr, flip: flip)
-        pp [noun, "combine_adjp"]
       when .pn?
         at_h = pron_at_head?(pron: node, noun: noun)
         noun = init_pair_node(head: node, tail: noun, epos: :NP, attr: attr, flip: !at_h)

@@ -232,7 +232,7 @@ class MT::VpNode
   def split_vnv!(verb : M2Node)
     if verb.rhsn.zstr[0].in?("没", "不")
       {verb.lhsn, verb.rhsn}
-      # {verb.lhsn, tail}
+      # {verb.lhsn, tail}ai
     else
       {verb, nil}
     end
