@@ -255,7 +255,6 @@ export function gen_mt_ai_text(
   _raw = false
 ) {
   if (!node) return ''
-  console.log(node)
   const [_pos, attr, _from, _upto, body] = node
   if (attr.includes('Hide')) return _raw ? body.toString() : ''
 
@@ -305,7 +304,7 @@ export function gen_mt_ai_text(
 
 export function flatten_tree(node: CV.Cvtree, list: CV.Cvtree[] = []) {
   list.push(node)
-  const body = node[1]
+  const body = node[4]
 
   if (Array.isArray(body)) {
     for (const next of body) flatten_tree(next, list)

@@ -58,10 +58,24 @@ class MT::ViTermForm
 
   getter? on_delete : Bool { @vstr.empty? && !@attr.includes?("Hide") }
 
+  def init_pg_term(dict : PgDict, uname : String)
+    term = PgDefn.init(d_id: dict.d_id, cpos: @cpos, zstr: @zstr)
+
+    unless self.on_delete?
+      term.vstr = @vstr
+      term.attr = @attr
+      term.plock = @plock
+
+      term.uname = uname
+      term.mtime = TimeUtil.cv_mtime
+    end
+
+    term
+  end
+
   def save!(uname : String = "", privi = 4, persist : Bool = true)
     zdict = PgDict.load!(@dname.sub("book", "wn").tr("/:", ""))
-
-    zterm = zdict.load_term(cpos: @cpos, zstr: @zstr)
+    zterm = init_pg_term(zdict, uname)
     p_min = zdict.p_min + zterm.plock
 
     if privi < p_min
@@ -70,18 +84,18 @@ class MT::ViTermForm
 
     fresh = zterm.mtime < 0
 
-    if @vstr.empty? && !@attr.includes?("Hide")
-      return zdict.delete_term(zterm: zterm, fresh: fresh, persist: persist)
+    if self.on_delete?
+      PgDefn.delete(zdict.d_id, ipos: zterm.ipos, zstr: zterm.zstr)
+      TrieDict.delete_term(@dname, zstr: zstr, epos: zterm.ipos)
+
+      spawn SqDefn.delete(zdict.d_id, zterm.ipos, zterm.zstr)
+      spawn zdict.delete_term(zterm: zterm, fresh: fresh, persist: persist)
+    else
+      zterm = zterm.upsert!
+      # TrieDict.add_term(@dname, zterm)
+
+      spawn SqDefn.new(zterm).save!
+      spawn zdict.add_term(zterm, fresh: fresh, persist: persist)
     end
-
-    zterm.vstr = @vstr
-    zterm.attr = @attr
-    zterm.plock = @plock
-
-    zterm.uname = uname
-    zterm.mtime = TimeUtil.cv_mtime
-
-    zterm = zterm.upsert!
-    zdict.add_term(zterm, fresh: fresh, persist: true)
   end
 end

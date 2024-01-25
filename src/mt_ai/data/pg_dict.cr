@@ -1,4 +1,5 @@
 require "./pg_defn"
+require "./sq_defn"
 
 class MT::PgDict
   class_getter db : ::DB::Database = ZR_DB
@@ -41,13 +42,6 @@ class MT::PgDict
   def add_term(zterm : PgDefn, fresh : Bool = true, persist : Bool = true)
     @total += 1 if fresh
     @mtime = zterm.mtime
-
-    # mdata = MtData.new(zterm)
-    # spawn mdata.save!
-
-    # HashDict.add_term(@name, zterm.zstr, zterm.ipos, mdata.mt_term)
-    # # TrieDict.add_term(@name, zterm.zstr, mdata.ws_term)
-
     self.upsert! if persist
   end
 

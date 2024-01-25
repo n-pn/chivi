@@ -19,7 +19,7 @@ class MT::MtDict
 
   def add_temp(zstr, vstr, attr, epos)
     defn = MtDefn.new(vstr: vstr, attr: attr, dnum: :auto0, fpos: epos)
-    @data.last.root[zstr].add_data(epos, defn) { MtWseg.new(zstr) }
+    @data.last.root[zstr].add_data(epos, defn) { TrieDict.calc_prio(zstr.size) }
     defn
   end
 
@@ -36,28 +36,32 @@ class MT::MtDict
 
     @data.each do |trie|
       next unless node = trie.root[zstr]?
-      got = node.vals.try(&.[epos]?)
+      got, new_alt = node.get_defn?(epos)
+      alt ||= new_alt
+
       return got, alt if got
-      alt ||= node.defn
     end
 
     return got, alt
   end
 
-  def all_wsegs(input : Array(Char), start : Int32 = 0)
-    wsegs = [] of MtWseg
+  def any_defn?(zstr : String)
+    @data.each do |trie|
+      next unless defn = trie.any_defn?(zstr)
+      return defn
+    end
+  end
+
+  def each_wseg(input : Array(Char), start : Int32 = 0, &)
     skips = BitArray.new(input.size &- start &+ 1, false) # tracking for overriding
 
     @data.each do |trie|
-      trie.scan_wseg(input, start: start) do |size, wseg|
-        next if skips[size]    # skip if this wseg existed in higher dict
-        skips[size] = true     # mark wseg as existed
-        next if wseg.prio == 0 # skip wseg marks as deleted
-        wsegs << wseg
+      trie.scan_wseg(input, start: start) do |size, prio|
+        next if skips[size] # skip if this wseg existed in higher dict
+        skips[size] = true  # mark wseg as existed
+        yield size, prio unless prio == 0
       end
     end
-
-    wsegs
   end
 
   # # ameba:disable Metrics/CyclomaticComplexity

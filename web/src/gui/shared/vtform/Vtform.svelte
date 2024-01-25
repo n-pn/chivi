@@ -104,7 +104,7 @@
       tdata.cpos = vnode[0]
       tdata.vstr = gen_mt_ai_text(vnode, { cap: false, und: true })
 
-      const dnum = vnode[5]
+      const dnum = vnode[5] || 0
       tdata.plock = Math.floor(dnum / 10)
       tdata.local = dnum % 2 == 1
     }

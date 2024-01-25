@@ -36,14 +36,13 @@ class MT::QtCore
   def parse!(input : String, _idx = 0)
     output = QtData.new
 
-    @wseg_core.parse!(input).each do |token|
-      zstr = token.zstr
+    @wseg_core.tokenize(input).each do |zstr|
       size = zstr.size
 
-      if defn = @dict.get_defn?(zstr)
+      if defn = @dict.any_defn?(zstr)
         output << QtNode.new(zstr, defn.vstr, defn.attr, _idx: _idx, _dic: defn.dnum.value)
       else
-        vstr, attr = init_data(token.zstr, token.bner)
+        vstr, attr = init_data(zstr)
         output << QtNode.new(zstr, vstr, attr, _idx: _idx, _dic: 0)
       end
 
@@ -53,17 +52,21 @@ class MT::QtCore
     output
   end
 
-  private def init_data(zstr : String, bner : MtEner = :none)
+  private def init_data(zstr : String)
     vstr = CharUtil.normalize(zstr)
-    return {vstr, MtAttr[Capx, Undb, Undn]} if vstr.blank?
 
-    case bner
-    when .link?, .dint?
+    case vstr
+    when .blank?
+      {vstr, MtAttr[Capx, Undb, Undn]}
+    when .starts_with?("http"), .starts_with?("www.")
       {vstr, MtAttr::Asis}
-    when .punc?
-      {vstr, MtAttr.parse_punct(zstr)}
+    when /^[\w\s]+/
+      attr = MtAttr::None
+      attr |= MtAttr::Undb if vstr.starts_with?(' ')
+      attr |= MtAttr::Undn if vstr.ends_with?(' ')
+      {vstr, attr}
     else
-      {vstr, MtAttr::None}
+      {vstr, MtAttr.parse_punct(zstr)}
     end
   end
 end

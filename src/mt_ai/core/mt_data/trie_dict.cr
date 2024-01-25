@@ -18,7 +18,29 @@ class MT::TrieDict
   end
 
   def self.add_term(dname : String, wterm : MtWseg)
-    CACHE[dname]?.try(&.[wstem.zstr] = wterm)
+    return unless dict = CACHE[dname]?
+    dict[wstem.zstr] = wterm
+  end
+
+  def self.add_term(dname : String, input : PgDefn)
+    return unless dict = CACHE[dname]?
+
+    node = dict.root[zstr]
+
+    defn = MtDefn.new(
+      vstr: input.vstr,
+      attr: input.attr,
+      dnum: MtDnum.from(input.d_id, input.plock)
+    )
+    node.add_data(defn)
+
+    node.defs.try(&.delete(epos))
+  end
+
+  def self.delete_term(dname : String, zstr : String, epos : MtEpos)
+    return unless dict = CACHE[dname]?
+    return unless node = dict.root[zstr]?
+    node.defs.try(&.delete(epos))
   end
 
   def self.delete_term(dname : String, zstr : String)
@@ -33,71 +55,70 @@ class MT::TrieDict
     @d_id = MtDtyp.map_id(name)
     return if reset
 
-    time = Time.measure do
-      self.load_from_db3!(@d_id)
-      self.load_from_tsv!(@name)
-    end
-
+    time = Time.measure { self.load_from_db3!(@d_id) }
     Log.info { "loading #{name} trie: #{time.total_milliseconds}ms, entries: #{@size}" }
   end
 
   def load_from_db3!(d_id = @d_id)
     SqDefn.query_each(d_id) do |zstr, epos, defn|
-      @root[zstr].add_data(epos, defn) { MtWseg.new(zstr) }
+      @root[zstr].add_data(epos, defn) { TrieDict.calc_prio(zstr.size) }
       @size &+= 1
     end
   end
 
-  def load_from_tsv!(name = @name)
-    tsv_file = "var/mtdic/wseg/#{name}.tsv"
-    return unless File.file?(tsv_file)
-
-    File.each_line(tsv_file, chomp: true) do |line|
-      next if line.blank?
-      wseg = MtWseg.new(line.split('\t'))
-      @root[wseg.zstr].wseg = wseg
-    end
+  def self.calc_prio(size : Int32, prio : Int16 = 2)
+    prio == 0 ? 0_i16 : size.to_i16 &* (prio &+ size.to_i16)
   end
+
+  # def load_from_tsv!(name = @name)
+  #   tsv_file = "var/mtdic/wseg/#{name}.tsv"
+  #   return unless File.file?(tsv_file)
+
+  #   File.each_line(tsv_file, chomp: true) do |line|
+  #     next if line.blank?
+  #     wseg = MtWseg.new(line.split('\t'))
+  #     @root[wseg.zstr].wseg = wseg
+  #   end
+  # end
+
+  # @[AlwaysInline]
+  # def get_defn?(zstr : String, cpos : String)
+  #   @root.get_defn?(zstr: zstr, epos: MtEpos.parse(cpos))
+  # end
+
+  # @[AlwaysInline]
+  # def get_defn?(zstr : String, epos : MtEpos)
+  #   @root[zstr]?.try(&.defs).try(&.[epos]?)
+  # end
 
   @[AlwaysInline]
-  def get_defn?(zstr : String, cpos : String)
-    @root.get_defn?(zstr: zstr, epos: MtEpos.parse(cpos))
-  end
-
-  @[AlwaysInline]
-  def get_defn?(zstr : String, epos : MtEpos)
-    @root[zstr]?.try(&.vals).try(&.[epos]?)
-  end
-
   def any_defn?(zstr : String)
-    @root[zstr]?.try(&.defn)
+    @root[zstr]?.try(&.any_defn?)
   end
 
   def scan_wseg(input : Array(Char), start : Int32 = 0, &)
     node = @root
-    size = 0
 
-    start.upto(input.size &- 1) do |idx|
-      char = input.unsafe_fetch(idx)
+    start.upto(input.size &- 1) do |index|
+      char = input.unsafe_fetch(index)
       # char = CharUtil.to_canon(char, true)
+      char = char - 32 if 'ａ' <= char <= 'ｚ'
       break unless node = node.succ.try(&.[char]?)
-      next unless wseg = node.wseg
-      yield idx &- start &+ 1, wseg
+      yield index &- start &+ 1, node.prio if node.prio >= 0
     end
   end
 
   ####
 
   class Trie
+    property prio : Int16 = -1_i16
     property succ : Hash(Char, self)? = nil
-    property vals : Hash(MtEpos, MtDefn)? = nil
-    property defn : MtDefn? = nil
-    property wseg : MtWseg? = nil
+    property defs : {MtEpos, MtDefn} | Hash(MtEpos, MtDefn) | Nil = nil
 
     def [](zstr : String)
       zstr.each_char.reduce(self) do |node, char|
-        # char = CharUtil.to_canon(char, true)
         succ = node.succ ||= {} of Char => Trie
+        # char = char - 32 if 'ａ' <= char <= 'ｚ'
         succ[char] ||= Trie.new
       end
     end
@@ -113,38 +134,44 @@ class MT::TrieDict
       node
     end
 
-    def add_data(epos : MtEpos, defn : MtDefn, & : MtWseg? ->) : Nil
-      vals = @vals ||= {} of MtEpos => MtDefn
-      vals[epos] = defn
-      @defn = defn if epos.x? || !defn
+    def add_data(epos : MtEpos, defn : MtDefn) : Nil
+      case prev = @defs
+      in Nil
+        @defs = {epos, defn}
+      in Tuple(MtEpos, MtDefn)
+        @defs = {
+          prev[0] => prev[1],
+          epos    => defn,
+        }
+      in Hash
+        prev[epos] = defn
+      end
 
-      @wseg = yield @wseg
+      @prio = yield if @prio < 0
     end
 
     @[AlwaysInline]
-    def get_defn?(zstr : String, cpos : String)
-      get_defn?(zstr: zstr, epos: MtEpos.parse(cpos))
+    def get_defn?(cpos : String)
+      get_defn?(epos: MtEpos.parse(cpos))
     end
 
-    @[AlwaysInline]
-    def get_defn?(zstr : String, epos : MtEpos)
-      self[zstr]?.try(&.vals).try(&.[epos]?)
+    def get_defn?(epos : MtEpos)
+      case defs = @defs
+      in Nil then {nil, nil}
+      in Tuple
+        {epos == defs[0] ? defs[1] : nil, defs[1]}
+      in Hash
+        {defs[epos]?, defs.first_value}
+      end
     end
 
-    def any_defn?(zstr : String)
-      self[zstr]?.try(&.defn)
-    end
-
-    def scan_wseg(input : Array(Char), start : Int32 = 0, &)
-      node = self
-      size = 0
-
-      start.upto(input.size &- 1) do |idx|
-        char = input.unsafe_fetch(idx)
-        # char = CharUtil.to_canon(char, true)
-        break unless node = node.succ.try(&.[char]?)
-        next unless wseg = node.wseg
-        yield idx &- start &+ 1, wseg
+    def any_defn?
+      case defs = @defs
+      in Nil then nil
+      in Tuple
+        defs[1]
+      in Hash
+        defs.first_value
       end
     end
   end

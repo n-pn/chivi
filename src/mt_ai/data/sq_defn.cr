@@ -1,5 +1,6 @@
 require "crorm"
 require "../base/*"
+require "./pg_defn"
 
 # convert from postgresql database for faster loading
 struct MT::SqDefn
@@ -46,7 +47,7 @@ struct MT::SqDefn
   field dnum : Int32
   field fpos : Int32 = 0
 
-  def initialize(zterm : ZvTerm)
+  def initialize(zterm : PgDefn)
     @d_id = zterm.d_id
     @epos = @fpos = MtEpos.parse(zterm.cpos).to_i
 
@@ -86,11 +87,14 @@ struct MT::SqDefn
     end
   end
 
-  # def save!
-  #   db = self.class.load_db(@d_id)
-  #   spawn File.open(db.db_path.sub(".db3", ".log"), "a", &.puts(self.to_json))
-  #   self.upsert!(db: db)
-  # end
+  def dnum
+    dtype = @d_id % 10 < 4 ? 2_i8 : 1_i8
+    @plock.to_i8 &* 10_i8 &+ dtype
+  end
+
+  def save!
+    self.upsert!(db: self.class.load_db(@d_id))
+  end
 
   def self.fetch(d_id : Int32, &)
     self.load_db(d_id).open_ro do |db|

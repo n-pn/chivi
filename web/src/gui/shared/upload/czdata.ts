@@ -135,7 +135,7 @@ export class Cztext {
     }
 
     if (mode == 0 || mode == 5) {
-      const chaps = this.split_label(opts.chdiv_labels)
+      const chaps = this.split_regex(opts.custom_regex)
       if (this.valid_enough(chaps) || mode == 5) return chaps
     }
 

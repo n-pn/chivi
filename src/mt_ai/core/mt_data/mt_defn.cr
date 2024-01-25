@@ -1,6 +1,12 @@
 require "../../base/*"
 
 struct MT::MtDefn
+  def self.calc_prio(size : Int32, prio : Int16 = 5_i16)
+    prio == 0 ? 0_i16 : size.to_i16 &* (prio &+ size.to_i16)
+  end
+
+  ###
+
   DEG0 = new(vstr: "", attr: MtAttr[Hide, At_t], dnum: :Root2, fpos: :DEG)
   DEG1 = new(vstr: "của", attr: :at_t, dnum: :Root2, fpos: :DEG)
   DEG2 = new(vstr: "do", attr: :at_t, dnum: :Root2, fpos: :DEG)
@@ -8,14 +14,11 @@ struct MT::MtDefn
   ###
 
   getter vstr : String
-  getter attr : MtAttr
 
+  getter attr : MtAttr = MtAttr::None
   getter dnum : MtDnum = MtDnum::Unkn0
-  getter fpos : MtEpos = MtEpos::X
 
-  def self.calc_prio(size : Int32, prio : Int16 = 5_i16)
-    prio == 0 ? 0_i16 : size.to_i16 &* (prio &+ size.to_i16)
-  end
+  getter fpos : MtEpos = MtEpos::X
 
   def initialize(char : Char)
     @vstr = char.to_s

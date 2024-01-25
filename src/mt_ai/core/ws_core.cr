@@ -13,81 +13,122 @@ class MT::WsCore
   def initialize(@dict : MtDict)
   end
 
-  def parse!(input : String)
-    chars = input.chars
+  @[AlwaysInline]
+  def alnum?(char : Char)
+    char == '　' || ('０' <= char <= '９') || ('ａ' <= char <= 'ｚ') || ('Ａ' <= char <= 'Ｚ')
+  end
 
-    best_terms = [] of MtWseg
-    best_costs = Array(Int16).new(chars.size + 1, 0)
+  @[AlwaysInline]
+  def ascii?(char : Char)
+    '！' <= char <= '～'
+  end
 
-    table = chars.map_with_index do |char, i|
-      best_terms << MtWseg.new(char.to_s)
-      @dict.all_wsegs(chars, start: i)
-    end
+  @[AlwaysInline]
+  def punct?(char : Char)
+    char.in?('！', '？', '。', '…', '～')
+  end
 
-    (chars.size - 1).downto(0) do |i|
-      terms = table[i]
-      next if terms.empty?
+  @[AlwaysInline]
+  def tokenize(input : String)
+    tokenize(input.chars)
+  end
 
+  def tokenize(chars : Array(Char), upper = chars.size &- 1)
+    best_sizes = Array(Int32).new(upper &+ 2, 1)
+    best_costs = Array(Int16).new(upper &+ 2, 0)
+
+    # table = chars.map_with_index do |char, i|
+    #   best_terms << MtWseg.new(char.to_s)
+    #   @dict.all_wsegs(chars, start: i)
+    # end
+
+    alnum = 0
+    ascii = 0
+    punct = 0
+
+    upper.downto(0) do |i|
       best_cost = 0_i16
-      best_term = best_terms[i]
+      best_size = 1
 
-      if best_ner_term = get_best_ner_term(table, i, terms)
-        terms << best_ner_term
+      @dict.each_wseg(chars, start: i) do |size, prio|
+        cost = prio &+ best_costs[i &+ size]
+        next if cost <= best_cost
+        best_cost = cost
+        best_size = size
       end
 
-      terms.each do |term|
-        cost = term.prio + best_costs[i + term.size]
+      char = chars.unsafe_fetch(i)
 
-        if cost > best_cost
-          best_cost = cost
-          best_term = term
-        end
+      if alnum?(char)
+        alnum += 1
+        ascii += 1
+        punct = 0
+      elsif ascii?(char)
+        ascii += 1
+        alnum = 0
+        punct = 0
+      elsif punct?(char)
+        alnum = 0
+        ascii = 0
+        punct += 1
+      else
+        alnum = 0
+        ascii = 0
+        punct = 0
+      end
+
+      {ascii, alnum, punct}.each do |size|
+        prio = TrieDict.calc_prio(size, 1_i16) &- 1
+        cost = prio &+ best_costs[i &+ size]
+        next if cost <= best_cost
+        best_cost = cost
+        best_size = size
       end
 
       best_costs[i] = best_cost
-      best_terms[i] = best_term
+      best_sizes[i] = best_size
     end
 
     # TODO: apply ner
 
-    tokens = [] of MtWseg
-    cursor = 0
+    words = [] of String
+    index = 0
 
-    while cursor < chars.size
-      best = best_terms[cursor]
-      tokens << best
-      cursor &+= best.zstr.size
+    while index <= upper
+      size = best_sizes[index]
+      words << chars[index, size].join
+      index += size
     end
 
-    tokens
+    words
   end
 
-  private def get_best_ner_term(table, index, terms)
-    best_term = nil
-    ner_terms = terms.reject(&.bner.none?)
+  # private def get_best_ner_term(table, index, terms)
+  #   best_term = nil
+  #   ner_terms = terms.reject(&.bner.none?)
 
-    while term = ner_terms.shift?
-      next unless tails = table[index + term.size]?
+  #   while term = ner_terms.shift?
+  #     next unless tails = table[index + term.size]?
 
-      tails.each do |tail|
-        new_bner = term.bner & tail.iner
-        next if new_bner.none?
+  #     tails.each do |tail|
+  #       new_bner = term.bner & tail.iner
+  #       next if new_bner.none?
 
-        new_term = MtWseg.new(
-          zstr: "#{term.zstr}#{tail.zstr}",
-          bner: new_bner,
-          iner: term.iner,
-          oner: tail.oner
-        )
+  #       new_term = MtWseg.new(
+  #         zstr: "#{term.zstr}#{tail.zstr}",
+  #         bner: new_bner,
+  #         iner: term.iner,
+  #         oner: tail.oner
+  #       )
 
-        ner_terms << new_term
-        next if (new_bner & ~tail.oner).none?
+  #       ner_terms << new_term
+  #       next if (new_bner & ~tail.oner).none?
 
-        next if best_term && (best_term.size > new_term.size || best_term.bner > new_bner)
-        best_term = new_term
-      end
-    end
+  #       next if best_term && (best_term.size > new_term.size || best_term.bner > new_bner)
+  #       best_term = new_term
+  #     end
+  #   end
 
-    best_term
-  end
+  #   best_term
+  # end
 end

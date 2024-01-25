@@ -14,7 +14,7 @@ module MT::TlUnit
     return unless zstr[0] == '一' && zstr[1] == zstr[2]
 
     qzstr = zstr[-1].to_s
-    qdefn = TrieDict.nqnt_vi.any_defn?(qzstr) || TrieDict.essence.any_defn?(qzstr)
+    qdefn = TrieDict.nqnt_vi.any_defn?(qzstr) || TrieDict.regular.any_defn?(qzstr)
 
     qvstr = qdefn.try(&.vstr) || qzstr
     "từng #{qvstr} từng #{qvstr}"
