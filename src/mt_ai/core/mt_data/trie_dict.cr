@@ -23,24 +23,14 @@ class MT::TrieDict
   end
 
   def self.add_term(dname : String, input : PgDefn)
-    return unless dict = CACHE[dname]?
-
-    node = dict.root[zstr]
-
-    defn = MtDefn.new(
-      vstr: input.vstr,
-      attr: input.attr,
-      dnum: MtDnum.from(input.d_id, input.plock)
-    )
-    node.add_data(defn)
-
-    node.data.try(&.delete(epos))
+    return unless node = CACHE[dname]?.try(&[zstr])
+    defn = MtDefn.new(vstr: input.vstr, attr: input.attr, dnum: MtDnum.from(input.d_id, input.plock))
+    node.add_data(defn) { TrieDict.calc_prio(input.zstr.size) }
   end
 
-  def self.delete_term(dname : String, zstr : String, epos : MtEpos)
+  def self.delete_term(dname : String, zstr : String, epos : MtEpos) : Nil
     return unless dict = CACHE[dname]?
-    return unless node = dict.root[zstr]?
-    node.data.try(&.delete(epos))
+    dict[zstr]?.try(&.delete(epos))
   end
 
   def self.delete_term(dname : String, zstr : String)
@@ -61,13 +51,33 @@ class MT::TrieDict
 
   def load_from_db3!(d_id = @d_id)
     SqDefn.query_each(d_id) do |zstr, epos, defn|
-      @root[zstr].add_data(epos, defn) { TrieDict.calc_prio(zstr.size) }
+      self.[zstr].add_data(epos, defn) { TrieDict.calc_prio(zstr.size) }
       @size &+= 1
     end
   end
 
   def self.calc_prio(size : Int32, prio : Int16 = 2)
     prio == 0 ? 0_i16 : size.to_i16 &* (prio &+ size.to_i16)
+  end
+
+  def [](zstr : String)
+    zstr.each_char.reduce(self.root) do |node, char|
+      succ = node.succ ||= {} of Char => Trie
+      # char = char - 32 if 'ａ' <= char <= 'ｚ'
+      succ[char] ||= Trie.new
+    end
+  end
+
+  def []?(zstr : String)
+    node = self.root
+
+    zstr.each_char do |char|
+      return unless succ = node.succ
+      char = char - 32 if 'ａ' <= char <= 'ｚ'
+      return unless node = succ[char]?
+    end
+
+    node
   end
 
   # def load_from_tsv!(name = @name)
@@ -81,19 +91,19 @@ class MT::TrieDict
   #   end
   # end
 
-  # @[AlwaysInline]
-  # def get_defn?(zstr : String, cpos : String)
-  #   @root.get_defn?(zstr: zstr, epos: MtEpos.parse(cpos))
-  # end
+  @[AlwaysInline]
+  def get_defn?(zstr : String, cpos : String)
+    get_defn?(zstr: zstr, epos: MtEpos.parse(cpos))
+  end
 
-  # @[AlwaysInline]
-  # def get_defn?(zstr : String, epos : MtEpos)
-  #   @root[zstr]?.try(&.data).try(&.[epos]?)
-  # end
+  @[AlwaysInline]
+  def get_defn?(zstr : String, epos : MtEpos)
+    self[zstr]?.try(&.get_defn?(epos))
+  end
 
   @[AlwaysInline]
   def any_defn?(zstr : String)
-    @root[zstr]?.try(&.any_defn?)
+    self[zstr]?.try(&.any_defn?)
   end
 
   def scan_wseg(input : Array(Char), start : Int32 = 0, &)
@@ -116,25 +126,6 @@ class MT::TrieDict
     property prio : Int16 = -1_i16
     property succ : Hash(Char, self)? = nil
     property data : Array(Data) | Data | Nil = nil
-
-    def [](zstr : String)
-      zstr.each_char.reduce(self) do |node, char|
-        succ = node.succ ||= {} of Char => Trie
-        # char = char - 32 if 'ａ' <= char <= 'ｚ'
-        succ[char] ||= Trie.new
-      end
-    end
-
-    def []?(zstr : String)
-      node = self
-
-      zstr.each_char do |char|
-        return unless succ = node.succ
-        return unless node = succ[char]?
-      end
-
-      node
-    end
 
     def add_data(epos : MtEpos, defn : MtDefn, &) : Nil
       new_data = Data.new(epos, defn)
@@ -171,6 +162,19 @@ class MT::TrieDict
       in Nil   then nil
       in Data  then data.defn
       in Array then data.first.defn
+      end
+    end
+
+    def delete(epos : MtEpos)
+      case data = @data
+      in Nil then return
+      in Data
+        return unless data.epos == epos
+        @data = nil
+        @prio = -1_i16 if @prio > 0
+      in Array
+        data.reject!(&.epos.== epos)
+        @data = data.first if data.size == 1
       end
     end
   end

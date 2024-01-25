@@ -19,23 +19,15 @@ class MT::MtDict
 
   def add_temp(zstr, vstr, attr, epos)
     defn = MtDefn.new(vstr: vstr, attr: attr, dnum: :auto0, fpos: epos)
-    @data.last.root[zstr].add_data(epos, defn) { TrieDict.calc_prio(zstr.size) }
+    @data.last[zstr].add_data(epos, defn) { TrieDict.calc_prio(zstr.size) }
     defn
-  end
-
-  def get_defn?(zstr : String)
-    @data.each do |trie|
-      next unless node = trie.root[zstr]?
-      defn = node.defn
-      return defn if defn
-    end
   end
 
   def get_defn?(zstr : String, epos : MtEpos)
     got = alt = nil
 
     @data.each do |trie|
-      next unless node = trie.root[zstr]?
+      next unless node = trie[zstr]?
       got, new_alt = node.get_defn?(epos)
       alt ||= new_alt
 

@@ -12,7 +12,6 @@ class MT::AiCore
 
     term.attr = :at_t
     return unless tail.zstr == "的"
-    pp [head, tail]
 
     case
     when head.attr.any?(MtAttr[Ndes, Ntmp])
