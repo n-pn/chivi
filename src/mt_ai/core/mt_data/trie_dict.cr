@@ -34,13 +34,13 @@ class MT::TrieDict
     )
     node.add_data(defn)
 
-    node.defs.try(&.delete(epos))
+    node.data.try(&.delete(epos))
   end
 
   def self.delete_term(dname : String, zstr : String, epos : MtEpos)
     return unless dict = CACHE[dname]?
     return unless node = dict.root[zstr]?
-    node.defs.try(&.delete(epos))
+    node.data.try(&.delete(epos))
   end
 
   def self.delete_term(dname : String, zstr : String)
@@ -88,7 +88,7 @@ class MT::TrieDict
 
   # @[AlwaysInline]
   # def get_defn?(zstr : String, epos : MtEpos)
-  #   @root[zstr]?.try(&.defs).try(&.[epos]?)
+  #   @root[zstr]?.try(&.data).try(&.[epos]?)
   # end
 
   @[AlwaysInline]
@@ -110,10 +110,12 @@ class MT::TrieDict
 
   ####
 
+  record Data, epos : MtEpos, defn : MtDefn
+
   class Trie
     property prio : Int16 = -1_i16
     property succ : Hash(Char, self)? = nil
-    property defs : {MtEpos, MtDefn} | Hash(MtEpos, MtDefn) | Nil = nil
+    property data : Array(Data) | Data | Nil = nil
 
     def [](zstr : String)
       zstr.each_char.reduce(self) do |node, char|
@@ -134,17 +136,16 @@ class MT::TrieDict
       node
     end
 
-    def add_data(epos : MtEpos, defn : MtDefn) : Nil
-      case prev = @defs
+    def add_data(epos : MtEpos, defn : MtDefn, &) : Nil
+      new_data = Data.new(epos, defn)
+
+      case data = @data
       in Nil
-        @defs = {epos, defn}
-      in Tuple(MtEpos, MtDefn)
-        @defs = {
-          prev[0] => prev[1],
-          epos    => defn,
-        }
-      in Hash
-        prev[epos] = defn
+        @data = new_data
+      in Data
+        @data = [data, new_data]
+      in Array
+        data << new_data
       end
 
       @prio = yield if @prio < 0
@@ -156,22 +157,20 @@ class MT::TrieDict
     end
 
     def get_defn?(epos : MtEpos)
-      case defs = @defs
+      case data = @data
       in Nil then {nil, nil}
-      in Tuple
-        {epos == defs[0] ? defs[1] : nil, defs[1]}
-      in Hash
-        {defs[epos]?, defs.first_value}
+      in Data
+        {epos == data.epos ? data.defn : nil, data.defn}
+      in Array
+        {data.find(&.epos.== epos).try(&.defn), data.first.defn}
       end
     end
 
     def any_defn?
-      case defs = @defs
-      in Nil then nil
-      in Tuple
-        defs[1]
-      in Hash
-        defs.first_value
+      case data = @data
+      in Nil   then nil
+      in Data  then data.defn
+      in Array then data.first.defn
       end
     end
   end
