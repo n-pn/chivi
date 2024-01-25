@@ -20,11 +20,14 @@ class MT::AiCore
       new_body.unshift(node)
     end
 
-    if new_body.size > 1 || !new_body.first.epos.np?
+    if new_body.size > 1
       term.body = new_body
-    else
+    elsif new_body.first.epos.np?
       term.attr |= new_body.first.attr
       term.body = new_body.first
+    else
+      term.body = new_body
+      term.attr |= new_body.first.attr
     end
 
     term
@@ -98,8 +101,8 @@ class MT::AiCore
     end
   end
 
-  private def cast_nn_tail_as_sufx(tail : MtAttr)
-  end
+  # private def cast_nn_tail_as_sufx(tail : MtAttr)
+  # end
 
   def init_np_term(orig : Array(MtNode), noun : MtNode, _pos : Int32 = orig.size - 2)
     attr = noun.attr.turn_off(MtAttr[Sufx, Undb])

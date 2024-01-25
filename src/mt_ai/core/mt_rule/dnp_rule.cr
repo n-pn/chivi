@@ -3,14 +3,16 @@
 class MT::AiCore
   def fix_dnp_pair!(term : MtNode, body : MtPair)
     head, tail = body.head, body.tail
+    body.flip = true
 
-    if head.attr.at_h?
+    if !head.epos.noun? && head.attr.at_h?
       term.attr = :at_h
       return
     end
 
-    body.flip = true
-    return unless tail.zstr == "的" && tail.epos.deg?
+    term.attr = :at_t
+    return unless tail.zstr == "的"
+    pp [head, tail]
 
     case
     when head.attr.any?(MtAttr[Ndes, Ntmp])
@@ -22,8 +24,6 @@ class MT::AiCore
     else
       tail.body = MtDefn::DEG0
     end
-
-    term.attr = :at_t
   end
 
   private def dnp_head_is_sv_ip?(body)
