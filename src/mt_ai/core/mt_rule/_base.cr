@@ -16,10 +16,12 @@ class MT::AiCore
       TlUnit.translate_mq(zstr) || QtCore.tl_hvword(zstr)
     when epos.nr?
       @name_qt.translate(zstr, cap: true)
+    when epos.nn?
+      @qt_core.tl_noun(zstr)
     else
       # TODO: change to fast translation mode
       # TODO: handle verb/noun/adjt translation
-      QtCore.tl_hvword(zstr)
+      @qt_core.translate(zstr, false)
     end
   end
 

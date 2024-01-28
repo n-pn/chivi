@@ -88,6 +88,24 @@ class MT::MtNode
     end
   end
 
+  def inner_head
+    case body = @body
+    in MtDefn then self
+    in MtNode then body
+    in MtPair then body.head.inner_head
+    in Array  then body.first.inner_head
+    end
+  end
+
+  def inner_tail
+    case body = @body
+    in MtDefn then self
+    in MtNode then body
+    in MtPair then body.tail.inner_tail
+    in Array  then body.last.inner_tail
+    end
+  end
+
   ###
 
   def each_child(& : self ->)

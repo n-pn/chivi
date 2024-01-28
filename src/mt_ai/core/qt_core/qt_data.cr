@@ -30,9 +30,10 @@ class MT::QtData < Array(MT::QtNode)
   def to_json(jb : JSON::Builder) : Nil
     jb.array do
       jb.string "TOP"
+      jb.string ""
+
       jb.number 0
       jb.number self.sum(&.zstr.size)
-      jb.string ""
 
       jb.array do
         self.each { |node| node.to_json(jb) }

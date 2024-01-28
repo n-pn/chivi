@@ -12,7 +12,7 @@ class MT::AiCore
     end
 
     if match_any && (orig.is_a?(String) || (orig.size > 1 && epos.can_use_alt?))
-      body = match_any.as_any
+      body = match_any.as_any(epos)
       return MtNode.new(body: body, zstr: zstr, epos: epos, attr: attr, from: from)
     end
 

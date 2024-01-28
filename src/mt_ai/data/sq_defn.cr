@@ -20,7 +20,7 @@ struct MT::SqDefn
     ) strict, without rowid;
     SQL
 
-  DIR = ENV["MT_DIR"]? || "var/mtdic/mdata"
+  DIR = ENV["MT_DIR"]? || "var/mt_db/mdata"
 
   def self.db_path(d_id : Int32)
     "#{DIR}/#{d_id % 10}.db3"

@@ -15,6 +15,8 @@ class MT::AiCore
 
   def initialize(pdict : String)
     @mt_dict = MtDict.for_mt(pdict)
+    @qt_core = QtCore.new(@mt_dict)
+
     @name_qt = QtCore.new(MtDict.hv_name(pdict))
   end
 

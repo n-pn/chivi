@@ -3,15 +3,15 @@ require "./mt_data/*"
 
 class MT::MtDict
   def self.for_qt(pdict : String)
-    new([TrieDict.load!(pdict), TrieDict.essence, TrieDict.new(pdict)])
+    new([TrieDict.load!(pdict), TrieDict.essence])
   end
 
   def self.for_mt(pdict : String)
-    new([TrieDict.load!(pdict), TrieDict.regular, TrieDict.essence, TrieDict.suggest])
+    new([TrieDict.load!(pdict), TrieDict.regular, TrieDict.suggest])
   end
 
   def self.hv_name(pdict : String)
-    new([TrieDict.load!(pdict), TrieDict.name_hv])
+    new([TrieDict.load!(pdict), TrieDict.essence])
   end
 
   def initialize(@data : Array(TrieDict))

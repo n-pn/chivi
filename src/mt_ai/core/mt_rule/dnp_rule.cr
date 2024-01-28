@@ -13,6 +13,9 @@ class MT::AiCore
     term.attr = :at_t
     return unless tail.zstr == "的"
 
+    head_body = head.body
+    head = head_body if head_body.is_a?(MtNode)
+
     case
     when head.attr.any?(MtAttr[Ndes, Ntmp])
       tail.body = MtDefn::DEG0
@@ -21,6 +24,7 @@ class MT::AiCore
     when head.epos.ip? && dnp_head_is_sv_ip?(head.body)
       tail.body = MtDefn::DEG2
     else
+      pp [head, tail]
       tail.body = MtDefn::DEG0
     end
   end

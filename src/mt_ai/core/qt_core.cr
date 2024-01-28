@@ -25,6 +25,30 @@ class MT::QtCore
     @wseg_core = WsCore.new(dict)
   end
 
+  NOUN_SF = {
+    "感" => {"cảm giác", true},
+    "贼" => {"giặc", true},
+  }
+
+  NOUN_SF_RE = /(.+)(#{NOUN_SF.keys.join('|')})$/
+
+  def tl_noun(zstr : String)
+    String.build do |io|
+      if match = NOUN_SF_RE.match(zstr)
+        _, zstr, sf_zstr = match
+        sf_vstr, sf_flip = NOUN_SF[sf_zstr]
+
+        if sf_flip
+          io << sf_vstr << ' '
+          sf_vstr = nil
+        end
+      end
+
+      parse!(zstr).to_txt(io: io, cap: false)
+      io << ' ' << sf_vstr if sf_vstr
+    end
+  end
+
   def translate(str : String, cap : Bool = true)
     parse!(str).to_txt(cap: cap)
   end

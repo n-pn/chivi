@@ -9,11 +9,6 @@ class MT::AiCore
 
   # ameba:disable Metrics/CyclomaticComplexity
   def fix_vp_node!(vp_node : MtNode, vp_body : Array(MtNode)) : MtNode
-    if vp_body.last.zstr == "了"
-      vp_body.last.body = "rồi"
-      vp_body.last.epos = :SP
-    end
-
     pos, max = 0, vp_body.size
     preps = [] of MtNode
 
@@ -54,7 +49,7 @@ class MT::AiCore
       when .np?
         vp_node = init_vp_np_pair(vp_node, np_node: node, vv_node: vv_node)
         pos &+= 1
-      when .vv?, .ip?, .vp?, .pp?
+      when .vv?, .ip?, .vp?, .pp?, .advp?
         # TODO: handle join
         vp_node = init_vp_ip_pair(vp_node, ip_node: node, vv_node: vv_node)
         pos &+= 1
@@ -143,14 +138,22 @@ class MT::AiCore
         when "不想"
           vv_node.body = "không muốn"
         when "会"
-          vv_node.body = "sẽ"
+          vv_node.body = ip_is_skill?(ip_node) ? "biết" : "sẽ"
         when "不会"
-          vv_node.body = "sẽ không"
+          vv_node.body = ip_is_skill?(ip_node) ? "không biết" : "sẽ không"
         end
       end
 
       MtPair.new(vp_node, ip_node, flip: false)
     end
+  end
+
+  private def ip_is_skill?(ip_node, ip_body = ip_node.body)
+    return false unless ip_node.epos.vp?
+    # TODO: check for combined case
+
+    return false unless ip_body.is_a?(MtPair)
+    ip_body.head.epos.verb? && ip_body.tail.epos.verb?
   end
 
   private def init_vp_qp_pair(vp_node, qp_node, vv_node)

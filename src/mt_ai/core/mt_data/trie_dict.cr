@@ -46,7 +46,7 @@ class MT::TrieDict
     return if reset
 
     time = Time.measure { self.load_from_db3!(@d_id) }
-    Log.info { "loading #{name} trie: #{time.total_milliseconds}ms, entries: #{@size}" }
+    Log.info { "loading [#{name}]: #{time.total_milliseconds}ms, total: #{@size}" }
   end
 
   def load_from_db3!(d_id = @d_id)
@@ -63,7 +63,7 @@ class MT::TrieDict
   def [](zstr : String)
     zstr.each_char.reduce(self.root) do |node, char|
       succ = node.succ ||= {} of Char => Trie
-      # char = char - 32 if 'ａ' <= char <= 'ｚ'
+      # char = char - 32 if 'ａ' <= char <= 'ｚ'debug
       succ[char] ||= Trie.new
     end
   end
