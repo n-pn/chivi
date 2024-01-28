@@ -17,40 +17,50 @@ class MT::QtCore
     self.pin_yin.translate(str, cap: cap)
   end
 
+  class_getter pin_yin : self { new(MtDict.for_qt("pin_yin")) }
   class_getter hv_word : self { new(MtDict.for_qt("word_hv")) }
   class_getter hv_name : self { new(MtDict.for_qt("name_hv")) }
-  class_getter pin_yin : self { new(MtDict.for_qt("pin_yin")) }
+
+  class_getter name_qt : self { new(MtDict.name_hv("combine")) }
+  class_getter noun_qt : self { new(MtDict.for_mt("noun_vi")) }
+  class_getter verb_qt : self { new(MtDict.for_mt("verb_vi")) }
+  class_getter adjt_qt : self { new(MtDict.for_mt("adjt_vi")) }
+  class_getter nqmt_qt : self { new(MtDict.for_mt("nqmt_vi")) }
 
   def initialize(@dict : MtDict)
     @wseg_core = WsCore.new(dict)
   end
 
-  NOUN_SF = {
-    "感" => {"cảm giác", true},
-    "贼" => {"giặc", true},
-  }
-
-  NOUN_SF_RE = /(.+)(#{NOUN_SF.keys.join('|')})$/
-
   def tl_noun(zstr : String)
-    String.build do |io|
-      if match = NOUN_SF_RE.match(zstr)
-        _, zstr, sf_zstr = match
-        sf_vstr, sf_flip = NOUN_SF[sf_zstr]
+    list = parse!("∅#{zstr}∅")
+    list.shift if list.first.zstr == "∅"
+    list.pop if list.last.zstr == "∅"
 
-        if sf_flip
-          io << sf_vstr << ' '
-          sf_vstr = nil
-        end
-      end
+    # collect attr from last word
+    attr = list.last.attr
 
-      parse!(zstr).to_txt(io: io, cap: false)
-      io << ' ' << sf_vstr if sf_vstr
+    # swapping order
+    # note: do not swap special words
+
+    from = list[0].has_attr?(MtAttr[Prfx, At_h]) ? 1 : 0
+    upto = list.size - 1
+    upto -= 1 if list.last.has_attr?(MtAttr[Sufx, At_t])
+
+    from.upto((upto &- from) // 2) do |i|
+      j = upto &- i &+ from
+      list[i], list[j] = list[j], list[i]
     end
+
+    {list.to_txt(cap: false), attr}
   end
 
-  def translate(str : String, cap : Bool = true)
-    parse!(str).to_txt(cap: cap)
+  @[AlwaysInline]
+  def tl_term(zstr : String)
+    parse!("∅#{zstr}∅").to_txt(cap: false)
+  end
+
+  def translate(zstr : String, cap : Bool = true)
+    parse!(zstr).to_txt(cap: cap)
   end
 
   def to_mtl(str : String)

@@ -44,7 +44,6 @@ class MT::TrieDict
   def initialize(@name : String, reset : Bool = false)
     @d_id = MtDtyp.map_id(name)
     return if reset
-
     time = Time.measure { self.load_from_db3!(@d_id) }
     Log.info { "loading [#{name}]: #{time.total_milliseconds}ms, total: #{@size}" }
   end

@@ -17,7 +17,7 @@ class MT::AiCore
     end
 
     if orig.is_a?(String)
-      vstr = translate_str(zstr, epos)
+      vstr, attr = init_from_zstr(zstr, epos, attr)
       body = @mt_dict.add_temp(zstr, vstr, attr, epos)
       return MtNode.new(body: body, zstr: zstr, epos: epos, attr: attr, from: from)
     end

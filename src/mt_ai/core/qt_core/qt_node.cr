@@ -13,6 +13,11 @@ struct MT::QtNode
   def initialize(@zstr, @vstr, @attr, @_idx, @_dic = 0_i8)
   end
 
+  @[AlwaysInline]
+  def has_attr?(attr : MtAttr)
+    @attr.includes?(attr)
+  end
+
   def to_txt(io : IO, cap : Bool, und : Bool)
     io << ' ' unless @attr.undent?(und)
     @attr.render_vstr(io, @vstr, cap, und)

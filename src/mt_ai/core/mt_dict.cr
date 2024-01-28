@@ -11,7 +11,7 @@ class MT::MtDict
   end
 
   def self.hv_name(pdict : String)
-    new([TrieDict.load!(pdict), TrieDict.essence])
+    new([TrieDict.load!(pdict), TrieDict.name_hv, TrieDict.essence])
   end
 
   def initialize(@data : Array(TrieDict))

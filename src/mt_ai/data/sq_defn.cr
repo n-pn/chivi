@@ -57,14 +57,13 @@ struct MT::SqDefn
     @attr = MtAttr.parse_list(zterm.attr).to_i
     @fpos = MtEpos.parse(zterm.fixp).to_i unless zterm.fixp.empty?
 
-    dtype = zterm.d_id % 10 < 4 ? 2_i8 : 1_i8
     plock = zterm.plock.to_i8 > 0 ? 1_i8 : 0_i8
-    @dnum = MtDnum.from(zterm.d_id, zterm.plock).to_i
+    @dnum = MtDnum.from(zterm.d_id, plock).to_i
   end
 
   def initialize(@d_id, @epos, @zstr,
                  @vstr = TextUtil.normalize(zstr),
-                 @attr = :none, @dnum = :unknown_0)
+                 @attr = 0, @dnum = :unknown_0)
   end
 
   def self.query_each(d_id : Int32, & : (String, MtEpos, MtDefn) ->)

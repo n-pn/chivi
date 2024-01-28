@@ -40,14 +40,22 @@ class MT::MtNode
     end
   end
 
+  @[AlwaysInline]
   def body=(@body : MtDefn)
     @attr = body.attr
   end
 
+  @[AlwaysInline]
   def body=(vstr : String)
     @body = MtDefn.new(vstr, dnum: :Root2)
   end
 
+  @[AlwaysInline]
+  def has_attr?(attr : MtAttr)
+    @attr.includes?(attr)
+  end
+
+  @[AlwaysInline]
   def attr_off(attr : MtAttr)
     @attr = @attr & ~attr
   end

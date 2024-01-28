@@ -3,10 +3,9 @@ require "../../src/mt_ai/core/qt_core"
 
 time = Time.monotonic
 
-TEXT = ARGV[0]? || "他也懒得计较，大大方方地点了点头，反正他也不是什么知名人物，就算露个脸也没什么关系。"
-D_ID = ARGV[1]?.try(&.to_i) || 5344
+TEXT = ARGV[0]? || "“你不是来晚了，是看傻了吧。”她的语气从刚刚的悲愤已然转化成了明显的埋怨。但很快她就发现自己有些失态，很快就把那股埋怨藏了起来。"
 
-QT_MT = MT::QtCore.new("wn5344", "regular")
+QT_MT = MT::QtCore.new(MT::MtDict.for_mt("wn5344"))
 
 puts "Dict loading time: #{(Time.monotonic - time).total_milliseconds.round}ms".colorize.red
 

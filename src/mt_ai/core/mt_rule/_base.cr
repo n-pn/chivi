@@ -3,26 +3,34 @@ require "../mt_util/*"
 require "../mt_dict"
 
 class MT::AiCore
-  def translate_str(zstr : String, epos : MtEpos) : String
+  def init_from_zstr(zstr : String, epos : MtEpos, attr : MtAttr = :none) : {String, MtAttr}
     case
-    when epos.em? then zstr
+    when epos.em?
+      vstr = zstr
     when epos.pu?, epos.url?
-      CharUtil.normalize(zstr)
+      vstr = CharUtil.normalize(zstr)
     when epos.od?
-      TlUnit.translate_od(zstr)
+      vstr = TlUnit.translate_od(zstr)
     when epos.cd?
-      TlUnit.translate_od(zstr)
+      vstr = TlUnit.translate_od(zstr)
     when epos.qp?
-      TlUnit.translate_mq(zstr) || QtCore.tl_hvword(zstr)
+      vstr = TlUnit.translate_mq(zstr) || QtCore.tl_hvword(zstr)
     when epos.nr?
-      @name_qt.translate(zstr, cap: true)
-    when epos.nn?
-      @qt_core.tl_noun(zstr)
+      vstr = @name_qt.translate(zstr, cap: true)
+    when epos.noun?
+      vstr, noun_attr = QtCore.noun_qt.tl_noun(zstr)
+      attr |= noun_attr
+    when epos.verb?
+      vstr = QtCore.verb_qt.tl_term(zstr)
+    when epos.adjt?
+      vstr = QtCore.adjt_qt.tl_term(zstr)
     else
       # TODO: change to fast translation mode
       # TODO: handle verb/noun/adjt translation
-      @qt_core.translate(zstr, false)
+      vstr = @qt_core.translate(zstr, false)
     end
+
+    {vstr, attr}
   end
 
   private def init_pair_node(head : MtNode, tail : MtNode,
@@ -59,7 +67,7 @@ class MT::AiCore
     match, _fuzzy = @mt_dict.get_defn?(zstr, epos)
     return match if match
 
-    return unless vstr = translate_str(zstr, epos)
+    vstr, attr = init_from_zstr(zstr, epos, attr)
     @mt_dict.add_temp(zstr, vstr, attr, epos)
   end
 end

@@ -1,6 +1,5 @@
 require "sqlite3"
-
-INP_PATH = "/2tb/app.chivi/var/mtapp/v1dic/v1_defns.dic"
+require "../../../src/mt_ai/data/zv_defn"
 
 struct Input
   include DB::Serializable
@@ -13,33 +12,19 @@ struct Input
   getter val : String = ""
 
   getter ptag : String = ""
-  getter rank : Int32 = 2
 
   # getter uname : String = ""
-  # getter mtime : Int32 = 0
-
-  SPLIT = 'ǀ'
-
-  def to_term
-    cpos, attr = map_tag(@ptag)
-
-    {
-      zstr: @key,
-      cpos: cpos,
-      vstr: @val.split(SPLIT).first.strip,
-      attr: attr,
-    }
-  end
+  getter mtime : Int32 = 0
 
   MAP = {
-    "Na"       => {"NR", MT::MtAttr[Nloc, Npos]},
-    "Nag"      => {"NR", MT::MtAttr[Nloc, Npos]},
-    "Nal"      => {"NR", MT::MtAttr[Nloc, Npos]},
+    "Na"       => {"NR", MT::MtAttr[Nloc]},
+    "Nag"      => {"NR", MT::MtAttr[Nloc]},
+    "Nal"      => {"NR", MT::MtAttr[Nloc]},
     "Nl"       => {"NR", MT::MtAttr[Ndes]},
-    "Nr"       => {"NR", MT::MtAttr[Nper, Npos]},
-    "Nrf"      => {"NR", MT::MtAttr[Nper, Npos]},
-    "Nw"       => {"NR", MT::MtAttr[Npos]},
-    "Nz"       => {"NR", MT::MtAttr[Npos]},
+    "Nr"       => {"NR", MT::MtAttr[Nper]},
+    "Nrf"      => {"NR", MT::MtAttr[Nper]},
+    "Nw"       => {"NR", MT::MtAttr[None]},
+    "Nz"       => {"NR", MT::MtAttr[None]},
     "[\"vi\"]" => {"VV", MT::MtAttr[Vint]},
     "a"        => {"VA", MT::MtAttr[None]},
     "ab"       => {"JJ", MT::MtAttr[None]},
@@ -72,17 +57,17 @@ struct Input
     "ng"       => {"NN", MT::MtAttr[Sufx]},
     "nh"       => {"NN", MT::MtAttr[Nper, Sufx]},
     "nj"       => {"NN", MT::MtAttr[None]},
-    "nl"       => {"NP", MT::MtAttr[Npos]},
-    "nn"       => {"NN", MT::MtAttr[Npos]},
-    "no"       => {"NN", MT::MtAttr[Npos]},
+    "nl"       => {"NP", MT::MtAttr[None]},
+    "nn"       => {"NN", MT::MtAttr[None]},
+    "no"       => {"NN", MT::MtAttr[None]},
     "np"       => {"NP", MT::MtAttr[None]},
-    "nr"       => {"NR", MT::MtAttr[Nper, Npos]},
-    "nr 3"     => {"NR", MT::MtAttr[Nper, Npos]},
-    "nr 4"     => {"NR", MT::MtAttr[Nper, Npos]},
+    "nr"       => {"NR", MT::MtAttr[Nper]},
+    "nr 3"     => {"NR", MT::MtAttr[Nper]},
+    "nr 4"     => {"NR", MT::MtAttr[Nper]},
     "ns"       => {"NN", MT::MtAttr[Nloc, Ndes]},
     "nt"       => {"NT", MT::MtAttr[Ntmp]},
-    "nv"       => {"NN", MT::MtAttr[Npos]},
-    "nz"       => {"NN", MT::MtAttr[Npos]},
+    "nv"       => {"NN", MT::MtAttr[None]},
+    "nz"       => {"NN", MT::MtAttr[None]},
     "p"        => {"P", MT::MtAttr[None]},
     "pba"      => {"P", MT::MtAttr[None]},
     "pbei"     => {"SB", MT::MtAttr[None]},
@@ -92,7 +77,7 @@ struct Input
     "qv"       => {"M", MT::MtAttr[None]},
     "qx"       => {"M", MT::MtAttr[None]},
     "r"        => {"PN", MT::MtAttr[None]},
-    "rr"       => {"PN", MT::MtAttr[Nper, Npos]},
+    "rr"       => {"PN", MT::MtAttr[Nper]},
     "ry"       => {"PN", MT::MtAttr[Pn_d]},
     "rz"       => {"PN", MT::MtAttr[Pn_i]},
     "u"        => {"MSP", MT::MtAttr[None]},
@@ -152,11 +137,39 @@ struct Input
   def map_tag(ptag : String)
     MAP[ptag] ||= {"X", MT::MtAttr::None}
   end
+
+  SPLIT = 'ǀ'
+
+  def to_tsv(io : IO)
+    cpos, attr = map_tag(@ptag)
+    vstr = @val.split(SPLIT).first.strip
+    {@key, cpos, vstr, attr}.join(io, '\t')
+  end
 end
 
+INP_PATH = "/2tb/app.chivi/var/mtapp/v1dic/v1_defns.dic"
 inputs = DB.open("sqlite3:#{INP_PATH}?immutable=1") do |db|
-  query = "select * from defns where rank > 0 and flag >= 0 and val <> '' order by mtime desc"
+  query = "select * from defns where dic > -2 and prio > 0 and _flag >= 0 and val <> '' order by mtime desc"
   db.query_all(query, as: Input)
 end
 
-inputs.uniq! { |x| {x.dic, x.key} }
+OUT_DIR = "var/mtdic/mt_v1"
+Dir.mkdir_p(OUT_DIR)
+
+File.delete?("#{OUT_DIR}/regular.tsv")
+File.delete?("#{OUT_DIR}/combine.tsv")
+
+inputs.group_by(&.dic).each do |d_id, terms|
+  dname = d_id < 0 ? "regular" : "combine"
+  dpath = "#{OUT_DIR}/#{dname}.tsv"
+  terms.uniq!(&.key).sort!(&.mtime)
+
+  File.open(dpath, "a") do |file|
+    terms.each do |term|
+      term.to_tsv(file)
+      file.puts
+    end
+  end
+
+  puts "#{dpath}: #{terms.size} saved!"
+end

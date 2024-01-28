@@ -24,7 +24,6 @@ class MT::AiCore
     when head.epos.ip? && dnp_head_is_sv_ip?(head.body)
       tail.body = MtDefn::DEG2
     else
-      pp [head, tail]
       tail.body = MtDefn::DEG0
     end
   end
