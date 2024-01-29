@@ -78,7 +78,7 @@ class MT::WsCore
       end
 
       {ascii, alnum, punct}.each do |size|
-        prio = TrieDict.calc_prio(size, 1_i16) &- 1
+        prio = MtDefn.calc_prio(size, 1_i16) &- 1
         cost = prio &+ best_costs[i &+ size]
         next if cost <= best_cost
         best_cost = cost

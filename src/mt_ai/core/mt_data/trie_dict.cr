@@ -17,31 +17,22 @@ class MT::TrieDict
     CACHE[name] ||= new(name)
   end
 
-  def self.add_term(dname : String, wterm : MtWseg)
-    return unless dict = CACHE[dname]?
-    dict[wstem.zstr] = wterm
+  @[AlwaysInline]
+  def self.add_defn(dname : String, input : SqDefn)
+    CACHE[dname]?.try(&.add(input))
   end
 
-  def self.add_term(dname : String, input : PgDefn)
-    return unless node = CACHE[dname]?.try(&[zstr])
-    defn = MtDefn.new(vstr: input.vstr, attr: input.attr, dnum: MtDnum.from(input.d_id, input.plock))
-    node.add_data(defn) { TrieDict.calc_prio(input.zstr.size) }
+  @[AlwaysInline]
+  def self.del_defn(dname : String, input : SqDefn) : Nil
+    CACHE[dname]?.try(&.delete(input))
   end
 
-  def self.delete_term(dname : String, zstr : String, epos : MtEpos) : Nil
-    return unless dict = CACHE[dname]?
-    dict[zstr]?.try(&.delete(epos))
-  end
-
-  def self.delete_term(dname : String, zstr : String)
-    CACHE[dname]?.try(&.[zstr] = nil)
-  end
-
+  getter name : String
   getter root = Trie.new
   getter size = 0
   getter d_id : Int32
 
-  def initialize(@name : String, reset : Bool = false)
+  def initialize(@name, reset : Bool = false)
     @d_id = MtDtyp.map_id(name)
     return if reset
     time = Time.measure { self.load_from_db3!(@d_id) }
@@ -49,15 +40,33 @@ class MT::TrieDict
   end
 
   def load_from_db3!(d_id = @d_id)
-    SqDefn.query_each(d_id) do |zstr, epos, defn|
-      self.[zstr].add_data(epos, defn) { TrieDict.calc_prio(zstr.size) }
+    SqDefn.query_each(d_id) do |zstr, defn|
+      self[zstr].add_data(defn) { MtDefn.calc_prio(zstr.size) }
       @size &+= 1
     end
   end
 
-  def self.calc_prio(size : Int32, prio : Int16 = 2)
-    prio == 0 ? 0_i16 : size.to_i16 &* (prio &+ size.to_i16)
+  @[AlwaysInline]
+  def add(defn : SqDefn)
+    self.add(defn.zstr, MtDefn.new(defn))
   end
+
+  @[AlwaysInline]
+  def add(zstr : String, defn : MtDefn)
+    self[zstr].add_data(defn) { MtDefn.calc_prio(zstr.size) }
+  end
+
+  @[AlwaysInline]
+  def delete(defn : SqDefn)
+    self.delete(defn.zstr, MtEpos.from_value(defn.epos))
+  end
+
+  @[AlwaysInline]
+  def delete(zstr : String, epos : MtEpos)
+    self[zstr]?.try(&.delete(epos))
+  end
+
+  ####
 
   def [](zstr : String)
     zstr.each_char.reduce(self.root) do |node, char|
@@ -119,26 +128,40 @@ class MT::TrieDict
 
   ####
 
-  record Data, epos : MtEpos, defn : MtDefn
-
   class Trie
     property prio : Int16 = -1_i16
     property succ : Hash(Char, self)? = nil
-    property data : Array(Data) | Data | Nil = nil
+    property data : Array(MtDefn) | MtDefn | Nil = nil
 
-    def add_data(epos : MtEpos, defn : MtDefn, &) : Nil
-      new_data = Data.new(epos, defn)
+    def add_data(defn : MtDefn, &) : Nil
+      @prio = yield if @prio < 0
+
+      if defn.rank > 2
+        @data = defn
+        return
+      end
 
       case data = @data
       in Nil
-        @data = new_data
-      in Data
-        @data = [data, new_data]
+        @data = defn
+      in MtDefn
+        @data = [data, defn]
       in Array
-        data << new_data
+        data << defn
       end
+    end
 
-      @prio = yield if @prio < 0
+    def delete(epos : MtEpos)
+      case data = @data
+      in Nil then return
+      in MtDefn
+        return unless data.epos == epos
+        @data = nil
+        @prio = -1_i16 if @prio > 0
+      in Array
+        data.reject!(&.epos.== epos)
+        @data = data.first if data.size == 1
+      end
     end
 
     @[AlwaysInline]
@@ -149,31 +172,18 @@ class MT::TrieDict
     def get_defn?(epos : MtEpos)
       case data = @data
       in Nil then {nil, nil}
-      in Data
-        {epos == data.epos ? data.defn : nil, data.defn}
+      in MtDefn
+        {epos == data.epos ? data : nil, data}
       in Array
-        {data.find(&.epos.== epos).try(&.defn), data.first.defn}
+        {data.find(&.epos.== epos), data.first}
       end
     end
 
     def any_defn?
       case data = @data
-      in Nil   then nil
-      in Data  then data.defn
-      in Array then data.first.defn
-      end
-    end
-
-    def delete(epos : MtEpos)
-      case data = @data
-      in Nil then return
-      in Data
-        return unless data.epos == epos
-        @data = nil
-        @prio = -1_i16 if @prio > 0
-      in Array
-        data.reject!(&.epos.== epos)
-        @data = data.first if data.size == 1
+      in Nil    then nil
+      in MtDefn then data
+      in Array  then data.first
       end
     end
   end

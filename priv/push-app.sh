@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-export GC_INITIAL_HEAP_SIZE=4G
 export OUT=/2tb/app.chivi
 
 for target in "$@"

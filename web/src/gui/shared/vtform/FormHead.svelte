@@ -8,8 +8,6 @@
   export let rline: Rdline
   export let rword: Rdword
 
-  const rorig = rword.copy()
-
   $: chars = Array.from(rline.ztext)
   $: zsize = chars.length
 

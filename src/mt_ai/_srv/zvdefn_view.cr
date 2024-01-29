@@ -1,6 +1,6 @@
 require "../data/pg_dict"
 
-class MT::ZvtermView
+class MT::ZvdefnView
   def self.fetch_all(
     d_id : Int32,
     zstr : String? = nil,

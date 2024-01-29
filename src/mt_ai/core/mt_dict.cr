@@ -2,12 +2,16 @@ require "bit_array"
 require "./mt_data/*"
 
 class MT::MtDict
-  def self.for_qt(pdict : String)
-    new([TrieDict.load!(pdict), TrieDict.essence])
+  def self.for_mt(pdict : String, udict : String)
+    new([TrieDict.load!(udict), TrieDict.load!(pdict), TrieDict.regular])
   end
 
   def self.for_mt(pdict : String)
     new([TrieDict.load!(pdict), TrieDict.regular, TrieDict.suggest])
+  end
+
+  def self.for_qt(pdict : String)
+    new([TrieDict.load!(pdict), TrieDict.essence])
   end
 
   def self.hv_name(pdict : String)
@@ -15,11 +19,12 @@ class MT::MtDict
   end
 
   def initialize(@data : Array(TrieDict))
+    Log.info { @data.map(&.name) }
   end
 
   def add_temp(zstr, vstr, attr, epos)
-    defn = MtDefn.new(vstr: vstr, attr: attr, dnum: :auto0, fpos: epos)
-    @data.last[zstr].add_data(epos, defn) { TrieDict.calc_prio(zstr.size) }
+    defn = MtDefn.new(vstr: vstr, attr: attr, dnum: :auto_tmp, epos: epos)
+    @data.last[zstr].add_data(defn) { MtDefn.calc_prio(zstr.size) }
     defn
   end
 

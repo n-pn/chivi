@@ -9,12 +9,12 @@ require "./mt_rule/*"
 class MT::AiCore
   CACHE = {} of String => self
 
-  def self.load(pdict : String)
-    CACHE[pdict] ||= new(pdict)
+  def self.load(pdict : String, udict : String = "qt0")
+    CACHE["#{pdict}-#{udict}"] ||= new(pdict, udict: udict)
   end
 
-  def initialize(pdict : String)
-    @mt_dict = MtDict.for_mt(pdict)
+  def initialize(pdict : String, udict : String = "qt0")
+    @mt_dict = MtDict.for_mt(pdict, udict)
     @qt_core = QtCore.new(@mt_dict)
 
     @name_qt = QtCore.new(MtDict.hv_name(pdict))

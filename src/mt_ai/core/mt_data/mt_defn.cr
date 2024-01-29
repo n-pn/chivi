@@ -7,29 +7,47 @@ struct MT::MtDefn
 
   ###
 
-  DEG0 = new(vstr: "", attr: MtAttr[Hide, At_t], dnum: :Root2, fpos: :DEG)
-  DEG1 = new(vstr: "của", attr: :at_t, dnum: :Root2, fpos: :DEG)
-  DEG2 = new(vstr: "do", attr: :at_t, dnum: :Root2, fpos: :DEG)
+  DEG0 = new(vstr: "", attr: MtAttr[Hide, At_t], dnum: :auto_fix, epos: :DEG)
+  DEG1 = new(vstr: "của", attr: :at_t, dnum: :auto_fix, epos: :DEG)
+  DEG2 = new(vstr: "do", attr: :at_t, dnum: :auto_fix, epos: :DEG)
 
   ###
 
   getter vstr : String
 
   getter attr : MtAttr = MtAttr::None
-  getter dnum : MtDnum = MtDnum::Unkn0
+  getter dnum : MtDnum = MtDnum::UserTmp
 
-  getter fpos : MtEpos = MtEpos::X
+  getter epos : MtEpos = MtEpos::X
+  getter rank : Int8 = 0_i8
 
   def initialize(char : Char)
     @vstr = char.to_s
     @attr = MtAttr.parse(char)
   end
 
-  def initialize(@vstr, @attr = :none, @dnum = :unkn0, @fpos = :X)
+  def initialize(@vstr, @attr = :none, @dnum = :user_tmp, @epos = :X, @rank = 0_i8)
   end
 
-  def as_any(fpos : MtEpos = @fpos)
-    MtDefn.new(vstr: @vstr, attr: :none, dnum: @dnum.as_any, fpos: fpos)
+  def initialize(rs : DB::ResultSet)
+    @vstr = rs.read(String)
+
+    @epos = MtEpos.from_value(rs.read(Int32))
+    @attr = MtAttr.from_value(rs.read(Int32))
+    @dnum = MtDnum.from_value(rs.read(Int32))
+    @rank = rs.read(Int32).to_i8
+  end
+
+  def initialize(data : SqDefn)
+    @vstr = data.zstr
+    @epos = MtEpos.from_value(data.epos)
+    @attr = MtAttr.from_value(data.attr)
+    @dnum = MtDnum.from_value(data.dnum)
+    @rank = data.rank.to_i8
+  end
+
+  def as_any(epos : MtEpos = @epos)
+    MtDefn.new(vstr: @vstr, attr: :none, dnum: @dnum.as_any, epos: epos)
   end
 
   # def to_txt(io : IO, cap : Bool, und : Bool)

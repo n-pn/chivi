@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-export GC_INITIAL_HEAP_SIZE=4G
+export OUT=/2tb/dev.chivi
 
 for target in "$@"
 do
@@ -9,14 +9,10 @@ do
 
   if [[ $target == "cvweb" ]]
   then
-    cd web && pnpm run build
-    rsync -ai --no-p build/ /2tb/dev.chivi/web/
+    cd web && pnpm run build && rsync -ai --no-p build/ $OUT/web/
     cd ..
-  elif [[ $target == "hanlp" ]]
-  then
-    cp -f "src/mt_ai/hanlp-srv.py" /2tb/dev.chivi/bin
   else
-    crystal build -s --release --mcpu native src/$target/$target-srv.cr -o /2tb/dev.chivi/bin/$target-srv
+    crystal build -s --release --mcpu native src/$target/$target-srv.cr -o $OUT/bin/$target-srv
   fi
 
   echo restarting $target-dev service

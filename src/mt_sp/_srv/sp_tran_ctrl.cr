@@ -37,7 +37,16 @@ class SP::TranCtrl < AC::Base
     quota.add_using!(wcount)
 
     if type.starts_with?("mtl_")
-      vdata, mtime = qdata.get_mtran(type, opts: opts, redo: redo)
+      opts = opts.split(/[,:]/, remove_empty: true)
+      pdict = opts[0]? || "combine"
+      t_seg = opts[1]? || "1"
+
+      vdata, mtime = qdata.get_mtran(
+        m_alg: type,
+        udict: "qt#{self._vu_id}",
+        pdict: pdict,
+        t_seg: t_seg,
+        regen: redo)
     else
       vdata, mtime = qdata.get_vtran(type, opts: opts, redo: redo)
     end

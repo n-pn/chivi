@@ -1,70 +1,42 @@
 enum MT::MtDnum : Int8
-  Unkn0 = 0 # reserved
-  User0 = 1 # unique for each user
-  Main0 = 2 # book dict/priv dict/fixture dict that override regular terms
-  Core0 = 3 # regular dict
-  Base0 = 4 # essence dict
-  Auto0 = 5 # entries auto translated by system
-  Root0 = 6 # redefined by translation machine
+  UserTmp  = 0 # unique for each user (match ptag)
+  UserTmpX = 1 # pick first definition (ptag do not match)
 
-  # plock = 1
-  Unkn1 = 10
-  User1 = 11
-  Main1 = 12
-  Core1 = 13
-  Base1 = 14
-  Auto1 = 15
-  Root1 = 16
+  MainTmp  = 2 # book dict/priv dict/fixture dict that override regular terms
+  MainTmpX = 3 # (ptag do not match)
 
-  # plock = 2
-  Unkn2 = 20
-  User2 = 21
-  Main2 = 22
-  Core2 = 23
-  Base2 = 24
-  Auto2 = 25
-  Root2 = 26
+  BaseTmp  = 4 # regular dict (ptag match)
+  BaseTmpX = 5 # regular dict (ptag dont match)
 
-  # as_any
+  AutoTmp = 6 # entries auto translated
 
-  Unkn0x = 100
-  User0x = 101
-  Main0x = 102
-  Core0x = 103
-  Base0x = 104
-  Auto0x = 105
-  Root0x = 106
+  # verified
 
-  # plock = 1
-  Unkn1x = 110
-  User1x = 111
-  Main1x = 112
-  Core1x = 113
-  Base1x = 114
-  Auto1x = 115
-  Root1x = 116
+  UserFix  = 10
+  UserVfdX = 11
 
-  # plock = 2
-  Unkn2x = 120
-  User2x = 121
-  Main2x = 122
-  Core2x = 123
-  Base2x = 124
-  Auto2x = 125
-  Root2x = 126
+  MainFix  = 12
+  MainVfdX = 13
 
-  def on_primary_dict?
-    self.to_i8 % 10 % 2 == 1
-  end
+  BaseFix  = 14
+  BaseVfdX = 15
+
+  AutoFix = 16 # words changed by pair
 
   def as_any
-    MtDnum.new(self.value + 100)
+    self.value % 2 == 0 ? MtDnum.new(self.value + 1) : self
   end
 
   @[AlwaysInline]
   def self.from(d_id : Int32, plock : Int16 = 0_i16)
-    dtype = d_id % 10 < 4 ? 2_i8 : 1_i8
-    new(plock.to_i8 &* 10_i8 &+ dtype)
+    base = plock > 0 ? 10_i8 : 0_i8
+
+    case MtDtyp.from_value(d_id % 10)
+    when .global? then new(BaseTmp.value &+ base)
+    when .system? then new(AutoTmp.value &+ base)
+    when .userqt? then new(UserTmp.value &+ base)
+    else               new(MainTmp.value &+ base)
+    end
   end
 
   def self.init(kind : self, plock : Int16 = 2_i16)

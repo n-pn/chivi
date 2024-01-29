@@ -4,27 +4,21 @@ class MT::AiCore
   def fix_dnp_pair!(term : MtNode, body : MtPair)
     head, tail = body.head, body.tail
     body.flip = true
-
-    if !head.epos.noun? && head.attr.at_h?
-      term.attr = :at_h
-      return
-    end
-
     term.attr = :at_t
+
     return unless tail.zstr == "的"
 
-    head_body = head.body
-    head = head_body if head_body.is_a?(MtNode)
-
     case
-    when head.attr.any?(MtAttr[Ndes, Ntmp])
-      tail.body = MtDefn::DEG0
     when head.epos.noun?
+      head = head.inner_tail
+      is_jj = head.attr.any?(MtAttr[Ndes, Ntmp])
+      tail.body = is_jj ? MtDefn::DEG0 : MtDefn::DEG1
+    when head.epos.pn? && (head.attr.nper? || head.attr.nloc?)
       tail.body = MtDefn::DEG1
     when head.epos.ip? && dnp_head_is_sv_ip?(head.body)
       tail.body = MtDefn::DEG2
-    else
-      tail.body = MtDefn::DEG0
+    when head.attr.at_h?
+      term.attr = :at_h
     end
   end
 

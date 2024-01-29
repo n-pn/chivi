@@ -178,13 +178,21 @@ abstract class AC::Base
   LOG_DIR = "var/ulogs/daily"
   Dir.mkdir_p(LOG_DIR)
 
-  def _log_action(type : String, data : Object, user = _uname, ldir = LOG_DIR)
-    spawn do
-      local_now = Time.local
-      log_file = "#{ldir}/#{local_now.to_s("%F")}.jsonl"
+  def _log_action(type : String, data : Object, ldir = LOG_DIR)
+    local_now = Time.local
+    log_file = "#{ldir}/#{type}-#{local_now.to_s("%F")}.jsonl"
 
-      action = {time: local_now, user: user, type: type, data: data}
-      File.open(log_file, "a", &.puts(action.to_json))
+    File.open(log_file, "a") do |file|
+      JSON.build(file) do |jb|
+        jb.object do
+          jb.field "time", local_now
+          jb.field "user", self._uname
+          jb.field "data" { data.to_json(jb) }
+          jb.field "orig", request.headers["Referer"]? || ""
+        end
+      end
+
+      file.puts
     end
   end
 

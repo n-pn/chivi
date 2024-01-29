@@ -23,7 +23,7 @@ class MT::AiCore
     fchar = term.zstr[0]
     return {term, nil} if term.zstr.size == 1 || !fchar.in?('这', '那')
 
-    dt_body = MtDefn.new(vstr: fchar == '这' ? "này" : "kia", dnum: :root2)
+    dt_body = MtDefn.new(vstr: fchar == '这' ? "này" : "kia", dnum: :auto_fix)
     dt_term = MtNode.new(epos: :DT, attr: :none, zstr: fchar.to_s, body: dt_body, from: term.from)
 
     qp_zstr = term.zstr[1..]

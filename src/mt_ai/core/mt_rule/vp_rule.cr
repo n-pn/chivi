@@ -44,7 +44,7 @@ class MT::AiCore
       node = vp_body.unsafe_fetch(pos)
       case node.epos
       when .is?(:AS)
-        vp_node = init_pair_node(vp_node, node, epos: :VAS, attr: vv_node.attr, flip: false)
+        vp_node = init_vp_as_pair(vp_node, node)
         pos &+= 1
       when .np?
         vp_node = init_vp_np_pair(vp_node, np_node: node, vv_node: vv_node)
@@ -106,6 +106,38 @@ class MT::AiCore
     end
 
     PairDict.d_v_pair.fix_if_match!(ad_node, vv_node)
+  end
+
+  private def init_vp_as_pair(vp_node, as_node, had_aspect : Bool = false)
+    init_pair_node(vp_node, as_node, epos: :VAS, attr: :none) do
+      if had_aspect
+        as_node.attr = :hide
+        flip = false
+      else
+        flip = fix_as_node!(as_node)
+      end
+
+      MtPair.new(vp_node, as_node, flip: flip)
+    end
+  end
+
+  private def fix_as_node!(as_node)
+    case as_node.zstr
+    when "着"
+      as_node.body = "đang"
+      as_node.attr = :none
+      true
+    when "了"
+      as_node.body = "đã"
+      as_node.attr = :none
+      true
+    when "过"
+      as_node.body = "từng"
+      as_node.attr = :none
+      true
+    else
+      false
+    end
   end
 
   private def init_vp_np_pair(vp_node, np_node, vv_node)

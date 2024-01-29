@@ -14,7 +14,7 @@ class MT::PgDefn
   field zstr : String, pkey: true
 
   field cpos : String = "X"
-  field fixp : String = "X"
+  field rank : Int16 = 0_i16
 
   field vstr : String = ""
   field attr : String = ""
@@ -74,15 +74,12 @@ class MT::PgDefn
 
       jb.field "vstr", @vstr
       jb.field "attr", @attr
+      jb.field "rank", @rank
 
       jb.field "uname", @uname
       jb.field "mtime", TimeUtil.cv_utime(@mtime)
       jb.field "plock", @plock
     end
-  end
-
-  def as_temp
-    self.dup.tap { |x| x.dnum += 2_i8 }
   end
 
   ###

@@ -33,7 +33,7 @@ class MT::MtNode
   def initialize(@body, @zstr, @epos, @attr : MtAttr = :none, @from = 0)
     case body
     when MtDefn
-      @epos = body.fpos unless body.fpos.x?
+      @epos = body.epos if body.rank == 2
       @attr |= body.attr
     when MtNode
       @attr |= body.attr
@@ -46,8 +46,13 @@ class MT::MtNode
   end
 
   @[AlwaysInline]
+  def set_body(vstr : String, dnum : MtDnum = :auto_fix)
+    @body = MtDefn.new(vstr, dnum: dnum)
+  end
+
+  @[AlwaysInline]
   def body=(vstr : String)
-    @body = MtDefn.new(vstr, dnum: :Root2)
+    set_body(vstr, :auto_fix)
   end
 
   @[AlwaysInline]

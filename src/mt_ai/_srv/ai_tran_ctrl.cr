@@ -7,10 +7,10 @@ class MT::AiTranCtrl < AC::Base
   ALGOS = {"mtl_0", "mtl_1", "mtl_2", "mtl_3"}
 
   @[AC::Route::GET("/qtran")]
-  def qfile(fpath : String, pdict : String = "combine", _algo : String = "mtl_1",
-            ch_rm : UInt32 = 1_u32, debug : Bool = false)
+  def qfile(fpath : String, pdict : String = "combine", udict : String = "",
+            _algo : String = "mtl_1", ch_rm : UInt32 = 1_u32, debug : Bool = false)
     ztext = File.read_lines("var/texts/#{fpath}.raw.txt", chomp: true)
-    json = do_qtran(ztext, pdict, _algo, ch_rm: ch_rm, debug: debug)
+    json = do_qtran(ztext, pdict, udict, _algo, ch_rm: ch_rm, debug: debug)
 
     cache_control 3.seconds
     render json: json
@@ -21,17 +21,18 @@ class MT::AiTranCtrl < AC::Base
   end
 
   @[AC::Route::POST("/qtran")]
-  def qtext(pdict : String = "combine", _algo : String = "mtl_1",
-            ch_rm : UInt32 = 1_u32, debug : Bool = false)
+  def qtext(pdict : String = "combine", udict : String = "",
+            _algo : String = "mtl_1", ch_rm : UInt32 = 1_u32, debug : Bool = false)
     ztext = self._read_body.lines(chomp: true)
-    json = do_qtran(ztext, pdict, _algo, ch_rm: ch_rm, debug: debug)
+    json = do_qtran(ztext, pdict, udict, _algo, ch_rm: ch_rm, debug: debug)
     render json: json
   rescue ex
     Log.error(exception: ex) { ztext }
     render 455, ex.message
   end
 
-  private def do_qtran(input : Array(String), pdict : String, m_alg : String, ch_rm : UInt32, debug = false)
+  private def do_qtran(input : Array(String), pdict : String, udict : String,
+                       m_alg : String, ch_rm : UInt32, debug = false)
     start = Time.monotonic
     heads = [] of MtNode | Nil
 
@@ -41,7 +42,7 @@ class MT::AiTranCtrl < AC::Base
       heads << split
     end
 
-    ai_mt = AiCore.new(pdict)
+    ai_mt = udict.empty? ? AiCore.load(pdict) : AiCore.load(pdict, udict)
     zdata = MCache.find_con!(input, ver: m_alg[-1].to_i16)
 
     vdata = zdata.map_with_index do |line, l_id|
@@ -57,7 +58,7 @@ class MT::AiTranCtrl < AC::Base
   @[AC::Route::POST("/reload")]
   def reload(pdict : String = "combine")
     start = Time.monotonic
-    ai_mt = AiCore.new(pdict)
+    ai_mt = AiCore.load(pdict, "qt#{self._vu_id}")
 
     input = self._read_body.lines(chomp: true)
     trees = input.map { |line| ai_mt.translate!(RawCon.from_text(line)) }

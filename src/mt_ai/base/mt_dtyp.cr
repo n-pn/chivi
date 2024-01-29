@@ -72,4 +72,9 @@ enum MT::MtDtyp : Int16
       else                          raise "invalid dname #{dname}"
       end
   end
+
+  @[AlwaysInline]
+  def self.qtd_id(vu_id : Int32)
+    vu_id &* 10 &+ Userqt.value
+  end
 end

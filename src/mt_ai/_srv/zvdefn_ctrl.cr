@@ -1,9 +1,10 @@
 require "./_mt_ctrl_base"
-require "./vi_term_form"
-require "./zv_term_view"
 
-class MT::ViTermCtrl < AC::Base
-  base "/_ai/terms"
+require "./zvdefn_form"
+require "./zvdefn_view"
+
+class MT::ZvdefnCtrl < AC::Base
+  base "/_ai/zvdefns"
 
   @[AC::Route::GET("/")]
   def index(d_id : Int32,
@@ -15,7 +16,7 @@ class MT::ViTermCtrl < AC::Base
             plock : Int16? = nil)
     pg_no, limit, offset = _paginate(min: 10, max: 100)
 
-    terms, total = ZvtermView.fetch_all(
+    terms, total = ZvdefnView.fetch_all(
       d_id: d_id, zstr: zstr, cpos: cpos,
       vstr: vstr, attr: attr,
       uname: uname, plock: plock,
@@ -35,10 +36,24 @@ class MT::ViTermCtrl < AC::Base
   LOG_DIR = "var/ulogs/mtapp"
   Dir.mkdir_p(LOG_DIR)
 
-  @[AC::Route::PUT("/once", body: :tform)]
-  def upsert_once(tform : ViTermForm)
-    _log_action("once", tform, ldir: LOG_DIR)
-    tform.save!(uname: self._uname, privi: self._privi)
+  @[AC::Route::PUT("/once", body: :dform)]
+  def upsert_once(dform : ZvdefnForm)
+    spawn self._log_action("zvdefn-once", data: dform, ldir: LOG_DIR)
+
+    zv_dict, zv_defn = dform.to_pg(self._vu_id, self._uname, self._privi)
+    sq_defn = SqDefn.new(zv_defn)
+
+    spawn do
+      zv_defn.upsert!
+      sq_defn.upsert!(db: SqDefn.load_db(zv_dict.d_id))
+    end
+
+    if zv_defn.plock < 0
+      TrieDict.del_defn(zv_dict.name, input: sq_defn)
+    else
+      TrieDict.add_defn(zv_dict.name, input: sq_defn)
+    end
+
     render text: "ok"
   end
 

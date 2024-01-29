@@ -215,7 +215,7 @@ export function gen_mt_ai_html(
     opts.cap = (opts.cap && asis) || attr.includes('Capn')
 
     if (opts.mode == 2) {
-      const dtyp = dnum % 10
+      const dtyp = dnum == 16 ? 7 : dnum % 10
 
       html += `<x-n d=${dtyp} data-b=${from} data-e=${upto} data-c=${cpos}>`
       html += render_mtl(vesc, cpos)

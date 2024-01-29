@@ -19,7 +19,7 @@ export const load = (async ({ fetch, url, parent }) => {
   const { dinfo } = await parent()
 
   const query = merge_query(url.searchParams, { d_id: dinfo.d_id, lm: 50 })
-  const table = await api_get<TermsData>(`/_ai/terms?${query}`, fetch)
+  const table = await api_get<TermsData>(`/_ai/zvdefns?${query}`, fetch)
 
   const _meta = {
     left_nav: [

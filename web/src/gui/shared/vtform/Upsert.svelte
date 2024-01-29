@@ -1,25 +1,8 @@
-<script lang="ts" context="module">
-  import { writable } from 'svelte/store'
-  import { Rdword, type Rdline } from '$lib/reader'
-  import { tooltip } from '$lib/actions'
-  import { flatten_tree } from '$lib/mt_data_2'
-
-  export const ctrl = {
-    ...writable({ actived: false, tab: 0 }),
-    show: (tab = 0) => {
-      ctrl.set({ actived: true, tab })
-    },
-    hide: () => {
-      ctrl.set({ actived: false, tab: 0 })
-    },
-  }
-</script>
-
 <script lang="ts">
   import { get_user } from '$lib/stores'
   const _user = get_user()
 
-  import { Viform } from './zvterm_form'
+  import { Viform } from './viform'
 
   import cpos_info from '$lib/consts/cpos_info'
   import attr_info from '$lib/consts/attr_info'
@@ -102,160 +85,105 @@
 
   let form_msg = ''
 
-  const action = '/_ai/zvdefns/once'
+  const action = '/_ai/terms/once'
   const method = 'PUT'
-  const headers = { 'Content-type': 'application/json' }
 
   const submit_action = async () => {
-    const body = JSON.stringify({
-      zstr: tform.zstr,
-      ...tform.fdata,
-      pdict: ropts.pdict,
-      m_alg: ropts.mt_rm,
-      m_con: rline.ctree_text(ropts.mt_rm),
-      zfrom: rword.from,
-    })
+    const headers = { 'Content-type': 'application/json' }
 
-    const res = await fetch(action, { body: body, method, headers })
+    const _ctx = { ...ropts, ctree: rline.ctree_text(ropts.mt_rm) }
+    const body = tform.toJSON(_ctx)
+
+    const init = { body: JSON.stringify(body), method, headers }
+    const res = await fetch(action, init)
 
     if (!res.ok) {
       form_msg = await res.text()
     } else {
       on_close(true)
-      ctrl.hide()
     }
   }
 </script>
 
-<Dialog actived={$ctrl.actived} on_close={ctrl.hide} class="vtform" _size="lg">
-  <FormHead {rline} bind:rword bind:actived={$ctrl.actived} />
+<form class="body" {method} {action} on:submit|preventDefault={submit_action}>
+  <div class="tree">
+    {#each mlist as [cpos, _body, from, upto], index}
+      {@const cpos_data = cpos_info[cpos]}
+      {#if index > 0}<span class="sep u-fg-mute">/</span>{/if}
+      <button
+        type="button"
+        class="cbtn"
+        class:_active={rword.match(from, upto, cpos)}
+        data-tip="Chọn [{cpos_data.name}] từ ký tự thứ {from + 1} tới {upto +
+          1}"
+        on:click={() => (rword = new Rdword(from, upto, cpos))}>
+        <code>{cpos}</code>
+        <!-- <span class="u-fg-mute">{upto - from}</span> -->
+        <span>{from + 1}&ndash;{upto + 1}</span>
+      </button>
+    {/each}
+  </div>
 
-  <nav class="tabs">
-    <button
-      class="htab _edit"
-      class:_active={$ctrl.tab == 0}
-      data-kbd="⌃`"
-      on:click={() => ctrl.show(0)}>
-      <span>Thêm sửa từ</span>
-    </button>
+  <div class="main">
+    <div class="main-head">
+      <button
+        type="button"
+        class="cpos"
+        data-kbd="u"
+        on:click={() => (pick_cpos = !pick_cpos)}>
+        <span class="plbl u-show-pl">Từ loại:</span>
+        <span class="ptag" data-tip="cpos_data.desc}">
+          <code>{tform.cpos}</code>
+          <span class="name">{cpos_data.name || 'Chưa rõ'}</span>
+          <SIcon name={tform.cpos == 'X' ? 'lock-open' : 'lock'} />
+        </span>
+      </button>
 
-    <button
-      type="button"
-      class="htab _novel"
-      class:_active={$ctrl.tab == 1}
-      data-kbd="⌃1"
-      on:click={() => ctrl.show(1)}
-      disabled>
-      <span>Nghĩa cặp từ</span>
-    </button>
-
-    <button
-      type="button"
-      class="htab _find"
-      class:_active={$ctrl.tab == 2}
-      data-kbd="⌃2"
-      on:click={() => ctrl.show(2)}
-      disabled>
-      <span>Tách ghép từ</span>
-    </button>
-  </nav>
-
-  <form class="body" {method} {action} on:submit|preventDefault={submit_action}>
-    <div class="tree">
-      {#each mlist as [cpos, _body, from, upto], index}
-        {@const cpos_data = cpos_info[cpos]}
-        {#if index > 0}<span class="sep u-fg-mute">/</span>{/if}
-        <button
-          type="button"
-          class="cbtn"
-          class:_active={rword.match(from, upto, cpos)}
-          data-tip="Chọn [{cpos_data.name}] từ ký tự thứ {from + 1} tới {upto +
-            1}"
-          on:click={() => (rword = new Rdword(from, upto, cpos))}>
-          <code>{cpos}</code>
-          <!-- <span class="u-fg-mute">{upto - from}</span> -->
-          <span>{from + 1}&ndash;{upto + 1}</span>
-        </button>
-      {/each}
+      <button
+        type="button"
+        class="attr"
+        data-kbd="i"
+        on:click={() => (pick_attr = !pick_attr)}>
+        <span class="plbl u-show-pm">Từ tính:</span>
+        {#each attr_list as attr}
+          <code data-tip={attr_info[attr]?.desc}>{attr}</code>
+        {:else}
+          <code data-tip="Không có từ tính cụ thể">None</code>
+        {/each}
+      </button>
     </div>
 
-    <div class="main">
-      <div class="main-head">
-        <button
-          type="button"
-          class="cpos"
-          data-kbd="u"
-          on:click={() => (pick_cpos = !pick_cpos)}>
-          <span class="plbl u-show-pl">Từ loại:</span>
-          <span class="ptag" use:tooltip={cpos_data.desc} data-anchor=".vtform">
-            <code>{tform.cpos}</code>
-            <span class="name">{cpos_data.name || 'Chưa rõ'}</span>
-            <SIcon name={tform.cpos == 'X' ? 'lock-open' : 'lock'} />
-          </span>
-        </button>
+    <div class="main-text" class:_fresh={!tform.tinit.vstr}>
+      <input
+        type="text"
+        class="vstr"
+        bind:this={field}
+        bind:value={tform.vstr}
+        autocomplete="off"
+        autocapitalize="off" />
 
-        <button
-          type="button"
-          class="attr"
-          data-kbd="i"
-          on:click={() => (pick_attr = !pick_attr)}>
-          <span class="plbl u-show-pm">Từ tính:</span>
-          {#each attr_list as attr}
-            <code use:tooltip={attr_info[attr]?.desc} data-anchor=".vtform"
-              >{attr}</code>
-          {:else}
-            <code use:tooltip={'Không có từ tính cụ thể'} data-anchor=".vtform"
-              >None</code>
-          {/each}
-        </button>
-      </div>
-
-      <div class="main-text" class:_fresh={tform.fresh}>
-        <input
-          type="text"
-          class="vstr"
-          bind:this={field}
-          bind:value={tform.vstr}
-          autocomplete="off"
-          autocapitalize="off" />
-
-        <VstrBtns bind:tform />
-      </div>
-
-      <VstrUtil bind:tform {field} />
+      <VstrBtns bind:tform />
     </div>
 
-    {#if form_msg}
-      <div class="form-msg _err">
-        Lỗi: {form_msg}
-      </div>
-    {:else if tform.req_privi > $_user.privi}
-      <div class="form-msg u-warn">
-        Gợi ý: Bạn cần thiết quyền hạn {tform.req_privi} để thêm/sửa từ.
-      </div>
-    {/if}
+    <VstrUtil bind:tform {field} />
+  </div>
 
-    <FormBtns
-      privi={$_user.privi}
-      uname={$_user.uname}
-      bind:tform
-      bind:show_dfn />
-  </form>
+  {#if form_msg}
+    <div class="form-msg _err">
+      Lỗi: {form_msg}
+    </div>
+  {:else if tform.req_privi > $_user.privi}
+    <div class="form-msg u-warn">
+      Gợi ý: Bạn cần thiết quyền hạn {tform.req_privi} để thêm/sửa từ.
+    </div>
+  {/if}
 
-  <HelpLink key={tform.ztext} />
-</Dialog>
-
-{#if pick_cpos}
-  <CposPicker bind:output={tform.cpos} bind:actived={pick_cpos} />
-{/if}
-
-{#if pick_attr}
-  <AttrPicker bind:output={tform.attr} bind:actived={pick_attr} />
-{/if}
-
-{#if show_dfn}
-  <Glossary bind:actived={show_dfn} {rline} rword={rword.copy()} />
-{/if}
+  <FormBtns
+    privi={$_user.privi}
+    uname={$_user.uname}
+    bind:tform
+    bind:show_dfn />
+</form>
 
 <style lang="scss">
   $gutter: 0.75rem;

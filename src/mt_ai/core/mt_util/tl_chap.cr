@@ -42,7 +42,7 @@ module MT::TlChap
     zh_ch += trash
     vi_ch += ':' unless title.empty?
 
-    defn = MtDefn.new(vstr: vi_ch, attr: :capn, dnum: :root2, fpos: :LST)
+    defn = MtDefn.new(vstr: vi_ch, attr: :capn, dnum: :auto_fix, epos: :LST)
     node = MtNode.new(body: defn, epos: :LST, zstr: zh_ch, from: 0)
 
     {title, node}

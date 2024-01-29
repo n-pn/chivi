@@ -84,7 +84,9 @@ class MT::AiCore
 
   private def init_nn_nn_pair(head : MtNode, tail : MtNode, attr : MtAttr)
     init_pair_node(head: head, tail: tail, epos: :NN, attr: attr) do
-      if tail.attr.sufx? && tail.attr.nper?
+      if head.attr.ndes? || head.attr.ntmp?
+        flip = true
+      elsif tail.attr.sufx? && tail.attr.nper?
         tail.epos = MtEpos::NH
 
         if defn = @mt_dict.get_defn?(tail.zstr, :NH)[0]
@@ -92,7 +94,7 @@ class MT::AiCore
           tail.attr = defn.attr
         end
 
-        flip = tail.attr.at_h?
+        flip = !tail.attr.at_t?
       else
         flip = !tail.attr.at_t?
       end

@@ -2,7 +2,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   import { tooltip } from '$lib/actions'
-  import type { Viform } from './viform'
+  import type { Viform } from './zvterm_form'
 
   // import { type CvtermForm, hint, req_privi } from './_shared'
 

@@ -81,12 +81,12 @@ class SP::QtData
 
   MT_AI_API = "#{CV_ENV.ai_host}/_ai/qtran"
 
-  def get_mtran(m_alg : String, opts : String = "combine,1", redo : Bool = false)
-    opts = opts.split(/[,:]/, remove_empty: true)
-    pdict = opts[0]? || "combine"
-    ch_rm = opts[1]? || "1"
-
-    url = "#{MT_AI_API}?_algo=#{m_alg}&pdict=#{pdict}&ch_rm=#{ch_rm}&force=#{redo}"
+  def get_mtran(m_alg : String,
+                pdict : String = "combine",
+                udict : String = "",
+                t_seg : String = "1",
+                regen : Bool = false)
+    url = "#{MT_AI_API}?_algo=#{m_alg}&pdict=#{pdict}&udict=#{udict}&ch_rm=#{t_seg}&force=#{regen}"
     mdata = HTTP::Client.post(url, body: @lines.join('\n'), &.body_io.gets_to_end)
 
     {mdata, Time.utc.to_unix}

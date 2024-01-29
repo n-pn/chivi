@@ -40,6 +40,26 @@
   @include ftsize(lg);
 }
 
+.u-fg-primary {
+  @include fgcolor(primary);
+}
+
+.u-fg-success {
+  @include fgcolor(success);
+}
+
+.u-fg-warning {
+  @include fgcolor(warning);
+}
+
+.u-fg-private {
+  @include fgcolor(private);
+}
+
+.u-fg-mute {
+  @include fgcolor(mute);
+}
+
 .u-fg-secd {
   @include fgcolor(secd);
 }
@@ -50,6 +70,18 @@
 
 .u-fg-mute {
   @include fgcolor(mute);
+}
+
+.u-bg-primary {
+  @include bgcolor(primary);
+}
+
+.u-bg-success {
+  @include bgcolor(success);
+}
+
+.u-bg-private {
+  @include bgcolor(private);
 }
 
 .u-show-pm {
