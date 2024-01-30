@@ -8,7 +8,7 @@
 
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import type { Viform } from './zvterm_form'
+  import type { Viform } from './zvdefn_form'
 
   // import { type CvtermForm, hint, req_privi } from './_shared'
 

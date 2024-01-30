@@ -19,7 +19,7 @@
   import { get_user } from '$lib/stores'
   const _user = get_user()
 
-  import { Viform } from './zvterm_form'
+  import { Viform } from './zvdefn_form'
 
   import cpos_info from '$lib/consts/cpos_info'
   import attr_info from '$lib/consts/attr_info'
@@ -42,13 +42,12 @@
   export let ropts: Partial<CV.Rdopts>
   export let on_close = (changed = false) => console.log(changed)
 
-  let mlist = []
-  let tform: Viform = new Viform(rline, rword, mlist)
+  let tform: Viform = new Viform([], rword, '')
 
-  $: {
-    mlist = gen_mlist(rline.mtran[ropts.mt_rm], rword.from, rword.upto)
-    tform = make_form(mlist, rword)
-  }
+  $: mlist = flatten_tree(rline.mtran[ropts.mt_rm])
+  $: mtree = filter_mtree(mlist, rword.from, rword.upto)
+
+  $: tform = make_form(mlist, rword)
 
   $: if (tform) refocus()
   $: cpos_data = cpos_info[tform.cpos] || {}
@@ -60,23 +59,20 @@
   let show_log = false
   let show_dfn = false
 
-  const gen_mlist = (ctree: CV.Cvtree, from: number, upto: number) => {
-    if (!ctree) return []
-    const input = flatten_tree(ctree)
-
-    let mlist = []
+  const filter_mtree = (input: CV.Cvtree[], from: number, upto: number) => {
+    let mtree = []
 
     for (const node of input) {
-      if (node[2] <= from && node[3] >= upto) mlist.push(node)
+      if (node[2] <= from && node[3] >= upto) mtree.push(node)
     }
 
-    if (mlist.length > 4) mlist = mlist.slice(mlist.length - 4)
+    if (mtree.length > 4) mtree = mtree.slice(mtree.length - 4)
 
     for (const node of input) {
-      if (node[2] >= from && node[3] < upto) mlist.push(node)
+      if (node[2] >= from && node[3] < upto) mtree.push(node)
     }
 
-    return mlist.slice(0, 6)
+    return mtree.slice(0, 6)
   }
 
   const cached = new Map<string, Viform>()
@@ -87,7 +83,11 @@
     const existed = cached.get(key)
     if (existed) return existed
 
-    const tform = new Viform(rline, rword, mlist)
+    const ztext = rline.get_ztext(from, upto)
+    const hviet = rline.get_hviet(from, upto)
+
+    const tform = new Viform(mlist, rword, ztext, hviet)
+
     cached.set(key, tform)
     return tform
   }
@@ -162,19 +162,18 @@
 
   <form class="body" {method} {action} on:submit|preventDefault={submit_action}>
     <div class="tree">
-      {#each mlist as [cpos, _body, from, upto], index}
-        {@const cpos_data = cpos_info[cpos]}
+      {#each mtree as [cpos, _body, from, upto], index}
+        {@const cpos_data = cpos_info[cpos] || { name: cpos }}
         {#if index > 0}<span class="sep u-fg-mute">/</span>{/if}
         <button
           type="button"
           class="cbtn"
           class:_active={rword.match(from, upto, cpos)}
-          data-tip="Chọn [{cpos_data.name}] từ ký tự thứ {from + 1} tới {upto +
-            1}"
+          data-tip="Chọn [{cpos_data.name}] từ ký tự thứ {from + 1} tới {upto}"
           on:click={() => (rword = new Rdword(from, upto, cpos))}>
           <code>{cpos}</code>
           <!-- <span class="u-fg-mute">{upto - from}</span> -->
-          <span>{from + 1}&ndash;{upto + 1}</span>
+          <span>{from + 1}&ndash;{upto}</span>
         </button>
       {/each}
     </div>
@@ -210,7 +209,7 @@
         </button>
       </div>
 
-      <div class="main-text" class:_fresh={tform.fresh}>
+      <div class="main-text">
         <input
           type="text"
           class="vstr"
@@ -448,10 +447,6 @@
 
     &:focus-within {
       @include linesd(primary, 4, $ndef: false);
-    }
-
-    &._fresh > * {
-      font-style: italic;
     }
 
     input {

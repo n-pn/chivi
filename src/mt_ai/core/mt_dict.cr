@@ -19,13 +19,13 @@ class MT::MtDict
   end
 
   def initialize(@data : Array(TrieDict))
-    Log.info { @data.map(&.name) }
+    # Log.info { @data.map(&.name) }
   end
 
   def add_temp(zstr, vstr, attr, epos)
-    defn = MtDefn.new(vstr: vstr, attr: attr, dnum: :auto_tmp, epos: epos)
-    @data.last[zstr].add_data(defn) { MtDefn.calc_prio(zstr.size) }
-    defn
+    MtDefn.new(vstr, attr, dnum: :auto_tmp, epos: epos).tap do |defn|
+      @data.last.add(zstr, defn)
+    end
   end
 
   def get_defn?(zstr : String, epos : MtEpos)
@@ -33,7 +33,7 @@ class MT::MtDict
 
     @data.each do |trie|
       next unless node = trie[zstr]?
-      got, new_alt = node.get_defn?(epos)
+      got, new_alt = node.get(epos)
       alt ||= new_alt
 
       return got, alt if got

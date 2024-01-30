@@ -41,7 +41,7 @@ class MT::TrieDict
 
   def load_from_db3!(d_id = @d_id)
     SqDefn.query_each(d_id) do |zstr, defn|
-      self[zstr].add_data(defn) { MtDefn.calc_prio(zstr.size) }
+      self[zstr].set(defn) { MtDefn.calc_prio(zstr.size) }
       @size &+= 1
     end
   end
@@ -53,7 +53,7 @@ class MT::TrieDict
 
   @[AlwaysInline]
   def add(zstr : String, defn : MtDefn)
-    self[zstr].add_data(defn) { MtDefn.calc_prio(zstr.size) }
+    self[zstr].set(defn) { MtDefn.calc_prio(zstr.size) }
   end
 
   @[AlwaysInline]
@@ -111,7 +111,7 @@ class MT::TrieDict
 
   @[AlwaysInline]
   def any_defn?(zstr : String)
-    self[zstr]?.try(&.any_defn?)
+    self[zstr]?.try(&.get_top)
   end
 
   def scan_wseg(input : Array(Char), start : Int32 = 0, &)
@@ -133,21 +133,27 @@ class MT::TrieDict
     property succ : Hash(Char, self)? = nil
     property data : Array(MtDefn) | MtDefn | Nil = nil
 
-    def add_data(defn : MtDefn, &) : Nil
+    def set(defn : MtDefn, &) : Nil
       @prio = yield if @prio < 0
-
-      if defn.rank > 2
-        @data = defn
-        return
-      end
 
       case data = @data
       in Nil
         @data = defn
-      in MtDefn
-        @data = [data, defn]
       in Array
-        data << defn
+        if index = data.index(&.epos.== defn.epos)
+          data[index] = defn
+        else
+          data << defn
+        end
+        data.sort_by!(&.rank.-)
+      in MtDefn
+        if defn.epos == data.epos
+          @data = defn
+        elsif defn.rank > data.rank
+          @data = [defn, data]
+        else
+          @data = [data, defn]
+        end
       end
     end
 
@@ -156,6 +162,7 @@ class MT::TrieDict
       in Nil then return
       in MtDefn
         return unless data.epos == epos
+
         @data = nil
         @prio = -1_i16 if @prio > 0
       in Array
@@ -165,21 +172,22 @@ class MT::TrieDict
     end
 
     @[AlwaysInline]
-    def get_defn?(cpos : String)
-      get_defn?(epos: MtEpos.parse(cpos))
+    def get(cpos : String)
+      get(epos: MtEpos.parse(cpos))
     end
 
-    def get_defn?(epos : MtEpos)
+    def get(epos : MtEpos) : {MtDefn?, MtDefn?}
       case data = @data
       in Nil then {nil, nil}
       in MtDefn
-        {epos == data.epos ? data : nil, data}
+        data.rank > 2 || epos == data.epos ? {data, nil} : {nil, data}
       in Array
-        {data.find(&.epos.== epos), data.first}
+        head = data.first
+        head.rank > 2 ? {head, nil} : {data.find(&.epos.== epos), head}
       end
     end
 
-    def any_defn?
+    def get_top
       case data = @data
       in Nil    then nil
       in MtDefn then data

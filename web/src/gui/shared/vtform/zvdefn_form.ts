@@ -63,11 +63,11 @@ export class Viform {
 
   fresh: boolean
 
-  constructor(rline: Rdline, rword: Rdword, mlist: CV.Cvtree[]) {
-    const { from, upto, cpos } = rword
+  constructor(mlist: CV.Cvtree[], rword: Rdword, ztext = '', hviet = '') {
+    this.ztext = ztext
+    this.hviet = hviet
 
-    this.ztext = rline.get_ztext(from, upto)
-    this.hviet = rline.get_hviet(from, upto)
+    const { from, upto, cpos } = rword
 
     const vnode = find_last<CV.Cvtree>(mlist, (x) => {
       if (x[2] != from || x[3] != upto) return false
@@ -80,12 +80,12 @@ export class Viform {
       this.finit = new Vtdata(vstr, vnode[0], vnode[1], dnum)
       this.fresh = dnum < 0 || dnum == 6 || dnum % 2 == 1
     } else {
-      this.finit = new Vtdata(this.hviet, cpos)
+      this.finit = new Vtdata(hviet, cpos)
       this.fresh = true
     }
 
     this.fdata = { ...this.finit, lock: false }
-    this.vtemp = this.finit.vstr || this.hviet
+    this.vtemp = this.finit.vstr || hviet
   }
 
   // fix_lock(privi: number) {

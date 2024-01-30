@@ -35,7 +35,7 @@
   import { baidu_word } from '$utils/qtran_utils/bd_tran'
 
   import { tooltip } from '$lib/actions'
-  import type { Viform } from './zvterm_form'
+  import type { Viform } from './zvdefn_form'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
 
