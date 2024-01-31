@@ -22,9 +22,9 @@ class MT::AiCore
       vstr, noun_attr = QtCore.noun_qt.tl_noun(zstr)
       attr |= noun_attr
     when epos.verb?
-      vstr = QtCore.verb_qt.tl_term(zstr)
+      vstr = QtCore.verb_qt.tl_term(zstr, :VV)
     when epos.adjt?
-      vstr = QtCore.adjt_qt.tl_term(zstr)
+      vstr = QtCore.adjt_qt.tl_term(zstr, :VA)
     else
       # TODO: change to fast translation mode
       # TODO: handle verb/noun/adjt translation

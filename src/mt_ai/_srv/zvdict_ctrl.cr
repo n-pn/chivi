@@ -1,7 +1,7 @@
 require "./_mt_ctrl_base"
 require "../data/pg_dict"
 
-class MT::PgDictCtrl < AC::Base
+class MT::ZvdictCtrl < AC::Base
   base "/_ai/dicts"
 
   @[AC::Route::GET("/")]

@@ -1,3 +1,5 @@
+ENV["MT_DIR"] ||= "/2tb/app.chivi/var/mt_db"
+
 require "../../src/mt_ai/data/pg_defn"
 require "../../src/mt_ai/data/sq_defn"
 

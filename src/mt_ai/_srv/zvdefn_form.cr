@@ -33,6 +33,9 @@ class MT::ZvdefnForm
     @vstr = VietUtil.fix_tones(@vstr)
 
     @attr = MtAttr.parse_list(@attr).to_str
+
+    @d_no = 0 if @d_no < 0
+    @rank = 0 if @rank < 0
   end
 
   def load_dict!(vu_id : Int32)
@@ -47,11 +50,10 @@ class MT::ZvdefnForm
     dict = self.load_dict!(vu_id)
     defn = PgDefn.init(dict.d_id, cpos: @cpos, zstr: @zstr)
 
-    p_min = dict.p_min
-    p_min += 1 if @lock || defn.plock > 1
+    p_min = @lock || defn.plock > 1 ? dict.p_min &+ 1 : dict.p_min
 
-    if privi < p_min
-      raise Unauthorized.new "Bạn cần quyền hạn tối thiểu là #{p_min} để thêm/sửa từ"
+    if privi + 1 < p_min
+      raise Unauthorized.new "Bạn cần quyền hạn tối thiểu là #{p_min - 1} để thêm/sửa từ"
     end
 
     defn.vstr = @vstr
