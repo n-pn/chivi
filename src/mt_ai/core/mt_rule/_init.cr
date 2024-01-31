@@ -5,15 +5,10 @@ class MT::AiCore
     zstr, orig = data.zstr, data.body
     epos, attr = MtEpos.parse_ctb(data.cpos, zstr)
 
-    match_pos, match_any = @mt_dict.get_defn?(zstr, epos)
+    use_alt = orig.is_a?(String) || (orig.size > 1 && epos.can_use_alt?)
 
-    if match_pos
-      return MtNode.new(body: match_pos, zstr: zstr, epos: epos, attr: attr, from: from)
-    end
-
-    if match_any && (orig.is_a?(String) || (orig.size > 1 && epos.can_use_alt?))
-      body = match_any.as_any(epos)
-      return MtNode.new(body: body, zstr: zstr, epos: epos, attr: attr, from: from)
+    if defn = @mt_dict.get_defn?(zstr, epos, use_alt)
+      return MtNode.new(body: defn, zstr: zstr, epos: epos, attr: attr, from: from)
     end
 
     if orig.is_a?(String)
@@ -23,18 +18,18 @@ class MT::AiCore
     end
 
     body = init_body(epos: epos, orig: orig, from: from)
-    term = MtNode.new(body, zstr: zstr, epos: epos, attr: attr, from: from)
+    node = MtNode.new(body, zstr: zstr, epos: epos, attr: attr, from: from)
 
     case
     when epos.np?
-      term = fix_np_node!(term, body)
+      node = fix_np_node!(node, body)
     when epos.vp?
-      term = fix_vp_node!(term, body)
+      node = fix_vp_node!(node, body)
     when body.is_a?(MtPair)
-      fix_mt_pair!(term, body)
+      fix_mt_pair!(node, body)
     end
 
-    term
+    node
   end
 
   private def init_body(epos : MtEpos, orig : Array(RawCon), from : Int32 = 0)
@@ -125,8 +120,8 @@ class MT::AiCore
     if inner_list.size > 1
       zstr = inner_list.join(&.zstr)
       epos = MtEpos::IP if inner_list.last.epos.pu?
-      defn, dalt = @mt_dict.get_defn?(zstr, epos)
-      inner = MtNode.new(body: defn || dalt || inner_list, zstr: zstr, epos: epos, from: inner_list.first.from)
+      body = @mt_dict.get_defn?(zstr, epos) || inner_list
+      inner = MtNode.new(body: body, zstr: zstr, epos: epos, from: inner_list.first.from)
     else
       inner = inner_list.first
     end

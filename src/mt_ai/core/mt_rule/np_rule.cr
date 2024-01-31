@@ -1,36 +1,36 @@
-# require "./ai_term"
+# require "./ai_node"
 
 class MT::AiCore
-  def fix_np_node!(term : MtNode, body = term.body) : MtNode
-    return term if body.is_a?(MtDefn) || body.is_a?(MtNode)
-    body = [body.head, body.tail] if body.is_a?(MtPair)
+  def fix_np_node!(np_node : MtNode, np_body = np_node.body) : MtNode
+    return np_node if np_body.is_a?(MtDefn) || np_body.is_a?(MtNode)
+    np_body = [np_body.head, np_body.tail] if np_body.is_a?(MtPair)
 
     new_body = [] of MtNode
-    _pos = body.size &- 1
+    _pos = np_body.size &- 1
 
     while _pos >= 0
-      node = body[_pos]
+      node = np_body.unsafe_fetch(_pos)
       _pos &-= 1
 
       if _pos >= 0 && node.epos.noun?
-        node, _pos = init_nn_term(body, noun: node, _pos: _pos)
-        node, _pos = init_np_term(body, noun: node, _pos: _pos) if _pos >= 0
+        node, _pos = init_nn_node(np_body, nn_node: node, _pos: _pos)
+        node, _pos = init_np_node(np_body, np_node: node, _pos: _pos) if _pos >= 0
       end
 
       new_body.unshift(node)
     end
 
     if new_body.size > 1
-      term.body = new_body
+      np_node.body = new_body
     elsif new_body.first.epos.np?
-      term.attr |= new_body.first.attr
-      term.body = new_body.first
+      np_node.attr |= new_body.first.attr
+      np_node.body = new_body.first
     else
-      term.body = new_body
-      term.attr |= new_body.first.attr
+      np_node.body = new_body
+      np_node.attr |= new_body.first.attr
     end
 
-    term
+    np_node
   end
 
   # def fix_np_pair!(body : MtPair)
@@ -45,15 +45,15 @@ class MT::AiCore
   #   body
   # end
 
-  def init_nn_term(orig : Array(MtNode), noun : MtNode, _pos = orig.size - 2)
-    attr = noun.attr.turn_off(MtAttr[Sufx, Undb])
+  def init_nn_node(orig : Array(MtNode), nn_node : MtNode, _pos = orig.size - 2)
+    attr = nn_node.attr.turn_off(MtAttr[Sufx, Undb])
 
     while _pos >= 0
       node = orig[_pos]
 
       case node.epos
       when .noun?
-        noun = init_nn_nn_pair(head: node, tail: noun, attr: attr)
+        nn_node = init_nn_nn_pair(head: node, tail: nn_node, attr: attr)
         _pos &-= 1
       when .adjp?
         # if current node is short modifier
@@ -62,24 +62,25 @@ class MT::AiCore
 
         # combine the noun list for phrase translation
         flip = !node.attr.at_h?
-        noun = init_pair_node(head: node, tail: noun, epos: :NN, attr: attr, flip: flip)
-      when .pu?
-        # FIXME: check error in this part
-        break if _pos == 0 || node.zstr[0] != '、'
-        _pos &-= 1
+        nn_node = init_pair_node(head: node, tail: nn_node, epos: :NN, attr: attr, flip: flip)
+        # when .pu?
+        #   # FIXME: check error in this part
+        #   break if _pos == 0 || node.zstr[0] != '、'
+        #   _pos &-= 1
 
-        break unless (prev = orig[_pos - 1]?) && prev.epos.noun?
-        _pos &-= 1
+        #   prev = orig[_pos]
+        #   break unless prev.epos.noun?
+        #   _pos &-= 1
 
-        prev, _pos = init_nn_term(orig, prev, _pos) if _pos >= 0
-        epos = prev.epos == noun.epos ? noun.epos : MtEpos::NP
-        noun = init_term([prev, node, noun], epos: epos, attr: attr)
+        #   prev, _pos = init_nn_node(orig, prev, _pos) if _pos >= 0
+        #   epos = prev.epos == noun.epos ? noun.epos : MtEpos::NP
+        #   noun = init_node([prev, node, noun], epos: epos, attr: attr)
       else
         break
       end
     end
 
-    {noun, _pos}
+    {nn_node, _pos}
   end
 
   private def init_nn_nn_pair(head : MtNode, tail : MtNode, attr : MtAttr)
@@ -89,7 +90,7 @@ class MT::AiCore
       elsif tail.attr.sufx? && tail.attr.nper?
         tail.epos = MtEpos::NH
 
-        if defn = @mt_dict.get_defn?(tail.zstr, :NH)[0]
+        if defn = @mt_dict.get_defn?(tail.zstr, :NH, false)
           tail.body = defn
           tail.attr = defn.attr
         end
@@ -106,27 +107,25 @@ class MT::AiCore
   # private def cast_nn_tail_as_sufx(tail : MtAttr)
   # end
 
-  def init_np_term(orig : Array(MtNode), noun : MtNode, _pos : Int32 = orig.size - 2)
-    attr = noun.attr.turn_off(MtAttr[Sufx, Undb])
+  def init_np_node(orig : Array(MtNode), np_node : MtNode, _pos : Int32 = orig.size - 2)
+    attr = np_node.attr.turn_off(MtAttr[Sufx, Undb])
 
     while _pos >= 0
       node = orig.unsafe_fetch(_pos)
 
       case node.epos
       when .od?, .cp?, .ip?, .lcp?
-        noun = init_pair_node(head: node, tail: noun, epos: :NP, attr: attr, flip: true)
-      when .cd?, .clp?
-        noun = init_pair_node(head: node, tail: noun, epos: :NP, attr: attr, flip: false)
+        np_node = init_pair_node(head: node, tail: np_node, epos: :NP, attr: attr, flip: true)
       when .dp?
-        noun = init_dp_np_pair(np_term: noun, dp_term: node)
-      when .qp?
-        noun = init_qp_np_pair(np_term: noun, qp_term: node)
+        np_node = init_dp_np_pair(np_node: np_node, dp_node: node)
+      when .qp?, .clp?, .cd?
+        np_node = init_qp_np_pair(np_node: np_node, qp_node: node)
       when .adjp?, .dnp?
         flip = !node.attr.at_h?
-        noun = init_pair_node(head: node, tail: noun, epos: :NP, attr: attr, flip: flip)
+        np_node = init_pair_node(head: node, tail: np_node, epos: :NP, attr: attr, flip: flip)
       when .pn?
-        at_h = pron_at_head?(pron: node, noun: noun)
-        noun = init_pair_node(head: node, tail: noun, epos: :NP, attr: attr, flip: !at_h)
+        at_h = pron_at_head?(pn_node: node, np_node: np_node)
+        np_node = init_pair_node(head: node, tail: np_node, epos: :NP, attr: attr, flip: !at_h)
       else
         break
       end
@@ -134,10 +133,10 @@ class MT::AiCore
       _pos &-= 1
     end
 
-    {noun, _pos}
+    {np_node, _pos}
   end
 
-  private def pron_at_head?(pron : MtNode, noun : MtNode)
+  private def pron_at_head?(pn_node : MtNode, np_node : MtNode)
     true
   end
 end

@@ -28,18 +28,17 @@ class MT::MtDict
     end
   end
 
-  def get_defn?(zstr : String, epos : MtEpos)
-    got = alt = nil
+  def get_defn?(zstr : String, epos : MtEpos, use_alt = epos.can_use_alt?) : MtDefn?
+    fuzzy = nil
 
     @data.each do |trie|
       next unless node = trie[zstr]?
-      got, new_alt = node.get(epos)
-      alt ||= new_alt
-
-      return got, alt if got
+      found, fuzzy_2 = node.get(epos)
+      return found if found
+      fuzzy ||= fuzzy_2
     end
 
-    return got, alt
+    fuzzy if use_alt
   end
 
   def any_defn?(zstr : String)

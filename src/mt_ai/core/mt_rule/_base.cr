@@ -14,9 +14,10 @@ class MT::AiCore
     when epos.cd?
       vstr = TlUnit.translate_od(zstr)
     when epos.qp?
-      vstr = TlUnit.translate_mq(zstr) || QtCore.tl_hvword(zstr)
+      vstr = TlUnit.translate_mq(zstr) || QtCore.tl_hvword(zstr, false)
     when epos.nr?
-      vstr = @name_qt.translate(zstr, cap: true)
+      vstr = @name_qt.tl_name(zstr, wrap: true)
+      # TODO: translate time
     when epos.noun?
       vstr, noun_attr = QtCore.noun_qt.tl_noun(zstr)
       attr |= noun_attr
@@ -36,8 +37,7 @@ class MT::AiCore
   private def init_pair_node(head : MtNode, tail : MtNode,
                              epos : MtEpos, attr : MtAttr = tail.attr,
                              zstr = "#{head.zstr}#{tail.zstr}", &)
-    match, _fuzzy = @mt_dict.get_defn?(zstr, epos)
-    body = match || yield
+    body = @mt_dict.get_defn?(zstr, epos) || yield
     MtNode.new(body: body, zstr: zstr, epos: epos, attr: attr, from: head.from)
   end
 
@@ -49,25 +49,17 @@ class MT::AiCore
     end
   end
 
-  private def init_term(list : Array(MtNode),
-                        epos : MtEpos, attr : MtAttr = :none,
-                        zstr = list.join(&.zstr), from = list[0].from)
-    body = init_defn(zstr, epos, attr) || begin
-      case list.size
-      when 1 then list[0]
-      when 2 then MtPair.new(list[0], list[1])
-      else        list
-      end
-    end
-
+  private def init_list_node(list : Array(MtNode),
+                             epos : MtEpos, attr : MtAttr = :none,
+                             zstr = list.join(&.zstr), from = list[0].from)
+    body = @mt_dict.get_defn?(zstr, epos) || list
     MtNode.new(body: body, zstr: zstr, epos: epos, attr: attr, from: from)
   end
 
   private def init_defn(zstr : String, epos : MtEpos, attr : MtAttr = :none)
-    match, _fuzzy = @mt_dict.get_defn?(zstr, epos)
-    return match if match
-
-    vstr, attr = init_from_zstr(zstr, epos, attr)
-    @mt_dict.add_temp(zstr, vstr, attr, epos)
+    @mt_dict.get_defn?(zstr, epos, false) || begin
+      vstr, attr = init_from_zstr(zstr, epos, attr)
+      @mt_dict.add_temp(zstr, vstr, attr, epos)
+    end
   end
 end

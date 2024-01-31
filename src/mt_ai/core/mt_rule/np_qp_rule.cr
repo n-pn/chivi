@@ -1,14 +1,16 @@
 # require "./ai_term"
 
 class MT::AiCore
-  private def init_qp_np_pair(np_term : MtNode, qp_term : MtNode)
-    init_pair_node(head: qp_term, tail: np_term, epos: :NP, attr: np_term.attr) do
-      m_term = qp_term.find_by_epos(:M) || qp_term
-      # pp [m_term, qp_term, np_term]
-      PairDict.m_n_pair.fix_if_match!(m_term, np_term)
+  private def init_qp_np_pair(np_node : MtNode, qp_node : MtNode)
+    init_pair_node(head: qp_node, tail: np_node, epos: :NP, attr: np_node.attr) do
+      case qp_body = qp_node.body
+      when MtPair
+        np_node = init_qp_np_pair(np_node, qp_body.tail)
+        qp_node = qp_body.head
+      end
 
-      # TODO: split `OD`, fix `M` vstr
-      MtPair.new(qp_term, np_term, flip: qp_term.attr.at_t?)
+      PairDict.m_n_pair.fix_if_match!(qp_node, np_node)
+      MtPair.new(qp_node, np_node, flip: qp_node.epos.od? || qp_node.attr.at_t?)
     end
   end
 

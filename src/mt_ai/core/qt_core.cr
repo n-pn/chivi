@@ -32,9 +32,7 @@ class MT::QtCore
   end
 
   def tl_noun(zstr : String)
-    list = parse!("∅#{zstr}∅")
-    list.shift if list.first.zstr == "∅"
-    list.pop if list.last.zstr == "∅"
+    list = wrap_tokenize(zstr)
 
     # collect attr from last word
     attr = list.last.attr
@@ -55,38 +53,54 @@ class MT::QtCore
   end
 
   @[AlwaysInline]
+  def tl_name(zstr : String, wrap : Bool = true)
+    data = wrap ? wrap_tokenize(zstr) : tokenize(zstr)
+    data.unshift(data.pop) if data.last.has_attr?(MtAttr[Sufx, At_h])
+    data.to_txt(cap: false)
+  end
+
+  @[AlwaysInline]
   def tl_term(zstr : String)
-    parse!("∅#{zstr}∅").to_txt(cap: false)
+    wrap_tokenize(zstr).to_txt(cap: false)
   end
 
   def translate(zstr : String, cap : Bool = true)
-    parse!(zstr).to_txt(cap: cap)
+    tokenize(zstr).to_txt(cap: cap)
   end
 
   def to_mtl(str : String)
-    parse!(str).to_mtl(cap: true)
+    tokenize(str).to_mtl(cap: true)
   end
 
-  def parse!(input : String, _idx = 0)
+  @[AlwaysInline]
+  def wrap_tokenize(zstr : String, _idx = 0)
+    data = tokenize("∅#{zstr}∅", _idx: _idx)
+    data.shift if data.first.zstr == "∅"
+    data.pop if data.last.zstr == "∅"
+    data
+  end
+
+  def tokenize(input : String, _idx = 0)
+    tokens = @wseg_core.tokenize(input)
     output = QtData.new
 
-    @wseg_core.tokenize(input).each do |zstr|
+    tokens.each do |zstr|
       size = zstr.size
 
       if defn = @dict.any_defn?(zstr)
         output << QtNode.new(zstr, defn.vstr, defn.attr, _idx: _idx, _dic: defn.dnum.value)
       else
-        vstr, attr = init_data(zstr)
+        vstr, attr = init_from_zstr(zstr)
         output << QtNode.new(zstr, vstr, attr, _idx: _idx, _dic: 0)
       end
 
-      _idx += size
+      _idx &+= size
     end
 
     output
   end
 
-  private def init_data(zstr : String)
+  private def init_from_zstr(zstr : String)
     vstr = CharUtil.normalize(zstr)
 
     case vstr

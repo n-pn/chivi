@@ -19,7 +19,8 @@ class MT::TrieDict
 
   @[AlwaysInline]
   def self.add_defn(dname : String, input : SqDefn)
-    CACHE[dname]?.try(&.add(input))
+    return unless dict = CACHE[dname]?
+    input.dnum < 0 ? dict.delete(input) : dict.add(input)
   end
 
   @[AlwaysInline]
@@ -149,7 +150,7 @@ class MT::TrieDict
       in MtDefn
         if defn.epos == data.epos
           @data = defn
-        elsif defn.rank > data.rank
+        elsif defn.rank >= data.rank
           @data = [defn, data]
         else
           @data = [data, defn]

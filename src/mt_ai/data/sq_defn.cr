@@ -59,7 +59,7 @@ struct MT::SqDefn
     @vstr = zterm.vstr
     @attr = MtAttr.parse_list(zterm.attr).to_i
 
-    @dnum = MtDnum.from(@d_id, zterm.plock).to_i
+    @dnum = zterm.plock < 0 ? -1 : MtDnum.from(@d_id, zterm.plock).to_i
     @rank = zterm.rank.to_i
   end
 
@@ -84,7 +84,7 @@ struct MT::SqDefn
 
   def self.query_each(d_id : Int32, & : (String, MtDefn) ->)
     load_db(d_id).open_ro do |db|
-      query = "select zstr, vstr, epos, attr, dnum, rank from zvdefn where d_id = $1"
+      query = "select zstr, vstr, epos, attr, dnum, rank from zvdefn where d_id = $1 and dnum >= 0"
       db.query_each(query, d_id) { |rs| yield rs.read(String), MtDefn.new(rs) }
     end
   end

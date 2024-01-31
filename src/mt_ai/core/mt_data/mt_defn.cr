@@ -39,7 +39,7 @@ struct MT::MtDefn
   end
 
   def initialize(data : SqDefn)
-    @vstr = data.zstr
+    @vstr = data.vstr
     @epos = MtEpos.from_value(data.epos)
     @attr = MtAttr.from_value(data.attr)
     @dnum = MtDnum.from_value(data.dnum)

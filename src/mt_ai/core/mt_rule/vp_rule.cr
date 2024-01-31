@@ -44,8 +44,9 @@ class MT::AiCore
       node = vp_body.unsafe_fetch(pos)
       case node.epos
       when .is?(:AS)
-        vp_node = init_vp_as_pair(vp_node, node)
         pos &+= 1
+        hide_as_node = vp_body[pos]?.try(&.epos.verb?) || false
+        vp_node = init_vp_as_pair(vp_node, node, hide_as_node)
       when .np?
         vp_node = init_vp_np_pair(vp_node, np_node: node, vv_node: vv_node)
         pos &+= 1
@@ -108,9 +109,9 @@ class MT::AiCore
     PairDict.d_v_pair.fix_if_match!(ad_node, vv_node)
   end
 
-  private def init_vp_as_pair(vp_node, as_node, had_aspect : Bool = false)
+  private def init_vp_as_pair(vp_node, as_node, hide_as_node : Bool = false)
     init_pair_node(vp_node, as_node, epos: :VAS, attr: :none) do
-      if had_aspect
+      if hide_as_node
         as_node.attr = :hide
         flip = false
       else

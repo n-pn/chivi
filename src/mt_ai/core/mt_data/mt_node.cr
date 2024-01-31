@@ -33,8 +33,13 @@ class MT::MtNode
   def initialize(@body, @zstr, @epos, @attr : MtAttr = :none, @from = 0)
     case body
     when MtDefn
-      @epos = body.epos if body.rank == 2
       @attr |= body.attr
+
+      if body.rank > 2 # force single ptag
+        @epos = body.epos
+      elsif body.epos != epos
+        @body = body.as_any(epos)
+      end
     when MtNode
       @attr |= body.attr
     end
@@ -120,6 +125,20 @@ class MT::MtNode
   end
 
   ###
+
+  # def reverse_each(& : self ->)
+  #   case body = @body
+  #   when MtDefn
+  #     yield self
+  #   when MtNode
+  #     yield body
+  #   when MtPair
+  #     yield body.tail
+  #     yield body.head
+  #   when Array
+  #     body.reverse_each { |term| yield term }
+  #   end
+  # end
 
   def each_child(& : self ->)
     case body = @body
