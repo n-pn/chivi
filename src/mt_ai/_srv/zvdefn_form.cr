@@ -15,7 +15,7 @@ class MT::ZvdefnForm
   getter attr : String
 
   getter cpos : String
-  getter rank : Int16 = 0
+  getter rank : Int16 = 1
 
   getter d_no : Int32 = 0
   getter lock : Bool = true

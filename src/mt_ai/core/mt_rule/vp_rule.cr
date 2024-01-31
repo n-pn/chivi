@@ -45,8 +45,8 @@ class MT::AiCore
       case node.epos
       when .is?(:AS)
         pos &+= 1
-        hide_as_node = vp_body[pos]?.try(&.epos.verb?) || false
-        vp_node = init_vp_as_pair(vp_node, node, hide_as_node)
+        # hide_as_node = vp_body[pos]?.try(&.epos.verb?) || false
+        vp_node = init_vp_as_pair(vp_node, node, pos < max)
       when .np?
         vp_node = init_vp_np_pair(vp_node, np_node: node, vv_node: vv_node)
         pos &+= 1
@@ -112,7 +112,7 @@ class MT::AiCore
   private def init_vp_as_pair(vp_node, as_node, hide_as_node : Bool = false)
     init_pair_node(vp_node, as_node, epos: :VAS, attr: :none) do
       if hide_as_node
-        as_node.attr = :hide
+        as_node.attr = :hide unless as_node == "过"
         flip = false
       else
         flip = fix_as_node!(as_node)

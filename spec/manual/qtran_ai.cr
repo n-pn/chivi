@@ -15,6 +15,7 @@ input = [
   "这句话一出空气瞬间凝结。",
   "“所以他，特恩布尔他才会在死前说那样一番话。”",
   "那些特恩布尔靠着坑蒙拐骗和威逼利诱，靠着宰掉前一批老大而积攒起来，对他拍胸脯表忠心的狂热狗腿子们。",
+  "鲁贝、索洛、红蝮蛇、宋、飞刀小丑、刀婊子、战狼乃",
 ]
 
 ch_rm = 1
@@ -26,8 +27,8 @@ ch_rm.times do |index|
   cheads << split
 end
 
-zdata = MT::MCache.find_con!(input, ver: 3_i8)
-ai_mt = MT::AiCore.new("wn48576")
+zdata = MT::MCache.find_con!(input, ver: 2_i8)
+ai_mt = MT::AiCore.new("wn18004")
 
 zdata.each_with_index do |rcon, l_id|
   data = ai_mt.translate!(rcon, prfx: cheads[l_id]?)

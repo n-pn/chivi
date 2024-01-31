@@ -9,7 +9,7 @@ QT_MT = MT::QtCore.new(MT::MtDict.for_mt("wn5344"))
 
 puts "Dict loading time: #{(Time.monotonic - time).total_milliseconds.round}ms".colorize.red
 
-res = QT_MT.parse!(TEXT)
+res = QT_MT.tokenize(TEXT)
 res.inspect(STDOUT)
 
 puts
@@ -25,3 +25,5 @@ puts "-----".colorize.dark_gray
 # puts "-----".colorize.dark_gray
 
 puts "Total time used (including loading dicts): #{(Time.monotonic - time).total_milliseconds.round}ms".colorize.red
+
+puts MT::QtCore.verb_qt.tl_term("补完")

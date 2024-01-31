@@ -7,7 +7,7 @@ class Vtdata {
   vstr: string
   cpos: string
   attr: string
-
+  rank: number
   lock: boolean
   d_no: number
 
@@ -21,8 +21,9 @@ class Vtdata {
     this.cpos = cpos
     this.attr = attr
 
-    this.lock = dnum >= 10
-    this.d_no = dnum < 0 || dnum == 6 ? -1 : ((dnum % 10) / 2) % 3
+    this.rank = dnum >= 300 ? 3 : 1
+    this.lock = dnum % 100 >= 10
+    this.d_no = dnum < 0 || dnum == 6 ? -1 : ((dnum % 10) / 2) | 0 % 3
   }
 }
 
@@ -162,5 +163,9 @@ export class Viform {
     }
 
     return false
+  }
+
+  fixed_cpos() {
+    return this.fdata.rank == 3
   }
 }

@@ -189,7 +189,6 @@
           <span class="ptag" use:tooltip={cpos_data.desc} data-anchor=".vtform">
             <code>{tform.cpos}</code>
             <span class="name">{cpos_data.name || 'Chưa rõ'}</span>
-            <SIcon name={tform.cpos == 'X' ? 'lock-open' : 'lock'} />
           </span>
         </button>
 
@@ -206,6 +205,18 @@
             <code use:tooltip={'Không có từ tính cụ thể'} data-anchor=".vtform"
               >None</code>
           {/each}
+        </button>
+
+        <button
+          type="button"
+          class="rank"
+          class:_active={tform.fixed_cpos()}
+          data-kbd="f"
+          use:tooltip={'Áp dụng từ loại/nghĩa duy nhất cho cụm từ'}
+          data-anchor=".vtform"
+          on:click={() => (tform.fdata.rank = tform.fixed_cpos() ? 1 : 3)}>
+          <SIcon name={tform.fixed_cpos() ? 'checkbox' : 'square'} />
+          <span class="ptag">Ép đơn nghĩa</span>
         </button>
       </div>
 
@@ -388,13 +399,22 @@
   .main-head {
     @include flex();
 
-    justify-content: space-between;
+    gap: 0.5rem;
     padding: 0.25rem 0.625rem;
     height: 2rem;
 
     code {
       padding: 0 0.375rem;
       @include bgcolor(neutral, 4, 1);
+    }
+
+    > * {
+      display: inline-flex;
+      gap: 0.25rem;
+      align-items: center;
+      padding: 0;
+      background: inherit;
+      line-height: 1.5rem;
     }
   }
 
@@ -405,35 +425,32 @@
   }
 
   .cpos {
-    display: inline-flex;
-    gap: 0.25rem;
-
-    padding: 0;
-    background: inherit;
     @include fgcolor(tert);
   }
 
   .ptag {
     @include ftsize(sm);
-    gap: 0.2em;
-    display: inline-flex;
-    align-items: center;
   }
 
   .attr {
-    display: inline-flex;
-    gap: 0.25rem;
-    // align-items: center;
-    margin-left: auto;
-    padding: 0;
-    background: inherit;
-    line-height: 1.5rem;
-
     @include ftsize(sm);
     @include fgcolor(tert);
 
     &:hover {
       @include fgcolor(primary);
+    }
+  }
+
+  .rank {
+    margin-left: auto;
+
+    text-transform: none;
+    // @include ftsize(sm);
+    @include fgcolor(tert);
+
+    &:hover,
+    &._active {
+      @include fgcolor(warning);
     }
   }
 

@@ -195,7 +195,7 @@ class MT::MtNode
       case body = @body
       when MtDefn
         jb.string body.vstr
-        jb.number body.dnum.value
+        jb.number 100 &* body.rank &+ body.dnum.value
       else
         jb.array do
           self.each_child(&.to_json(jb: jb))
