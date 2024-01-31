@@ -86,7 +86,7 @@
     const ztext = rline.get_ztext(from, upto)
     const hviet = rline.get_hviet(from, upto)
 
-    const tform = new Viform(mlist, rword, ztext, hviet)
+    const tform = new Viform(mlist, rword, ztext, hviet, $_user.privi + 1)
 
     cached.set(key, tform)
     return tform

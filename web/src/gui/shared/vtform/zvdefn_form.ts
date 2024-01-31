@@ -1,27 +1,9 @@
-import { flatten_tree, gen_mt_ai_text } from '$lib/mt_data_2'
+import { gen_mt_ai_text } from '$lib/mt_data_2'
 
-import type { Rdline, Rdword } from '$lib/reader'
+import type { Rdword } from '$lib/reader'
+import { find_last } from '$utils/list_utils'
 
-export const gen_mlist = (ctree: CV.Cvtree, from: number, upto: number) => {
-  if (!ctree) return []
-  const input = flatten_tree(ctree)
-
-  let mlist = []
-
-  for (const node of input) {
-    if (node[2] <= from && node[3] >= upto) mlist.push(node)
-  }
-
-  if (mlist.length > 4) mlist = mlist.slice(mlist.length - 4)
-
-  for (const node of input) {
-    if (node[2] >= from && node[3] < upto) mlist.push(node)
-  }
-
-  return mlist.slice(0, 6)
-}
-
-export class Vtdata {
+class Vtdata {
   vstr: string
   cpos: string
   attr: string
@@ -40,17 +22,8 @@ export class Vtdata {
     this.attr = attr
 
     this.lock = dnum >= 10
-    this.d_no = dnum < 0 ? 0 : ((dnum % 10) / 2) | 0
+    this.d_no = dnum < 0 || dnum == 6 ? -1 : ((dnum % 10) / 2) % 3
   }
-}
-
-export function find_last<T>(input: T[], callback: (x: T) => boolean) {
-  for (let i = input.length - 1; i >= 0; i--) {
-    const item = input[i]
-    if (callback(item)) return item
-  }
-
-  return undefined
 }
 
 export class Viform {
@@ -58,40 +31,40 @@ export class Viform {
   fdata: Vtdata
 
   ztext: string
-  hviet: string
   vtemp: string
 
-  fresh: boolean
-
-  constructor(mlist: CV.Cvtree[], rword: Rdword, ztext = '', hviet = '') {
+  constructor(
+    mlist: CV.Cvtree[],
+    rword: Rdword,
+    ztext = '',
+    hviet = '',
+    privi = -1,
+    pd_no = 3
+  ) {
     this.ztext = ztext
-    this.hviet = hviet
-
-    const { from, upto, cpos } = rword
 
     const vnode = find_last<CV.Cvtree>(mlist, (x) => {
-      if (x[2] != from || x[3] != upto) return false
-      return x[0] == cpos || cpos == 'X'
+      if (x[2] != rword.from || x[3] != rword.upto) return false
+      return rword.cpos == x[0] || rword.cpos == 'X'
     })
 
     if (vnode) {
       const vstr = gen_mt_ai_text(vnode, { cap: false, und: true })
       const dnum = vnode[5] || -1
       this.finit = new Vtdata(vstr, vnode[0], vnode[1], dnum)
-      this.fresh = dnum < 0 || dnum == 6 || dnum % 2 == 1
     } else {
-      this.finit = new Vtdata(hviet, cpos)
-      this.fresh = true
+      this.finit = new Vtdata(hviet, rword.cpos)
     }
 
-    this.fdata = { ...this.finit, lock: false }
+    let d_no = this.finit.d_no
+
+    if (pd_no < 3) d_no = pd_no
+    else if (d_no < 0) d_no = rword.cpos == 'NR' || rword.cpos == 'NN' ? 1 : 2
+    if (d_no > privi) d_no = privi > 0 ? privi : 0
+
+    this.fdata = { ...this.finit, d_no, lock: false }
     this.vtemp = this.finit.vstr || hviet
   }
-
-  // fix_lock(privi: number) {
-  //   if (this.plock < 0) this.plock = privi > 0 ? 1 : 0
-  //   else if (this.plock == 0 && privi > this.min_privi) this.plock = 1
-  // }
 
   get zstr() {
     return this.ztext
@@ -147,7 +120,7 @@ export class Viform {
   }
 
   get state() {
-    return !this.fdata.vstr ? 0 : this.fresh ? 1 : 2
+    return !this.fdata.vstr ? 0 : this.finit.d_no < 0 ? 1 : 2
   }
 
   get plock() {
@@ -160,7 +133,9 @@ export class Viform {
     } else if (this.fdata.vstr != this.finit.vstr) {
       this.fdata.vstr = this.finit.vstr
     } else {
-      this.fdata = { ...this.finit, lock: false }
+      this.fdata.vstr = this.finit.vstr
+      this.fdata.cpos = this.finit.cpos
+      this.fdata.attr = this.finit.attr
     }
 
     return this
@@ -172,7 +147,7 @@ export class Viform {
     } else if (this.fdata.attr) {
       this.fdata.attr = ''
     } else {
-      this.fdata.vstr = '⛶'
+      this.fdata.vstr = '∅'
       this.fdata.attr = 'Hide'
     }
 
@@ -180,27 +155,12 @@ export class Viform {
   }
 
   changed() {
-    if (!this.fdata.vstr) return false
+    if (this.fdata.d_no < 0) return true
 
     for (const field in this.finit) {
       if (this[field] != this.finit[field]) return true
     }
 
     return false
-  }
-
-  toJSON(_ctx = {}) {
-    return {
-      zstr: this.zstr,
-      vstr: this.vstr,
-
-      cpos: this.cpos,
-      attr: this.attr,
-
-      lock: this.lock,
-      d_no: this.d_no,
-
-      _ctx,
-    }
   }
 }

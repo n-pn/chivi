@@ -77,9 +77,9 @@
 
   @include fgcolor(secd);
 
-  @include bp-min(tl) {
-    margin: 0 var(--gutter);
-  }
+  // @include bp-min(tl) {
+  //   margin: 0 var(--gutter);
+  // }
 
   h1,
   h2,
@@ -256,13 +256,23 @@ x-pad {
 }
 
 cv-data {
+  display: block;
+  position: relative;
+
+  .zdata,
+  .cdata {
+    @include bp-min(tl) {
+      padding: 0 var(--gutter-small);
+    }
+  }
+
   .zdata {
     @include fgcolor(tert);
     margin-bottom: 0;
   }
 
   .zdata + .cdata {
-    margin-top: 0;
+    margin-top: 0.25rem;
   }
 }
 

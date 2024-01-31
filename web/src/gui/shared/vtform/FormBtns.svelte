@@ -38,7 +38,6 @@
         type="button"
         class="m-btn dict _{d_no}"
         class:_active={d_no == tform.d_no}
-        data-kbd="o"
         data-tip={brief}
         on:click={() => (tform.d_no = d_no)}>
         <SIcon name={dicon} />
