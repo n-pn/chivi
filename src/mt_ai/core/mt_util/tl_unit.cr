@@ -46,7 +46,7 @@ module MT::TlUnit
     translate_mq(input).try { |x| return x }
 
     head, mid, tail = input.partition("分之")
-    vstr = tail.empty ? "" : translate(tail)
+    vstr = tail.empty? ? "" : translate(tail)
 
     return vstr if head.empty?
     return "#{vstr} phần" unless mid.empty?

@@ -14,11 +14,10 @@ class MT::AiCore
 
     while pos < max
       node = vp_body.unsafe_fetch(pos)
-
       pos &+= 1
 
       case node.epos
-      when .vv?
+      when .verb?, .adjt?
         vv_node = node
         break
       when .pu?

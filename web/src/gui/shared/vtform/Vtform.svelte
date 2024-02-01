@@ -197,7 +197,7 @@
           class="attr"
           data-kbd="i"
           on:click={() => (pick_attr = !pick_attr)}>
-          <span class="plbl u-show-pm">Từ tính:</span>
+          <span class="plbl u-show-pl">Từ tính:</span>
           {#each attr_list as attr}
             <code use:tooltip={attr_info[attr]?.desc} data-anchor=".vtform"
               >{attr}</code>
@@ -216,7 +216,7 @@
           data-anchor=".vtform"
           on:click={() => (tform.fdata.rank = tform.fixed_cpos() ? 1 : 3)}>
           <SIcon name={tform.fixed_cpos() ? 'checkbox' : 'square'} />
-          <span class="ptag">Ép đơn nghĩa</span>
+          <span class="ptag">Đơn nghĩa</span>
         </button>
       </div>
 

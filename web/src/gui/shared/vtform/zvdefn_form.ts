@@ -32,6 +32,7 @@ export class Viform {
   fdata: Vtdata
 
   ztext: string
+  hviet: string
   vtemp: string
 
   constructor(
@@ -43,6 +44,7 @@ export class Viform {
     pd_no = 3
   ) {
     this.ztext = ztext
+    this.hviet = hviet
 
     const vnode = find_last<CV.Cvtree>(mlist, (x) => {
       if (x[2] != rword.from || x[3] != rword.upto) return false

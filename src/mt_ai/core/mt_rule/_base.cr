@@ -12,7 +12,7 @@ class MT::AiCore
     when epos.od?
       vstr = TlUnit.translate_od(zstr)
     when epos.cd?
-      vstr = TlUnit.translate_od(zstr)
+      vstr = TlUnit.translate_cd(zstr)
     when epos.qp?
       vstr = TlUnit.translate_mq(zstr) || QtCore.tl_hvword(zstr, false)
     when epos.nr?
@@ -26,8 +26,6 @@ class MT::AiCore
     when epos.adjt?
       vstr = QtCore.adjt_qt.tl_term(zstr, :VA)
     else
-      # TODO: change to fast translation mode
-      # TODO: handle verb/noun/adjt translation
       vstr = @qt_core.translate(zstr, false)
     end
 
@@ -37,6 +35,7 @@ class MT::AiCore
   private def init_pair_node(head : MtNode, tail : MtNode,
                              epos : MtEpos, attr : MtAttr = tail.attr,
                              zstr = "#{head.zstr}#{tail.zstr}", &)
+    attr = attr.turn_off(MtAttr[Sufx, Prfx])
     body = @mt_dict.get_defn?(zstr, epos) || yield
     MtNode.new(body: body, zstr: zstr, epos: epos, attr: attr, from: head.from)
   end

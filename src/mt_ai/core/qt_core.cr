@@ -35,7 +35,7 @@ class MT::QtCore
     list = wrap_tokenize(zstr, :NN)
 
     # collect attr from last word
-    attr = list.last.attr
+    attr = list.last.attr.turn_off(MtAttr[Sufx, Undb])
 
     # swapping order
     # note: do not swap special words
