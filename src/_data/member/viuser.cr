@@ -75,18 +75,22 @@ class CV::Viuser
   def check_privi!(persist : Bool = true)
     self.last_loggedin_at = Time.utc
 
-    if !self.privi.in?(0..3) || self.p_exp > Time.utc.to_unix
+    if !self.privi.in?(1..4) || self.p_exp > Time.utc.to_unix
       self.save!
-    else
-      uprivi = Uprivi.load!(self.id)
-      uprivi.fix_privi!(persist: true)
+      return
+    end
+
+    if uprivi = Uprivi.max_valid(self.id)
       self.fix_privi!(uprivi, persist: persist)
+    else
+      self.privi = 0
+      self.save! if persist
     end
   end
 
   def fix_privi!(uprivi : Uprivi, persist : Bool = false)
-    self.privi = uprivi.p_now
-    self.p_exp = uprivi.p_exp
+    self.privi = uprivi.privi
+    self.p_exp = uprivi.p_til
     self.save! if persist
   end
 

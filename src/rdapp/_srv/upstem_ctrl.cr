@@ -66,7 +66,7 @@ class RD::UpstemCtrl < AC::Base
   @[AC::Route::POST("/:up_id", body: uform)]
   def update(up_id : Int32, uform : Upstem)
     ustem = get_ustem(up_id)
-    guard_owner ustem.owner, 1, "sửa sưu tầm cá nhân"
+    guard_owner ustem.owner, 0, "sửa sưu tầm cá nhân"
 
     ustem.au_zh = uform.au_zh unless uform.au_vi.empty?
     ustem.au_vi = uform.au_vi unless uform.au_vi.empty?

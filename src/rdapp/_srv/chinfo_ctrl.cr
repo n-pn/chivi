@@ -59,7 +59,7 @@ class RD::ChinfoCtrl < AC::Base
 
   private def build_cpart(crepo, cinfo, p_idx, force, regen)
     vu_id, privi = self._vu_id, self._privi
-    user_multp, real_multp = crepo.chap_multp(cinfo.ch_no, vu_id: vu_id, privi: privi &+ 1)
+    user_multp, real_multp = crepo.chap_multp(cinfo.ch_no, vu_id: vu_id, privi: privi)
 
     ztext, cksum, p_max = crepo.load_raw_part(cinfo, p_idx, regen: regen)
 
@@ -102,7 +102,7 @@ class RD::ChinfoCtrl < AC::Base
   end
 
   private def inc_view_count!(crepo : Tsrepo, sname : String)
-    value = (self._privi &+ 2)
+    value = (self._privi &+ 1)
     crepo.inc_view_count!(value)
     case crepo.stype
     when 1

@@ -115,7 +115,7 @@ export class Viform {
   }
 
   get min_privi() {
-    return this.d_no - 1 // TODO: update after increase privi
+    return this.fdata.d_no
   }
 
   get req_privi() {

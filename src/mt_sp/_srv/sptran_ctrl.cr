@@ -29,7 +29,7 @@ class SP::TranCtrl < AC::Base
   Dir.mkdir_p(LOG_DIR)
 
   private def do_translate(qdata : QtData, type : String, opts = "", redo = false)
-    sleep 10.milliseconds * (1 << (4 - self._privi))
+    sleep 10.milliseconds * (1 << (5 - self._privi))
 
     wcount, charge = qdata.quota_using(type, opts)
 

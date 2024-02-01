@@ -3,6 +3,7 @@
   const pduras_days = [14, 30, 60, 90]
 
   const costs = [
+    [0, 0, 0, 0],
     [7, 15, 30, 45],
     [20, 40, 75, 100],
     [40, 80, 150, 210],
@@ -18,7 +19,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let p_now = $_user.privi
-  let pform = { privi: p_now < 0 ? 0 : p_now > 3 ? 3 : p_now, pdura: 1 }
+  let pform = { privi: p_now < 1 ? 1 : p_now > 4 ? 4 : p_now, pdura: 1 }
 
   let error = ''
   let state = 0
@@ -41,7 +42,7 @@
     state = 2
   }
 
-  const privi_colors = ['neutral', 'success', 'primary', 'warning', 'harmful']
+  const privi_colors = ['neutral', 'success', 'primary', 'private', 'warning']
 </script>
 
 <article class="article island">
@@ -52,7 +53,7 @@
     <div class="form-field">
       <label class="form-label" for="privi">Chọn quyền hạn:</label>
       <div class="radio-group">
-        {#each [0, 1, 2, 3] as value}
+        {#each [1, 2, 3, 4] as value}
           <label class="m-label _{value}" class:_active={value == pform.privi}>
             <input type="radio" bind:group={pform.privi} {value} />
             <span class="icon"><SIcon name="privi-{value}" iset="icons" /></span
@@ -67,7 +68,7 @@
       <div class="radio-group">
         {#each [0, 1, 2, 3] as value}
           <label
-            class="m-label pdura _{value}"
+            class="m-label pdura _{pform.privi}"
             class:_active={value == pform.pdura}>
             <div>
               <input type="radio" bind:group={pform.pdura} {value} />
@@ -95,7 +96,7 @@
     <footer class="form-action">
       <button
         type="submit"
-        class="m-btn _lg _fill _{privi_colors[pform.privi]}"
+        class="m-btn _lg _fill _warning"
         data-umami-event="upgrade-privi"
         disabled={state > 0 || cost > $_user.vcoin}>
         <SIcon name={['send', 'loader-2', 'check'][state]} spin={state == 1} />

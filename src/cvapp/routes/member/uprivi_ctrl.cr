@@ -6,8 +6,8 @@ class CV::UpriviCtrl < CV::BaseCtrl
 
   @[AC::Route::GET("/mine")]
   def mine
-    uprivi = Uprivi.load!(_vu_id)
-    render json: uprivi
+    items = Uprivi.get_all(self._vu_id, &.<< " where vu_id = $1 order by privi desc")
+    render json: items
   end
 
   @[AC::Route::PUT("/upgrade", body: :form)]
@@ -17,7 +17,8 @@ class CV::UpriviCtrl < CV::BaseCtrl
     viuser = form.do_upgrade!(_vu_id)
     save_current_user!(viuser)
 
-    render json: ViuserView.new(viuser, true)
+    view = ViuserView.new(viuser, true)
+    render json: view
   rescue ex
     Log.error(exception: ex) { ex }
     render 400, text: "Bạn chưa đủ số vcoin tối thiểu để tăng quyền hạn!"

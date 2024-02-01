@@ -112,35 +112,35 @@ cv-user,
   font-weight: 500;
   color: var(--color, #{color(neutral, 5)});
 
-  &[data-privi='-2'] {
+  &[data-privi='-1'] {
     text-decoration: line-through;
   }
 
-  &[data-privi='-1'] {
+  &[data-privi='0'] {
     --color: #{color(neutral, 5)};
   }
 
-  &[data-privi='0'] {
+  &[data-privi='1'] {
     --color: #{color(success, 5)};
   }
 
-  &[data-privi='1'] {
+  &[data-privi='2'] {
     --color: #{color(primary, 5)};
   }
 
-  &[data-privi='2'] {
+  &[data-privi='3'] {
     --color: #{color(purple, 5)};
   }
 
-  &[data-privi='3'] {
+  &[data-privi='4'] {
     --color: #{color(warning, 5)};
   }
 
-  &[data-privi='4'] {
+  &[data-privi='5'] {
     --color: #{color(harmful, 5)};
   }
 
-  &[data-privi='5'] {
+  &[data-privi='6'] {
     --color: #{color(yellow, 5)};
   }
 }

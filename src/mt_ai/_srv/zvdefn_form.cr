@@ -52,8 +52,8 @@ class MT::ZvdefnForm
 
     p_min = @lock || defn.plock > 1 ? dict.p_min &+ 1 : dict.p_min
 
-    if privi + 1 < p_min
-      raise Unauthorized.new "Bạn cần quyền hạn tối thiểu là #{p_min - 1} để thêm/sửa từ"
+    if privi < p_min
+      raise Unauthorized.new "Bạn cần quyền hạn tối thiểu là #{p_min} để thêm/sửa từ"
     end
 
     defn.vstr = @vstr

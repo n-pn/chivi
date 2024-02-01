@@ -1,4 +1,5 @@
 require "../../util/qt_number"
+require "../mt_data/trie_dict"
 
 module MT::TlUnit
   def self.translate_od(zstr : String)
@@ -44,13 +45,12 @@ module MT::TlUnit
 
   def self.translate_cd(input : String)
     translate_mq(input).try { |x| return x }
+    parts = input.split("分之", 2)
 
-    head, mid, tail = input.partition("分之")
-    vstr = tail.empty? ? "" : translate(tail)
+    return translate(input) unless tail = parts[1]?
 
-    return vstr if head.empty?
-    return "#{vstr} phần" unless mid.empty?
-
+    head = parts[0]
+    vstr = translate(tail)
     sufx = PERC_HEAD.put_if_absent(head) { QtNumber.translate(head) }
     "#{vstr} phần #{sufx}"
   end

@@ -104,11 +104,11 @@
           <span class="lbl">Quyền hạn:</span>
           <SIcon name="privi-{privi}" iset="icons" />
         </div>
-        {#if privi > 3}
+        {#if privi > 4}
           <a class="m-btn _xs _harmful" href="/su" target="_blank">
             <span>Quản lý</span>
           </a>
-        {:else if privi < 0}
+        {:else if privi < 1}
           <a class="m-btn _xs _primary" href="/me/privi">
             <span>Nâng cấp</span>
           </a>

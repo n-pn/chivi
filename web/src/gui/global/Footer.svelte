@@ -14,6 +14,10 @@
     <span class="sep" />
     <a href="/hd/nang-cap-quyen-han" class="foot-link">Nâng cấp quyền hạn</a>
   </div>
+
+  <div class="secd u-warn">
+    Trang đang phát triển. Nếu gặp lỗi xin vui lòng liên hệ qua các kênh dưới:
+  </div>
   <div class="secd">
     <strong>Liên kết: </strong>
     {#each links as [text, href], index}
@@ -31,14 +35,14 @@
     margin-top: auto;
     padding: 0.75rem;
 
-    @include ftsize(sm);
+    font-size: rem(15px);
     @include border($loc: top);
     @include fgcolor(tert);
     // @include bgcolor(tert);
   }
 
   .secd {
-    margin-top: 0.25rem;
+    margin-top: 0.375rem;
   }
 
   .secd,

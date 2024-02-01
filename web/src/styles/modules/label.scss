@@ -55,6 +55,18 @@
   }
 
   &._3 {
+    --color: #{color(private, 5)};
+    --bdcolor: #{color(private, 2)};
+    --bgcolor: #{color(private, 1)};
+
+    @include tm-dark($svelte: false) {
+      --color: #{color(private, 3)};
+      --bdcolor: #{color(private, 5, 5)};
+      --bgcolor: #{color(private, 5, 3)};
+    }
+  }
+
+  &._4 {
     --color: #{color(warning, 5)};
     --bdcolor: #{color(warning, 2)};
     --bgcolor: #{color(warning, 1)};
@@ -66,7 +78,7 @@
     }
   }
 
-  &._4 {
+  &._5 {
     --color: #{color(harmful, 5)};
     --bdcolor: #{color(harmful, 2)};
     --bgcolor: #{color(harmful, 1)};

@@ -1,21 +1,10 @@
 <div class="app-vessel">
-  <div class="pledge u-warn">
-    <strong>
-      Chivi là trang cung cấp tiện ích dịch thuật, chúng tôi không chịu trách
-      nhiệm về nội dung trong trang. Các bạn trả phí là cho dịch vụ dịch thuật,
-      không phải là phí đọc truyện.
-    </strong>
-  </div>
-
-  <div class="pledge u-warn">
-    Trang đang phát triển. Nếu gặp lỗi hãy liên hệ qua kênh <a
-      href="https://discord.gg/mdC3KQH"
-      class="m-link"
-      target="_blank">Discord</a>
-    hoặc trang
-    <a href="https://www.facebook.com/chivi.fb/" class="m-link" target="_blank"
-      >Facebook</a
-    >.
+  <div class="pledge">
+    <em class="u-warn">
+      Thông báo mới nhất: Nhân dịp năm mới, quyền hạn của mỗi thành viên sẽ được
+      +1. Hạn chế về yêu cầu quyền hạn không đổi. Chi tiết liên hệ các kênh liên
+      lạc bên dưới.
+    </em>
   </div>
 </div>
 

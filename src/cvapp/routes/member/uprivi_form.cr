@@ -5,13 +5,15 @@ require "../../../_util/mail_util"
 struct CV::UpriviForm
   include JSON::Serializable
 
-  getter privi : Int32
+  getter privi : Int16
   getter pdura : Int32
+
+  getter auto_renew = false
 
   def after_initialize
     case @privi
-    when .< 0 then @privi = 0
-    when .> 3 then @privi = 3
+    when .< 1 then @privi = 1
+    when .> 4 then @privi = 4
     end
 
     case @pdura
@@ -23,10 +25,11 @@ struct CV::UpriviForm
   DURA = {14, 30, 60, 90}
 
   COST = {
-    {7, 15, 30, 45},     # privi 0
-    {20, 40, 75, 100},   # privi 1
-    {40, 80, 150, 210},  # privi 2
-    {80, 160, 300, 420}, # privi 3
+    {0, 0, 0, 0, 0},     # privi 0
+    {7, 15, 30, 45},     # privi 1
+    {20, 40, 75, 100},   # privi 2
+    {40, 80, 150, 210},  # privi 3
+    {80, 160, 300, 420}, # privi 4
   }
 
   def do_upgrade!(vu_id : Int32)
@@ -36,19 +39,22 @@ struct CV::UpriviForm
     viuser = Viuser.load!(vu_id)
     raise "Lượng vcoin không đủ!" if vcoin_req > viuser.vcoin
 
-    uprivi = Uprivi.load!(vu_id)
-    uprivi.extend_privi!(@privi.to_i16, dura_days, persist: true)
+    pdata = Uprivi.extend!(vu_id, @privi, dura_days)
 
     viuser.vcoin -= vcoin_req
-    viuser.privi = uprivi.p_now
-    viuser.p_exp = uprivi.p_exp
+
+    if viuser.privi < @privi
+      viuser.privi = @privi
+      viuser.p_exp = pdata.first.p_til
+    end
+
     viuser.save!
 
-    spawn record_action!(viuser, uprivi, vcoin_req, dura_days)
+    spawn record_action!(viuser, pdata, vcoin_req, dura_days)
     viuser
   end
 
-  private def record_action!(viuser : Viuser, uprivi : Uprivi, vcoin_req : Int32, dura_days : Int32)
+  private def record_action!(viuser : Viuser, pdata : Array(Uprivi), vcoin_req : Int32, dura_days : Int32)
     reason = "Nâng cấp quyền hạn Chivi lên #{@privi} trong #{dura_days} ngày."
     xvcoin = Xvcoin.new(
       kind: :privi_ug, sender_id: viuser.id, target_id: -1,
@@ -60,15 +66,6 @@ struct CV::UpriviForm
         <p><strong>Bạn đã nâng cấp/gia hạn quyền hạn #{@privi} thành công.</strong></p>
         <p>Bạn đã mất #{vcoin_req} vcoin để quyền hạn mới có hiệu lực thêm trong vòng #{dura_days} ngày.
         HTML
-
-      3.downto(0) do |privi|
-        time = Time.unix(uprivi.exp_a[privi])
-        next if time < Time.utc
-
-        io << <<-HTML
-          <p>Quyền hạn #{privi} của bạn có hiệu lực đến #{time.to_s("%H giờ %M phút ngày %d-%m-%Y")}.</p>
-          HTML
-      end
     end
 
     Unotif.new(

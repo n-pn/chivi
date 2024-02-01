@@ -3,15 +3,14 @@ import { api_get } from '$lib/api_call'
 import type { PageLoad } from './$types'
 
 interface Pdata {
-  p_now: number
-  p_exp: number
-
-  exp_a: [number, number, number, number]
+  privi: number
+  p_til: number
+  auto_renew: boolean
 }
 
 export const load = (async ({ fetch }) => {
   const path = `/_db/uprivis/mine`
-  const data = await api_get<Pdata>(path, fetch)
+  const data = await api_get<Pdata[]>(path, fetch)
 
   const _meta = {
     left_nav: [

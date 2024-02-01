@@ -136,7 +136,6 @@
       disabled={data._user.privi < 2 || chaps.length == 0}
       on:click={translate}>
       <span>Bắt đầu</span>
-      <SIcon name="privi-2" iset="icons" />
     </button>
   {:else if state == 1}
     <button class="m-btn _warning _fill u-right" disabled>
