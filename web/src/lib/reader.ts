@@ -57,7 +57,7 @@ export class Rdline {
   async load_mtran(rmode = 1, mtype = 'mtl_2', pdict = 'combine') {
     const cached = this.mtran[mtype]
     if (rmode == 0 || (rmode == 1 && cached)) return cached
-    this.mtran[mtype] = ['', '', 0, 0, '', '', 0]
+    this.mtran[mtype] = ['', '', 0, 0, '', 0]
 
     const opts = { pdict, title: 0 }
     const [lines] = await call_mtran(this.ztext, mtype, opts)

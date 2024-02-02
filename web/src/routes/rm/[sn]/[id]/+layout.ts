@@ -12,7 +12,7 @@ export const load = (async ({ fetch, params }) => {
   const sname = params.sn
   const sn_id = params.id
 
-  const sroot = `/rm/${sname}:${sn_id}`
+  const sroot = `/rm/${sname}/${sn_id}`
 
   const rdurl = `/_rd/tsrepos/rm${sname}/${sn_id}`
   const { xstem: rstem, crepo, rmemo } = await api_get<RmstemShow>(rdurl, fetch)

@@ -1,11 +1,11 @@
-import { home_nav, nav_link } from '$utils/header_util'
 import type { PageLoad } from './$types'
 
-const _meta: App.PageMeta = {
-  left_nav: [home_nav(), nav_link('login', 'Đăng nhập', 'login')],
-}
-
-export const load = (({ url }) => {
+export const load = (async ({ url, parent }) => {
   const email = url.searchParams.get('email') || ''
-  return { email, _meta, _title: 'Đăng nhập', ontab: 'login' }
+
+  return {
+    email,
+    ontab: 'login',
+    _navs: [{ href: '/_u/login', text: 'Đăng nhập', hd_icon: 'login' }],
+  }
 }) satisfies PageLoad

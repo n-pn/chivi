@@ -4,7 +4,8 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ items, pgidx, pgmax } = data.props)
+  $: ({ rpath, query, props } = data)
+  $: ({ items, pgidx, pgmax } = props)
 </script>
 
-<RmstemList {items} {pgidx} {pgmax} query={data.query} rpath="/rm/liked" />
+<RmstemList {items} {pgidx} {pgmax} {rpath} {query} />

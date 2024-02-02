@@ -1,9 +1,6 @@
 <script lang="ts">
-  import { page } from '$app/stores'
   import { get_user } from '$lib/stores'
   const _user = get_user()
-
-  import { crumbs } from '$gui/global/Bcrumb.svelte'
 
   import Section from '$gui/sects/Section.svelte'
 
@@ -26,7 +23,7 @@
     },
   ]
 
-  $: $crumbs = [{ text: 'Sưu tầm cá nhân', href: `/up` }]
+  // $: $crumbs = [{ text: 'Sưu tầm cá nhân', href: `/up` }]
 </script>
 
 <Section {tabs}>

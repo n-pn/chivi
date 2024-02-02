@@ -1,6 +1,5 @@
 <script lang="ts">
   import { page } from '$app/stores'
-  import { crumbs } from '$gui/global/Bcrumb.svelte'
 
   import BCover from '$gui/atoms/BCover.svelte'
   import UserMemo from '$gui/shared/wnovel/UserMemo.svelte'
@@ -24,11 +23,11 @@
     },
   ]
 
-  $: $crumbs = [
-    { text: 'Sưu tầm cá nhân', href: `/up` },
-    { text: ustem.sname, href: `/up?vu=${ustem.sname.substring(1)}` },
-    { text: `ID: ${ustem.id}` },
-  ]
+  // $: $crumbs = [
+  //   { text: 'Sưu tầm cá nhân', href: `/up` },
+  //   { text: ustem.sname, href: `/up?vu=${ustem.sname.substring(1)}` },
+  //   { text: `ID: ${ustem.id}` },
+  // ]
 
   $: author = ustem.au_vi || ustem.au_zh || 'Dật Danh'
 </script>

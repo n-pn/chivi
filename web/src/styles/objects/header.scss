@@ -70,7 +70,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   @include bdradi();
   @include bgcolor(primary, 7);
 
-  .__left > &:last-child,
+  .-left > &:last-child,
   &:hover {
     @include bgcolor(primary, 6);
   }

@@ -6,7 +6,7 @@
   export let rstem: CV.Rmstem
   export let rpath = '/rm'
 
-  $: sroot = `/rm/${rstem.sname}:${rstem.sn_id}`
+  $: sroot = `/rm/${rstem.sname}/${rstem.sn_id}`
 
   $: intro = rstem.intro_vi || rstem.intro_zh
   $: sname = rstem.sname.substring(1)
@@ -22,7 +22,7 @@
     <a class="title fz-fluid-lg" href={sroot}>{btitle}</a>
 
     <div class="xtags">
-      <a class="m-chip _xs _primary" href="{rpath}?sn={rstem.sname}">
+      <a class="m-chip _xs _primary" href="/rm/{rstem.sname}">
         <SIcon name="world" />
         <span class="-trim">{sname}</span>
       </a>

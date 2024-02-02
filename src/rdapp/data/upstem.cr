@@ -122,7 +122,7 @@ class RD::Upstem
 
       if uname
         args << uname
-        sql << " and sname = '@' || $2"
+        sql << " and sname = '@' || $1"
       end
 
       if wn_id
@@ -136,8 +136,8 @@ class RD::Upstem
       end
 
       if title
-        args << title
-        field = title =~ /\p{Han}/ ? "zname" : "vname"
+        args << title.chomp(',')
+        field = title.matches?(/\p{Han}/) ? "zname" : "vname"
         sql << " and #{field} ilike '%' || $#{args.size} || '%'"
       end
 

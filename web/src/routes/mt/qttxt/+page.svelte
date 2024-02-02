@@ -10,13 +10,11 @@
 <script lang="ts">
   import Cztext from '$gui/shared/upload/Cztext.svelte'
   import Csplit from '$gui/shared/upload/Csplit.svelte'
+  import type { Czdata } from '$gui/shared/upload/czdata'
 
   import { SIcon, Footer } from '$gui'
 
   import type { PageData } from './$types'
-  import { _pgidx } from '$lib/kit_path'
-  import type { Czdata } from '$gui/shared/upload/czdata'
-  import { ms_api_key } from '$utils/qtran_utils/ms_tran'
   export let data: PageData
 
   export let tmode = 'qt_v1'
@@ -24,11 +22,10 @@
 
   let ztext = ''
   let state = 0
+  let reuse = true
 
   let chaps: Czdata[] = []
   let trans: string[] = []
-
-  let reuse = true
 
   let on_ch_no = 0
   let err_text = ''
@@ -81,12 +78,7 @@
 
   const call_qtran = async (ztext: string, title = 0) => {
     let url = `/_sp/qtran/${tmode}?redo=${!reuse}`
-
-    if (tmode.startsWith('ms')) {
-      url += `&opts=${await ms_api_key()}`
-    } else if (tmode == 'qt_v1') {
-      url += `&opts=${wn_id}:${title}`
-    }
+    if (tmode == 'qt_v1') url += `&opts=${wn_id},${title}`
 
     const res = await fetch(url, { method: 'POST', body: ztext })
     const txt = await res.text()

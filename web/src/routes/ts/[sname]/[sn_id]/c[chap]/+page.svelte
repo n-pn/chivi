@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { crumbs } from '$gui/global/Bcrumb.svelte'
-
   import { afterNavigate } from '$app/navigation'
   import { mark_rdchap } from '$lib/common/rdmemo'
 
@@ -20,11 +18,11 @@
 
   import Reader from '$gui/shared/reader/Reader.svelte'
 
-  $: $crumbs = [
-    { text: `[${crepo.vname}]`, href: `/ts/${crepo.sroot}` },
-    { text: rdata.chdiv || 'Chính văn' },
-    { text: rdata.title },
-  ]
+  // $: $crumbs = [
+  //   { text: `[${crepo.vname}]`, href: `/ts/${crepo.sroot}` },
+  //   { text: rdata.chdiv || 'Chính văn' },
+  //   { text: rdata.title },
+  // ]
 
   $: ch_no = rdata.ch_no
   $: pg_no = _pgidx(ch_no)

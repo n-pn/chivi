@@ -114,6 +114,7 @@ module HttpUtil
         fetch(location, headers: headers, encoding: encoding, proxy: proxy)
       else
         proxy.failure_count += 1 if proxy
+        Log.error { res.body_io.gets_to_end }
         raise "http error: #{res.status_code}"
       end
     end

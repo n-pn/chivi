@@ -1,7 +1,4 @@
 <script lang="ts">
-  import { page } from '$app/stores'
-  import { crumbs } from '$gui/global/Bcrumb.svelte'
-
   import { get_user } from '$lib/stores'
   const _user = get_user()
 
@@ -10,14 +7,8 @@
   $: privi = $_user.privi
 
   const tabs = [
-    { type: 'home', href: `/rm`, icon: 'world', text: 'Danh sách' },
-    {
-      type: 'like',
-      href: `/rm/liked`,
-      icon: 'star',
-      text: 'Đã đánh dấu',
-      mute: privi < 0,
-    },
+    { type: 'index', href: `/rm`, icon: 'world', text: 'Danh sách' },
+
     {
       type: '+new',
       href: `/rm/+stem`,
@@ -26,15 +17,9 @@
       mute: privi < 1,
     },
   ]
-
-  $: $crumbs = [{ text: 'Nguồn liên kết nhúng', href: '/rm' }]
 </script>
 
-<Section {tabs}>
-  <slot />
-</Section>
-
-<footer>Hướng dẫn: TODO!</footer>
+<Section {tabs}><slot /></Section>
 
 <style lang="scss">
   footer {

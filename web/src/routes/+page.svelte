@@ -11,11 +11,10 @@
   $: ({ books } = data)
 
   const links = [
-    ['/qt', 'bolt', 'Dịch nhanh'],
-    ['/wn/crits', 'stars', 'Đánh giá'],
-    ['/wn/lists', 'bookmarks', 'Thư đơn'],
-    ['/mt/dicts', 'package', 'Từ điển'],
-    ['/gd', 'message', 'Diễn đàn'],
+    ['/mt/qtran', 'language', 'Dịch đoạn văn'],
+    ['/mt/qttxt', 'bolt', 'Dịch văn bản'],
+    // ['/mt/qturl', 'world', 'Dịch trang web'],
+    // ['/mt/qlook', 'search', 'Tra nhanh nghĩa'],
   ]
 </script>
 
@@ -27,14 +26,6 @@
     </a>
   {/each}
 </nav>
-
-<form class="qtran" action="/qt/multi" method="GET">
-  <input class="m-input" name="zh" placeholder="Dịch nhanh câu tiếng trung" />
-  <button type="submit" class="m-btn _primary _fill">
-    <SIcon name="bolt" />
-    <span class="u-show-pl">Dịch nhanh</span>
-  </button>
-</form>
 
 <article class="article island">
   <section class="list">

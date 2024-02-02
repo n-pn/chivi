@@ -1,6 +1,5 @@
 <script lang="ts">
   import Section from '$gui/sects/Section.svelte'
-  import { crumbs } from '$gui/global/Bcrumb.svelte'
 
   const tabs = [
     { type: 'index', href: '/wn/lists', icon: 'list', text: 'Danh sách' },
@@ -19,10 +18,10 @@
     },
   ]
 
-  $: $crumbs = [
-    { text: 'Thư viện truyện chữ', href: `/wn` },
-    { text: 'Thư đơn', href: `/wn/lists` },
-  ]
+  // $: $crumbs = [
+  //   { text: 'Thư viện truyện chữ', href: `/wn` },
+  //   { text: 'Thư đơn', href: `/wn/lists` },
+  // ]
 </script>
 
 <Section {tabs}>

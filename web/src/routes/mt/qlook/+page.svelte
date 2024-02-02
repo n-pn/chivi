@@ -32,7 +32,7 @@
   }
 
   const debounce_get_bing_defn = debounce(get_bing_defn, 300)
-  $: if (browser) debounce_get_bing_defn(data.word)
+  $: if (browser && data.word) debounce_get_bing_defn(data.word)
 
   const vi_tags = {
     NOUN: 'Danh từ',
@@ -80,7 +80,7 @@
             {#each defn.backTranslations as back}
               <a
                 class="word"
-                href="/tools/lookup?word={back.displayText}"
+                href="/mt/qlook?kw={back.displayText}"
                 data-tip="Tần suất: {back.frequencyCount}"
                 >{back.displayText}</a>
             {/each}

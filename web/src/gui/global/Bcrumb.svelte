@@ -1,30 +1,19 @@
-<script context="module" lang="ts">
-  export interface Crumb {
-    text: string
-    href?: string
-    icon?: string
-  }
-
-  import { writable } from 'svelte/store'
-  export const crumbs = writable<Crumb[]>([])
-</script>
-
 <script lang="ts">
+  import { page } from '$app/stores'
   import SIcon from '$gui/atoms/SIcon.svelte'
+
+  $: navs = $page.data._navs || []
 </script>
 
-{#if $crumbs.length}
-  <nav class="bread">
-    <span class="crumb"><a href="/"><SIcon name="home" />Trang chủ</a></span>
-    {#each $crumbs as { text, href, icon }}
-      <div class="crumb">
-        <svelte:element this={href ? 'a' : 'span'} {href}>
-          {#if icon}<SIcon name={icon} />{/if}{text}
-        </svelte:element>
-      </div>
-    {/each}
-  </nav>
-{/if}
+<!-- {#if navs.length} -->
+<nav class="bread">
+  <span class="crumb"><a href="/"><SIcon name="home" />Trang chủ</a></span>
+  {#each navs as { text, href = '.' }}
+    <div class="crumb"><a {href}>{text}</a></div>
+  {/each}
+</nav>
+
+<!-- {/if} -->
 
 <style lang="scss">
   .bread {
@@ -51,20 +40,15 @@
       @include fgcolor(mute);
     }
 
-    > span,
-    > a {
+    > * {
       @include fgcolor(tert);
-    }
-
-    > a {
       @include hover {
         @include fgcolor(primary, 5);
       }
     }
 
     :global(svg) {
-      height: 1rem;
-      width: 1rem;
+      font-size: large;
       @include fgcolor(mute);
       vertical-align: text-top;
       padding-right: 0.25rem;

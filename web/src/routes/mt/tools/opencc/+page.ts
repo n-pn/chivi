@@ -5,7 +5,7 @@ import type { PageLoad } from './$types'
 const _meta: App.PageMeta = {
   left_nav: [
     home_nav('ts'),
-    nav_link('/sp/opencc', 'Phồn -> Giản', 'arrows-shuffle'),
+    nav_link('/mt/tools/opencc', 'Phồn -> Giản', 'arrows-shuffle'),
   ],
 }
 

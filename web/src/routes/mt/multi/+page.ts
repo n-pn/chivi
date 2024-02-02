@@ -1,14 +1,10 @@
 import type { PageLoad } from './$types'
 
 export const load = (async ({ url: { searchParams, pathname } }) => {
-  const input = (searchParams.get('zh') || '').trim()
-  const m_alg = searchParams.get('m_alg') || 'mtl_2'
-  const pdict = searchParams.get('pdict') || 'combine'
-
   return {
-    input,
-    pdict,
-    m_alg,
+    input: (searchParams.get('zh') || '').trim(),
+    pdict: searchParams.get('mt') || 'mtl_2',
+    m_alg: searchParams.get('pd') || 'combine',
     ontab: 'multi',
 
     _title: 'Nhiều kết quả',

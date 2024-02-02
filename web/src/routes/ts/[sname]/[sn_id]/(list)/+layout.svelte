@@ -4,8 +4,6 @@
   // import { get_user } from '$lib/stores'
   // const _user = get_user()
 
-  import { crumbs } from '$gui/global/Bcrumb.svelte'
-
   import Section from '$gui/sects/Section.svelte'
   import UserMemo from '$gui/shared/wnovel/UserMemo.svelte'
 
@@ -14,10 +12,10 @@
 
   $: ({ crepo, rmemo, xroot } = data)
 
-  $: $crumbs = [
-    { text: `[${crepo.vname || crepo.sroot}]`, href: xroot },
-    { text: 'Chương tiết mục lục', href: data.sroot },
-  ]
+  // $: $crumbs = [
+  //   { text: `[${crepo.vname || crepo.sroot}]`, href: xroot },
+  //   { text: 'Chương tiết mục lục', href: data.sroot },
+  // ]
 
   $: tabs = [
     { type: 'ch', href: data.sroot, icon: 'list', text: 'Mục lục' },

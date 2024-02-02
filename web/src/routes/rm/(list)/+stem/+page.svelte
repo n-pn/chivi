@@ -20,7 +20,7 @@
       msg_type = 'err'
     } else {
       const { sname, sn_id } = await res.json()
-      goto(`/rm/${sname}:${sn_id}`)
+      goto(`/rm/${sname}/${sn_id}`)
     }
   }
 </script>

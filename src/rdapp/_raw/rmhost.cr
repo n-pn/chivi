@@ -223,7 +223,8 @@ class Rmhost
   def save_page(href : String, save_path : String) : String
     # raise "source is dead" if @seedtype.in?(2, 4)
 
-    html = HttpUtil.fetch(self.full_url(href), headers: self.get_headers(href), encoding: @encoding)
+    link = self.full_url(href)
+    html = HttpUtil.fetch(link, headers: self.get_headers(href), encoding: @encoding)
     html.tap { |data| File.write(save_path, data) rescue "can't write to file!" }
   end
 

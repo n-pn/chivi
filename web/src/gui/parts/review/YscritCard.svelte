@@ -39,7 +39,7 @@
     <a class="m-meta _user" href="/wn/crits?from=ys&user={user.id}"
       >{user.uname}</a>
     <span class="m-meta">&middot;</span>
-    <a class="m-meta" href="/sp/qtran/crits/{crit.id}">
+    <a class="m-meta" href="/mt/qtran/yc{crit.id}">
       <span>{rel_time(crit.utime)}{crit.utime != crit.ctime ? '*' : ''}</span>
     </a>
 

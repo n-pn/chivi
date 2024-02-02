@@ -67,26 +67,10 @@
   style="--top: {p_top}px; --left: {p_left}px; --mid: {p_mid}px">
   <button
     class="btn"
-    data-kbd="p"
-    data-tip="Chi tiết"
-    on:click|capture|stopPropagation={() => show_lookup('overview')}>
-    <SIcon name="world" />
-  </button>
-
-  <button
-    class="btn"
-    data-kbd="]"
-    data-tip="Tra từ"
+    data-kbd="["
+    data-tip="Tra nghĩa"
     on:click|capture|stopPropagation={() => show_lookup('glossary')}>
     <SIcon name="search" />
-  </button>
-
-  <button
-    class="btn"
-    data-kbd="["
-    data-tip="Ngữ pháp"
-    on:click|capture|stopPropagation={() => show_lookup('analysis')}>
-    <SIcon name="tree" />
   </button>
 
   <button
@@ -95,6 +79,18 @@
     data-tip="Thêm sửa từ"
     on:click|capture|stopPropagation={() => show_vtform()}>
     <SIcon name="circle-plus" />
+  </button>
+
+  <button
+    class="btn"
+    data-kbd="]"
+    data-tip="Cách dịch khác"
+    on:click|capture|stopPropagation={() => show_lookup('overview')}>
+    <SIcon name="language" />
+  </button>
+
+  <button class="btn" data-kbd="\\" data-tip="Sửa text gốc" disabled>
+    <SIcon name="pencil" />
   </button>
 </div>
 

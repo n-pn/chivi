@@ -106,7 +106,7 @@
     ['/wn/crits', 'stars', 'Đánh giá'],
     ['/wn/lists', 'bookmarks', 'Thư đơn'],
     ['/mt/dicts', 'package', 'Từ điển'],
-    ['/sp/qtran', 'bolt', 'Dịch nhanh'],
+    ['/mt/qtran', 'language', 'Dịch nhanh'],
   ]
 </script>
 

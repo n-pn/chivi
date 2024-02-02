@@ -1,8 +1,4 @@
 <script>
-  import { crumbs } from '$gui/global/Bcrumb.svelte'
-
-  $: $crumbs = [{ text: 'Cổng đăng nhập' }]
-
   import { afterNavigate } from '$app/navigation'
   import Section from '$gui/sects/Section.svelte'
 

@@ -33,14 +33,14 @@
   ]
 
   const links = [
-    ['/sp/qtran', 'bolt', 'Dịch nhanh'],
-    ['/sp/opencc', 'arrows-shuffle', 'Phồn -> Giản'],
+    ['/mt/qtran', 'langauge', 'Dịch nhanh'],
+    ['/mt/tools/opencc', 'arrows-shuffle', 'Phồn -> Giản'],
   ]
 </script>
 
 <nav class="nav-list">
   {#each links as [href, icon, text]}
-    <a {href} class="nav-link" class:_active={href == '/sp/opencc'}>
+    <a {href} class="nav-link">
       <SIcon class="show-ts" name={icon} />
       <span>{text}</span>
     </a>

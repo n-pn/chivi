@@ -1,6 +1,5 @@
 <script lang="ts">
   import { page } from '$app/stores'
-  import { crumbs } from '$gui/global/Bcrumb.svelte'
 
   import Section from '$gui/sects/Section.svelte'
   import UserMemo from '$gui/shared/wnovel/UserMemo.svelte'
@@ -27,11 +26,11 @@
   $: sname = rstem.sname.substring(1)
   $: author = rstem.author_vi || rstem.author_zh
 
-  $: $crumbs = [
-    { text: 'Nguồn liên kết nhúng', href: `/rm` },
-    { text: sname, href: `/rm?sn=${rstem.sname}` },
-    { text: `ID: ${rstem.sn_id}` },
-  ]
+  // $: $crumbs = [
+  //   { text: 'Nguồn liên kết nhúng', href: `/rm` },
+  //   { text: sname, href: `/rm?sn=${rstem.sname}` },
+  //   { text: `ID: ${rstem.sn_id}` },
+  // ]
 
   const status_strs = ['Còn tiếp', 'Hoàn thành', 'Tạm dừng', 'Không rõ']
 </script>

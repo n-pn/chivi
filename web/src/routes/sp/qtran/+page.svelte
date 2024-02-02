@@ -21,21 +21,21 @@
 
     if (res.ok) {
       const pname = await res.text()
-      await goto(`/sp/qtran/posts/${pname}`)
+      await goto(`/mt/qtran/qt${pname}`)
     } else {
       const data = await res.json()
       error = data.message
     }
   }
   const links = [
-    ['/sp/qtran', 'bolt', 'Dịch nhanh'],
-    ['/sp/opencc', 'arrows-shuffle', 'Phồn -> Giản'],
+    ['/mtl/qtran', 'language', 'Dịch đoạn văn'],
+    ['/mt/tools/opencc', 'arrows-shuffle', 'Phồn -> Giản'],
   ]
 </script>
 
 <nav class="nav-list">
   {#each links as [href, icon, text]}
-    <a {href} class="nav-link" class:_active={href == '/sp/qtran'}>
+    <a {href} class="nav-link">
       <SIcon class="show-ts" name={icon} />
       <span>{text}</span>
     </a>

@@ -23,31 +23,26 @@ declare namespace App {
 
   interface Platform {}
 
-  interface HeadItem {
-    'text'?: string
-    'icon'?: string
-    'href'?: string
-    'disable'?: boolean
-    'data-kbd'?: string
-    'data-show'?: string
-    'data-kind'?: string
-  }
+  interface PageNavi {
+    text: string
+    href: string
 
-  interface PageMeta {
-    url?: string
-    left_nav?: HeadItem[]
-    right_nav?: HeadItem[]
+    hd_icon?: string
+    hd_text?: string
+    hd_show?: string
+    hd_kind?: string
   }
 
   interface PageData {
     _user?: CurrentUser
-    _meta?: PageMeta
 
-    _title?: string
-    _image?: string
-    _mdesc?: string
+    _meta?: {
+      title?: string
+      image?: string
+      mdesc?: string
+      ogurl?: string
+    }
 
-    _board?: string
-    _mtcfg?: boolean
+    _navs?: PageNavi[]
   }
 }

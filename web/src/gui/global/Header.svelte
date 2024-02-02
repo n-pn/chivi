@@ -2,58 +2,48 @@
   import { page } from '$app/stores'
   import { scroll, popups, get_user } from '$lib/stores'
 
-  import { default_meta } from '$utils/header_util'
   import Item from './Header/HeaderItem.svelte'
-  import Appnav from './Modals/Appnav.svelte'
+  import Navi from './Header/HeaderNavi.svelte'
+
   import Usercp from '../shared/usercp/Usercp.svelte'
   import Config from '../shared/reader/Config.svelte'
-  import Dboard from './Modals/Dboard.svelte'
 
   const _user = get_user()
 
-  $: meta = $page.data._meta || default_meta
+  $: ({ _meta, _navs = [] } = $page.data)
 
-  $: title = $page.data._title || 'Trang chủ'
-  $: image = $page.data._image || '/imgs/avatar.png'
-  $: mdesc = $page.data._mdesc || ''
+  $: prev = _navs[_navs.length - 2]
+  $: curr = _navs[_navs.length - 1]
 
-  $: thread = $page.data._board || ''
+  $: title = _meta?.title || curr?.hd_text || curr?.text || 'Trang chủ'
 </script>
 
 <svelte:head>
   <title>{title} - Chivi</title>
-  <meta name="description" content={mdesc} />
+  <meta name="description" content={_meta?.mdesc || ''} />
 
-  {#if meta.url}<meta property="og:url" content={meta.url} />{/if}
+  {#if _meta?.ogurl}<meta property="og:url" content={_meta.ogurl} />{/if}
 
   <meta property="og:title" content={title} />
-  <meta property="og:description" content={mdesc} />
-  <meta property="og:image" content={image} />
+  <meta property="og:description" content={_meta?.mdesc || ''} />
+  <meta property="og:image" content={_meta?.image} />
 </svelte:head>
 
 <header class="app-header" class:clear={$scroll > 0}>
   <nav class="app-vessel">
-    <div class="-left __left">
-      <button
-        type="button"
-        class="appbar-item _brand"
-        on:click={() => popups.show('appnav')}>
+    <div class="-left">
+      <a href="/" class="appbar-item _brand">
         <img src="/icons/chivi.svg" alt="logo" />
         <span class="appbar-text u-show-ts">Chivi</span>
-      </button>
-      {#each meta.left_nav || [] as data}<Item {...data} />{/each}
+      </a>
+
+      {#if prev}<Navi {...prev} />{/if}
+      {#if curr}<Navi {...curr} />{/if}
+
+      <!-- {#each meta.left_nav || [] as data}<Item {...data} />{/each} -->
     </div>
 
     <div class="-right">
-      {#each meta.right_nav || [] as data}<Item {...data} />{/each}
-
-      {#if thread}
-        <Item
-          type="button"
-          icon="message-circle"
-          on:click={() => popups.show('dboard')} />
-      {/if}
-
       {#if $page.data._show_conf}
         <Item
           type="button"
@@ -69,8 +59,9 @@
           text={$_user.uname}
           icon="privi-{$_user.privi}"
           iset="icons"
+          kind="uname"
+          show="pl"
           _dot={$_user.unread_notif > 0}
-          opts={{ show: 'pl', kind: 'uname' }}
           on:click={() => popups.show('usercp')} />
       {:else}
         <Item
@@ -78,15 +69,14 @@
           href="/_u/login"
           text="Đăng nhập"
           icon="login"
-          opts={{ show: 'pl', kind: 'uname' }}
+          kind="uname"
+          show="pl"
           data-kbd="u" />
       {/if}
     </div>
   </nav>
 </header>
 
-{#if $popups.appnav}<Appnav bind:actived={$popups.appnav} />{/if}
-{#if $popups.dboard}<Dboard {thread} bind:actived={$popups.dboard} />{/if}
 {#if $popups.usercp}<Usercp bind:actived={$popups.usercp} />{/if}
 {#if $popups.config}<Config bind:actived={$popups.config} />{/if}
 

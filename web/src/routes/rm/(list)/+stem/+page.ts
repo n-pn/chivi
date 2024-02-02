@@ -1,20 +1,24 @@
-// import { api_get } from '$lib/api_call'
-import { nav_link } from '$utils/header_util'
 import type { PageLoad } from './$types'
 
-const _meta: App.PageMeta = {
-  left_nav: [
-    nav_link('/rm', 'Nguồn nhúng', 'world', { show: 'pl' }),
-    nav_link('/rm/+stem', 'Thêm mới', 'file-plus', { kind: 'title' }),
-  ],
-  right_nav: [],
-}
+const _navs = [
+  {
+    href: '/rm',
+    text: 'Nguồn nhúng',
+    hd_icon: 'world',
+    hd_show: 'pl',
+  },
+  {
+    href: '/rm/+stem',
+    text: 'Thêm mới',
+    hd_icon: 'file-plus',
+    hd_kind: 'title',
+  },
+]
 
-export const load = (async ({ url: { searchParams }, fetch }) => {
-  return { ontab: '+new', _meta, _title: 'Thêm nguồn nhung' }
+export const load = (() => {
+  return {
+    ontab: '+new',
+    _navs,
+    _meta: { title: 'Thêm nguồn nhúng mới' },
+  }
 }) satisfies PageLoad
-
-// export function load() {
-//
-//   return { nvinfo, wnform, _meta }
-// }

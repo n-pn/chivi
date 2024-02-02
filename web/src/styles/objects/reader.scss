@@ -207,7 +207,7 @@ x-n {
 
   // main_alt
   &[d='3'] {
-    @include cv-node(yellow);
+    @include cv-node(harmful);
   }
 
   // base
@@ -222,8 +222,7 @@ x-n {
 
   // autogen
   &[d='6'] {
-    @include cv-node(harmful);
-    text-decoration: wavy;
+    @include cv-node(purple);
   }
 
   // essence + fixture

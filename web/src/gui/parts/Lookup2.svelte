@@ -26,7 +26,6 @@
 
   import Overview from './Sideline/Overview.svelte'
   import Glossary from './Sideline/Glossary.svelte'
-  import Analysis from './Sideline/Analysis.svelte'
 
   export let rpage: Rdpage
   export let rword: Rdword
@@ -35,7 +34,10 @@
   export let state = 0
   export let l_idx = 0
   export let l_max = 0
-  export let set_focus_line = (l_idx: number) => {}
+
+  export let set_focus_line = (idx: number) => {
+    if (idx >= 0 && idx < l_max) l_idx = idx
+  }
 
   $: rline = rpage.lines[l_idx]
 
@@ -74,6 +76,8 @@
       rline = rpage.lines[l_idx]
     }
   }
+
+  $: mt_url = `/mt/multi?zh=${rline.ztext}&mt=${ropts.mt_rm}&pd=${ropts.pdict}`
 </script>
 
 <Slider
@@ -84,10 +88,23 @@
   --slider-width="30rem">
   <svelte:fragment slot="header-left">
     <div class="-icon"><SIcon name="compass" /></div>
-    <div class="-text">Chi tiết</div>
+    <div class="-text">Giải nghĩa</div>
   </svelte:fragment>
 
   <svelte:fragment slot="header-right">
+    <button
+      type="button"
+      class="-btn"
+      class:_active={$ctrl.panel == 'glossary'}
+      data-kbd="f"
+      data-tip="Xem nhanh nghĩa từ"
+      data-tip-loc="bottom"
+      data-umami-event="line-glossary"
+      data-umami-event-fpath={ropts.fpath}
+      on:click={() => ($ctrl.panel = 'glossary')}>
+      <SIcon name="search" />
+    </button>
+
     <button
       type="button"
       class="-btn"
@@ -98,40 +115,17 @@
       data-umami-event="line-overview"
       data-umami-event-fpath={ropts.fpath}
       on:click={() => ($ctrl.panel = 'overview')}>
-      <SIcon name="world" />
+      <SIcon name="language" />
     </button>
-    <button
-      type="button"
+
+    <a
       class="-btn"
-      class:_active={$ctrl.panel == 'glossary'}
-      data-kbd="f"
-      data-tip="Xem giải nghĩa từ"
-      data-tip-loc="bottom"
-      data-umami-event="line-glossary"
-      data-umami-event-fpath={ropts.fpath}
-      on:click={() => ($ctrl.panel = 'glossary')}>
-      <SIcon name="search" />
-    </button>
-    <button
-      type="button"
-      class="-btn"
-      class:_active={$ctrl.panel == 'analyis'}
-      data-kbd="g"
-      data-tip="Xem cây ngữ pháp"
-      data-tip-loc="bottom"
-      data-umami-event="line-analyis"
-      data-umami-event-fpath={ropts.fpath}
-      on:click={() => ($ctrl.panel = 'analyis')}>
-      <svg class="m-icon _analyze" viewBox="0 0 24 24">
-        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-        <path
-          d="M20 11a8.1 8.1 0 0 0 -6.986 -6.918a8.095 8.095 0 0 0 -8.019 3.918" />
-        <path d="M4 13a8.1 8.1 0 0 0 15 3" />
-        <path d="M19 16m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
-        <path d="M5 8m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
-        <path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" />
-      </svg>
-    </button>
+      href={mt_url}
+      target="_blank"
+      data-tip="Chia sẻ kết quả dịch dòng"
+      data-tip-loc="bottom">
+      <SIcon name="external-link" />
+    </a>
   </svelte:fragment>
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -145,8 +139,6 @@
         <Overview bind:rline {ropts} />
       {:else if $ctrl.panel == 'glossary'}
         <Glossary {rline} {viewer} bind:rword />
-      {:else}
-        <Analysis {rline} {ropts} />
       {/if}
     {/key}
   </section>

@@ -26,16 +26,6 @@
     <span class="title">{title}</span>
     <span class="tools">
       <slot name="tools" />
-      <button
-        type="button"
-        class="-btn"
-        data-tip="Sao chép bản dịch vào clipboard"
-        data-tip-loc="bottom"
-        data-tip-pos="right"
-        disabled={!wdata}
-        on:click={() => copy_to_clipboard(wdata)}>
-        <SIcon name="copy" />
-      </button>
 
       {#if loader}
         <button
@@ -49,6 +39,17 @@
           <SIcon name="refresh" />
         </button>
       {/if}
+
+      <button
+        type="button"
+        class="-btn"
+        data-tip="Sao chép bản dịch vào clipboard"
+        data-tip-loc="bottom"
+        data-tip-pos="right"
+        disabled={!wdata}
+        on:click={() => copy_to_clipboard(wdata)}>
+        <SIcon name="copy" />
+      </button>
 
       <button
         class="-btn"
@@ -81,7 +82,7 @@
   .panel {
     margin: 0.75rem 0;
     @include bdradi;
-    @include border(--bd-soft);
+    // @include border(--bd-soft);
     @include bgcolor(tert);
 
     // &:global(._big) {
@@ -140,7 +141,6 @@
     line-height: var(--lh);
     max-height: calc(var(--lh) * var(--lc, 3) + 0.5rem);
 
-    @include bgcolor(secd);
     @include bdradi($loc: bottom);
 
     @include scroll;
