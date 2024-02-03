@@ -24,5 +24,35 @@ export const load = (async ({ fetch, params }) => {
     binfo = await api_get<CV.Wninfo>(bpath, fetch)
   }
 
-  return { rstem, crepo, rmemo: writable(rmemo), binfo, sname, sn_id, sroot }
+  const _navs = [
+    {
+      href: '/rm',
+      text: 'Nguồn nhúng',
+    },
+    {
+      href: `/rm/${sname}`,
+      text: sname,
+      hd_icon: 'folder',
+      hd_show: 'pl',
+      hd_kind: 'zseed',
+    },
+    {
+      href: `/rm/${sname}/${sn_id}`,
+      text: `${rstem.btitle_vi} [ID: ${rstem.sn_id}]`,
+      hd_text: rstem.btitle_vi,
+      hd_icon: 'book',
+      hd_kind: 'title',
+    },
+  ]
+
+  return {
+    rstem,
+    crepo,
+    rmemo: writable(rmemo),
+    binfo,
+    sname,
+    sn_id,
+    sroot,
+    _navs,
+  }
 }) satisfies LayoutLoad

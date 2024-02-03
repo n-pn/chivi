@@ -31,7 +31,7 @@ export const load = (async ({ url, fetch, params: { type } }) => {
     _navs.push({ href: rpath, text: 'Đang theo dõi', hd_icon: 'star' })
   } else if (type && type[0] == '!') {
     search.append('sn', type)
-    _navs.push({ href: rpath, text: type, hd_icon: '', hd_kind: 'zseed' })
+    _navs.push({ href: rpath, text: type, hd_icon: 'folder', hd_kind: 'zseed' })
     type = 'index'
   }
 

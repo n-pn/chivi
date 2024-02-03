@@ -10,7 +10,7 @@
     {
       type: 'owned',
       href: `/up/owned`,
-      icon: 'at',
+      icon: 'ballpen',
       text: 'Của bạn',
       mute: privi < 0,
     },
@@ -22,8 +22,6 @@
       mute: privi < 1,
     },
   ]
-
-  // $: $crumbs = [{ text: 'Sưu tầm cá nhân', href: `/up` }]
 </script>
 
 <Section {tabs}>

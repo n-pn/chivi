@@ -22,11 +22,20 @@ export const load = (async ({ params, fetch }) => {
     nvinfo,
     crepo,
     rmemo: writable(rmemo),
+    _navs: [
+      { href: '/wn', text: 'Thư viện truyện chữ', hd_icon: 'books' },
+      {
+        href: `/wn/${wn_id}`,
+        text: nvinfo.vtitle,
+        hd_icon: 'book',
+        hd_show: 'tm',
+        hd_kind: 'title',
+      },
+    ],
     _meta: {
-      left_nav: [home_nav('ts'), book_nav(nvinfo.id, nvinfo.vtitle, '')],
+      title: nvinfo.vtitle,
+      image: nvinfo.bcover || '//cdn.chivi.app/covers/_blank.webp',
+      mdesc: nvinfo.bintro.substring(0, 300),
     },
-    _title: nvinfo.vtitle,
-    _image: nvinfo.bcover || '//cdn.chivi.app/covers/_blank.webp',
-    _mdesc: nvinfo.bintro.substring(0, 300),
   }
 }) satisfies LayoutData

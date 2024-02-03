@@ -13,19 +13,21 @@ export const load = (async ({ url, fetch, params, parent }) => {
   const rdurl = `/_rd/czdatas/${sname}/${sn_id}/${ch_no}`
   const zform = await api_get<ZtextRaw>(rdurl, fetch)
 
-  const { sroot, crepo } = await parent()
+  const { sroot, crepo, _navs } = await parent()
   const vname = crepo.vname || crepo.sroot
 
   return {
     zform,
     fixed: !!zform.ztext,
     ontab: 'ul',
-    _title: `Đăng tải text gốc - ${vname}`,
-    _meta: {
-      left_nav: [
-        nav_link(sroot, vname, 'article', { kind: 'title', show: 'pl' }),
-        nav_link('ul', 'Thêm text', 'upload', { show: 'pm' }),
-      ],
-    },
+    _meta: { title: `Đăng tải text gốc - ${vname}` },
+    // _navs: [
+    //   ..._navs,
+    //   {
+    //     href: '+text',
+    //     text: 'Thêm text gốc',
+    //     hd_icon: 'upload',
+    //   },
+    // ],
   }
 }) satisfies PageLoad

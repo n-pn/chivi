@@ -1,5 +1,4 @@
 import { api_get } from '$lib/api_call'
-import { home_nav, nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 
@@ -19,10 +18,10 @@ export const load = (async ({ fetch, url, params }) => {
 
   const dlcvs = await api_get<DlTran[]>(path, fetch)
 
-  const _meta = {
-    desc: 'Tải xuống bản dịch bộ truyện',
-    left_nav: [nav_link('+down', 'Tải bản dịch', 'pencil')],
-  }
+  // const _meta = {
+  //   desc: 'Tải xuống bản dịch bộ truyện',
+  //   left_nav: [nav_link('+down', 'Tải bản dịch', 'pencil')],
+  // }
 
-  return { dlcvs, pg_no, _meta, _title: `Tải xuống bản dịch` }
+  return { dlcvs, pg_no, _meta: { title: `Tải xuống nội dung` } }
 }) satisfies PageLoad

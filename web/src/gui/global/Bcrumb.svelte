@@ -5,30 +5,33 @@
   $: navs = $page.data._navs || []
 </script>
 
-<!-- {#if navs.length} -->
-<nav class="bread">
-  <span class="crumb"><a href="/"><SIcon name="home" />Trang chủ</a></span>
-  {#each navs as { text, href = '.' }}
-    <div class="crumb"><a {href}>{text}</a></div>
-  {/each}
-</nav>
-
-<!-- {/if} -->
+{#if navs.length}
+  <nav class="app-vessel bread">
+    <span class="crumb"><a href="/"><SIcon name="home" />Trang chủ</a></span>
+    {#each navs as { text, href = '.' }}
+      <span class="crumb"><a {href}>{text}</a></span>
+    {/each}
+  </nav>
+{/if}
 
 <style lang="scss">
   .bread {
-    margin: 0.75rem 0;
+    display: flow-root;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+
     line-height: 1.25rem;
     @include ftsize(sm);
-    display: flex;
-    flex-wrap: wrap;
+
+    // display: flex;
+    // flex-wrap: wrap;
   }
 
   .crumb {
-    display: inline;
+    float: left;
+    // display: inline;
 
     &:not(:last-child):after {
-      display: inline-flex;
       vertical-align: top;
 
       margin-left: 0.25rem;
@@ -40,7 +43,7 @@
       @include fgcolor(mute);
     }
 
-    > * {
+    a {
       @include fgcolor(tert);
       @include hover {
         @include fgcolor(primary, 5);
@@ -50,7 +53,7 @@
     :global(svg) {
       font-size: large;
       @include fgcolor(mute);
-      vertical-align: text-top;
+      vertical-align: top;
       padding-right: 0.25rem;
     }
   }

@@ -10,12 +10,7 @@
   import type { LayoutData } from './$types'
   export let data: LayoutData
 
-  $: ({ crepo, rmemo, xroot } = data)
-
-  // $: $crumbs = [
-  //   { text: `[${crepo.vname || crepo.sroot}]`, href: xroot },
-  //   { text: 'Chương tiết mục lục', href: data.sroot },
-  // ]
+  $: ({ crepo, rmemo } = data)
 
   $: tabs = [
     { type: 'ch', href: data.sroot, icon: 'list', text: 'Mục lục' },

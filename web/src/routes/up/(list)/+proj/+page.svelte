@@ -42,7 +42,7 @@
 
     try {
       const { ustem } = await api_call(action, body, 'POST')
-      await goto(`/up/${ustem.sname}:${ustem.id}`)
+      await goto(`/up/${ustem.sname}/${ustem.id}`)
     } catch (ex) {
       err_text = ex.body.message
     }

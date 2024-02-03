@@ -1,15 +1,5 @@
 import { api_get } from '$lib/api_call'
-
-import { nav_link } from '$utils/header_util'
 import type { PageLoad } from './$types'
-
-const _meta: App.PageMeta = {
-  left_nav: [
-    nav_link('/up', 'Sưu tầm', 'album', { show: 'pm' }),
-    nav_link('/up/+proj', 'Thêm mới', 'file-plus'),
-  ],
-  right_nav: [],
-}
 
 const init_form = {
   id: 0,
@@ -36,7 +26,7 @@ const init_form = {
 }
 
 export const load = (async ({ url: { searchParams }, parent, fetch }) => {
-  const { _user } = await parent()
+  const { _user, _navs } = await parent()
   const wn_id = +searchParams.get('wn') || 0
 
   const sname = '@' + _user.uname
@@ -63,5 +53,13 @@ export const load = (async ({ url: { searchParams }, parent, fetch }) => {
     uform.labels = binfo.genres
   }
 
-  return { uform, ontab: '+proj', _meta, _title: 'Thêm/sửa sưu tầm cá nhân' }
+  return {
+    uform,
+    ontab: '+proj',
+    _meta: { title: 'Thêm/sửa sưu tầm cá nhân' },
+    _navs: [
+      ..._navs,
+      { href: '/up/+proj', text: 'Thêm sửa', hd_icon: 'file-plus' },
+    ],
+  }
 }) satisfies PageLoad

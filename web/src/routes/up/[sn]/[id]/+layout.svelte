@@ -23,12 +23,6 @@
     },
   ]
 
-  // $: $crumbs = [
-  //   { text: 'Sưu tầm cá nhân', href: `/up` },
-  //   { text: ustem.sname, href: `/up?vu=${ustem.sname.substring(1)}` },
-  //   { text: `ID: ${ustem.id}` },
-  // ]
-
   $: author = ustem.au_vi || ustem.au_zh || 'Dật Danh'
 </script>
 

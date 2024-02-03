@@ -4,8 +4,9 @@
   import Section from '$gui/sects/Section.svelte'
   import UserMemo from '$gui/shared/wnovel/UserMemo.svelte'
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import { get_rtime } from '$gui/atoms/RTime.svelte'
   import BCover from '$gui/atoms/BCover.svelte'
+
+  import { get_rtime } from '$gui/atoms/RTime.svelte'
 
   import type { LayoutData } from './$types'
   export let data: LayoutData
@@ -25,12 +26,6 @@
 
   $: sname = rstem.sname.substring(1)
   $: author = rstem.author_vi || rstem.author_zh
-
-  // $: $crumbs = [
-  //   { text: 'Nguồn liên kết nhúng', href: `/rm` },
-  //   { text: sname, href: `/rm?sn=${rstem.sname}` },
-  //   { text: `ID: ${rstem.sn_id}` },
-  // ]
 
   const status_strs = ['Còn tiếp', 'Hoàn thành', 'Tạm dừng', 'Không rõ']
 </script>

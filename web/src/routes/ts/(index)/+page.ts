@@ -1,4 +1,3 @@
-import { home_nav, nav_link } from '$utils/header_util'
 import { merge_query, api_get } from '$lib/api_call'
 
 import type { PageLoad } from './$types'
@@ -18,12 +17,6 @@ export const load = (async ({ url, fetch, parent }) => {
     state,
 
     ontab: 'index',
-    _title: `Nội dung chương tiết`,
-    _meta: {
-      left_nav: [
-        home_nav(),
-        nav_link(`/ts`, 'Đọc truyện', 'books', { show: 'tm' }),
-      ],
-    },
+    _meta: { title: `Nội dung chương tiết` },
   }
 }) satisfies PageLoad

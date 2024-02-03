@@ -1,12 +1,11 @@
 <script lang="ts">
-  import { rel_time } from '$utils/time_utils'
   import SIcon from '$gui/atoms/SIcon.svelte'
   import BCover from '$gui/atoms/BCover.svelte'
 
   export let ustem: CV.Upstem
   export let upath = '/up'
 
-  $: sroot = `/up/${ustem.sname}:${ustem.id}`
+  $: sroot = `/up/${ustem.sname}/${ustem.id}`
 
   $: uname = ustem.sname.substring(1)
   $: intro = ustem.vdesc || 'Chưa có giới thiệu'
@@ -17,7 +16,7 @@
     <a class="title u-fz-lg" href={sroot}>{ustem.vname}</a>
 
     <div class="xtags">
-      <a class="m-chip _xs _primary" href="{upath}?vu={uname}">
+      <a class="m-chip _xs _primary" href="/up/{ustem.sname}">
         <SIcon name="at" />
         <span class="-trim">{uname}</span>
       </a>

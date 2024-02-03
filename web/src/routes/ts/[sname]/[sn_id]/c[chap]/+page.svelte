@@ -18,12 +18,6 @@
 
   import Reader from '$gui/shared/reader/Reader.svelte'
 
-  // $: $crumbs = [
-  //   { text: `[${crepo.vname}]`, href: `/ts/${crepo.sroot}` },
-  //   { text: rdata.chdiv || 'Chính văn' },
-  //   { text: rdata.title },
-  // ]
-
   $: ch_no = rdata.ch_no
   $: pg_no = _pgidx(ch_no)
 

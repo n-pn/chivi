@@ -82,11 +82,8 @@
 
   <Header />
   <Pledge />
-
-  <main class="app-vessel">
-    <Bcrumb />
-    <slot />
-  </main>
+  <Bcrumb />
+  <main class="app-vessel"><slot /></main>
   <Footer />
 </div>
 
