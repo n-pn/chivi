@@ -36,7 +36,7 @@ export const load = (async ({ url, fetch, params }) => {
         hd_icon: 'at',
         hd_kind: 'title',
       },
-      { href: '/wn/crits', text: 'Thư đơn truyện chữ', hd_icon: 'bookmarks' },
+      { href: '/uc/crits', text: 'Thư đơn truyện chữ', hd_icon: 'bookmarks' },
     ],
   }
 }) satisfies PageLoad

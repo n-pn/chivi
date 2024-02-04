@@ -26,7 +26,7 @@ export const usercp = {
 
 export const popups = {
   ...writable({
-    appnav: false,
+    navbar: false,
     usercp: false,
     config: false,
     dboard: false,

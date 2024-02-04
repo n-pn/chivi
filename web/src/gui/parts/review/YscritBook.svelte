@@ -1,17 +1,12 @@
 <script lang="ts">
-  import { map_status } from '$utils/nvinfo_utils'
-  import { rel_time } from '$utils/time_utils'
-
   import { SIcon, BCover } from '$gui'
-
   export let book: CV.Crbook | CV.Wninfo
-
-  $: genres = book.genres || []
+  $: genre = book.genres[0] || 'Loại khác'
 </script>
 
 <section class="book">
   <a class="cover" href="/wn/{book.bslug}">
-    <BCover srcset={book.bcover} _class="square" />
+    <BCover srcset={book.bcover} />
   </a>
 
   <div class="info">
@@ -23,21 +18,10 @@
         <span>{book.vauthor}</span>
       </a>
 
-      <a class="m-meta link" href="/wn/~{genres[0]}">
+      <a class="m-meta link" href="/wn/~{genre}">
         <SIcon name="folder" />
-        <span>{genres[0]}</span>
+        <span>{genre}</span>
       </a>
-    </div>
-    <div class="extra">
-      <span class="m-meta">
-        <SIcon name="activity" />
-        <span>{map_status(book.status)}</span>
-      </span>
-
-      <span class="m-meta">
-        <SIcon name="clock" />
-        <span>{rel_time(book.mftime)}</span>
-      </span>
     </div>
   </div>
 
@@ -89,7 +73,6 @@
     @include clamp($width: null);
 
     font-weight: 500;
-    margin: 0.25rem 0;
 
     @include bps(font-size, rem(15px), $pm: rem(16px), $ts: rem(17px));
 
@@ -101,6 +84,7 @@
   }
 
   .extra {
+    margin-top: 0.25rem;
     @include ftsize(sm);
     @include fgcolor(tert);
   }
@@ -122,7 +106,7 @@
 
   .cover {
     height: 100%;
-    width: 4rem;
+    width: 2.5rem;
   }
 
   .link {

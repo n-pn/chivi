@@ -21,14 +21,16 @@
 
 <board-head>
   <span>Lọc nhãn:</span>
-  <a href={pager.url.pathname} class="m-label _0">
+  <a href={pager.url.pathname} class="m-tag _0">
     <span>Tất cả</span>
-    {#if !tlabel}<SIcon name="check" /> {/if}
+    {#if !tlabel}<SIcon name="check" />
+    {/if}
   </a>
   {#each Object.entries(dlabels) as [value, klass]}
-    <a class="m-label _{klass}" href={pager.gen_url({ lb: value })}>
+    <a class="m-tag _{klass}" href={pager.gen_url({ lb: value })}>
       <span>{value}</span>
-      {#if tlabel == value}<SIcon name="check" /> {/if}
+      {#if tlabel == value}<SIcon name="check" />
+      {/if}
     </a>
   {/each}
 </board-head>

@@ -10,13 +10,13 @@
     return Math.round(num / 1000) + 'k'
   }
 
-  $: list_path = `/wn/lists/y${list.id}${list.vslug}`
+  $: list_path = `/uc/lists/y${list.id}${list.vslug}`
 </script>
 
 <article class="blcard">
   <div class="blcard-infos">
     <def class="fz-fluid">
-      <a class="cv-user" href="/wn/lists?from=ys&user={user.id}"
+      <a class="cv-user" href="/uc/lists?from=ys&user={user.id}"
         >{user.uname}</a>
 
       <span class="u-fg-tert">&middot;</span>

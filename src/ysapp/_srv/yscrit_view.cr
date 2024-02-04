@@ -4,7 +4,7 @@ require "../data/yscrit"
 require "../../_util/hash_util"
 require "../../_util/tran_util"
 
-struct YS::CritView
+struct YS::YscritView
   def initialize(@data : Yscrit, @full = false)
   end
 
@@ -48,7 +48,7 @@ struct YS::CritView
   end
 
   def self.as_list(inp : Enumerable(Yscrit), full = false)
-    res = [] of CritView
+    res = [] of YscritView
     inp.each { |obj| res << new(obj, full: full) }
     res
   end

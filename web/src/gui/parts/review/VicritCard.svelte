@@ -21,29 +21,22 @@
   const handle_like = (evt: Event) => {
     evt.preventDefault()
 
-    toggle_like(
-      'vicrit',
-      crit.vc_id,
-      crit.me_liked,
-      ({ like_count, memo_liked }) => {
-        crit.like_count = like_count
-        crit.me_liked = memo_liked
-      }
-    )
+    toggle_like('vicrit', crit.vc_id, crit.me_liked, ({ like_count, memo_liked }) => {
+      crit.like_count = like_count
+      crit.me_liked = memo_liked
+    })
   }
 
-  $: crit_path = `/br/@${crit.u_uname}/c${crit.vc_id}`
-  $: edit_path = `/br/chivi/+crit?id=${crit.vc_id}&wn=${crit.wn_id}`
-  $: list_path = `/bl/chivi/l${crit.l_uslug}`
+  $: crit_path = `/uc/crits/@${crit.u_uname}/c${crit.vc_id}`
+  $: edit_path = `/uc/crits/+crit?id=${crit.vc_id}&wn=${crit.wn_id}`
+  $: list_path = `/ul/lists/@${crit.u_uname}/l${crit.l_uslug}`
 </script>
 
 <article class="crit island">
   <header class="head">
-    <a class="cv-user" data-privi={crit.u_privi} href="/br/@{crit.u_uname}"
-      >{crit.u_uname}</a>
+    <a class="cv-user" data-privi={crit.u_privi} href="/uc/crits/@{crit.u_uname}">{crit.u_uname}</a>
     <span class="u-fg-tert">&middot;</span>
-    <span class="m-meta _time"
-      >{rel_time(crit.ctime)}{crit.utime > crit.ctime ? '*' : ''}</span>
+    <span class="m-meta _time">{rel_time(crit.ctime)}{crit.utime > crit.ctime ? '*' : ''}</span>
     <span class="u-fg-tert">&middot;</span>
     <a href={crit_path} class="m-meta"><em>Liên kết</em></a>
 
@@ -58,7 +51,7 @@
 
   <div class="vtags" class:big_text>
     {#each crit.btags as label}
-      <a class="vtag" href="/wn/crits?vtag={label}">
+      <a class="vtag" href="/uc/crits?lb={label}">
         <SIcon name="hash" />
         <span>{label}</span>
       </a>
@@ -77,12 +70,8 @@
       </a>
     {/if}
 
-    <div class="right">
-      <button
-        class="m-meta"
-        type="button"
-        on:click={handle_like}
-        class:_active={crit.me_liked > 0}>
+    <div class="u-right">
+      <button class="m-meta" type="button" on:click={handle_like} class:_active={crit.me_liked > 0}>
         <SIcon name="thumb-up" />
         <span class="u-show-pm">Ưa thích</span>
         <span class="m-badge">{crit.like_count}</span>
@@ -110,13 +99,15 @@
 <style lang="scss">
   .crit {
     display: block;
-    @include margin-y(1rem);
     @include padding-y(0);
-
     @include bgcolor(tert);
 
     // @include bdradi();
     @include linesd(--bd-soft, $inset: false);
+
+    & + :global(.crit) {
+      margin-top: 1rem;
+    }
   }
 
   .head {

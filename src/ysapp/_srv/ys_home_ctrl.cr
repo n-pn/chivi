@@ -16,7 +16,7 @@ class YS::HomeCtrl < AC::Base
 
     render json: {
       vbooks: BookView.as_hash(books),
-      ycrits: CritView.as_list(crits),
+      ycrits: YscritView.as_list(crits),
       ylists: ListView.as_list(lists),
       yusers: UserView.as_hash(users),
     }

@@ -43,7 +43,7 @@ form-field {
 }
 
 .m-radio,
-.m-label {
+.m-tag {
   input[type='radio'] {
     display: none;
   }
@@ -66,7 +66,7 @@ form-field {
   }
 }
 
-label.m-label {
+label.m-tag {
   @include flex-ca($gap: 0.125rem);
   height: 1.75rem;
 

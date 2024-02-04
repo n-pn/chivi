@@ -54,10 +54,9 @@
       <label class="form-label" for="privi">Chọn quyền hạn:</label>
       <div class="radio-group">
         {#each [1, 2, 3, 4] as value}
-          <label class="m-label _{value}" class:_active={value == pform.privi}>
+          <label class="m-tag _{value}" class:_active={value == pform.privi}>
             <input type="radio" bind:group={pform.privi} {value} />
-            <span class="icon"><SIcon name="privi-{value}" iset="icons" /></span
-            >Q. hạn {value}
+            <span class="icon"><SIcon name="privi-{value}" iset="icons" /></span>Q. hạn {value}
           </label>
         {/each}
       </div>
@@ -67,9 +66,7 @@
       <label class="form-label" for="privi">Chọn thời gian:</label>
       <div class="radio-group">
         {#each [0, 1, 2, 3] as value}
-          <label
-            class="m-label pdura _{pform.privi}"
-            class:_active={value == pform.pdura}>
+          <label class="m-tag pdura _{pform.privi}" class:_active={value == pform.pdura}>
             <div>
               <input type="radio" bind:group={pform.pdura} {value} />
 
@@ -86,8 +83,7 @@
     </div>
 
     <p class="explain">
-      Dùng <strong class="x-vcoin">{cost} vcoin</strong> để nâng cấp/gia hạn
-      quyền hạn {pform.privi}
+      Dùng <strong class="x-vcoin">{cost} vcoin</strong> để nâng cấp/gia hạn quyền hạn {pform.privi}
       thêm khoảng {pduras_days[pform.pdura]} ngày.
     </p>
 

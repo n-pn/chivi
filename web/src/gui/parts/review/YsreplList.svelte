@@ -35,7 +35,7 @@
             <img class="u-pic" {src} alt={repl.uname} />
 
             <header class="repl-head">
-              <a class="repl-user" href="/wn/crits?from=ys&user={repl.yu_id}"
+              <a class="repl-user" href="/uc/crits?from=ys&user={repl.yu_id}"
                 >{repl.uname}</a>
               <span class="u-fg-tert">·</span>
               <time class="repl-time">{get_rtime(repl.ctime)}</time>

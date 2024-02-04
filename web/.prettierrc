@@ -3,6 +3,7 @@
   "trailingComma": "es5",
   "quoteProps": "consistent",
   "tabWidth": 2,
+  "printWidth": 100,
   "semi": false,
   "singleQuote": true,
   "htmlWhitespaceSensitivity": "css",

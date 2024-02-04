@@ -4,16 +4,17 @@ class CV::VicritCtrl < CV::BaseCtrl
   base "/_db/crits"
 
   @[AC::Route::GET("/")]
-  def index(sort : String = "utime",
-            smin : Int32 = 1, smax : Int32 = 5,
-            from : String = "vi", user : String? = nil,
-            book : Int32? = nil, list : Int32? = nil,
-            vtag : String? = nil, memo : String? = nil)
+  def index(
+    gt smin : Int32 = 0, lt smax : Int32 = 6,
+    wn book : Int32? = nil, bl list : Int32? = nil,
+    by user : String? = nil, lb vtag : String? = nil,
+    _s sort : String = "utime", _m memo : String? = nil
+  )
     pg_no, limit, offset = _paginate(min: 1, max: 24)
 
     crits = VicritView.fetch_all(
-      self_id: _vu_id, order: sort,
-      vuser: from == "me" ? _uname : user,
+      self_id: _vu_id,
+      order: sort, vuser: user,
       wbook: book, vlist: list,
       btags: vtag, umemo: memo,
       s_min: smin, s_max: smax,
@@ -21,7 +22,7 @@ class CV::VicritCtrl < CV::BaseCtrl
     )
 
     total = VicritView.count_all(
-      vuser: from == "me" ? _uname : user,
+      vuser: user,
       wbook: book, vlist: list,
       btags: vtag, umemo: memo,
       s_min: smin, s_max: smax,

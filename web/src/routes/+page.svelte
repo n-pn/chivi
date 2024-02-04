@@ -6,6 +6,8 @@
 
   import RmstemCard from '$gui/parts/rmstem/RmstemCard.svelte'
   import UpstemCard from '$gui/parts/upstem/UpstemCard.svelte'
+  import VicritCard from '$gui/parts/review/VicritCard.svelte'
+  import YscritCard from '$gui/parts/review/YscritCard.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
@@ -29,63 +31,60 @@
   {/each}
 </nav>
 
-<article class="article island">
-  <header class="head m-flex _cy">
-    <h2 class="h3">Đánh giá truyện chữ</h2>
-    <a href="/br/users" class="m-viewall u-right"><em>Của người dùng</em></a>
-    <a href="/br/ysapp" class="m-viewall"><em>Ưu thư võng</em></a>
+<section class="article island">
+  <header class="head m-flex">
+    <h2 class="h3">Thư viện truyện chữ</h2>
+    <a class="m-viewall u-right" href="/wn">Xem tất cả</a>
   </header>
 
-  <WncritList vdata={data.vcrit} ydata={data.ycrit} show_book={true} />
-</article>
+  <WninfoList {books} />
+</section>
 
-<article class="article island">
-  <section class="list">
-    <header class="head">
-      <h3 class="text">Thư viện truyện chữ</h3>
-      <a class="link" href="/wn">Xem tất cả</a>
-    </header>
+<section class="article island">
+  <header class="head m-flex">
+    <h2 class="h3">Sưu tầm cá nhân</h2>
+    <a class="m-viewall u-right" href="/up">Xem tất cả</a>
+  </header>
+  {#each data.ustems as ustem}
+    <UpstemCard {ustem} />
+  {:else}
+    <div class="d-empty-sm">Có lỗi, mời liên hệ ban quản trị.</div>
+  {/each}
+</section>
 
-    <WninfoList {books} />
-  </section>
+<section class="article island">
+  <header class="head m-flex">
+    <h2 class="h3">Liên kết nhúng ngoài</h2>
+    <a class="m-viewall u-right" href="/rm">Xem tất cả</a>
+  </header>
+  {#each data.rstems as rstem}
+    <RmstemCard {rstem} />
+  {:else}
+    <div class="d-empty-sm">Có lỗi, mời liên hệ ban quản trị.</div>
+  {/each}
+</section>
 
-  <section class="list">
-    <header class="head">
-      <h3 class="text">Sưu tầm cá nhân</h3>
-      <a class="link" href="/up">Xem tất cả</a>
-    </header>
-    {#each data.ustems as ustem}
-      <UpstemCard {ustem} />
-    {:else}
-      <div class="d-empty-sm">Danh sách trống</div>
-    {/each}
-  </section>
+<section class="article island">
+  <header class="head m-flex _cy m-flex">
+    <h2 class="h3">Đánh giá truyện chữ</h2>
+    <a class="m-viewall u-right" href="/uc/crits">Xem tất cả</a>
+  </header>
 
-  <section class="list">
-    <header class="head">
-      <h3 class="text">Liên kết nhúng ngoài</h3>
-      <a class="link" href="/rm">Xem tất cả</a>
-    </header>
-    {#each data.rstems as rstem}
-      <RmstemCard {rstem} />
-    {:else}
-      <div class="d-empty-sm">Danh sách trống</div>
-    {/each}
-  </section>
-</article>
+  <WncritList vdata={data.vcrit} ydata={data.ycrit} show_book={true} _mode={0} />
+</section>
 
 <!--
 <section class="list">
-  <header class="head">
-    <h3 class="text">Truyện mới cập nhật</h3>
+  <header class="head m-flex">
+    <h2 class="h3">Truyện mới cập nhật</h2>
     <a class="link" href="/wn?order=update">Xem tất cả</a>
   </header>
   <WninfoList books={books.update} />
 </section>
 
 <section class="list">
-  <header class="head">
-    <h3 class="text">Tổng hợp cho điểm</h3>
+  <header class="head m-flex">
+    <h2 class="h3">Tổng hợp cho điểm</h2>
     <a class="link" href="/wn?order=weight">Xem tất cả</a>
   </header>
 
@@ -93,6 +92,15 @@
 </section> -->
 
 <style lang="scss">
+  .article + .article {
+    margin-top: var(--gutter);
+  }
+
+  .head {
+    align-items: baseline;
+    margin: 0.75rem 0 0.5rem;
+  }
+
   .qtran {
     @include flex-ca;
     margin: 0.75rem 0 1.5rem;
@@ -119,24 +127,6 @@
 
     &:not(:last-child) {
       @include border(--bd-soft, $loc: bottom);
-    }
-  }
-
-  .head {
-    display: flex;
-    align-items: baseline;
-    margin-bottom: 0.75rem;
-  }
-
-  .text {
-    flex: 1;
-  }
-
-  .link {
-    @include fgcolor(tert);
-    font-style: italic;
-    &:hover {
-      @include fgcolor(primary, 5);
     }
   }
 </style>

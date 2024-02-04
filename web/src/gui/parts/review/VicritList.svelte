@@ -62,7 +62,7 @@
 
       {#if wn_id}
         <p>
-          <a class="m-btn _primary _fill _lg" href="/br/+crit?wn=${wn_id}">
+          <a class="m-btn _primary _fill _lg" href="/uc/+crit?wn=${wn_id}">
             <SIcon name="ballpen" />
             <span class="-text">Thêm đánh giá</span>
           </a>

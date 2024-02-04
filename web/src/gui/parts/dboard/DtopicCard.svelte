@@ -14,15 +14,10 @@
   const handle_like = (evt: Event) => {
     evt.preventDefault()
 
-    toggle_like(
-      'dtopic',
-      post.dt_id,
-      post.me_liked,
-      ({ like_count, memo_liked }) => {
-        post.like_count = like_count
-        post.me_liked = memo_liked
-      }
-    )
+    toggle_like('dtopic', post.dt_id, post.me_liked, ({ like_count, memo_liked }) => {
+      post.like_count = like_count
+      post.me_liked = memo_liked
+    })
   }
 </script>
 
@@ -36,7 +31,7 @@
     {/if}
 
     {#each post.dtags as label}
-      <a class="m-label _{dlabels[label]} _sm" href="/gd?lb={label}">{label}</a>
+      <a class="m-tag _{dlabels[label]} _sm" href="/gd?lb={label}">{label}</a>
     {/each}
   </topic-head>
 

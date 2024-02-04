@@ -5,8 +5,8 @@
 
   const tabs = [
     ['/wn', 'Thư viện', 'books'],
-    ['/wn/crits', 'Đánh giá', 'stars'],
-    ['/wn/lists', 'Thư đơn', 'bookmarks'],
+    ['/uc/crits', 'Đánh giá', 'stars'],
+    ['/uc/lists', 'Thư đơn', 'bookmarks'],
   ]
 </script>
 

@@ -16,15 +16,10 @@
   const handle_like = (evt: Event) => {
     evt.preventDefault()
 
-    toggle_like(
-      'dtopic',
-      post.dt_id,
-      post.me_liked,
-      ({ like_count, memo_liked }) => {
-        post.like_count = like_count
-        post.me_liked = memo_liked
-      }
-    )
+    toggle_like('dtopic', post.dt_id, post.me_liked, ({ like_count, memo_liked }) => {
+      post.like_count = like_count
+      post.me_liked = memo_liked
+    })
   }
 </script>
 
@@ -43,8 +38,7 @@
     </a>
 
     {#each post.dtags as label}
-      <a class="m-label _{dlabels[label]}" href="{board_url}?lb={label}"
-        >{label}</a>
+      <a class="m-tag _{dlabels[label]}" href="{board_url}?lb={label}">{label}</a>
     {/each}
   </topic-navi>
 
@@ -56,8 +50,7 @@
     <topic-foot>
       <topic-user>
         <SIcon name="user" />
-        <a class="cv-user" href="/@{post.u_uname}" data-privi={post.u_privi}
-          >{post.u_uname}</a>
+        <a class="cv-user" href="/@{post.u_uname}" data-privi={post.u_privi}>{post.u_uname}</a>
       </topic-user>
 
       <topic-sep>·</topic-sep>
@@ -65,9 +58,7 @@
 
       {#if $_user.privi > 3 || $_user.uname == post.u_uname}
         <topic-sep>·</topic-sep>
-        <a class="action u-fg-tert" href="/gd/+topic?id={post.dt_id}"
-          ><span>Sửa</span>
-        </a>
+        <a class="action u-fg-tert" href="/gd/+topic?id={post.dt_id}"><span>Sửa</span> </a>
       {/if}
 
       <foot-right>
@@ -101,9 +92,7 @@
 
     {#if post.bhtml.length >= 500}
       <pbody-foot>
-        <button
-          class="m-btn _primary _xs btn-show"
-          on:click={() => (_all = !_all)}>
+        <button class="m-btn _primary _xs btn-show" on:click={() => (_all = !_all)}>
           <SIcon name="chevrons-{_all ? 'up' : 'down'}" />
           <span class="-text">{_all ? 'Thu hẹp' : 'Mở rộng'}</span>
         </button>
@@ -138,7 +127,7 @@
     flex-wrap: wrap;
   }
 
-  .m-label {
+  .m-tag {
     font-size: rem(12px);
     padding: 0 0.375rem;
     line-height: 1.25rem;

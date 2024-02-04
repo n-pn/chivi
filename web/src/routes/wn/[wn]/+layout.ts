@@ -23,12 +23,16 @@ export const load = (async ({ params, fetch }) => {
     crepo,
     rmemo: writable(rmemo),
     _navs: [
-      { href: '/wn', text: 'Thư viện truyện chữ', hd_icon: 'books' },
+      {
+        href: '/wn',
+        text: 'Thư viện truyện chữ',
+        hd_icon: 'books',
+        hd_show: 'pl',
+      },
       {
         href: `/wn/${wn_id}`,
         text: nvinfo.vtitle,
         hd_icon: 'book',
-        hd_show: 'tm',
         hd_kind: 'title',
       },
     ],

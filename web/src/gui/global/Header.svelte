@@ -7,6 +7,8 @@
 
   import Usercp from '../shared/usercp/Usercp.svelte'
   import Config from '../shared/reader/Config.svelte'
+  import Navbar from '$gui/global/Navbar.svelte'
+  import SIcon from '$gui/atoms/SIcon.svelte'
 
   const _user = get_user()
 
@@ -32,9 +34,12 @@
 <header class="app-header" class:clear={$scroll > 0}>
   <nav class="app-vessel">
     <div class="-left">
+      <button class="appbar-item" on:click={() => popups.show('navbar')}>
+        <SIcon name="menu-2" />
+      </button>
       <a href="/" class="appbar-item _brand">
         <img src="/icons/chivi.svg" alt="logo" />
-        <span class="appbar-text u-show-ts">Chivi</span>
+        <span class="appbar-text" class:u-show-ts={!!prev}>Chivi</span>
       </a>
 
       {#if prev}<Navi {...prev} />{/if}
@@ -77,6 +82,7 @@
   </nav>
 </header>
 
+{#if $popups.navbar}<Navbar bind:actived={$popups.navbar} />{/if}
 {#if $popups.usercp}<Usercp bind:actived={$popups.usercp} />{/if}
 {#if $popups.config}<Config bind:actived={$popups.config} />{/if}
 

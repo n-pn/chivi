@@ -1,6 +1,6 @@
 @use '../essence' as *;
 
-.m-label {
+.m-tag {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
@@ -15,7 +15,7 @@
   background: var(--bgcolor, #{color(neutral, 1)});
 
   font-size: rem(13px);
-  @include bdradi(0.75rem);
+  border-radius: 2rem;
 
   @include tm-dark($svelte: false) {
     --color: #{color(neutral, 3)};
@@ -27,6 +27,13 @@
     font-size: rem(12px);
     padding: 0 0.375rem;
     line-height: 1.25rem;
+    // height: 1.25rem;
+  }
+
+  &._lg {
+    font-size: rem(14px);
+    padding: 0 0.75rem;
+    line-height: 1.75rem;
     // height: 1.25rem;
   }
 
@@ -100,5 +107,66 @@
       --bdcolor: #{color(private, 5, 5)};
       --bgcolor: #{color(private, 5, 3)};
     }
+  }
+}
+
+.m-filter {
+  display: inline-flex;
+  border-radius: 2rem;
+  padding: 0.125rem;
+  @include bgcolor(main);
+
+  > .-child {
+    line-height: 1.5rem;
+    border-radius: 1.5rem;
+    padding: 0 0.5rem;
+
+    // text-transform: uppercase;
+    // font-weight: 500;
+    font-size: rem(14px);
+
+    @include fgcolor(tert);
+
+    &._active {
+      @include bgcolor(tert);
+      @include fgcolor(primary);
+    }
+  }
+}
+
+.m-label {
+  font-size: rem(15px);
+  @include fgcolor(mute);
+}
+
+.m-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  line-height: 1.5rem;
+  padding: 0 0.5rem;
+
+  font-weight: 500;
+  cursor: pointer;
+
+  color: var(--color, #{color(primary, 5)});
+  box-shadow: 0 0 0 1px var(--bdcolor, #{color(primary, 2)}) inset;
+  background: var(--bgcolor, #{color(primary, 1)});
+
+  font-size: rem(14px);
+  padding: 0 0.75rem;
+  line-height: 1.75rem;
+  border-radius: 2rem;
+
+  @include tm-dark($svelte: false) {
+    --color: #{color(primary, 3)};
+    --bdcolor: #{color(primary, 5, 5)};
+    --bgcolor: #{color(primary, 5, 3)};
+  }
+
+  &._active {
+    --bgcolor: #{color(primary, 5)};
+    --bdcolor: #{color(primary, 5)};
+    --color: #{color(white)};
   }
 }

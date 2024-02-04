@@ -284,6 +284,9 @@ x-vcoin,
 
 .m-viewall {
   @include fgcolor(tert);
+  font-style: italic;
+  font-style: 1rem;
+
   &:hover {
     @include fgcolor(primary);
   }

@@ -26,7 +26,7 @@
   export let vi: CV.VilistList = empty
   export let qs = ''
 
-  export let sroot = '/wn/lists'
+  export let sroot = '/uc/lists'
   export let _sort = 'utime'
 
   $: pager = new Pager($page.url, { sort: _sort, pg: 1, type: '' })

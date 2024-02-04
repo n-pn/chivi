@@ -100,7 +100,7 @@ class CV::Viuser
     ids.empty? ? [] of self : self.query.where { id.in? ids.to_a }
   end
 
-  def self.create!(email : String, uname : String, upass : String, privi : Int32 = -1) : self
+  def self.create!(email : String, uname : String, upass : String, privi : Int32 = 0) : self
     raise "Địa chỉ hòm thư quá ngắn" if email.size < 3
     raise "Địa chỉ hòm thư không hợp lệ" if email !~ /@/
     raise "Tên người dùng quá ngắn (cần ít nhất 5 ký tự)" if uname.size < 5

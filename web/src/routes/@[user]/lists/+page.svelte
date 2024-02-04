@@ -3,7 +3,6 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   import WnlistList from '$gui/parts/review/WnlistList.svelte'
-  import NavLink from '../NavLink.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
@@ -11,7 +10,7 @@
   $: ({ viuser, vi } = data)
 
   const do_filter = async () => {
-    await goto(`/@${viuser.uname}/ul?qs=${data.filter.qs}`)
+    await goto(`/uc/lists/@${viuser.uname}?qs=${data.filter.qs}`)
   }
 </script>
 
@@ -19,7 +18,7 @@
   <form
     class="search-bar"
     method="get"
-    action="/wn/lists"
+    action="/uc/lists"
     on:submit|preventDefault={do_filter}>
     <input
       type="search"
@@ -33,7 +32,7 @@
     </button>
   </form>
 
-  <a class="m-btn _primary _fill _sm" href="/wn/lists/+list">
+  <a class="m-btn _primary _fill _sm" href="/uc/lists/+list">
     <SIcon name="ballpen" />
     <span class="-text show-ts">Tạo thư đơn</span>
   </a>

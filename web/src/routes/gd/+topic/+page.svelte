@@ -71,7 +71,7 @@
   <section class="chips">
     <label-cap>Phân loại:</label-cap>
     {#each Object.entries(dlabels) as [value, klass]}
-      <label class="m-label _{klass}">
+      <label class="m-tag _{klass}">
         <input type="checkbox" {value} bind:checked={labels[value]} />
         <label-name>{value}</label-name>
         {#if labels[value]}<SIcon name="check" />{/if}
@@ -173,7 +173,7 @@
     @include ftsize(sm);
   }
 
-  .m-label {
+  .m-tag {
     height: 1.75rem;
   }
 
@@ -187,7 +187,7 @@
     @include fgcolor(harmful, 5);
   }
 
-  .m-label > input {
+  .m-tag > input {
     display: none;
   }
 </style>

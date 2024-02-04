@@ -23,7 +23,7 @@
     rstate_slugs,
   } from '$lib/consts/rd_states'
 
-  $: ({ gdroot, rplist, nvinfo, ydata, bdata } = data)
+  $: ({ nvinfo, ydata, bdata } = data)
 
   let short_intro = false
   $: dhtml = nvinfo.bintro
@@ -40,7 +40,9 @@
 </section>
 
 <section>
-  <h3 class="sub">Từ khoá</h3>
+  <header class="sub-head">
+    <h3>Từ khóa tìm kiếm</h3>
+  </header>
 
   {#if nvinfo.labels.length > 0}
     <div class="tags">
@@ -57,15 +59,10 @@
 </section>
 
 <section>
-  <h3 class="sub">Bình luận nội dung</h3>
-  <GdreplList {gdroot} {rplist} />
-</section>
-
-<section>
-  <h3 class="sub">
-    <sub-label>Đánh giá nổi bật</sub-label>
-    <a class="sub-link" href="/wn/{nvinfo.id}/uc">Xem tất cả</a>
-  </h3>
+  <header class="sub-head">
+    <h3>Đánh giá nổi bật</h3>
+    <a class="m-viewall u-right" href="/wn/{nvinfo.id}/crits">Xem tất cả</a>
+  </header>
 
   <div class="crits">
     {#each ydata.crits as crit}
@@ -81,10 +78,10 @@
 </section>
 
 <section>
-  <h3 class="sub">
-    <sub-label>Truyện đồng tác giả</sub-label>
-    <a class="sub-link" href="/wn/={nvinfo.vauthor}">Xem tất cả</a>
-  </h3>
+  <header class="sub-head">
+    <h3>Truyện đồng tác giả</h3>
+    <a class="m-viewall u-right" href="/wn/={nvinfo.vauthor}">Xem tất cả</a>
+  </header>
 
   {#if bdata.books.length > 0}
     <WninfoList books={bdata.books} />
@@ -94,9 +91,9 @@
 </section>
 
 <section>
-  <h3 class="sub">
-    <sub-label>Danh sách độc giả</sub-label>
-  </h3>
+  <header class="sub-head">
+    <h3>Danh sách độc giả</h3>
+  </header>
 
   {#if bdata.users.length > 0}
     <div class="users">
@@ -122,23 +119,12 @@
     @include bps(font-size, rem(15px), rem(16px), rem(17px));
   }
 
-  .sub {
+  .sub-head {
     line-height: 2rem;
     height: 2rem;
     margin-bottom: 0.75rem;
     @include flex($gap: 0.5rem);
     @include border(--bd-main, $loc: bottom);
-  }
-
-  .sub-link {
-    margin-left: auto;
-    font-style: italic;
-    @include ftsize(md);
-    @include fgcolor(tert);
-
-    &:hover {
-      @include fgcolor(primary, 5);
-    }
   }
 
   .tag {

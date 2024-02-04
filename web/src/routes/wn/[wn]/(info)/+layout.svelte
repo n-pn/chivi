@@ -15,10 +15,20 @@
   $: rpath = `/wn/${nvinfo.id}`
 
   $: tabs = [
-    { type: 'fp', href: rpath, icon: 'news', text: 'Tổng quan' },
-    { type: 'uc', href: `${rpath}/uc`, icon: 'stars', text: 'Đánh giá' },
-    { type: 'ul', href: `${rpath}/ul`, icon: 'bookmarks', text: 'Thư đơn' },
-    // { type: 'gd', href: `${rpath}/gd`, icon: 'message', text: 'Thảo luận' },
+    { type: '', href: rpath, icon: 'news', text: 'Tổng quan' },
+    { type: 'crits', href: `${rpath}/crits`, icon: 'stars', text: 'Đánh giá' },
+    {
+      type: 'lists',
+      href: `${rpath}/lists`,
+      icon: 'bookmarks',
+      text: 'Thư đơn',
+    },
+    {
+      type: 'bants',
+      href: `${rpath}/bants`,
+      icon: 'message',
+      text: 'Thảo luận',
+    },
   ]
 </script>
 

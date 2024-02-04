@@ -7,15 +7,15 @@ class YS::CritCtrl < AC::Base
 
   # list revies
   @[AC::Route::GET("/")]
-  def index(sort : String = "utime",
-            smin : Int32 = 3, smax : Int32 = 5,
-            from : String = "ys", user : String? = nil,
-            book : Int32? = nil, list : Int32? = nil,
-            vtag : String? = nil)
-    pg_no, limit, offset = _paginate(max: 24)
+  def index(
+    gt smin : Int32 = 0, lt smax : Int32 = 6,
+    by user : String? = nil, lb vtag : String? = nil,
+    wn book : Int32? = nil, bl list : Int32? = nil,
+    _s sort : String = "utime"
+  )
+    pg_no, limit, offset = self._paginate(max: 24)
 
     query = Yscrit.query.sort_by(sort)
-    query.where("ztext <> ''")
 
     query.where("? = any(vtags)", vtag) if vtag
     query.where("ysuser_id = ?", user) if user
@@ -48,7 +48,7 @@ class YS::CritCtrl < AC::Base
     pgmax += 1 if pgmax == pg_no && crits.size == limit
 
     render json: ({
-      crits: CritView.as_list(crits),
+      crits: YscritView.as_list(crits),
       books: BookView.as_hash(books),
       lists: ListView.as_hash(lists),
       users: UserView.as_hash(users),
@@ -66,7 +66,7 @@ class YS::CritCtrl < AC::Base
     ylist = Yslist.find({id: ycrit.yslist_id})
 
     json = {
-      crit: CritView.new(ycrit),
+      crit: YscritView.new(ycrit),
       book: wbook ? BookView.new(wbook) : nil,
       list: ylist ? ListView.new(ylist) : nil,
       user: UserView.new(Ysuser.find!({id: ycrit.ysuser_id})),

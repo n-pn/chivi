@@ -20,14 +20,13 @@
   export let view_all = false
   export let big_text = false
 
-  $: card_path = `/br/ysapp/c${crit.id}`
+  $: card_path = `/uc/crits/y${crit.id}`
 
   $: [plock, ptype, label] = check_locking(crit.stars)
 
   const check_locking = (stars = 3): [number, string, string] => {
     if (stars == 5) return [-1, 'đăng nhập', 'bình luận 5 sao']
-    if (stars < 4)
-      return [1, 'quyền hạn tối thiểu là 1', 'tất cả các bình luận']
+    if (stars < 4) return [1, 'quyền hạn tối thiểu là 1', 'tất cả các bình luận']
     return [0, 'kích hoạt tài khoản', 'bình luận từ 4 sao trở lên']
   }
 
@@ -36,8 +35,7 @@
 
 <section class="crit island">
   <header>
-    <a class="m-meta _user" href="/wn/crits?from=ys&user={user.id}"
-      >{user.uname}</a>
+    <a class="m-meta _user" href="/uc/crits?from=ys&user={user.id}">{user.uname}</a>
     <span class="m-meta">&middot;</span>
     <a class="m-meta" href="/mt/qtran/yc{crit.id}">
       <span>{rel_time(crit.utime)}{crit.utime != crit.ctime ? '*' : ''}</span>
@@ -54,7 +52,7 @@
 
   <div class="vtags">
     {#each crit.vtags as label}
-      <a class="vtag" href="/wn/crits?vtag={label}">
+      <a class="vtag" href="/uc/crits?lb={label}">
         <SIcon name="hash" />
         <span>{label}</span>
       </a>
@@ -66,10 +64,8 @@
       <p class="u-fg-mute">
         <small>
           <em
-            >(Bạn cần thiết <span class="u-warn">{ptype}</span> để xem {label}).
-            Chi tiết tham khảo:
-            <a class="m-link" href="/hd/nang-cap-quyen-han"
-              >Hướng dẫn nâng cấp quyền hạn.</a>
+            >(Bạn cần thiết <span class="u-warn">{ptype}</span> để xem {label}). Chi tiết tham khảo:
+            <a class="m-link" href="/hd/nang-cap-quyen-han">Hướng dẫn nâng cấp quyền hạn.</a>
           </em>
         </small>
       </p>
@@ -101,7 +97,7 @@
 
   {#if show_list && list}
     <footer class="list">
-      <a class="link _list" href="/wn/lists/y{list.id}{list.vslug}">
+      <a class="link _list" href="/uc/lists/y{list.id}">
         <SIcon name="bookmarks" />
         <span>{list.vname}</span>
         <span>({list.book_count} bộ truyện)</span>

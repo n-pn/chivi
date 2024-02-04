@@ -62,11 +62,11 @@ class YS::ListCtrl < AC::Base
       ylist: ListView.new(ylist, true),
       yuser: UserView.new(yuser),
 
-      crits: CritView.as_list(crits, false),
+      crits: YscritView.as_list(crits, false),
       books: BookView.as_hash(books),
 
       pgidx: pg_no,
-      pgmax: _pgidx(ylist.book_count, limit),
+      pgmax: self._pgidx(ylist.book_count, limit),
     }
   rescue ex
     render :not_found, text: "Thư đơn không tồn tại"
