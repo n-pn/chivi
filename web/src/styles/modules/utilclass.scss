@@ -192,6 +192,18 @@ x-vcoin,
   }
 }
 
+.m-iflex {
+  display: inline-flex;
+
+  &._cx {
+    justify-content: center;
+  }
+
+  &._cy {
+    align-items: center;
+  }
+}
+
 .fz-fluid {
   @include bps(
     font-size,

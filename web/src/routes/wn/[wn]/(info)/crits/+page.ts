@@ -18,15 +18,7 @@ export const load = (async ({ url, fetch, parent }) => {
   }
 
   const limit = qdata.og == 'mixed' ? 4 : 8
-  const query = (url.search || '?_s=score') + `&lm=${limit}`
-
-  // const _meta = {
-  //   left_nav: [
-  //     book_nav(nvinfo.id, nvinfo.vtitle, 'tm'),
-  //     nav_link('uc', 'Đánh giá', 'stars', { show: 'pm' }),
-  //   ],
-  // }
-  // return {
+  const query = (url.search || '?_s=score') + `&lm=${limit}&wn=${nvinfo.id}`
 
   const { vdata, ydata } = await load_crits(qdata.og, query, fetch)
 

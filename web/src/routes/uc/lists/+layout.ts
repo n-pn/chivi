@@ -2,6 +2,7 @@ import type { LayoutLoad } from './$types'
 
 export const load = (() => {
   return {
+    ontab: 'lists',
     _navs: [
       {
         href: '/uc',

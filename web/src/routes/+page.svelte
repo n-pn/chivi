@@ -1,13 +1,10 @@
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
+
   import WncritList from '$gui/parts/review/WncritList.svelte'
-
   import WninfoList from '$gui/parts/wninfo/WninfoList.svelte'
-
   import RmstemCard from '$gui/parts/rmstem/RmstemCard.svelte'
   import UpstemCard from '$gui/parts/upstem/UpstemCard.svelte'
-  import VicritCard from '$gui/parts/review/VicritCard.svelte'
-  import YscritCard from '$gui/parts/review/YscritCard.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
@@ -92,6 +89,9 @@
 </section> -->
 
 <style lang="scss">
+  .article {
+    padding-bottom: 1rem;
+  }
   .article + .article {
     margin-top: var(--gutter);
   }

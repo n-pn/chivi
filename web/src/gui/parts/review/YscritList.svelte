@@ -59,14 +59,7 @@
     {@const list = lists[crit.list_id]}
 
     {#key crit.id}
-      <YscritCard
-        {crit}
-        {user}
-        {book}
-        {list}
-        {show_book}
-        {show_list}
-        {view_all} />
+      <YscritCard {crit} {user} {book} {list} {show_book} {show_list} {view_all} />
     {/key}
   {/each}
 
@@ -76,12 +69,6 @@
 </div>
 
 <style lang="scss">
-  .crits,
-  .qdata {
-    @include bps(margin-left, 0rem, $tm: 0.75rem, $tl: 1.5rem);
-    @include bps(margin-right, 0rem, $tm: 0.75rem, $tl: 1.5rem);
-  }
-
   .qdata {
     margin-top: 0.75rem;
     @include bps(flex-direction, column, $ts: row);

@@ -26,8 +26,7 @@
     <def class="left">
       <span class="entry">
         <SIcon name="user" />
-        <a class="uname" href="/uc/lists?from=ys&user={yuser.id}"
-          >{yuser.uname}</a>
+        <a class="uname" href="/uc/lists?from=ys&user={yuser.id}">{yuser.uname}</a>
       </span>
 
       <span class="entry">
@@ -71,39 +70,29 @@
 
   <div class="origin">
     <a
+      class="m-link m-iflex _cy"
       href="https://www.yousuu.com/booklist/{ylist.orig_id}"
       rel="noreferrer"
       target="_blank">
       <SIcon name="external-link" />
-      <span>Nguồn</span></a>
+      <span>Nguồn Ưu Thư Võng</span></a>
   </div>
 </section>
 
-<article class="article island">
-  <YscritList
-    {crits}
-    {users}
-    {books}
-    {pgidx}
-    {pgmax}
-    _sort="utime"
-    show_list={false} />
-</article>
+<YscritList
+  {crits}
+  {users}
+  {books}
+  {pgidx}
+  {pgmax}
+  qdata={{ sort: 'utime', smin: 0, smax: 6, pg: 1 }}
+  show_list={false} />
 
 <style lang="scss">
   .content {
     @include padding-y(var(--gutter));
     // max-width: 42rem;
     // margin: 0 auto;
-  }
-
-  .origin {
-    margin-bottom: 1rem;
-    a {
-      display: inline-flex;
-      align-items: center;
-      @include fgcolor(primary);
-    }
   }
 
   .vname {

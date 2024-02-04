@@ -27,9 +27,9 @@
     })
   }
 
-  $: crit_path = `/uc/crits/@${crit.u_uname}/c${crit.vc_id}`
+  $: crit_path = `/uc/crits/v${crit.vc_id}`
   $: edit_path = `/uc/crits/+crit?id=${crit.vc_id}&wn=${crit.wn_id}`
-  $: list_path = `/ul/lists/@${crit.u_uname}/l${crit.l_uslug}`
+  $: list_path = `/uc/lists/v${crit.vl_id}`
 </script>
 
 <article class="crit island">

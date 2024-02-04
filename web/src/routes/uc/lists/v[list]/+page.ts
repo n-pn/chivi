@@ -1,5 +1,5 @@
 import { api_get } from '$lib/api_call'
-import { home_nav, nav_link } from '$utils/header_util'
+import { Pager } from '$lib/pager'
 
 import type { PageLoad } from './$types'
 
@@ -9,7 +9,6 @@ interface VilistData extends CV.Paginate {
 
   books: CV.VicritList
 }
-
 export const load = (async ({ url, fetch, params, parent }) => {
   const l_id = parseInt(params.list, 10)
   const path = `/_db/lists/${l_id}${url.search}`
@@ -17,9 +16,21 @@ export const load = (async ({ url, fetch, params, parent }) => {
   const { list, books } = await api_get<VilistData>(path, fetch)
   const { _navs } = await parent()
 
+  const qdata = {
+    by: list.u_uname,
+    og: 'chivi',
+    gt: +url.searchParams.get('gt') || 1,
+    lt: +url.searchParams.get('lt') || 5,
+    pg: +url.searchParams.get('pg') || 1,
+    _s: url.searchParams.get('_s') || 'utime',
+    _m: url.searchParams.get('_m'),
+  }
+
   return {
     list,
     books,
+    qdata,
+    pager: new Pager(url, qdata),
     _meta: {
       title: `Thư đơn: ${list.title}`,
       mdesc: list.dhtml.substring(0, 150),

@@ -11,30 +11,23 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ list } = data)
+  $: ({ list, qdata, pager } = data)
 
   const handle_like = (evt: Event) => {
     evt.preventDefault()
 
-    toggle_like(
-      'vilist',
-      list.vl_id,
-      list.me_liked,
-      ({ like_count, memo_liked }) => {
-        list.like_count = like_count
-        list.me_liked = memo_liked
-      }
-    )
+    toggle_like('vilist', list.vl_id, list.me_liked, ({ like_count, memo_liked }) => {
+      list.like_count = like_count
+      list.me_liked = memo_liked
+    })
   }
 </script>
 
 <section class="content">
   <header class="header">
     <def class="left">
-      <a
-        class="uname v"
-        href="/uc/lists?from=vi&user={list.u_uname}"
-        data-privi={list.u_privi}>{list.u_uname}</a>
+      <a class="uname v" href="/uc/lists?from=vi&user={list.u_uname}" data-privi={list.u_privi}
+        >{list.u_uname}</a>
 
       <span class="u-fg-tert">&middot;</span>
 
@@ -85,15 +78,11 @@
   </div>
 </section>
 
-<article class="article island">
-  <WncritList vi={data.books} ys={undefined} _sort="utime" show_list={false} />
-</article>
+<WncritList vdata={data.books} ydata={undefined} {qdata} {pager} show_list={false} _mode={1} />
 
 <style lang="scss">
   .content {
-    @include padding-y(var(--gutter));
-    // max-width: 42rem;
-    // margin: 0 auto;
+    margin-top: 0.75rem;
   }
 
   .vname {
@@ -127,9 +116,5 @@
   .uname {
     font-weight: 500;
     @include fgcolor(secd);
-  }
-
-  .vdesc :global(p) {
-    margin-bottom: 0.75rem;
   }
 </style>

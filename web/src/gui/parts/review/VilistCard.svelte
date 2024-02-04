@@ -14,28 +14,22 @@
     return Math.round(num / 1000) + 'k'
   }
 
-  $: list_path = `/uc/lists/v${list.tslug}`
+  $: list_path = `/uc/lists/v${list.vl_id}`
 
   const handle_like = (evt: Event) => {
     evt.preventDefault()
 
-    toggle_like(
-      'vilist',
-      list.vl_id,
-      list.me_liked,
-      ({ like_count, memo_liked }) => {
-        list.like_count = like_count
-        list.me_liked = memo_liked
-      }
-    )
+    toggle_like('vilist', list.vl_id, list.me_liked, ({ like_count, memo_liked }) => {
+      list.like_count = like_count
+      list.me_liked = memo_liked
+    })
   }
 </script>
 
 <article class="blcard">
   <div class="blcard-infos">
     <def class="fz-fluid">
-      <a class="cv-user" href="/@{list.u_uname}" data-privi={list.u_privi}
-        >{list.u_uname}</a>
+      <a class="cv-user" href="/@{list.u_uname}" data-privi={list.u_privi}>{list.u_uname}</a>
       <span class="u-fg-tert">&middot;</span>
       <span class="m-meta">{rel_time(list.utime)} </span>
     </def>
@@ -73,9 +67,7 @@
     {#each list.covers || [] as cover, idx}
       <div class="blcard-bcover _{idx}">
         <picture>
-          <source
-            type="image/webp"
-            srcset="https://cdn.chivi.app/covers/{cover}" />
+          <source type="image/webp" srcset="https://cdn.chivi.app/covers/{cover}" />
           <img src="https://cdn.chivi.app/imgs/empty.png" alt="" />
         </picture>
       </div>

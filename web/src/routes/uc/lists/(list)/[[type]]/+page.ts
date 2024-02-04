@@ -16,7 +16,6 @@ export const load = (async ({ url, fetch, parent, params: { type } }) => {
   return {
     ...data,
     filter: { qs: url.searchParams.get('qs') },
-    ontab: type || 'index',
     _meta: { title: 'Thư đơn truyện chữ' },
   }
 }) satisfies PageLoad

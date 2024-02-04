@@ -6,17 +6,16 @@
 </script>
 
 <script lang="ts">
-  import { page } from '$app/stores'
-
   import SIcon from '$gui/atoms/SIcon.svelte'
   import YscritCard from './YscritCard.svelte'
   import VicritCard from './VicritCard.svelte'
-  import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
+  import Mpager, { type Pager } from '$gui/molds/Mpager.svelte'
 
-  export let vdata: CV.VicritList
-  export let ydata: CV.YscritList
+  export let vdata: CV.VicritList = { pgmax: 0 }
+  export let ydata: CV.YscritList = { pgmax: 0 }
 
   export let qdata = { og: 'mixed', by: '', gt: 1, lt: 5, pg: 1, _s: 'utime', _m: '' }
+  export let pager: Pager
 
   export let wn_id = 0
 
@@ -24,8 +23,6 @@
   export let show_list = true
 
   export let _mode = 2
-
-  export let pager = new Pager($page.url, qdata)
 </script>
 
 {#if _mode == 2}
@@ -113,6 +110,7 @@
     </div>
   {/each}
 {/if}
+
 {#if _mode}
   <footer class="pagi">
     <Mpager
@@ -146,5 +144,10 @@
     span {
       margin-right: 0.125rem;
     }
+  }
+
+  .pagi {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
   }
 </style>

@@ -1,3 +1,5 @@
+import { Pager } from '$lib/pager'
+
 import type { PageLoad } from './$types'
 
 import { load_crits } from '$lib/fetch_data'
@@ -17,5 +19,12 @@ export const load = (async ({ url, fetch }) => {
   const query = (url.search || '?_s=utime') + `&lm=${limit}`
 
   const { vdata, ydata } = await load_crits(qdata.og, query, fetch)
-  return { vdata, ydata, qdata, ontab: 'crits', _meta: { title: 'Đánh giá truyện chữ' } }
+  return {
+    vdata,
+    ydata,
+    qdata,
+    pager: new Pager(url, qdata),
+    ontab: 'crits',
+    _meta: { title: 'Đánh giá truyện chữ' },
+  }
 }) satisfies PageLoad

@@ -4,7 +4,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ ydata, vdata, qdata } = data)
+  $: ({ ydata, vdata, qdata, pager } = data)
 </script>
 
-<WncritList {vdata} {ydata} {qdata} show_book={true} />
+<WncritList {vdata} {ydata} {qdata} {pager} show_book={true} />

@@ -121,15 +121,19 @@
     border-radius: 1.5rem;
     padding: 0 0.5rem;
 
-    // text-transform: uppercase;
-    // font-weight: 500;
-    font-size: rem(14px);
-
+    text-transform: uppercase;
+    font-weight: 500;
+    // font-size: rem(14px);
+    @include bps(font-size, rem(11px), rem(12px), rem(13px));
     @include fgcolor(tert);
 
     &._active {
       @include bgcolor(tert);
       @include fgcolor(primary);
+    }
+
+    & + & {
+      margin-left: -0.5rem;
     }
   }
 }

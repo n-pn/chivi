@@ -1,5 +1,5 @@
 <script context="module">
-  const sort_lbls = { score: 'Nổi bật', likes: 'Ưa thích', utime: 'Đổi mới' }
+  const sort_lbls = { score: 'Nổi bật', utime: 'Đổi mới' }
   const type_lbls = { male: 'Nam sinh', female: 'Nữ sinh', both: 'Tất cả' }
 
   const empty = {
@@ -55,22 +55,23 @@
   </form>
 </header>
 
-<div class="filter">
-  <div class="klass">
-    <span class="label">Đối tượng:</span>
-    {#each Object.entries(type_lbls) as [type, label]}
-      {@const href = pager.gen_url({ sort: opts.sort, type, pg: 1 })}
-      <a {href} class="m-chip _sort" class:_active={type == opts.type}>
-        <span>{label}</span>
-      </a>
-    {/each}
+<div class="filter m-flex">
+  <div class="m-flex _cy">
+    <span class="m-label u-show-pl">Đối tượng:</span>
+    <div class="m-filter">
+      {#each Object.entries(type_lbls) as [type, label]}
+        {@const href = pager.gen_url({ sort: opts.sort, type, pg: 1 })}
+        <a {href} class="-child" class:_active={type == opts.type}>
+          <span>{label}</span>
+        </a>
+      {/each}
+    </div>
   </div>
 
-  <div class="sorts">
-    <span class="label">Sắp xếp:</span>
+  <div class="m-filter">
     {#each Object.entries(sort_lbls) as [sort, name]}
       {@const href = pager.gen_url({ sort, type: 'both', pg: 1 })}
-      <a {href} class="m-chip _sort" class:_active={sort == opts.sort}>
+      <a {href} class="-child" class:_active={sort == opts.sort}>
         <span>{name}</span>
       </a>
     {/each}
@@ -101,10 +102,8 @@
 <style lang="scss">
   .head {
     @include flex-ca;
-
-    padding: 0.75rem 0;
+    margin-top: 0.75rem;
     margin-bottom: 0.75rem;
-    @include border(--bd-soft, $loc: bottom);
   }
 
   .search {
@@ -142,31 +141,9 @@
   // }
 
   .filter {
-    display: flex;
+    gap: 0.5rem;
     margin-top: 0.25rem;
-    @include bps(flex-direction, column, $ts: row);
-
-    .label {
-      line-height: 1.75rem;
-      @include fgcolor(mute);
-    }
-  }
-
-  .sorts {
-    @include flex-cx($gap: 0.5rem);
-    margin-top: 0.5rem;
-    @include bp-min(ts) {
-      align-items: right;
-      margin-top: 0;
-      margin-left: auto;
-    }
-  }
-
-  .klass {
-    @include flex-cx($gap: 0.5rem);
-    @include bp-min(ts) {
-      align-items: left;
-    }
+    justify-content: space-around;
   }
 
   .lists {
