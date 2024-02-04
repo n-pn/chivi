@@ -6,55 +6,41 @@
 </script>
 
 {#if navs.length}
-  <nav class="app-vessel bread">
-    <span class="crumb"><a href="/"><SIcon name="home" />Trang chủ</a></span>
-    {#each navs as { text, href = '.' }}
-      <span class="crumb"><a {href}>{text}</a></span>
-    {/each}
+  <nav class="app-vessel">
+    <div class="bread">
+      <a href="/" class="crumb"><SIcon name="home" />Trang chủ</a>
+      {#each navs as { text, href = '.' }}
+        <span class="crumb _sep">/</span><a {href} class="crumb">{text}</a>
+      {/each}
+    </div>
   </nav>
 {/if}
 
 <style lang="scss">
   .bread {
-    display: flow-root;
     margin-top: 0.75rem;
     margin-bottom: 0.75rem;
-
     line-height: 1.25rem;
     @include ftsize(sm);
-
-    // display: flex;
-    // flex-wrap: wrap;
   }
 
-  .crumb {
-    float: left;
-    // display: inline;
-
-    &:not(:last-child):after {
-      vertical-align: top;
-
-      margin-left: 0.25rem;
-      margin-right: 0.25rem;
-
-      content: '/';
-      font-size: 0.775em;
-
-      @include fgcolor(mute);
-    }
-
-    a {
-      @include fgcolor(tert);
-      @include hover {
-        @include fgcolor(primary, 5);
-      }
+  a {
+    @include fgcolor(tert);
+    @include hover {
+      @include fgcolor(primary, 5);
     }
 
     :global(svg) {
-      font-size: large;
+      vertical-align: text-top;
+      // padding-right: 0.125rem;
       @include fgcolor(mute);
-      vertical-align: top;
-      padding-right: 0.25rem;
     }
+  }
+
+  ._sep {
+    margin-left: 0.5ch;
+    margin-right: 0.5ch;
+    font-size: 0.85em;
+    @include fgcolor(mute);
   }
 </style>

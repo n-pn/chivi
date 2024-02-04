@@ -10,21 +10,28 @@ interface VilistData extends CV.Paginate {
   books: CV.VicritList
 }
 
-export const load = (async ({ url, fetch, params }) => {
+export const load = (async ({ url, fetch, params, parent }) => {
   const l_id = parseInt(params.list, 10)
   const path = `/_db/lists/${l_id}${url.search}`
 
   const { list, books } = await api_get<VilistData>(path, fetch)
+  const { _navs } = await parent()
 
-  const { title, tslug } = list
-
-  const _meta: App.PageMeta = {
-    left_nav: [
-      nav_link('/wn/lists', 'Thư đơn', 'bookmarks', { show: 'tm' }),
-      nav_link(`v${tslug}`, title, null, { kind: 'title' }),
+  return {
+    list,
+    books,
+    _meta: {
+      title: `Thư đơn: ${list.title}`,
+      mdesc: list.dhtml.substring(0, 150),
+    },
+    _navs: [
+      ..._navs,
+      {
+        href: `/wn/lists/v${l_id}`,
+        text: `ID: v${l_id}`,
+        hd_text: list.title,
+        hd_kind: 'title',
+      },
     ],
-    right_nav: [nav_link('/wn/crits', 'Đánh giá', 'stars', { show: 'tm' })],
   }
-
-  return { list, books, _meta, _title: `Thư đơn: ${title}` }
 }) satisfies PageLoad

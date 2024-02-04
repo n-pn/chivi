@@ -12,7 +12,8 @@ class CV::UpriviCtrl < CV::BaseCtrl
 
   @[AC::Route::PUT("/upgrade", body: :form)]
   def upgrade_privi(form : UpriviForm)
-    _log_action("ug-privi", form)
+    guard_privi 0, "nâng cấp quyền hạn"
+    spawn _log_action("upgrade-privi", form)
 
     viuser = form.do_upgrade!(_vu_id)
     save_current_user!(viuser)

@@ -1,5 +1,7 @@
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
+  import WncritList from '$gui/parts/review/WncritList.svelte'
+
   import WninfoList from '$gui/parts/wninfo/WninfoList.svelte'
 
   import RmstemCard from '$gui/parts/rmstem/RmstemCard.svelte'
@@ -26,6 +28,16 @@
     </a>
   {/each}
 </nav>
+
+<article class="article island">
+  <header class="head m-flex _cy">
+    <h2 class="h3">Đánh giá truyện chữ</h2>
+    <a href="/br/users" class="m-viewall u-right"><em>Của người dùng</em></a>
+    <a href="/br/ysapp" class="m-viewall"><em>Ưu thư võng</em></a>
+  </header>
+
+  <WncritList vdata={data.vcrit} ydata={data.ycrit} show_book={true} />
+</article>
 
 <article class="article island">
   <section class="list">

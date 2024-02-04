@@ -69,13 +69,15 @@ class CV::VicritCtrl < CV::BaseCtrl
 
     crits.reject!(&.vc_id.== vc_id) if vcrit
 
-    render json: {
+    fdata = {
       cform: init_form(vcrit, wn_id),
       ctime: vcrit.try(&.ctime) || 0,
       bname: Wninfo.get_btitle_vi(wn_id),
       lists: lists,
       crits: crits,
     }
+
+    render json: fdata
   end
 
   private def init_form(crit : Nil, wn_id : Int32)
@@ -116,16 +118,15 @@ class CV::VicritCtrl < CV::BaseCtrl
   def create(form : CritForm)
     guard_privi 0, "tạo đánh giá"
 
-    vicrit = Vicrit.new({
-      viuser_id: _viuser.id,
+    vcrit = Vicrit.new({
+      viuser_id: self._vu_id,
       nvinfo_id: form.wn_id,
       vilist_id: form.vl_id || -_vu_id,
     })
 
-    vicrit.patch!(form.input, form.stars, form.tag_list)
-    spawn Vilist.inc_counter(vicrit.vilist_id, "book_count")
-
-    render text: vicrit.id
+    vcrit.patch!(form.input, form.stars, form.tag_list)
+    spawn Vilist.inc_counter(vcrit.vilist_id, "book_count")
+    render json: {uname: self._uname, vu_id: vcrit.id}
   rescue err
     case msg = err.message || "Không rõ lỗi!"
     when .includes?("unique constraint")

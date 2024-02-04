@@ -1,9 +1,10 @@
 import { merge_query, api_get } from '$lib/api_call'
+import type { URLSearchParams } from 'url'
 
-const get = async <T>(
+const fetch_data = async <T>(
   path: string,
-  fetch: CV.Fetch,
-  search: URLSearchParams
+  search: URLSearchParams,
+  fetch: CV.Fetch = globalThis.fetch
 ) => {
   const url = `${path}?${search}`
   return await api_get<T>(url, fetch)
@@ -20,7 +21,33 @@ const empty_crits = {
   total: 0,
 }
 
-export const load_crits = async (url: URL, fetch: CV.Fetch, opts = {}) => {
+export const load_vi_crits = async (
+  query = 'lm=10',
+  fetch = globalThis.fetch
+) => {
+  try {
+    return await api_get<CV.VicritList>(`/_db/crits?${query}`, fetch)
+  } catch (ex) {
+    return empty_crits as CV.VicritList
+  }
+}
+
+export const load_ys_crits = async (
+  query = 'lm=10',
+  fetch = globalThis.fetch
+) => {
+  try {
+    return await api_get<CV.YscritList>(`/_ys/crits?${query}`, fetch)
+  } catch {
+    return empty_crits as CV.YscritList
+  }
+}
+
+export const load_crits = async (
+  url: URL,
+  opts = {},
+  fetch: CV.Fetch = globalThis.fetch
+) => {
   opts['sort'] ||= url.searchParams.get('sort') || 'score'
   opts['lm'] ||= 10
 
@@ -31,11 +58,11 @@ export const load_crits = async (url: URL, fetch: CV.Fetch, opts = {}) => {
   let ys: CV.YscritList = empty_crits
 
   if (from != 'ys') {
-    vi = await get<CV.VicritList>('/_db/crits', fetch, search)
+    vi = await fetch_data<CV.VicritList>('/_db/crits', search, fetch)
   }
 
   if (from == 'ys' || from == '') {
-    ys = await get<CV.YscritList>('/_ys/crits', fetch, search)
+    ys = await fetch_data<CV.YscritList>('/_ys/crits', search, fetch)
   }
 
   return { vi, ys }

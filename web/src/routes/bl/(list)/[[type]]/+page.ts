@@ -1,5 +1,4 @@
 import { load_lists } from '$lib/fetch_data'
-import { home_nav, nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 
@@ -18,10 +17,7 @@ export const load = (async ({ url, fetch, parent, params: { type } }) => {
     ...data,
     filter: { qs: url.searchParams.get('qs') },
     ontab: type || 'index',
-    _meta: {
-      left_nav: [home_nav(), nav_link('/wn/lists', 'Thư đơn', 'bookmarks')],
-    },
-    _title: 'Thư đơn truyện chữ',
+    _meta: { title: 'Thư đơn truyện chữ' },
   }
 }) satisfies PageLoad
 

@@ -279,5 +279,16 @@ x-vcoin,
   margin-top: 0.75rem;
   margin-bottom: 0.75rem;
   // padding-top: 0.75rem;
-  @include border($loc: top);
+  @include border(--bd-soft, $loc: bottom);
+}
+
+.m-viewall {
+  @include fgcolor(tert);
+  &:hover {
+    @include fgcolor(primary);
+  }
+
+  & + & {
+    margin-left: 0.5rem;
+  }
 }

@@ -17,13 +17,6 @@
       text: 'Tạo mới',
     },
   ]
-
-  // $: $crumbs = [
-  //   { text: 'Thư viện truyện chữ', href: `/wn` },
-  //   { text: 'Thư đơn', href: `/wn/lists` },
-  // ]
 </script>
 
-<Section {tabs}>
-  <slot />
-</Section>
+<Section {tabs}><slot /></Section>

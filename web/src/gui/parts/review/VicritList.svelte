@@ -1,20 +1,18 @@
+<script lang="ts" context="module">
+  const sort_trans = { score: 'Tổng hợp', likes: 'Ưa thích', utime: 'Gần nhất' }
+</script>
+
 <script lang="ts">
   import { page } from '$app/stores'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  import YscritCard from './YscritCard.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
+  import YscritCard from './YscritCard.svelte'
+  import VicritCard from './VicritCard.svelte'
 
-  const sort_trans = { score: 'Tổng hợp', likes: 'Ưa thích', utime: 'Gần nhất' }
+  export let vdata: CV.VicritList
 
-  export let crits: CV.Yscrit[] = []
-  export let books: Record<number, CV.Crbook> = {}
-  export let users: Record<number, CV.Ysuser> = {}
-  export let lists: Record<number, CV.Yslist> = {}
-
-  export let pgidx = 1
-  export let pgmax = 1
-
+  export let wn_id = 0
   export let qdata = { sort: 'score', smin: 0, smax: 6, pg: 1 }
 
   export let show_book = true
@@ -23,7 +21,7 @@
   $: pager = new Pager($page.url, qdata)
 </script>
 
-<div class="qdata m-flex _cx">
+<div class="qdata">
   <div class="stars">
     <span class="label">Số sao:</span>
 
@@ -40,7 +38,7 @@
     {/each}
   </div>
 
-  <div class="sorts u-right">
+  <div class="sorts">
     <span class="label">Sắp xếp:</span>
     {#each Object.entries(sort_trans) as [sort, name]}
       {@const href = pager.gen_url({ sort, pg: 1 })}
@@ -52,28 +50,31 @@
 </div>
 
 <div class="crits">
-  {#each crits as crit}
-    {@const view_all = crit.vhtml.length < 600}
-    {@const book = books[crit.book_id]}
-    {@const user = users[crit.user_id]}
-    {@const list = lists[crit.list_id]}
+  {#each vdata.crits as crit}
+    {@const book = vdata.books[crit.wn_id]}
 
-    {#key crit.id}
-      <YscritCard
-        {crit}
-        {user}
-        {book}
-        {list}
-        {show_book}
-        {show_list}
-        {view_all} />
+    {#key crit.vc_id}
+      <VicritCard {crit} {book} {show_book} {show_list} />
     {/key}
-  {/each}
+  {:else}
+    <div class="d-empty">
+      <p class="u-fg-tert fs-i">Chưa có đánh giá của người dùng.</p>
 
-  <footer class="pagi">
-    <Mpager {pager} {pgidx} {pgmax} />
-  </footer>
+      {#if wn_id}
+        <p>
+          <a class="m-btn _primary _fill _lg" href="/br/+crit?wn=${wn_id}">
+            <SIcon name="ballpen" />
+            <span class="-text">Thêm đánh giá</span>
+          </a>
+        </p>
+      {/if}
+    </div>
+  {/each}
 </div>
+
+<footer class="pagi">
+  <Mpager {pager} pgidx={vdata.pgidx} pgmax={vdata.pgmax} />
+</footer>
 
 <style lang="scss">
   .crits,
@@ -83,15 +84,10 @@
   }
 
   .qdata {
+    display: flex;
     margin-top: 0.75rem;
-    @include bps(flex-direction, column, $ts: row);
-  }
 
-  .sorts {
-    @include flex-cx($gap: 0.5rem);
-    @include bp-min(ts) {
-      align-items: left;
-    }
+    @include bps(flex-direction, column, $ts: row);
   }
 
   .label {
@@ -104,6 +100,16 @@
     @include flex-cx;
     @include bp-min(ts) {
       align-items: left;
+    }
+  }
+
+  .sorts {
+    @include flex-cx($gap: 0.5rem);
+    margin-top: 0.25rem;
+    @include bp-min(ts) {
+      align-items: right;
+      // margin-top: 0;
+      margin-left: auto;
     }
   }
 
@@ -124,6 +130,6 @@
   }
 
   .pagi {
-    padding-bottom: 0.5rem;
+    padding-bottom: 1rem;
   }
 </style>

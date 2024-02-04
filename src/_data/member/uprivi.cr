@@ -57,6 +57,6 @@ class CV::Uprivi
   end
 
   def self.max_valid(vu_id : Int32, p_til = Time.utc.to_unix)
-    self.get(vu_id, p_til, &.<< "where vu_id = $1 and p_til >= $2 order by privi desc limit 1")
+    self.get(vu_id, p_til, &.<< "where vu_id = $1 and p_til >= $2 order by privi desc")
   end
 end

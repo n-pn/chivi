@@ -65,12 +65,12 @@ class CV::UsercpCtrl < CV::BaseCtrl
   @[AC::Route::PUT("/passwd", body: :form)]
   def update_passwd(form : PasswdForm)
     guard_privi 0, "đổi mật khẩu"
+    spawn _log_action("change-passwd", form)
 
     form.validate!(_viuser)
     _viuser.tap(&.passwd = form.newpw).save!
 
     data = {email: _viuser.email, cpass: _viuser.cpass}
-    _log_action("ug-passwd", data)
 
     render :accepted, text: "Đổi mật khẩu thành công"
   rescue err

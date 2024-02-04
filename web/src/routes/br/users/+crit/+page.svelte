@@ -34,8 +34,8 @@
     if (!res.ok) {
       error = await res.text()
     } else {
-      const vc_id = await res.text()
-      await goto(`/wn/crits/v${vc_id}`)
+      const { uname, vc_id } = await res.json()
+      await goto(`/br/@${uname}/c${vc_id}`)
     }
   }
 

@@ -27,7 +27,7 @@ class CV::Viuser
 
   column level : Int16 = 0
 
-  column privi : Int32 = -1
+  column privi : Int32 = 0
   column p_exp : Int64 = 0
 
   column vcoin : Float64 = 0

@@ -15,7 +15,7 @@ class CV::SigninCtrl < CV::BaseCtrl
 
   @[AC::Route::POST("/signup", body: :form)]
   def signup(form : SignupForm)
-    _log_action("user-signup", form, form.uname)
+    spawn _log_action("user-signup", form)
 
     viuser = Viuser.create!(form.email.strip, form.uname.strip, form.upass.strip)
     render_user!(viuser)

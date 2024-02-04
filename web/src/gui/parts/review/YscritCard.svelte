@@ -20,7 +20,7 @@
   export let view_all = false
   export let big_text = false
 
-  $: crit_path = `/wn/crits/y${crit.id}`
+  $: card_path = `/br/ysapp/c${crit.id}`
 
   $: [plock, ptype, label] = check_locking(crit.stars)
 
@@ -79,7 +79,7 @@
   </section>
 
   <footer class="foot" class:_sticky={view_all}>
-    <a class="m-meta" href={crit_path}>
+    <a class="m-meta" href={card_path}>
       <SIcon name="link" />
       <span>Liên kết</span>
     </a>
@@ -91,7 +91,7 @@
         <span class="m-badge">{crit.like_count}</span>
       </span>
 
-      <a class="m-meta" href="{crit_path}#repls">
+      <a class="m-meta" href="{card_path}#repls">
         <SIcon name="message" />
         <span class="u-show-pl">Phản hồi</span>
         <span class="m-badge">{crit.repl_count}</span>

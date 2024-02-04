@@ -32,23 +32,22 @@
     )
   }
 
-  $: crit_path = `/wn/crits/v${crit.vc_id}`
-  $: edit_path = `/wn/crits/+crit?id=${crit.vc_id}&wn=${crit.wn_id}`
-  $: list_path = `/wn/lists/v${crit.l_uslug}`
+  $: crit_path = `/br/@${crit.u_uname}/c${crit.vc_id}`
+  $: edit_path = `/br/chivi/+crit?id=${crit.vc_id}&wn=${crit.wn_id}`
+  $: list_path = `/bl/chivi/l${crit.l_uslug}`
 </script>
 
 <article class="crit island">
   <header class="head">
-    <a
-      class="m-meta _user cv-user"
-      data-privi={crit.u_privi}
-      href="/wn/crits?from=vi&user={crit.u_uname}">{crit.u_uname}</a>
-
+    <a class="cv-user" data-privi={crit.u_privi} href="/br/@{crit.u_uname}"
+      >{crit.u_uname}</a>
     <span class="u-fg-tert">&middot;</span>
     <span class="m-meta _time"
       >{rel_time(crit.ctime)}{crit.utime > crit.ctime ? '*' : ''}</span>
+    <span class="u-fg-tert">&middot;</span>
+    <a href={crit_path} class="m-meta"><em>Liên kết</em></a>
 
-    <div class="right">
+    <div class="stars m-flex _cx u-right">
       <span class="m-meta _star">
         <Stars count={crit.stars} />
       </span>
@@ -71,13 +70,6 @@
   </section>
 
   <footer class="foot" class:_sticky={view_all}>
-    <!-- <span class="m-meta">&middot;</span> -->
-
-    <a class="m-meta" href={crit_path}>
-      <SIcon name="link" />
-      <span>Liên kết</span>
-    </a>
-
     {#if $_user.uname == crit.u_uname || $_user.privi > 3}
       <a class="m-meta" href={edit_path}>
         <SIcon name="pencil" />
@@ -124,7 +116,7 @@
     @include bgcolor(tert);
 
     // @include bdradi();
-    @include linesd(--bd-main, $inset: false);
+    @include linesd(--bd-soft, $inset: false);
   }
 
   .head {
@@ -132,8 +124,9 @@
     position: sticky;
     top: 0;
     z-index: 10;
-    padding: 0 var(--gutter);
-    line-height: 2.25rem;
+    padding: 0.375rem var(--gutter);
+
+    // line-height: 2.25rem;
 
     @include bgcolor(tert);
     @include border(--bd-soft, $loc: bottom);
@@ -143,24 +136,19 @@
     }
   }
 
-  .right {
-    display: flex;
-    margin-left: auto;
-    @include flex($gap: 0.375rem);
+  .m-meta {
+    &._star :global(.star) {
+      width: 1.25em;
+      height: 1.25em;
+    }
   }
 
-  .m-meta {
-    &._user {
-      font-weight: 500;
-      @include clamp($width: null);
-      @include bps(font-size, rem(13px), $pl: rem(14px), $tm: rem(15px));
-      // flex-shrink: 0;
-    }
-
-    &._star :global(.star) {
-      width: 1.1em;
-      height: 1.1em;
-    }
+  .cv-user {
+    font-weight: 500;
+    @include bps(font-size, rem(13px), $pl: rem(14px), $tm: rem(15px));
+    @include clamp($width: null);
+    max-width: 30vw;
+    // flex-shrink: 0;
   }
 
   .vtags {
@@ -188,7 +176,7 @@
       margin-top: 0.75em;
     }
 
-    --line: 10;
+    --line: 6;
     // prettier-ignore
     @include bp-min(ts) { --line: 8; }
     // prettier-ignore
