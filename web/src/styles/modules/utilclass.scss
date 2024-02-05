@@ -182,6 +182,7 @@ x-vcoin,
 
 .m-flex {
   display: flex;
+  flex-wrap: wrap;
 
   &._cx {
     justify-content: center;
@@ -190,6 +191,22 @@ x-vcoin,
   &._cy {
     align-items: center;
   }
+}
+
+.u_gap1 {
+  gap: 0.25rem;
+}
+
+.u_gap2 {
+  gap: 0.5rem;
+}
+
+.u_gap3 {
+  gap: 0.75rem;
+}
+
+.u_gap4 {
+  gap: 1rem;
 }
 
 .m-iflex {

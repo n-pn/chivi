@@ -2,31 +2,17 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   import Truncate from '$gui/atoms/Truncate.svelte'
-  import GdreplList from '$gui/parts/dboard/GdreplList.svelte'
   import WninfoList from '$gui/parts/wninfo/WninfoList.svelte'
   import YscritCard from '$gui/parts/review/YscritCard.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
 
-  import {
-    status_types,
-    status_icons,
-    status_names,
-    status_colors,
-  } from '$lib/constants'
+  import { rstate_labels, rstate_colors, rstate_icons, rstate_slugs } from '$lib/consts/rd_states'
 
-  import {
-    rstate_labels,
-    rstate_colors,
-    rstate_icons,
-    rstate_slugs,
-  } from '$lib/consts/rd_states'
+  $: ({ nvinfo: binfo, ydata, bdata } = data)
 
-  $: ({ nvinfo, ydata, bdata } = data)
-
-  let short_intro = false
-  $: dhtml = nvinfo.bintro
+  $: dhtml = binfo.bintro
     .split('\n')
     .map((x) => `<p>${x}</p>`)
     .join('\n')
@@ -34,8 +20,42 @@
 
 <section>
   <h2>Giới thiệu:</h2>
-  <div class="intro" class:_short={short_intro}>
+  <div class="intro" class:_short={false}>
     <Truncate html={dhtml} />
+  </div>
+</section>
+
+<section>
+  <header class="sub-head">
+    <h3>Các tên khác:</h3>
+  </header>
+
+  <div class="m-flex u_gap3">
+    <span class="m-iflex u_gap2">
+      <span class="u-fg-tert">Gốc Trung: </span>
+      <span class="u-fg-main">{binfo.ztitle}</span>
+    </span>
+    <span class="m-iflex u_gap2">
+      <span class="u-fg-tert">Hán Việt:</span>
+      <span class="u-fg-main">{binfo.htitle}</span>
+    </span>
+  </div>
+</section>
+
+<section>
+  <header class="sub-head">
+    <h3>Liên kết ngoài:</h3>
+  </header>
+  <div class="m-flex _cy u_gap2">
+    {#each binfo.origins as { name, link, type }}
+      <a class="tag" href={link} rel="noreferrer" target="_blank">{name}</a>
+      {#if type == 1}
+        <a class="u-fg-tert" href="/wn?from={name}" data-tip="Tìm truyện cùng nguồn"
+          ><SIcon name="search" /></a>
+      {/if}
+    {:else}
+      <div class="d-empty-xs">Danh sách trống</div>
+    {/each}
   </div>
 </section>
 
@@ -44,9 +64,9 @@
     <h3>Từ khóa tìm kiếm</h3>
   </header>
 
-  {#if nvinfo.labels.length > 0}
-    <div class="tags">
-      {#each nvinfo.labels as label}
+  {#if binfo.labels.length > 0}
+    <div class="m-flex u_gap3">
+      {#each binfo.labels as label}
         <a class="tag" href="/wn?tagged={label}">
           <SIcon name="hash" />
           <span>{label}</span>
@@ -61,7 +81,7 @@
 <section>
   <header class="sub-head">
     <h3>Đánh giá nổi bật</h3>
-    <a class="m-viewall u-right" href="/wn/{nvinfo.id}/crits">Xem tất cả</a>
+    <a class="m-viewall u-right" href="/wn/{binfo.id}/crits">Xem tất cả</a>
   </header>
 
   <div class="crits">
@@ -80,7 +100,7 @@
 <section>
   <header class="sub-head">
     <h3>Truyện đồng tác giả</h3>
-    <a class="m-viewall u-right" href="/wn/={nvinfo.vauthor}">Xem tất cả</a>
+    <a class="m-viewall u-right" href="/wn/={binfo.vauthor}">Xem tất cả</a>
   </header>
 
   {#if bdata.books.length > 0}
@@ -130,11 +150,13 @@
   .tag {
     display: inline-flex;
     align-items: center;
-    margin-right: 0.5rem;
-    line-height: 1.25rem;
+    @include ftsize(lg);
+    // margin-right: 0.5rem;
+    height: 1.25rem;
     @include fgcolor(primary, 5);
+
     &:hover {
-      @include border(primary, 5, $loc: bottom);
+      text-decoration: underline;
     }
   }
 
