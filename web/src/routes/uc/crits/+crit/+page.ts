@@ -11,7 +11,7 @@ interface CritFormPage {
   crits: CV.Vicrit[]
 }
 
-export const load = (async ({ url, fetch }) => {
+export const load = (async ({ url, fetch, parent }) => {
   const wn = +url.searchParams.get('wn') || 0
   const id = +url.searchParams.get('id') || 0
 
@@ -19,15 +19,12 @@ export const load = (async ({ url, fetch }) => {
   const fdata = await api_get<CritFormPage>(cpath, fetch)
 
   const title = id ? 'Sửa đánh giá' : 'Thêm đánh giá'
+  const { _navs } = await parent()
 
   return {
-    fdata,
-    _title: title,
-    _meta: {
-      left_nav: [
-        nav_link('/crits', 'Đánh giá', 'stars', { show: 'tm' }),
-        nav_link(url.pathname, title, 'ballpen', { show: 'pm' }),
-      ],
-    },
+    ...fdata,
+    ontab: 'crits',
+    _meta: { title },
+    _navs: [..._navs, { href: url.pathname, text: title, hd_icon: 'ballpen' }],
   }
 }) satisfies PageLoad

@@ -7,19 +7,13 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ viuser, vi } = data)
-
   const do_filter = async () => {
-    await goto(`/uc/lists/@${viuser.uname}?qs=${data.filter.qs}`)
+    await goto(`/uc/lists/@${data.uname}?qs=${data.filter.qs}`)
   }
 </script>
 
 <header class="head">
-  <form
-    class="search-bar"
-    method="get"
-    action="/uc/lists"
-    on:submit|preventDefault={do_filter}>
+  <form class="search-bar" method="get" action="/uc/lists" on:submit|preventDefault={do_filter}>
     <input
       type="search"
       class="m-input _sm"
@@ -38,7 +32,7 @@
   </a>
 </header>
 
-<WnlistList {vi} ys={undefined} _sort="score" />
+<WnlistList vi={data.vdata} ys={undefined} _sort="score" />
 
 <style lang="scss">
   .head {

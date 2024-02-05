@@ -44,5 +44,6 @@ declare namespace App {
     }
 
     _navs?: PageNavi[]
+    _alts?: PageNavi[]
   }
 }

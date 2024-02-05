@@ -108,12 +108,15 @@
 
 <style lang="scss">
   .crit {
-    margin-top: var(--gutter);
     @include bgcolor(tert);
     @include linesd(--bd-main, $inset: false);
 
     @include tm-dark {
       @include linesd(--bd-soft, $ndef: false, $inset: false);
+    }
+
+    :global(.crit) + & {
+      margin-top: var(--gutter);
     }
   }
 

@@ -12,7 +12,7 @@
 
   const _user = get_user()
 
-  $: ({ _meta, _navs = [] } = $page.data)
+  $: ({ _meta, _navs = [], _alts = [] } = $page.data)
 
   $: prev = _navs[_navs.length - 2]
   $: curr = _navs[_navs.length - 1]
@@ -49,6 +49,10 @@
     </div>
 
     <div class="-right">
+      {#each _alts as item}
+        <Navi {...item} />
+      {/each}
+
       {#if $page.data._show_conf}
         <Item
           type="button"

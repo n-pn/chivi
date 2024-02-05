@@ -43,4 +43,17 @@ declare namespace CV {
     input: string
     btags: string
   }
+
+  interface CritFilter {
+    og: string
+    by: string
+    wn: string
+    bl: string
+
+    gt: number
+    lt: number
+    pg: number
+    _s: string
+    _m: string
+  }
 }

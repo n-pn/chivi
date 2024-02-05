@@ -10,6 +10,14 @@ const _meta = {
 }
 
 const _navs: App.PageNavi[] = []
+const _alts: App.PageNavi[] = [
+  {
+    href: '/mt/qtran',
+    text: 'Dịch nhanh',
+    hd_icon: 'language',
+    hd_show: 'pl',
+  },
+]
 
 type Wndata = { books: CV.Wninfo[] }
 type Rmdata = { items: CV.Rmstem[] }
@@ -22,5 +30,5 @@ export const load = (async ({ fetch }) => {
 
   const { vdata: vcrit, ydata: ycrit } = await load_crits('mixed', '?lm=1&sort=utime', fetch)
 
-  return { vcrit, ycrit, books, rstems, ustems, _meta, _navs }
+  return { vcrit, ycrit, books, rstems, ustems, _meta, _navs, _alts }
 }) satisfies PageLoad

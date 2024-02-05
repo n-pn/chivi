@@ -82,6 +82,22 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
     @include bgcolor(primary, 7);
   }
 
+  &._primary {
+    @include fgcolor(primary, 3);
+  }
+
+  &._success {
+    @include fgcolor(success, 3);
+  }
+
+  &._warning {
+    @include fgcolor(warning, 3);
+  }
+
+  &._harmful {
+    @include fgcolor(harmful, 3);
+  }
+
   &._dot:after {
     $size: 0.625rem;
 

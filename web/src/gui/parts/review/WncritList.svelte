@@ -14,10 +14,16 @@
   export let vdata: CV.VicritList = { pgmax: 0 }
   export let ydata: CV.YscritList = { pgmax: 0 }
 
-  export let qdata = { og: 'mixed', by: '', gt: 1, lt: 5, pg: 1, _s: 'utime', _m: '' }
+  export let qdata: Partial<CV.CritFilter> = {
+    og: 'mixed',
+    by: '',
+    gt: 1,
+    lt: 5,
+    pg: 1,
+    _s: 'utime',
+    _m: '',
+  }
   export let pager: Pager
-
-  export let wn_id = 0
 
   export let show_book = true
   export let show_list = true
@@ -47,7 +53,7 @@
 {#if _mode > 0}
   <div class="qdata m-flex">
     <div class="m-flex _cy">
-      <span class="m-label">Số sao:</span>
+      <span class="m-label u-show-pl">Số sao:</span>
       {#each [1, 2, 3, 4, 5] as star}
         {@const _active = star >= qdata.gt && star <= qdata.lt}
         {@const gt = _active || star < qdata.gt ? star : qdata.gt}
@@ -81,11 +87,11 @@
     {/key}
   {:else}
     <div class="d-empty-sm">
-      <p>Chưa có đánh giá của người dùng.</p>
+      <div>Chưa có đánh giá của người dùng.</div>
 
-      {#if wn_id}
+      {#if qdata.wn}
         <p>
-          <a class="m-btn _primary _fill _lg" href="/uc/crits/+crit?wn=${wn_id}">
+          <a class="m-btn _success _fill" href="/uc/crits/+crit?wn={qdata.wn}">
             <SIcon name="ballpen" />
             <span class="-text">Thêm đánh giá</span>
           </a>
@@ -134,7 +140,7 @@
     display: inline-flex;
     align-items: center;
     @include fgcolor(mute);
-    margin-left: 0.75rem;
+    margin-left: 0.5rem;
 
     &._active {
       color: rgb(247, 186, 42);

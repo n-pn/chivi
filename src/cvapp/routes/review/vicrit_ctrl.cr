@@ -127,7 +127,7 @@ class CV::VicritCtrl < CV::BaseCtrl
 
     vcrit.patch!(form.input, form.stars, form.tag_list)
     spawn Vilist.inc_counter(vcrit.vilist_id, "book_count")
-    render json: {uname: self._uname, vu_id: vcrit.id}
+    render json: {uname: self._uname, vc_id: vcrit.id}
   rescue err
     case msg = err.message || "Không rõ lỗi!"
     when .includes?("unique constraint")
@@ -139,12 +139,12 @@ class CV::VicritCtrl < CV::BaseCtrl
 
   @[AC::Route::PATCH("/:crit_id", body: form)]
   def update(crit_id : Int32, form : CritForm)
-    vicrit = load_crit(crit_id)
+    vcrit = load_crit(crit_id)
 
-    owner_id = vicrit.viuser_id
+    owner_id = vcrit.viuser_id
     guard_owner owner_id, 0, "sửa đánh giá"
 
-    old_list_id = vicrit.vilist_id
+    old_list_id = vcrit.vilist_id
     new_list_id = form.vl_id || old_list_id
 
     if old_list_id != new_list_id
@@ -154,24 +154,24 @@ class CV::VicritCtrl < CV::BaseCtrl
       end
     end
 
-    vicrit.vilist_id = new_list_id
-    vicrit.changed_at = Time.utc
-    vicrit.patch!(form.input, form.stars, form.tag_list)
+    vcrit.vilist_id = new_list_id
+    vcrit.changed_at = Time.utc
+    vcrit.patch!(form.input, form.stars, form.tag_list)
 
-    render text: vicrit.id
+    render json: {uname: self._uname, vc_id: vcrit.id}
   end
 
   @[AC::Route::DELETE("/:crit_id")]
   def delete(crit_id : Int32)
-    vicrit = load_crit(crit_id)
+    vcrit = load_crit(crit_id)
 
-    spawn Vilist.dec_counter(vicrit.vilist_id, "book_count")
+    spawn Vilist.dec_counter(vcrit.vilist_id, "book_count")
 
-    owner_id = vicrit.viuser_id
+    owner_id = vcrit.viuser_id
     guard_owner owner_id, 0, "xoá đánh giá"
 
     is_admin = _privi > 3 && _vu_id != owner_id
-    vicrit.update!({_flag: is_admin ? -3 : -2})
+    vcrit.update!({_flag: is_admin ? -3 : -2})
 
     render json: {msg: "đánh giá đã bị xoá"}
   end

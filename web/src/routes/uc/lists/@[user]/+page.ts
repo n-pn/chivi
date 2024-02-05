@@ -1,15 +1,13 @@
-import { merge_query, api_get } from '$lib/api_call'
-
-import { nav_link } from '$utils/header_util'
-
 import type { PageLoad } from './$types'
 
-export const load = (async ({ url, fetch, params }) => {
+import { merge_query, api_get } from '$lib/api_call'
+
+export const load = (async ({ url, fetch, params, parent }) => {
   const user = params.user
   const search = merge_query(url.searchParams, { user, lm: 10 })
   const path = '/_db/lists?' + search.toString()
 
-  const vi = await api_get<CV.VilistList>(path, fetch)
+  const vdata = await api_get<CV.VilistList>(path, fetch)
 
   // const _meta: App.PageMeta = {
   //   left_nav: [
@@ -24,19 +22,23 @@ export const load = (async ({ url, fetch, params }) => {
   const sort = url.searchParams.get('sort') || 'utime'
   const filter = { qs: url.searchParams.get('qs'), sort }
 
+  const { _navs } = await parent()
+
   return {
-    vi,
+    vdata,
     filter,
-    ontab: 'list',
-    _meta: { title: `Đánh giá truyện của ${user}` },
+    uname: user,
+    ontab: 'lists',
+    _meta: { title: `Thư đơn của @${user}` },
     _navs: [
+      ..._navs,
+
       {
-        href: `/@${user}`,
-        text: `@${user}`,
+        href: `/uc/lists/@${user}`,
+        text: `Thư đơn của @${user}`,
+        hd_text: user,
         hd_icon: 'at',
-        hd_kind: 'title',
       },
-      { href: '/uc/crits', text: 'Thư đơn truyện chữ', hd_icon: 'bookmarks' },
     ],
   }
 }) satisfies PageLoad
