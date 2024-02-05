@@ -5,11 +5,11 @@ CREATE TABLE viusers(
   email citext UNIQUE NOT NULL,
   cpass text NOT NULL,
   --
-  vcoin double precision DEFAULT 0 NOT NULL,
-  karma int DEFAULT 0 NOT NULL,
+  vcoin_real int DEFAULT 0 NOT NULL,
+  vcoin_free int DEFAULT 0 NOT NULL,
   --
-  privi int DEFAULT 0 NOT NULL,
-  privi_until bigint[] NOT NULL DEFAULT '{0, 0, 0}' ::bigint[],
+  privi smallint DEFAULT 0 NOT NULL,
+  trust smallint DEFAULT 0 NOT NULL,
   --
   wtheme text NOT NULL DEFAULT 'light',
   --

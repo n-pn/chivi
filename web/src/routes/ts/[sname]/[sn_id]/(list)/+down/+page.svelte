@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import { invalidate } from '$app/navigation'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
@@ -182,4 +182,4 @@
     gap: 0.75rem;
     margin-top: 0.75rem;
   }
-</style>
+</style> -->

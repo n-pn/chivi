@@ -60,7 +60,7 @@ Trong trường hợp bạn quên chưa cung cấp thông tin định danh, hãy
 
 _Khi bạn ủng hộ Chivi bằng tiền mặt, bạn sẽ được tặng một đơn vị tiền tệ ảo là vcoin, bạn có thể dùng vcoin để nâng cấp quyền hạn, gửi tặng người dùng khác, hoặc sử dụng các tính năng nâng cao sẽ dần được phát triển bổ sung._
 
-<p class="u-warn u-bold">Quy ước trao đổi: 1000 VND = 1 vcoin, $1 USD = 20 vcoin.</p>
+<p class="u-warn u-bold">Quy ước trao đổi: 1000 VND = 1000 vcoin, $1 USD = 20000 vcoin.</p>
 
 **Lưu ý: Hiện tại trang chưa có hệ thống thanh toán tự động, cho nên bạn chỉ được cộng vcoin sau khi ban quản trị có người kiểm tra thông tin giao dịch rồi cộng thủ công, quá trình này có thể kéo dài từ vài chục phút tới vài giờ tuỳ tình huống, mong các bạn kiên nhẫn.**
 

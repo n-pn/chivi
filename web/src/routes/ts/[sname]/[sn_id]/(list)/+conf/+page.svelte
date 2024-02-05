@@ -65,8 +65,7 @@
 <details open>
   <summary>Chọn từ điển chính khi sử dụng chế độ dịch máy</summary>
   <p class="hints">
-    Bạn có thể dùng từ điển riêng độc lập, hoặc dùng chung với từ điển bộ truyện
-    được liên kết.
+    Bạn có thể dùng từ điển riêng độc lập, hoặc dùng chung với từ điển bộ truyện được liên kết.
   </p>
 
   <div class="field options">
@@ -79,11 +78,7 @@
     </label>
 
     <label class="radio">
-      <input
-        type="radio"
-        value="wn{crepo.wn_id}"
-        bind:group={pdict}
-        disabled={crepo.wn_id < 1} />
+      <input type="radio" value="wn{crepo.wn_id}" bind:group={pdict} disabled={crepo.wn_id < 1} />
       <span>Dùng từ điển bộ truyện</span>
     </label>
 
@@ -96,41 +91,6 @@
       <SIcon name="privi-{plock.pdict[crepo.stype]}" iset="icons" />
     </button>
   </div>
-</details>
-
-<details open>
-  <summary
-    >Hệ số nhân theo số lượng chữ để tính vcoin cần thiết khi mở chương</summary>
-  <p class="hints">
-    Tùy vào độ hiếm có, đặc dị, mức độ hoàn thiện của nội dung mà bạn có thể
-    thiết đặt giá chương sao cho hợp lý
-  </p>
-
-  <div class="field options">
-    {#each [1, 2, 3, 4, 5] as value}
-      <label class="radio">
-        <input type="radio" {value} bind:group={multp} />
-        <span>{value}x</span>
-      </label>
-    {/each}
-    <label>
-      <span>Tự chọn:</span>
-      <input type="number" class="m-input _sm _multp" bind:value={multp} />
-    </label>
-
-    <button
-      class="m-btn _sm _fill _warning u-right"
-      disabled={conf_disabled('multp', $_user.privi)}
-      on:click={() => update_conf({ multp })}>
-      <SIcon name="send" />
-      <span>Lưu</span>
-      <SIcon name="privi-{plock.multp[crepo.stype]}" iset="icons" />
-    </button>
-  </div>
-
-  <p class="hints">
-    Công thức tính: <code>1 vcoin / 200_000 chữ * hệ số nhân.</code>
-  </p>
 </details>
 
 <style lang="scss">

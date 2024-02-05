@@ -18,19 +18,20 @@ class CV::Viuser
   column pwtemp_until : Int64 = 0
 
   # user group and privilege:
-  # - admin: 4 // granted all access
-  # - vip_3: 3 // granted all premium features
-  # - vip_2: 2 // freely reading all content
-  # - vip_1: 1 // limited access
-  # - basic: 0 // restristed access
+  # - admin: 5
+  # - vip_4: 4
+  # - vip_3: 3
+  # - vip_2: 2
+  # - vip_1: 1
+  # - basic: 0
   # - banned: -1 // banned user is treated similar to unregisted user
-
-  column level : Int16 = 0
 
   column privi : Int32 = 0
   column p_exp : Int64 = 0
 
   column vcoin : Float64 = 0
+  column vcoin_real : Int32 = 0
+  column vcoin_gift : Int32 = 0
 
   column last_loggedin_at : Time = Time.utc
   column reply_checked_at : Time = Time.utc
@@ -49,10 +50,6 @@ class CV::Viuser
     Crypto::Bcrypt::Password.new(cpass).verify(upass) || pwtemp?(upass)
   end
 
-  def point_limit
-    privi < 0 ? 0 : (self.vcoin * 1000).round.to_i &+ (2 ** self.privi) * 100_000
-  end
-
   def pwtemp?(upass : String)
     self.pwtemp == upass && self.pwtemp_until >= Time.utc.to_unix
   end
@@ -66,10 +63,16 @@ class CV::Viuser
     self.save!
   end
 
-  def spend_vcoin!(value : Float64 | Int32)
-    query = "update viusers set vcoin = vcoin - $1 where vcoin >= $1 and id = $2 returning vcoin"
-    return nil unless vcoin = PGDB.query_one query, value, self.id, as: Int32
-    @vcoin = vcoin
+  def substract_vcoin!(value : Int32) : Int32?
+    query = <<-SQL
+      update viusers
+      set vcoin_real = vcoin_real - $1,
+      where vcoin_real >= $1 and id = $2
+      returning vcoin_real
+      SQL
+
+    return unless vcoin_real = PGDB.query_one(query, value, self.id, as: Int32)
+    self.vcoin_real = vcoin_real
   end
 
   def check_privi!(persist : Bool = true)

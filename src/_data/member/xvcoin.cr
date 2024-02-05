@@ -31,7 +31,7 @@ class CV::Xvcoin
   field target_id : Int32 = 0
   field target_name : String = ""
 
-  field amount : Float64 = 0_f64
+  field amount : Int32 = 0
   field reason : String = ""
 
   timestamps
@@ -51,7 +51,7 @@ class CV::Xvcoin
       jb.field "sender_id", self.sender_id
       jb.field "target_id", self.target_id
 
-      jb.field "amount", self.amount.round(2)
+      jb.field "amount", self.amount
       jb.field "reason", self.reason
 
       jb.field "ctime", self.created_at.to_unix
@@ -87,13 +87,13 @@ class CV::Xvcoin
     returning vcoin
     SQL
 
-  def self.subtract(vu_id : Int32, value : Float64)
+  def self.subtract(vu_id : Int32, value : Int32)
     # TODO: convert vcoin to vietnam dong
-    @@db.query_one?(SUBTRACT_VCOIN_SQL, value, vu_id, as: Float64)
+    @@db.query_one?(SUBTRACT_VCOIN_SQL, value, vu_id, as: Int32)
   end
 
-  def self.increase(vu_id : Int32, value : Float64)
+  def self.increase(vu_id : Int32, value : Int32)
     # TODO: convert vcoin to vietnam dong
-    @@db.query_one(INCREASE_VCOIN_SQL, value, vu_id, as: Float64)
+    @@db.query_one(INCREASE_VCOIN_SQL, value, vu_id, as: Int32)
   end
 end

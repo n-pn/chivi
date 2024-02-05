@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS vcoin_xlogs(
   target_id int NOT NULL REFERENCES viusers(id) ON UPDATE CASCADE ON DELETE CASCADE,
   target_name text NOT NULL DEFAULT '',
   --
-  amount double precision NOT NULL DEFAULT 0,
+  amount int NOT NULL DEFAULT 0,
   reason text NOT NULL DEFAULT '',
   --
   created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,

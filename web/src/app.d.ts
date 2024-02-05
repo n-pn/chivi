@@ -11,9 +11,6 @@ declare namespace App {
     vcoin: number
     until: number
 
-    point_today: number
-    point_limit: number
-
     unread_notif: number
   }
 

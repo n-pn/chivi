@@ -5,12 +5,11 @@ struct CV::XvcoinForm
 
   getter target : String
   getter reason : String = ""
-  getter amount : Float64
+  getter amount : Int32
 
   def after_initialize
     @target = @target.strip
-    @amount = @amount.round(2)
-    @amount = 0.01 if @amount < 0.01
+    @amount = 10 if @amount < 10
   end
 
   def find_target

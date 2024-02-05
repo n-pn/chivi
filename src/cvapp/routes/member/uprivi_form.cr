@@ -33,22 +33,22 @@ struct CV::UpriviForm
   }
 
   def do_upgrade!(vu_id : Int32)
-    vcoin_req = COST[@privi][@pdura]
+    viuser = Viuser.load!(vu_id)
+
+    vcoin_req = COST[@privi][@pdura] * 1000
     dura_days = DURA[@pdura]
 
-    viuser = Viuser.load!(vu_id)
-    raise "Lượng vcoin không đủ!" if vcoin_req > viuser.vcoin
+    unless remain = viuser.substract_vcoin!(vcoin_req)
+      raise "Lượng vcoin không đủ!"
+    end
 
     pdata = Uprivi.extend!(vu_id, @privi, dura_days)
-
-    viuser.vcoin -= vcoin_req
 
     if viuser.privi < @privi
       viuser.privi = @privi
       viuser.p_exp = pdata.first.p_til
+      viuser.save!
     end
-
-    viuser.save!
 
     spawn record_action!(viuser, pdata, vcoin_req, dura_days)
     viuser
@@ -58,7 +58,7 @@ struct CV::UpriviForm
     reason = "Nâng cấp quyền hạn Chivi lên #{@privi} trong #{dura_days} ngày."
     xvcoin = Xvcoin.new(
       kind: :privi_ug, sender_id: viuser.id, target_id: -1,
-      amount: vcoin_req.to_f64, reason: reason, target_name: "Chivi",
+      amount: vcoin_req, reason: reason, target_name: "Chivi",
     ).insert!
 
     content = String.build do |io|

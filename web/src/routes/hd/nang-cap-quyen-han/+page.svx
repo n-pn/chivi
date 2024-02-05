@@ -39,17 +39,9 @@ Bạn được miễn giảm số vcoin cần thiết khi mở khóa chương th
 
 Ví dụ bạn có quyền hạn 2, chương có 2k chữ, cần hệ số nhân là 4 để mở khóa, thì thay vì phải mất 4 \* 2k / 100*000 = 0.08 vcoin để mở khóa chương, bạn chỉ cần (4 - 2) * 2k / 100_000 = 0.04 vcoin. Nếu quyền hạn là 3, bạn chỉ cần 0.02 vcoin. Nếu quyền hạn là 1, bạn cần 0.06 vcoin.
 
-### Quyền hạn -1:
-
-Đây là quyền hạn mặc định của bạn khi đăng ký Chivi
-
-Với quyền hạn -1 bạn có thể dùng các tiện ích như dịch nhanh, tra từ, thêm truyện vào thư viện.
-
 ### Quyền hạn 0:
 
-Bạn cần quyền hạn tối thiểu là 0 để đọc nội dung chương tiết các bộ truyện trên Chivi.
-
-Ngoài ra bạn còn có các quyền sau:
+Đây là quyền hạn mặc định của bạn khi đăng ký Chivi
 
 - Tạo bình luận, đánh giá truyện, tạo chủ đề trong diễn đàn
 - Thêm từ vào trong từ điển riêng cho bộ truyện (chỉ áp dụng nếu từ chưa tồn tại hoặc đang được mở khóa)
