@@ -39,7 +39,7 @@
       </button>
       <a href="/" class="appbar-item _brand">
         <img src="/icons/chivi.svg" alt="logo" />
-        <span class="appbar-text" class:u-show-ts={!!prev}>Chivi</span>
+        <span class="appbar-text" class:u-show-tm={!!prev}>Chivi</span>
       </a>
 
       {#if prev}<Navi {...prev} />{/if}

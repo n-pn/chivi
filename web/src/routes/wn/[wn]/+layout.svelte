@@ -40,19 +40,23 @@
   ]
 
   import type { LayoutData } from './$types'
+  import Star from '$gui/atoms/Star.svelte'
+  import { rating_to_stars } from '$utils/star_utils'
   export let data: LayoutData
 
   $: binfo = data.nvinfo
   $: rpath = `/wn/${binfo.id}`
-  $: genres = binfo.genres || []
+  $: genre = binfo.genres[0] || 'Loại khác'
   $: update = new Date(binfo.mftime || 0).toISOString()
+
+  $: star_count = rating_to_stars(binfo.rating)
 </script>
 
 <svelte:head>
   <meta name="keywords" content={gen_keywords(binfo)} />
 
   <meta property="og:type" content="novel" />
-  <meta property="og:novel:category" content={genres[0]} />
+  <meta property="og:novel:category" content={genre} />
   <meta property="og:novel:author" content={binfo.vauthor} />
   <meta property="og:novel:book_name" content={binfo.vtitle} />
   <meta property="og:novel:status" content={map_status(binfo.status)} />
@@ -61,9 +65,7 @@
 
 <section class="bwrap">
   <div class="binfo">
-    <h1 class="title">
-      <h1 class="bname">{binfo.vtitle}</h1>
-    </h1>
+    <h1 class="title">{binfo.vtitle}</h1>
 
     <div class="links">
       <a class="m-chip _warning" href="/wn/={binfo.vauthor}">
@@ -71,31 +73,28 @@
         <span class="-trim">{binfo.vauthor}</span>
       </a>
 
-      {#each binfo.genres || [] as genre, idx}
-        <a href="/wn/~{genre}" class="m-chip _primary" class:_trim={idx > 1}>
-          <SIcon name="folder" />
-          <span class="-text">{genre}</span>
-        </a>
-      {/each}
+      <a href="/wn/~{genre}" class="m-chip _primary">
+        <SIcon name="folder" />
+        <span class="-text">{genre}</span>
+      </a>
     </div>
 
     <div class="stats">
-      <span class="stat _status">
+      <span class="m-iflex _cy u_gap1">
         <SIcon name="activity" />
         <span>{map_status(binfo.status)}</span>
       </span>
 
-      <span class="stat _mftime">
+      <span class="m-iflex _cy u_gap1">
         <SIcon name="clock" />
         <span><RTime mtime={binfo.mftime} /></span>
       </span>
     </div>
 
-    <div class="stats">
-      <span class="stat">
-        <span>Đánh giá: </span><span class="label">{binfo.voters <= 10 ? '--' : binfo.rating}</span
-        >/10</span>
-      <span class="stat">({binfo.voters} lượt<span class="trim">&nbsp;đánh giá</span>)</span>
+    <div class="stats stars">
+      {#each [1, 2, 3, 4, 5] as star}<Star active={star <= star_count} />{/each}
+      <span class="stat"><strong>{binfo.voters <= 10 ? '--' : binfo.rating}</strong> /10</span>
+      <em class="u-fg-secd">({binfo.voters} lượt đánh giá)</em>
     </div>
   </div>
 
@@ -122,6 +121,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    width: calc(100% - 20vw);
   }
 
   .title {
@@ -141,46 +141,40 @@
   }
 
   .stats {
-    @include flex($gap: 0.5rem);
-    font-style: italic;
-    line-height: 1em;
-    padding: 0.25em;
-
+    @include flex-cy($gap: 0.5rem);
+    line-height: 1.25rem;
+    // margin-top: 0.25rem;
+    // padding: 0 0.25em;
     @include bps(font-size, rem(13px), $pl: rem(14px), $ts: rem(15px), $tm: rem(16px));
+
+    :global(svg) {
+      @include fgcolor(tert);
+    }
+  }
+
+  .stars :global(svg) {
+    @include fgcolor(neutral, 5, 2);
+    height: 1rem;
+    width: 1rem;
+    margin-right: -0.25rem;
   }
 
   .cover {
-    width: 30vw;
-    max-width: 96px;
+    width: 20vw;
+    max-width: 108px;
     padding-left: 0.75rem;
     margin-left: auto;
   }
 
-  .bname {
-    @include fgcolor(secd);
+  .title {
     font-weight: 400;
-    @include clamp($lines: 2);
+
+    @include fgcolor(secd);
+    @include clamp($width: null);
     // prettier-ignore
     @include bps(font-size, rem(21px), rem(22px), rem(23px), rem(25px), rem(27px));
     @include bps(line-height, 1.5rem, $pl: 1.75rem, $ts: 2rem);
-    // &:hover {
-    //   display: block;
-    // }
   }
-
-  // .line {
-
-  //   .stats {
-  //     @include flex($gap: 0.5rem);
-  //     font-style: italic;
-  //     margin-bottom: 0.5rem;
-  //     line-height: 1em;
-  //     padding: 0.25em;
-
-  //     @include bps(font-size, rem(13px), $pl: rem(14px), $ts: rem(15px), $tm: rem(16px));
-  //   }
-
-  // }
 
   .-trim {
     // max-width: 100%;

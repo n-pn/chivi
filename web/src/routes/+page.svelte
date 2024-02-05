@@ -8,25 +8,7 @@
 
   import type { PageData } from './$types'
   export let data: PageData
-
-  $: ({ books } = data)
-
-  const links = [
-    ['/mt/qtran', 'language', 'Dịch đoạn văn'],
-    ['/mt/qttxt', 'bolt', 'Dịch văn bản'],
-    // ['/mt/qturl', 'world', 'Dịch trang web'],
-    // ['/mt/qlook', 'search', 'Tra nhanh nghĩa'],
-  ]
 </script>
-
-<nav class="nav-list">
-  {#each links as [href, icon, text]}
-    <a {href} class="nav-link">
-      <SIcon class="u-show-pm" name={icon} />
-      <span>{text}</span>
-    </a>
-  {/each}
-</nav>
 
 <section class="article island">
   <header class="head m-flex">
@@ -34,7 +16,7 @@
     <a class="m-viewall u-right" href="/wn">Xem tất cả</a>
   </header>
 
-  <WninfoList {books} />
+  <WninfoList books={data.books} />
 </section>
 
 <section class="article island">
@@ -67,7 +49,7 @@
     <a class="m-viewall u-right" href="/uc/crits">Xem tất cả</a>
   </header>
 
-  <WncritList vdata={data.vcrit} ydata={data.ycrit} show_book={true} _mode={0} />
+  <WncritList vdata={data.vcrit} ydata={data.ycrit} pager={undefined} show_book={true} _mode={0} />
 </section>
 
 <!--

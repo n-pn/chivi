@@ -26,6 +26,7 @@ export const load = (async ({ params, fetch }) => {
       {
         href: '/wn',
         text: 'Thư viện truyện chữ',
+        hd_text: 'Thư viện',
         hd_icon: 'books',
         hd_show: 'pl',
       },

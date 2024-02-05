@@ -1,23 +1,11 @@
 <script lang="ts">
   import BCover from '$gui/atoms/BCover.svelte'
+  import { gen_stars } from '$utils/star_utils'
 
   export let nvinfo: CV.Wninfo
   export let nvtab = ''
 
-  function rating_stars(rating: number, voters: number) {
-    if (voters <= 10) return []
-
-    const output = ['⭐']
-
-    if (rating > 1.2) output.push('⭐')
-    if (rating > 3.7) output.push('⭐')
-    if (rating > 6.2) output.push('⭐')
-    if (rating > 8.7) output.push('⭐')
-
-    return output.join('')
-  }
-
-  $: stars = rating_stars(nvinfo.rating, nvinfo.voters)
+  $: stars = gen_stars(nvinfo.rating, nvinfo.voters)
   $: route = nvtab == 'index' ? '' : nvtab
 </script>
 
