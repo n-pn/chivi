@@ -35,13 +35,13 @@ export const load = (async ({ url, fetch, params, parent }) => {
       title: `Thư đơn: ${list.title}`,
       mdesc: list.dhtml.substring(0, 150),
     },
+    _curr: { text: list.title },
     _navs: [
       ..._navs,
       {
         href: `/uc/lists/v${l_id}`,
         text: `ID: v${l_id}`,
-        hd_text: list.title,
-        hd_kind: 'title',
+        kind: 'title',
       },
     ],
   }

@@ -32,11 +32,11 @@ export const load = (async ({ fetch, params, parent }) => {
       {
         href: xroot,
         text: crepo.vname,
-        hd_icon: xicon,
-        hd_kind: 'title',
-        hd_show: 'pl',
+        icon: xicon,
+        kind: 'title',
+        show: 'pl',
       },
-      { href: sroot, text: 'Chương tiết', hd_icon: 'list' },
+      { href: sroot, text: 'Chương tiết', icon: 'list' },
     ],
   }
 }) satisfies LayoutLoad

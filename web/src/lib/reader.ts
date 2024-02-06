@@ -7,8 +7,7 @@ import {
   gen_ctree_html,
   gen_ctree_text,
 } from '$lib/mt_data_2'
-
-import { call_mtran, call_qtran } from '$utils/qtran_utils'
+import { call_qtran } from '$utils/qtran_utils'
 
 export class Rdword {
   from: number
@@ -41,40 +40,40 @@ export class Rdline {
   ztext: string
   hviet: string[]
 
-  mtran: Record<string, CV.Cvtree>
-  qtran: Record<string, string>
-  utran: string[]
+  trans: Record<string, string | CV.Cvtree>
+  edits: string[]
 
   constructor(ztext: string) {
     this.ztext = ztext
     this.hviet = []
 
-    this.mtran = {}
-    this.qtran = {}
-    this.utran = []
+    this.trans = {}
+    this.edits = []
   }
 
-  async load_mtran(rmode = 1, mtype = 'mtl_2', pdict = 'combine') {
-    const cached = this.mtran[mtype]
-    if (rmode == 0 || (rmode == 1 && cached)) return cached
-    this.mtran[mtype] = ['', '', 0, 0, '', 0]
-
-    const opts = { pdict, title: 0 }
-    const [lines] = await call_mtran(this.ztext, mtype, opts)
-
-    this.mtran[mtype] = lines[0]
-    return lines[0]
+  text_get_fn(qkind: string, ropts = {}) {
+    return async (rmode = 1) => {
+      const qdata = await this.load_qtran(rmode, qkind, ropts)
+      if (typeof qdata == 'string') return qdata
+      return gen_mt_ai_text(qdata)
+    }
+  }
+  html_get_fn(qkind: string, ropts = {}) {
+    return async (rmode = 1) => {
+      const qdata = await this.load_qtran(rmode, qkind, ropts)
+      if (typeof qdata == 'string') return qdata
+      return gen_mt_ai_html(qdata, { mode: 2, cap: true, und: true, _qc: 0 })
+    }
   }
 
   async load_qtran(rmode = 1, qtype = 'qt_v1', ropts = {}) {
-    const cached = this.qtran[qtype]
+    const cached = this.trans[qtype]
     if (rmode == 0 || (rmode == 1 && cached)) return cached
-    this.qtran[qtype] = '...'
+    this.trans[qtype] = qtype.startsWith('mtl') ? ['', '', 0, 0, '', 0] : '...'
 
-    const [lines] = await call_qtran(this.ztext, qtype, ropts)
-    this.qtran[qtype] = lines[0] || 'Không có dữ liệu!'
-
-    return this.qtran[qtype]
+    const [qtran] = await call_qtran(this.ztext, qtype, ropts)
+    this.trans[qtype] = qtran
+    return qtran
   }
 
   get_ztext(from: number, upto: number) {
@@ -103,64 +102,67 @@ export class Rdline {
   }
 
   ctree_text(mtype = 'mtl_2') {
-    const mdata = this.mtran[mtype]
+    const mdata = this.trans[mtype] as CV.Cvtree
     return mdata ? gen_ctree_text(mdata) : ''
   }
 
   ctree_html(mtype = 'mtl_2') {
-    const mdata = this.mtran[mtype]
+    const mdata = this.trans[mtype] as CV.Cvtree
     return mdata ? gen_ctree_html(mdata) : ''
   }
 
   mtran_text(mtype = 'mtl_2') {
-    const mdata = this.mtran[mtype]
+    const mdata = this.trans[mtype] as CV.Cvtree
     return mdata ? gen_mt_ai_text(mdata) : ''
   }
 
   mtran_html(mtype = 'mtl_2') {
-    const mdata = this.mtran[mtype]
-    return mdata
-      ? gen_mt_ai_html(mdata, { mode: 2, cap: true, und: true, _qc: 0 })
-      : ''
+    const mdata = this.trans[mtype] as CV.Cvtree
+    return mdata ? gen_mt_ai_html(mdata, { mode: 2, cap: true, und: true, _qc: 0 }) : ''
+  }
+
+  qtran_text(qkind = 'qt_v1') {
+    const qdata = this.trans[qkind]
+    if (!qdata) return ''
+    if (typeof qdata == 'string') return qdata
+    return gen_mt_ai_text(qdata)
   }
 }
 
 export class Rdpage {
   lines: Rdline[]
   state: Record<string, boolean>
+  track: Record<string, number>
 
   constructor(ztext: string) {
     let lines = ztext.split('\n').filter(Boolean)
     this.lines = lines.map((x) => new Rdline(x.trim()))
     this.state = {}
-  }
-
-  get ztext() {
-    return this.lines.map((x) => x.ztext)
-  }
-
-  get_ztext(l_idx: number) {
-    return this.lines[l_idx].ztext
-  }
-
-  get_qtran(qtype: string) {
-    return this.lines.map(({ qtran }) => qtran[qtype])
-  }
-
-  get_mtran(mtype: string) {
-    return this.lines.map(({ mtran }) => mtran[mtype])
-  }
-
-  get hviet() {
-    return this.lines.map((x) => x.hviet)
+    this.track = {}
   }
 
   gen_rinit(cache: number, method = 'GET'): RequestInit {
     return {
       method,
       cache: cache == 2 ? 'no-cache' : 'force-cache',
-      body: method == 'POST' ? this.ztext.join('\n') : undefined,
+      body: method == 'POST' ? this.lines.map((x) => x.ztext).join('\n') : undefined,
     }
+  }
+
+  get_ztext(l_idx: number) {
+    return this.lines[l_idx].ztext
+  }
+
+  get_trans(qtype: string) {
+    return this.lines.map(({ trans }) => trans[qtype])
+  }
+
+  get_texts(qtype: string) {
+    return this.lines.map((x) => x.qtran_text(qtype))
+  }
+
+  get hviet() {
+    return this.lines.map((x) => x.hviet)
   }
 
   async load_hviet(cache = 0) {
@@ -176,35 +178,61 @@ export class Rdpage {
     this.state['hviet'] = true
   }
 
-  async load_qtran(cache = 0, qtype = 'qt_v1', ropts = {}) {
-    if (cache == 0 || (cache == 1 && this.state[qtype])) {
-      return this.get_qtran(qtype)
-    }
+  async reload(needle: string, qkind = 'qt_v1', pdict = 'combine') {
+    if (!needle) return
 
-    const [lines] = await call_qtran(this.ztext.join('\n'), qtype, ropts)
-    if (lines.length == 0) return
+    let input = ''
+    let l_ids = []
 
     for (let i = 0; i < this.lines.length; i++) {
-      this.lines[i].qtran[qtype] = lines[i]
+      const { ztext, trans } = this.lines[i]
+      if (trans[qkind] && ztext.includes(needle)) {
+        l_ids.push(i)
+        if (input) input += '\n'
+        input += ztext
+      }
     }
 
-    this.state[qtype] = true
-    return lines
+    const ropts = { pdict, h_sep: l_ids[0] == 0 ? 1 : 0 }
+    const lines = await call_qtran(input, qkind, ropts)
+
+    for (let i = 0; i < lines.length; i++) {
+      this.lines[l_ids[i]].trans[qkind] = lines[i]
+    }
+
+    return l_ids
   }
 
-  async load_mtran(cache = 0, mtype = 'mtl_1', pdict = 'combine') {
-    if (cache == 0 || (cache == 1 && this.state[mtype])) {
-      return this.get_mtran(mtype)
+  async load_more(qkind = 'qt_v1', pdict = 'combine') {
+    const start = this.track[qkind] || 0
+    const total = this.lines.length
+    let new_start = start
+
+    let input = ''
+    let count = 0
+
+    const limit = qkind == 'c_gpt' ? 500 : 1000
+
+    for (; new_start < total; new_start++) {
+      const ztext = this.lines[new_start].ztext
+
+      if (input) input += '\n'
+      input += ztext
+      count += ztext.length
+
+      if (new_start + 5 < total && count > limit) break
     }
 
-    const opts = { pdict, title: 1 }
-    const [lines] = await call_mtran(this.ztext.join('\n'), mtype, opts)
+    console.log({ from: start, upto: new_start, size: count })
 
-    for (let i = 0; i < this.lines.length; i++) {
-      this.lines[i].mtran[mtype] = lines[i]
+    const ropts = { pdict, h_sep: start == 0 ? 1 : 0 }
+    const lines = await call_qtran(input.trim(), qkind, ropts)
+
+    for (let i = 0; i < lines.length; i++) {
+      this.lines[i + start].trans[qkind] = lines[i]
     }
 
-    this.state[mtype] = true
-    return lines
+    this.track[qkind] = new_start
+    return new_start
   }
 }

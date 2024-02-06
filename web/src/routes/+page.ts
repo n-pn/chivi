@@ -14,8 +14,8 @@ const _alts: App.PageNavi[] = [
   {
     href: '/mt/qtran',
     text: 'Dịch nhanh',
-    hd_icon: 'language',
-    hd_show: 'pl',
+    icon: 'language',
+    show: 'pl',
   },
 ]
 

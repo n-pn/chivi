@@ -32,16 +32,15 @@ export const load = (async ({ fetch, params }) => {
     {
       href: `/rm/${sname}`,
       text: sname,
-      hd_icon: 'folder',
-      hd_show: 'pl',
-      hd_kind: 'zseed',
+      icon: 'folder',
+      show: 'pl',
+      kind: 'zseed',
     },
     {
       href: `/rm/${sname}/${sn_id}`,
       text: `${rstem.btitle_vi} [ID: ${rstem.sn_id}]`,
-      hd_text: rstem.btitle_vi,
-      hd_icon: 'book',
-      hd_kind: 'title',
+      icon: 'book',
+      kind: 'title',
     },
   ]
 
@@ -54,5 +53,6 @@ export const load = (async ({ fetch, params }) => {
     sn_id,
     sroot,
     _navs,
+    _curr: { text: rstem.btitle_vi },
   }
 }) satisfies LayoutLoad

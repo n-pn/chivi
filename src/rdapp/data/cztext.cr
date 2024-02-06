@@ -38,8 +38,8 @@ class RD::Cztext
 
   ###
 
-  CHAR_LIMIT = 2048
-  CHAR_UPPER = 3072
+  CHAR_LIMIT = 32768
+  CHAR_UPPER = 49152
 
   @[AlwaysInline]
   def self.char_limit(char_count : Int32)
@@ -57,10 +57,9 @@ class RD::Cztext
 
   def self.fix_raw(lines : Array(String), title : String = "")
     lines.shift if lines[0].starts_with?("///") # remove chap div
-
     limit = char_limit(lines.sum(&.size))
-    title = lines.shift if title.empty? # extract chap title
 
+    title = lines.shift if title.empty? # extract chap title
     cbody = String::Builder.new(title)
     count = 0
 

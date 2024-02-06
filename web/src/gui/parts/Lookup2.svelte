@@ -62,21 +62,6 @@
 
   let viewer: HTMLElement
 
-  let stale = false
-  $: if (stale) load_mt_ai_data()
-
-  const load_mt_ai_data = async () => {
-    stale = false
-
-    if (ropts.rmode == 'mt') {
-      state = 1
-    } else {
-      state = 0
-      await rpage.load_mtran(2, ropts.mt_rm, ropts.pdict)
-      rline = rpage.lines[l_idx]
-    }
-  }
-
   $: mt_url = `/mt/multi?zh=${rline.ztext}&mt=${ropts.mt_rm}&pd=${ropts.pdict}`
 </script>
 
@@ -129,11 +114,7 @@
   </svelte:fragment>
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <section
-    class="cbody"
-    bind:this={viewer}
-    on:click={handle_click}
-    on:contextmenu={handle_ctxmenu}>
+  <section class="cbody" bind:this={viewer} on:click={handle_click} on:contextmenu={handle_ctxmenu}>
     {#key rline.ztext}
       {#if $ctrl.panel == 'overview'}
         <Overview bind:rline {ropts} />

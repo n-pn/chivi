@@ -20,18 +20,18 @@ export const load = (async ({ url, fetch, params: { type } }) => {
     {
       href: '/rm',
       text: 'Nguồn nhúng',
-      hd_icon: 'world',
-      hd_show: 'pl',
+      icon: 'world',
+      show: 'pl',
     },
   ]
 
   const search = new URLSearchParams(url.searchParams)
   if (type == 'liked') {
     search.append('_m', 'liked')
-    _navs.push({ href: rpath, text: 'Đang theo dõi', hd_icon: 'star' })
+    _navs.push({ href: rpath, text: 'Đang theo dõi', icon: 'star' })
   } else if (type && type[0] == '!') {
     search.append('sn', type)
-    _navs.push({ href: rpath, text: type, hd_icon: 'folder', hd_kind: 'zseed' })
+    _navs.push({ href: rpath, text: type, icon: 'folder', kind: 'zseed' })
     type = 'index'
   }
 

@@ -10,50 +10,46 @@ require "../util/*"
 class SP::TranCtrl < AC::Base
   base "/_sp/qtran"
 
-  @[AC::Route::POST("/:type")]
-  def tl_text(type : String, opts : String = "", redo : Bool = false)
+  @[AC::Route::POST("/:qkind")]
+  def tl_text(qkind : String, pd pdict = "combine", op otype = "mtl",
+              rg regen : Int32 = 0, hs h_sep : Int32 = 1, ls l_sep : Int32 = 0)
     ztext = self._read_body
     raise BadRequest.new("Nội dung dịch không hợp lệ!") if ztext.size > 5000
 
     qdata = QtData.from_ztext(ztext)
-    do_translate(qdata, type, opts, redo)
+    qdata.set_opts(pdict, regen, h_sep, l_sep, otype)
+    do_translate(qdata, qkind)
   end
 
-  @[AC::Route::GET("/:type/:name")]
-  def tl_file(type : String, name : String, opts : String = "", redo : Bool = false)
-    qdata = QtData.from_fname(name)
-    do_translate(qdata, type, opts, redo)
+  @[AC::Route::GET("/:qkind/:qhash")]
+  def tl_file(qkind : String, qhash : String, pd pdict = "combine", op otype = "mtl",
+              rg regen : Int32 = 0, hs h_sep : Int32 = 1, ls l_sep : Int32 = 0)
+    qdata = QtData.from_fname(qhash)
+    qdata.set_opts(pdict, regen, h_sep, l_sep, otype)
+    do_translate(qdata, qkind)
   end
 
   LOG_DIR = "var/ulogs/xquota"
   Dir.mkdir_p(LOG_DIR)
 
-  private def do_translate(qdata : QtData, type : String, opts = "", redo = false)
+  private def do_translate(qdata : QtData, qkind : String)
     sleep 10.milliseconds * (1 << (5 - self._privi))
 
-    wcount, charge = qdata.quota_using(type, opts)
+    wcount, charge = qdata.quota_using(qkind)
 
     quota = Uquota.load(self._vu_id)
     quota.add_using!(wcount)
 
-    if type.starts_with?("mtl_")
-      opts = opts.split(/[,:]/, remove_empty: true)
-      pdict = opts[0]? || "combine"
-      t_seg = opts[1]? || "1"
-
-      vdata, mtime = qdata.get_mtran(
-        m_alg: type,
-        udict: "qt#{self._vu_id}",
-        pdict: pdict,
-        t_seg: t_seg,
-        regen: redo)
+    if qkind.starts_with?("mtl_")
+      vdata, mtime = qdata.get_mtran(qkind, udict: "qt#{self._vu_id}")
     else
-      vdata, mtime = qdata.get_vtran(type, opts: opts, redo: redo)
+      vdata, mtime = qdata.get_vtran(qkind)
     end
 
     spawn do
       time_now = Time.local
       log_file = "#{LOG_DIR}/#{time_now.to_s("%F")}.log"
+
       File.open(log_file, "a") do |file|
         JSON.build(file) do |jb|
           jb.object do
@@ -62,7 +58,7 @@ class SP::TranCtrl < AC::Base
             jb.field "mtime", time_now.to_unix
             jb.field "charge", charge
             jb.field "wcount", wcount
-            jb.field "type", type
+            jb.field "type", qkind
             jb.field "orig", request.headers["Referer"]? || ""
           end
         end

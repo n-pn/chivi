@@ -30,15 +30,7 @@ export const load = (async ({ url, fetch, params, parent }) => {
     uname: user,
     ontab: 'lists',
     _meta: { title: `Thư đơn của @${user}` },
-    _navs: [
-      ..._navs,
-
-      {
-        href: `/uc/lists/@${user}`,
-        text: `Thư đơn của @${user}`,
-        hd_text: user,
-        hd_icon: 'at',
-      },
-    ],
+    _curr: { text: user },
+    _navs: [..._navs, { href: `/uc/lists/@${user}`, text: `Thư đơn của @${user}`, icon: 'at' }],
   }
 }) satisfies PageLoad

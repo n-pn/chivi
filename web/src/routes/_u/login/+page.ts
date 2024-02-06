@@ -6,6 +6,6 @@ export const load = (async ({ url, parent }) => {
   return {
     email,
     ontab: 'login',
-    _navs: [{ href: '/_u/login', text: 'Đăng nhập', hd_icon: 'login' }],
+    _navs: [{ href: '/_u/login', text: 'Đăng nhập', icon: 'login' }],
   }
 }) satisfies PageLoad

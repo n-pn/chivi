@@ -1,15 +1,13 @@
 <script context="module" lang="ts">
-  import { browser } from '$app/environment'
   import { afterNavigate } from '$app/navigation'
   import { config } from '$lib/stores'
   import { init_page } from './_store'
   import { gen_mt_ai_html } from '$lib/mt_data_2'
-
   import { next_elem, prev_elem } from '$utils/dom_utils'
 </script>
 
 <script lang="ts">
-  import { type Rdpage, Rdword } from '$lib/reader'
+  import { type Rdline, Rdword } from '$lib/reader'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   import Lookup, { ctrl as lookup_ctrl } from '$gui/parts/Lookup2.svelte'
@@ -24,15 +22,11 @@
   // $: pager = new Pager($page.url, { rm: 'qt', qt: 'qt_v1', mt: 'mtl_1' })
   $: label = rdata.p_max > 1 ? `[${rdata.p_idx}/${rdata.p_max}]` : ''
 
-  let vdata: CV.Cvtree[] | string[] = []
-  $: if (browser && state > 0) load_vdata(rpage, true)
-
   afterNavigate(() => {
     l_idx = -1
     state = 2
     focus_line = undefined
     focus_node = undefined
-    vdata = []
     $ctmenu_ctrl.actived = false
   })
 
@@ -51,6 +45,16 @@
   $: if (ctmenu) ctmenu.show_menu(reader, focus_node || focus_line)
 
   let rword = Rdword.from(focus_node)
+
+  $: qkind = ropts.rmode == 'mt' ? ropts.mt_rm : ropts.qt_rm
+  $: qtran_count = rpage.track[qkind] || 0
+  $: qtran_lines = rpage.lines.slice(0, qtran_count)
+
+  const load_more = async () => {
+    state = 1
+    qtran_count = await rpage.load_more(qkind, ropts.pdict)
+    state = 0
+  }
 
   const handle_click = async (event: MouseEvent) => {
     if ($config.r_mode == 1) return
@@ -74,28 +78,17 @@
     }
   }
 
-  const on_term_change = async (changed = false) => {
-    if (!changed) return
-    vdata = await rpage.load_mtran(2, ropts.mt_rm, ropts.pdict)
+  const on_term_change = async (ztext = '') => {
+    if (!ztext) return
+    await rpage.reload(ztext, ropts.mt_rm, ropts.pdict)
+    qtran_lines = qtran_lines
   }
 
-  const load_vdata = async (rpage: Rdpage, redo: boolean = false) => {
-    if (ropts.rmode == 'mt') {
-      vdata = await rpage.load_mtran(redo ? 2 : 1, ropts.mt_rm, ropts.pdict)
-    } else {
-      let qtype = ropts.qt_rm
-      if (qtype == 'baidu') qtype = 'bd_zv'
-      else if (qtype == 'bt_zv') qtype = 'ms_zv'
-      vdata = await rpage.load_qtran(redo ? 2 : 1, qtype)
-    }
-
-    state = 0
-  }
-
-  const gen_vdata = (cdata: CV.Cvtree | string, mode: number = 1) => {
-    if (!cdata) return
-    if (typeof cdata == 'string') return cdata
-    return gen_mt_ai_html(cdata, { mode, cap: true, und: true, _qc: 0 })
+  const gen_vdata = (rline: Rdline, mode: number = 1) => {
+    if (!rline) return
+    const qdata = rline.trans[qkind]
+    if (typeof qdata == 'string') return qdata
+    return gen_mt_ai_html(qdata, { mode, cap: true, und: true, _qc: 0 })
   }
 
   const move_node_left = (evt: Event) => {
@@ -156,6 +149,15 @@
 
     focus_line.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
   }
+
+  function trigger_on_view(node: HTMLElement) {
+    const trigger = ([e]) => {
+      if (e.isIntersecting) node.click()
+    }
+    const observer = new IntersectionObserver(trigger, { threshold: [1] })
+    observer.observe(node)
+    return { destroy: () => observer.disconnect() }
+  }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -166,15 +168,15 @@
   style:--textlh="{$config.textlh}%"
   bind:this={reader}
   on:click={handle_click}>
-  {#if vdata.length > 0}<Ctmenu bind:this={ctmenu} {rpage} />{/if}
+  {#if qtran_lines.length > 0}<Ctmenu bind:this={ctmenu} {rpage} />{/if}
 
-  {#each vdata as vline, l_id}
+  {#each qtran_lines as vline, l_id}
     {@const elem = l_id == 0 ? 'h1' : 'p'}
 
     <cv-data id="L{l_id}" data-line={l_id}>
       {#if show_z}
         <svelte:element this={elem} class="zdata">
-          {rpage.ztext[l_id]}
+          {rpage.lines[l_id].ztext}
         </svelte:element>
       {/if}
       <svelte:element this={elem} class="cdata">
@@ -182,14 +184,25 @@
         {#if l_id == 0 && label}{label}{/if}
       </svelte:element>
     </cv-data>
-  {:else}
-    <div class="d-empty">
-      <div class="m-flex _cx">
-        <SIcon name="loader" spin={true} />
-        <span>Đang tải nội dung...</span>
-      </div>
-    </div>
   {/each}
+
+  {#key rpage}
+    {#if qtran_count == 0}
+      <div class="d-empty">
+        <button class="m-btn _primary _sm" use:trigger_on_view on:click={load_more}>
+          <SIcon name="loader-2" spin={state == 1} />
+          <span>Đang dịch nội dung...</span>
+        </button>
+      </div>
+    {:else if qtran_count < rpage.lines.length}
+      <div class="d-empty-xs">
+        <button class="m-btn _primary _sm" use:trigger_on_view on:click={load_more}>
+          <SIcon name="loader-2" spin={state == 1} />
+          <span>Dịch tiếp phần còn lại</span>
+        </button>
+      </div>
+    {/if}
+  {/key}
 </div>
 
 <div hidden>
@@ -202,22 +215,11 @@
 </div>
 
 {#if rpage && $lookup_ctrl.actived}
-  <Lookup
-    bind:rpage
-    bind:rword
-    bind:state
-    bind:l_idx
-    {ropts}
-    {l_max}
-    {set_focus_line} />
+  <Lookup bind:rpage bind:rword bind:state bind:l_idx {ropts} {l_max} {set_focus_line} />
 {/if}
 
 {#if $vtform_ctrl.actived}
-  <Vtform
-    rline={rpage.lines[l_idx]}
-    {ropts}
-    {rword}
-    on_close={on_term_change} />
+  <Vtform rline={rpage.lines[l_idx]} {ropts} {rword} on_close={on_term_change} />
 {/if}
 
 <style lang="scss">
@@ -229,5 +231,9 @@
 
   .m-flex {
     gap: 0.25rem;
+  }
+
+  .reader > :first-child {
+    margin-top: 1em;
   }
 </style>

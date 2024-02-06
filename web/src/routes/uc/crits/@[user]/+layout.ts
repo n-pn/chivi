@@ -4,15 +4,10 @@ export const load = (async ({ parent, params: { user } }) => {
   const { _navs } = await parent()
 
   return {
+    _curr: { text: user },
     _navs: [
       ..._navs,
-      {
-        href: `@${user}`,
-        text: `Đánh giá của @${user}`,
-        hd_icon: 'at',
-        hd_text: user,
-        hd_kind: 'title',
-      },
+      { href: `@${user}`, text: `Đánh giá của @${user}`, icon: 'at', kind: 'title' },
     ],
   }
 }) satisfies LayoutData

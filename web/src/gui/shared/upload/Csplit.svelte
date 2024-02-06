@@ -39,7 +39,7 @@
     // mode 5
     custom_regex: `^第[\\d零〇一二两三四五六七八九十百千]+[章节回]`,
     // mode 6
-    chunk_length: 2000,
+    chunk_length: 10000,
   }
 
   $: zdata = new Cztext(ztext, ch_no)
@@ -53,32 +53,19 @@
 </script>
 
 <div class="d-label">
-  <label for="split_mode" data-tip="Số thứ tự khi chèn chương"
-    >Vị trí chương bắt đầu:</label>
-  <input
-    class="m-input _sm _fix u-right"
-    type="number"
-    name="ch_no"
-    min={1}
-    bind:value={ch_no} />
+  <label for="split_mode" data-tip="Số thứ tự khi chèn chương">Vị trí chương bắt đầu:</label>
+  <input class="m-input _sm _fix u-right" type="number" name="ch_no" min={1} bind:value={ch_no} />
 </div>
 
 <label class="d-label" for="split_mode">
   <span>Chọn cách chia chương:</span>
-  <a
-    class="guide u-right"
-    href="/hd/chuong-tiet/them-loat-chuong"
-    target="_blank">
+  <a class="guide u-right" href="/hd/chuong-tiet/them-loat-chuong" target="_blank">
     <span>Giải thích cách chia</span>
   </a>
 </label>
 
 <div class="field">
-  <select
-    name="split_mode"
-    class="m-input"
-    disabled={state > 0}
-    bind:value={xopts.split_mode}>
+  <select name="split_mode" class="m-input" disabled={state > 0} bind:value={xopts.split_mode}>
     {#each split_modes as [value, label]}
       <option {value}>{label}</option>
     {/each}
@@ -91,10 +78,7 @@
 
 <label class="d-label" hidden={xopts.split_mode != 1}>
   <span>Đoạn ký tự phân tách:</span>
-  <input
-    class="m-input _sm _fix u-right"
-    name="div_marker"
-    bind:value={xopts.div_marker} />
+  <input class="m-input _sm _fix u-right" name="div_marker" bind:value={xopts.div_marker} />
 </label>
 
 <label class="d-label" hidden={xopts.split_mode != 2}>
@@ -119,10 +103,7 @@
 
 <label class="d-label" hidden={xopts.split_mode != 5}>
   <span>Regex:</span>
-  <input
-    class="m-input _sm _full u-right"
-    name="regex"
-    bind:value={xopts.custom_regex} />
+  <input class="m-input _sm _full u-right" name="regex" bind:value={xopts.custom_regex} />
 </label>
 
 <label class="d-label" hidden={xopts.split_mode != 6}>

@@ -37,7 +37,18 @@ class SP::QtData
   getter lines : Array(String)
   getter fbase : String
 
+  property pdict = "combine"
+  property udict = "qt0"
+
+  property regen = 0
+  property h_sep = 0
+  property l_sep = 0
+  property otype = "mtl"
+
   def initialize(@lines, @fbase, @cache = true)
+  end
+
+  def set_opts(@pdict, @regen, @h_sep, @l_sep, @otype = "mtl")
   end
 
   MULTP_MAP = {
@@ -54,19 +65,19 @@ class SP::QtData
     "c_gpt" => 10,
   }
 
-  def quota_using(type : String, opts : String = "")
+  def quota_using(qtype : String)
     wcount = @lines.sum(&.size) + @lines.size
-    charge = MULTP_MAP[type]?.try { |x| x * wcount } || wcount // 2
+    charge = MULTP_MAP[qtype]?.try { |x| x * wcount } || wcount // 2
     {wcount, charge}
   end
 
-  def get_vtran(type : String, opts : String = "", redo : Bool = false)
+  def get_vtran(qtype : String)
     return {"", 0_i64} if @lines.empty?
-    fpath = "#{@fbase}.#{type}.txt"
+    fpath = "#{@fbase}.#{qtype}.txt"
 
-    read_file(fpath, redo ? 5.minutes : 2.weeks) || begin
-      mdata = load_vtext(type, opts)
-      raise "Lỗi dịch nhanh với chế độ #{type}" unless mdata
+    read_file(fpath, regen > 1 ? 5.minutes : 2.weeks) || begin
+      mdata = load_vtext(qtype)
+      raise "Lỗi dịch nhanh với chế độ #{qtype}" unless mdata
       File.write(fpath, mdata[0]) if @cache
       mdata
     end
@@ -81,19 +92,17 @@ class SP::QtData
 
   MT_AI_API = "#{CV_ENV.ai_host}/_ai/qtran"
 
-  def get_mtran(m_alg : String,
-                pdict : String = "combine",
-                udict : String = "",
-                t_seg : String = "1",
-                regen : Bool = false)
-    url = "#{MT_AI_API}?_algo=#{m_alg}&pdict=#{pdict}&udict=#{udict}&ch_rm=#{t_seg}&force=#{regen}"
+  def get_mtran(qtype : String,
+
+                udict : String = "")
+    url = "#{MT_AI_API}?qtype=#{qtype}&&pdict=#{@pdict}&udict=#{udict}&h_sep=#{h_sep}&l_sep=#{l_sep}&regen=#{regen}"
     mdata = HTTP::Client.post(url, body: @lines.join('\n'), &.body_io.gets_to_end)
 
     {mdata, Time.utc.to_unix}
   end
 
-  def load_vtext(type : String, opts : String) : {String, Int64}?
-    return {call_qt_v1(opts), Time.utc.to_unix} if type == "qt_v1"
+  def load_vtext(type : String) : {String, Int64}?
+    return {call_qt_v1, Time.utc.to_unix} if type == "qt_v1"
 
     vobj = VCache::Obj.parse(type)
 
@@ -108,7 +117,7 @@ class SP::QtData
     when .bd_ze? # baidu translator
       vlines = BdTran.api_translate(missing, tl: "en")
     when .ms_zv? # microsoft transltor
-      vlines = MsTran.free_translate(missing, token: opts, sl: "zh", tl: "vi").map(&.first)
+      vlines = MsTran.free_translate(missing, sl: "zh", tl: "vi").map(&.first)
     when .dl_ze? # deepl
       vlines = DlTran.translate(missing, sl: "ZH", tl: "EN")
     when .dl_je? # deepl
@@ -128,12 +137,9 @@ class SP::QtData
 
   QT_V1_API = "#{CV_ENV.m1_host}/_m1/qtran"
 
-  private def call_qt_v1(opts : String = "0,1", format = "txt")
-    opts = opts.split(/[,:]/, remove_empty: true)
-    wn_id = opts[0]? || "0"
-    title = opts[1]? || "1"
-
-    url = "#{QT_V1_API}?format=#{format}&wn_id=#{wn_id}&title=#{title}"
+  private def call_qt_v1
+    wn_id = @pdict.starts_with?("wn") ? @pdict[2..].to_i : 0
+    url = "#{QT_V1_API}?format=text&wn_id=#{wn_id}&title=#{@h_sep}"
     HTTP::Client.post(url, body: @lines.join('\n'), &.body_io.gets_to_end)
   end
 

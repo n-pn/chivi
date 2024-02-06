@@ -8,35 +8,34 @@ class MT::AiTranCtrl < AC::Base
 
   @[AC::Route::GET("/qtran")]
   def qfile(fpath : String, pdict : String = "combine", udict : String = "",
-            _algo : String = "mtl_1", ch_rm : UInt32 = 1_u32, debug : Bool = false)
+            qtype : String = "mtl_1", h_sep : UInt32 = 1_u32)
     ztext = File.read_lines("var/texts/#{fpath}.raw.txt", chomp: true)
-    json = do_qtran(ztext, pdict, udict, _algo, ch_rm: ch_rm, debug: debug)
+    qdata = do_qtran(ztext, pdict, udict, qtype, h_sep: h_sep)
 
     cache_control 3.seconds
-    render json: json
+    render json: qdata
   rescue ex
     status = ex.message == "404" ? 404 : 500
     Log.error(exception: ex) { [fpath, pdict] }
-    render status, json: {lines: [] of String, error: ex.message}
+    render status, json: [] of String
   end
 
   @[AC::Route::POST("/qtran")]
   def qtext(pdict : String = "combine", udict : String = "",
-            _algo : String = "mtl_1", ch_rm : UInt32 = 1_u32, debug : Bool = false)
+            qtype : String = "mtl_1", h_sep : UInt32 = 1_u32)
     ztext = self._read_body.lines(chomp: true)
-    json = do_qtran(ztext, pdict, udict, _algo, ch_rm: ch_rm, debug: debug)
-    render json: json
+    qdata = do_qtran(ztext, pdict, udict, qtype, h_sep: h_sep)
+    render json: qdata
   rescue ex
     Log.error(exception: ex) { ztext }
     render 455, ex.message
   end
 
   private def do_qtran(input : Array(String), pdict : String, udict : String,
-                       m_alg : String, ch_rm : UInt32, debug = false)
-    start = Time.monotonic
+                       m_alg : String, h_sep : UInt32)
     heads = [] of MtNode | Nil
 
-    ch_rm.times do |index|
+    h_sep.times do |index|
       title, split = TlChap.split(input[index])
       input[index] = title
       heads << split
@@ -45,14 +44,9 @@ class MT::AiTranCtrl < AC::Base
     ai_mt = udict.empty? ? AiCore.load(pdict) : AiCore.load(pdict, udict)
     zdata = MCache.find_con!(input, ver: m_alg[-1].to_i16)
 
-    vdata = zdata.map_with_index do |line, l_id|
+    zdata.map_with_index do |line, l_id|
       ai_mt.translate!(line, prfx: heads[l_id]?)
     end
-
-    tspan = (Time.monotonic - start).total_milliseconds.round(2)
-    ztree = debug ? zdata.map(&.to_s) : [] of String
-
-    {lines: vdata, ztree: ztree, tspan: tspan}
   end
 
   @[AC::Route::POST("/reload")]

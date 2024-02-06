@@ -28,14 +28,7 @@ export const load = (async ({ url, fetch, params, parent }) => {
       title: `Thư đơn: ${vname}`,
       mdesc: vdesc,
     },
-    _navs: [
-      ..._navs,
-      {
-        href: `/uc/lists/y${id}`,
-        text: `ID: y${id}`,
-        hd_text: vname,
-        hd_kind: 'title',
-      },
-    ],
+    _curr: { text: vname },
+    _navs: [..._navs, { href: `/uc/lists/y${id}`, text: `ID: y${id}`, kind: 'title' }],
   }
 }) satisfies PageLoad

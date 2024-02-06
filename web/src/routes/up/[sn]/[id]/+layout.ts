@@ -34,21 +34,12 @@ export const load = (async ({ fetch, params }) => {
     sroot,
     rmemo: writable(rmemo),
 
+    _prev: { text: sname.substring(1), icon: 'at' },
+    _curr: { text: ustem.vname, kind: 'title', icon: 'book' },
     _navs: [
-      { href: '/up', text: 'Sưu tầm ', hd_icon: 'album' },
-      {
-        href: `/up/${sname}`,
-        text: sname,
-        hd_text: sname.substring(1),
-        hd_icon: 'at',
-      },
-      {
-        href: `/up/${sname}/${sn_id}`,
-        text: ustem.vname + ' ID: ' + sn_id,
-        hd_text: ustem.vname,
-        hd_icon: 'book',
-        hd_kind: 'title',
-      },
+      { href: '/up', text: 'Sưu tầm ' },
+      { href: `/up/${sname}`, text: sname },
+      { href: `/up/${sname}/${sn_id}`, text: ustem.vname + ' ID: ' + sn_id },
     ],
   }
 }) satisfies LayoutLoad

@@ -17,14 +17,15 @@ export const load = (async ({ params, parent, fetch, url }) => {
     rdata,
     _show_conf: true,
     _meta: { title: `${rdata.title} - ${crepo.vname}` },
+    _prev: { text: 'Mục lục', show: 'pl' },
+    _curr: { text: `Ch#${ch_no}` },
     _navs: [
       ..._navs,
       {
         href: url.pathname,
         text: rdata.chdiv ? `${rdata.chdiv} - ${rdata.title}` : rdata.title,
-        hd_text: `Ch#${ch_no}`,
-        hd_show: 'pm',
-        hd_kind: 'uname',
+        show: 'pm',
+        kind: 'uname',
       },
     ],
   }

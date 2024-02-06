@@ -26,11 +26,9 @@ declare namespace App {
   interface PageNavi {
     text: string
     href: string
-
-    hd_icon?: string
-    hd_text?: string
-    hd_show?: string
-    hd_kind?: string
+    icon?: string
+    show?: string
+    kind?: string
   }
 
   interface PageData {
@@ -45,5 +43,7 @@ declare namespace App {
 
     _navs?: PageNavi[]
     _alts?: PageNavi[]
+    _curr?: PageNavi
+    _prev?: PageNavi
   }
 }

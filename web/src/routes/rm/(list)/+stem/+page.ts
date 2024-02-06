@@ -4,14 +4,14 @@ const _navs = [
   {
     href: '/rm',
     text: 'Nguồn nhúng',
-    hd_icon: 'world',
-    hd_show: 'pl',
+    icon: 'world',
+    show: 'pl',
   },
   {
     href: '/rm/+stem',
     text: 'Thêm mới',
-    hd_icon: 'file-plus',
-    hd_kind: 'title',
+    icon: 'file-plus',
+    kind: 'title',
   },
 ]
 

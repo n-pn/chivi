@@ -12,12 +12,18 @@
 
   const _user = get_user()
 
-  $: ({ _meta, _navs = [], _alts = [] } = $page.data)
+  $: ({ _meta, _alts = [] } = $page.data)
+  $: ({ _prev, _curr } = init_navi($page.data))
+  $: title = _meta?.title || _curr?.text || 'Trang chủ'
 
-  $: prev = _navs[_navs.length - 2]
-  $: curr = _navs[_navs.length - 1]
+  const init_navi = ({ _navs = [], _prev, _curr }: App.PageData) => {
+    const size = _navs.length
 
-  $: title = _meta?.title || curr?.hd_text || curr?.text || 'Trang chủ'
+    if (size > 1) _prev = { ..._navs[size - 2], ...(_prev || {}) }
+    if (size > 0) _curr = { ..._navs[size - 1], ...(_curr || {}) }
+
+    return { _prev, _curr }
+  }
 </script>
 
 <svelte:head>
@@ -39,11 +45,11 @@
       </button>
       <a href="/" class="appbar-item _brand">
         <img src="/icons/chivi.svg" alt="logo" />
-        <span class="appbar-text" class:u-show-tm={!!prev}>Chivi</span>
+        <span class="appbar-text" class:u-show-tm={!!_prev}>Chivi</span>
       </a>
 
-      {#if prev}<Navi {...prev} />{/if}
-      {#if curr}<Navi {...curr} />{/if}
+      {#if _prev}<Navi {..._prev} />{/if}
+      {#if _curr}<Navi {..._curr} />{/if}
 
       <!-- {#each meta.left_nav || [] as data}<Item {...data} />{/each} -->
     </div>
@@ -58,7 +64,7 @@
           type="button"
           icon="adjustments"
           text="Cài đặt"
-          opts={{ show: 'pl', kind: 'x' }}
+          show="pl"
           on:click={() => popups.show('config')} />
       {/if}
 

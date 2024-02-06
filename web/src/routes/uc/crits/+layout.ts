@@ -5,18 +5,18 @@ export const load = (async ({ parent }) => {
     _navs: [
       {
         href: '/uc',
-        text: 'Nội dung từ gười dùng',
-        hd_text: 'Người dùng',
-        hd_icon: 'users',
-        hd_show: 'ts',
-        hd_kind: 'title',
+        text: 'Nội dung từ người dùng',
+        icon: 'users',
+        show: 'ts',
+        kind: 'title',
       },
       {
         href: '/uc/crits',
         text: 'Đánh giá truyện chữ',
-        hd_icon: 'stars',
-        hd_kind: 'title',
+        icon: 'stars',
+        kind: 'title',
       },
     ],
+    _curr: { text: 'Người dùng' },
   }
 }) satisfies LayoutLoad

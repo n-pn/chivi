@@ -21,7 +21,7 @@ export const load = (async ({ url, fetch, parent }) => {
       {
         href: `/wn/${nvinfo.id}/lists`,
         text: 'Thư đơn',
-        hd_icon: 'bookmarks',
+        icon: 'bookmarks',
       },
     ],
   }

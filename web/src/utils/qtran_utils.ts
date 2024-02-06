@@ -1,54 +1,29 @@
 import { gtran_text } from './qtran_utils/gg_tran'
-import { ms_api_key } from './qtran_utils/ms_tran'
 
 export const call_qtran = async (
   body: string,
   type: string,
-  opts = {},
-  redo = false
-): Promise<[string[], number]> => {
-  if (type == 'gg_zv') return [await gtran_text(body), 0]
-  let url = `/_sp/qtran/${type}?redo=${redo}`
+  opts: Record<string, any> = {}
+): Promise<string[] | CV.Cvtree[]> => {
+  const { pdict = 'combine', regen = 0, h_sep = 1, l_sep = 0, otype = 'mtl' } = opts
+  if (type == 'gg_zv') return await gtran_text(body)
+  const url = `/_sp/qtran/${type}?pd=${pdict}&rg=${regen}&hs=${h_sep}&ls=${l_sep}&op=${otype}`
 
-  if (type.startsWith('ms')) {
-    url += `&opts=${await ms_api_key()}`
-  } else if (type == 'qt_v1') {
-    const wn_id = opts['wn_id'] || 0
-    const title = opts['title'] || 1
-    url += `&opts=${wn_id},${title}`
+  const start = performance.now()
+  const res = await fetch(url, { method: 'POST', body })
+  if (!res.ok) return [await res.text()]
+
+  let vtran: string[] | CV.Cvtree[]
+
+  if (type.startsWith('mtl') && otype == 'mtl') {
+    vtran = (await res.json()) as CV.Cvtree[]
+  } else {
+    vtran = (await res.text()).trim().split('\n')
   }
 
-  const start = performance.now()
-  const res = await fetch(url, { method: 'POST', body })
-  const vtran = await res.text()
-
   const spent = performance.now() - start
   console.log(`- ${type}: ${body.length} chars, ${spent} milliseconds`)
 
-  if (!res.ok) return [[], spent]
-  return [vtran.trim().split('\n'), spent]
-}
-
-export const call_mtran = async (
-  body: string,
-  type: string,
-  opts = {},
-  redo = false
-): Promise<[CV.Cvtree[], number]> => {
-  let url = `/_sp/qtran/${type}?redo=${redo}`
-
-  const pdict = opts['pdict'] || 'combine'
-  const title = opts['title'] || 1
-  url += `&opts=${pdict},${title}`
-
-  const start = performance.now()
-
-  const res = await fetch(url, { method: 'POST', body })
-  const mdata = await res.json()
-
-  const spent = performance.now() - start
-  console.log(`- ${type}: ${body.length} chars, ${spent} milliseconds`)
-
-  if (!res.ok) return [[], spent]
-  return [mdata.lines as CV.Cvtree[], spent]
+  if (!res.ok) return []
+  return vtran
 }

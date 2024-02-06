@@ -9,7 +9,9 @@ type RepoData = {
   crepo: CV.Tsrepo
 }
 
-export const load = (async ({ params, fetch }) => {
+export const load = (async ({ parent, params, fetch }) => {
+  const { _navs } = await parent()
+
   const wn_id = parseInt(params.wn, 10)
 
   const rdpath = `/_rd/tsrepos/wn~avail/${wn_id}`
@@ -22,21 +24,9 @@ export const load = (async ({ params, fetch }) => {
     nvinfo,
     crepo,
     rmemo: writable(rmemo),
-    _navs: [
-      {
-        href: '/wn',
-        text: 'Thư viện truyện chữ',
-        hd_text: 'Thư viện',
-        hd_icon: 'books',
-        hd_show: 'pl',
-      },
-      {
-        href: `/wn/${wn_id}`,
-        text: nvinfo.vtitle,
-        hd_icon: 'book',
-        hd_kind: 'title',
-      },
-    ],
+    _prev: { show: 'pl', text: 'Thư viện' },
+
+    _navs: [..._navs, { href: `/wn/${wn_id}`, text: nvinfo.vtitle, icon: 'book', kind: 'title' }],
     _meta: {
       title: nvinfo.vtitle,
       image: nvinfo.bcover || '//cdn.chivi.app/covers/_blank.webp',

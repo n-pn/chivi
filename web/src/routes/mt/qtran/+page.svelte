@@ -2,10 +2,7 @@
   import { browser } from '$app/environment'
   import { debounce } from '$lib/svelte'
   import { mode_names } from '$lib/consts/tl_modes'
-  import { gen_mt_ai_text } from '$lib/mt_data_2'
   import { Rdpage, Rdword } from '$lib/reader'
-
-  import { call_mtran, call_qtran } from '$utils/qtran_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Cztext from '$gui/shared/upload/Cztext.svelte'
@@ -36,17 +33,16 @@
     l_idx = 0
     vtext = []
 
-    if (tmode.startsWith('mtl')) {
-      const data = await call_mtran(ztext, tmode, { pdict, title: 0 })
-      vtext = data[0].map((con: CV.Cvtree) => gen_mt_ai_text(con))
-      tspan = data[1]
-      state = 2
-    } else {
-      const data = await call_qtran(ztext, tmode, { wn_id: 0, title: 0 })
-      vtext = data[0]
-      tspan = data[1]
-      state = 2
+    const tspan_start = performance.now()
+    let start = 0
+
+    while (start < rpage.lines.length) {
+      start = await rpage.load_more(tmode, pdict)
+      vtext = rpage.get_texts(tmode)
     }
+
+    tspan = performance.now() - tspan_start
+    state = 2
   }
 
   let output: HTMLDivElement
@@ -87,15 +83,14 @@
       focus_line.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
     }
 
-    console.log(rpage.hviet)
-
     await rpage.load_hviet(1)
-    lookup_ctrl.show('overview')
+    lookup_ctrl.show('glossary')
   }
 
-  const on_term_change = async (changed = false) => {
-    if (!changed) return
-    await rpage.load_mtran(2, tmode, pdict)
+  const on_term_change = async (ztext = '') => {
+    if (!ztext) return
+    await rpage.reload(ztext, tmode, pdict)
+    vtext = vtext
   }
 </script>
 
@@ -214,8 +209,8 @@
     padding: 0.375rem 0.75rem;
     @include ftsize(lg);
     max-height: 70vh;
+    overflow-y: scroll;
     overflow-block: scroll;
-
     p {
       margin-bottom: 0.75em;
       &:global(.focus),

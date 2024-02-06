@@ -57,9 +57,6 @@ export const load = (async ({ url: { searchParams }, parent, fetch }) => {
     uform,
     ontab: '+proj',
     _meta: { title: 'Thêm/sửa sưu tầm cá nhân' },
-    _navs: [
-      ..._navs,
-      { href: '/up/+proj', text: 'Thêm sửa', hd_icon: 'file-plus' },
-    ],
+    _navs: [..._navs, { href: '/up/+proj', text: 'Thêm sửa', icon: 'file-plus' }],
   }
 }) satisfies PageLoad

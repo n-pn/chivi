@@ -155,10 +155,10 @@ class MT::MCache
       entry = new(ver: ver, tok: tok)
 
       entry.con = raw_data.con[idx]
-      entry.pos = raw_data.pos[idx].map { |pos| MtEpos.parse(pos).to_i16 }
+      entry.ner = raw_data.ner[idx]
 
+      entry.pos = raw_data.pos[idx].map { |pos| MtEpos.parse(pos).to_i16 }
       raw_data.dep[idx]?.try { |dep| entry.dep = dep }
-      entry.ner = raw_data.ner_msra[idx].concat(raw_data.ner_onto[idx])
 
       outputs[indexes[idx]] = entry.con
       new_data << entry

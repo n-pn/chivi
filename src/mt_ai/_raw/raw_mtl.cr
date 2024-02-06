@@ -24,10 +24,7 @@ struct MT::RawMtl
   getter pos : Array(String) = [] of String
 
   @[JSON::Field(key: "ner/msra")]
-  getter ner_msra : Array(RawEnt) = [] of RawEnt
-
-  @[JSON::Field(key: "ner/ontonotes")]
-  getter ner_onto : Array(RawEnt) = [] of RawEnt
+  getter ner : Array(RawEnt) = [] of RawEnt
 
   def self.from_file(file : String)
     File.open(file, "r") { |f| from_json(f) }
@@ -53,10 +50,7 @@ struct MT::RawMtlBatch
   getter pos : Array(Array(String)) = [] of Array(String)
 
   @[JSON::Field(key: "ner/msra")]
-  getter ner_msra = [] of Array(RawEnt)
-
-  @[JSON::Field(key: "ner/ontonotes")]
-  getter ner_onto = [] of Array(RawEnt)
+  getter ner = [] of Array(RawEnt)
 
   # def to_mcache
   #   self.tok.map_with_index do |tok, idx|

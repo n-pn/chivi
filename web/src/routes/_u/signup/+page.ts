@@ -6,8 +6,6 @@ export const load = (async ({ url }) => {
   return {
     email,
     ontab: 'signup',
-    _navs: [
-      { href: '/_u/signup', text: 'Tạo tài khoản', hd_icon: 'user-plus' },
-    ],
+    _navs: [{ href: '/_u/signup', text: 'Tạo tài khoản', icon: 'user-plus' }],
   }
 }) satisfies PageLoad

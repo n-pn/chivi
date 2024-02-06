@@ -40,11 +40,11 @@
   export let rline: Rdline
   export let rword: Rdword
   export let ropts: Partial<CV.Rdopts>
-  export let on_close = (changed = false) => console.log(changed)
+  export let on_close = (zstr = '') => console.log(zstr)
 
   let tform: Viform = new Viform([], rword, '')
 
-  $: mlist = flatten_tree(rline.mtran[ropts.mt_rm])
+  $: mlist = flatten_tree(rline.trans[ropts.mt_rm] as CV.Cvtree)
   $: mtree = filter_mtree(mlist, rword.from, rword.upto)
 
   $: tform = make_form(mlist, rword)
@@ -121,7 +121,7 @@
     if (!res.ok) {
       form_msg = await res.text()
     } else {
-      on_close(true)
+      on_close(tform.zstr)
       ctrl.hide()
     }
   }
@@ -180,11 +180,7 @@
 
     <div class="main">
       <div class="main-head">
-        <button
-          type="button"
-          class="cpos"
-          data-kbd="u"
-          on:click={() => (pick_cpos = !pick_cpos)}>
+        <button type="button" class="cpos" data-kbd="u" on:click={() => (pick_cpos = !pick_cpos)}>
           <span class="plbl u-show-pl">Từ loại:</span>
           <span class="ptag" use:tooltip={cpos_data.desc} data-anchor=".vtform">
             <code>{tform.cpos}</code>
@@ -192,18 +188,12 @@
           </span>
         </button>
 
-        <button
-          type="button"
-          class="attr"
-          data-kbd="i"
-          on:click={() => (pick_attr = !pick_attr)}>
+        <button type="button" class="attr" data-kbd="i" on:click={() => (pick_attr = !pick_attr)}>
           <span class="plbl u-show-pl">Từ tính:</span>
           {#each attr_list as attr}
-            <code use:tooltip={attr_info[attr]?.desc} data-anchor=".vtform"
-              >{attr}</code>
+            <code use:tooltip={attr_info[attr]?.desc} data-anchor=".vtform">{attr}</code>
           {:else}
-            <code use:tooltip={'Không có từ tính cụ thể'} data-anchor=".vtform"
-              >None</code>
+            <code use:tooltip={'Không có từ tính cụ thể'} data-anchor=".vtform">None</code>
           {/each}
         </button>
 
@@ -245,11 +235,7 @@
       </div>
     {/if}
 
-    <FormBtns
-      privi={$_user.privi}
-      uname={$_user.uname}
-      bind:tform
-      bind:show_dfn />
+    <FormBtns privi={$_user.privi} uname={$_user.uname} bind:tform bind:show_dfn />
   </form>
 
   <HelpLink key={tform.ztext} />

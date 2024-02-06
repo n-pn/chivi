@@ -26,7 +26,7 @@ export const load = (async ({ url, fetch, params, parent }) => {
       {
         href: `/up/${ontab}`,
         text: 'Của bạn',
-        hd_icon: 'ballpen',
+        icon: 'ballpen',
       },
     ] as App.PageNavi[]
   } else if (ontab[0] == '@') {
@@ -36,8 +36,7 @@ export const load = (async ({ url, fetch, params, parent }) => {
       {
         href: `/up/${ontab}`,
         text: ontab,
-        hd_text: ontab.substring(1),
-        hd_icon: 'at',
+        icon: 'at',
       },
     ] as App.PageNavi[]
 

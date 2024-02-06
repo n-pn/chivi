@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Rdpage, Rdword } from '$lib/reader'
+  import { Rdline, Rdpage, Rdword } from '$lib/reader'
 
   import Vtform, { ctrl as vtform_ctrl } from '$gui/shared/vtform/Vtform.svelte'
 
@@ -20,7 +20,7 @@
 
   const call_debug = async () => {
     await rpage.load_hviet(2)
-    await rpage.load_mtran(2)
+    await rpage.load_more(ropts.mt_rm, ropts.pdict)
     vtform_ctrl.show(0)
   }
 
@@ -34,8 +34,10 @@
     vtform_ctrl.show(0)
   }
 
-  const on_vtform_close = async (changed = false) => {
-    if (changed) await rpage.load_mtran(2)
+  const on_vtform_close = async (zstr = '') => {
+    const l_ids = await rpage.reload(zstr, ropts.mt_rm, ropts.pdict)
+    console.log({ l_ids })
+    rpage = rpage
   }
 </script>
 
@@ -46,30 +48,17 @@
     <div class="left">
       <h3 class="label">Tiếng Trung:</h3>
       <div class="input">
-        <textarea
-          name="input"
-          id=""
-          rows="5"
-          class="m-input cdata _zh"
-          bind:value={ztext} />
+        <textarea name="input" id="" rows="5" class="m-input cdata _zh" bind:value={ztext} />
       </div>
 
       <div class="m-flex">
         <label for="" class="x-label">Thuật toán</label>
-        <input
-          type="text"
-          name="m_alg"
-          class="m-input"
-          bind:value={ropts.mt_rm} />
+        <input type="text" name="m_alg" class="m-input" bind:value={ropts.mt_rm} />
       </div>
 
       <div class="m-flex">
         <label for="" class="x-label">Từ điển riêng</label>
-        <input
-          type="text"
-          name="pdict"
-          class="m-input"
-          bind:value={ropts.pdict} />
+        <input type="text" name="pdict" class="m-input" bind:value={ropts.pdict} />
       </div>
 
       <button class="m-btn _primary _fill" on:click={call_debug}>

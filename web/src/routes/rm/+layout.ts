@@ -6,8 +6,8 @@ export const load = (() => {
       {
         href: '/rm',
         text: 'Nguồn liên kết nhúng',
-        hd_icon: 'world',
-        hd_kind: 'title',
+        icon: 'world',
+        kind: 'title',
       },
     ],
   }

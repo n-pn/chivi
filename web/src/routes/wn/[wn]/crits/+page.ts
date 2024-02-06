@@ -2,7 +2,7 @@ import type { PageLoad } from './$types'
 import { load_crits } from '$lib/fetch_data'
 
 export const load = (async ({ url, fetch, parent }) => {
-  const { nvinfo } = await parent()
+  const { nvinfo, _navs } = await parent()
 
   const qdata = {
     wn: nvinfo.id,
@@ -26,35 +26,23 @@ export const load = (async ({ url, fetch, parent }) => {
     qdata,
     ontab: 'crits',
     _meta: { title: `Đánh giá truyện: ${nvinfo.vtitle}` },
+    _prev: { show: 'pl' },
     _navs: [
-      {
-        href: '/wn',
-        text: 'Thư viện truyện chữ',
-        hd_text: 'Thư viện',
-        hd_icon: 'books',
-        hd_show: 'pl',
-      },
-      {
-        href: `/wn/${nvinfo.id}`,
-        text: nvinfo.vtitle,
-        hd_icon: 'book',
-        hd_kind: 'title',
-        hd_show: 'pl',
-      },
+      ..._navs,
       {
         href: `/wn/${nvinfo.id}/crits`,
         text: 'Đánh giá',
-        hd_icon: 'stars',
-        hd_kind: 'title',
+        icon: 'stars',
+        kind: 'title',
       },
     ],
     _alts: [
       {
         href: `/uc/crits/+crit?wn=${nvinfo.id}`,
         text: 'Tạo mới',
-        hd_icon: 'square-plus',
-        hd_kind: 'success',
-        hd_show: 'tm',
+        icon: 'square-plus',
+        kind: 'success',
+        hshow: 'tm',
       },
     ],
   }

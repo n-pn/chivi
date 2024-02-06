@@ -13,7 +13,7 @@ export const load = (async ({ url, fetch, params, parent }) => {
   const rdurl = `/_rd/czdatas/${sname}/${sn_id}/${ch_no}`
   const zform = await api_get<ZtextRaw>(rdurl, fetch)
 
-  const { sroot, crepo, _navs } = await parent()
+  const { crepo, _navs } = await parent()
   const vname = crepo.vname || crepo.sroot
 
   return {
@@ -26,7 +26,7 @@ export const load = (async ({ url, fetch, params, parent }) => {
     //   {
     //     href: '+text',
     //     text: 'Thêm text gốc',
-    //     hd_icon: 'upload',
+    //     icon: 'upload',
     //   },
     // ],
   }

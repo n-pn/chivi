@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   let stats = { ctree: 2 }
-  import type { Rdpage, Rdline } from '$lib/reader'
+  import type { Rdline } from '$lib/reader'
 </script>
 
 <script lang="ts">
@@ -10,7 +10,7 @@
   export let rline: Rdline
   export let ropts: Partial<CV.Rdopts>
   const reload_ctree = async () => {
-    await rline.load_mtran(2, ropts.mt_rm)
+    alert('todo!')
   }
 </script>
 
@@ -31,7 +31,7 @@
       <SIcon name="refresh-dot" />
     </button>
   </svelte:fragment>
-  {#if rline.mtran[ropts.mt_rm]}
+  {#if rline.trans[ropts.mt_rm]}
     {@html rline.ctree_html(ropts.mt_rm)}
   {:else}
     <p class="blank">Chưa có cây ngữ pháp</p>

@@ -35,19 +35,6 @@
     ['mtl_2', 'Dùng model Electra Base'],
     ['mtl_3', 'Dùng model Ernie Gram'],
   ]
-
-  const load_qtran = (qtype: string) => {
-    return async (rmode = 1) => {
-      return await rline.load_qtran(rmode, qtype)
-    }
-  }
-
-  const load_mtran = (mtype: string) => {
-    return async (rmode = 1) => {
-      await rline.load_mtran(rmode, mtype, data.pdict)
-      return rline.mtran_text(m_alg)
-    }
-  }
 </script>
 
 <header>
@@ -72,15 +59,15 @@
     <Wpanel
       title="Dịch bằng Baidu:"
       class="_big"
-      wdata={rline.qtran['bd_zv']}
-      loader={load_qtran('bd_zv')} />
+      wdata={rline.trans['bd_zv'].toString()}
+      loader={rline.text_get_fn('bd_zv', data)} />
 
     <Wpanel
       class="_big"
       title="Máy dịch Chivi mới:"
       wdata={rline.mtran_text(m_alg)}
       bind:state={mtran_state}
-      loader={load_mtran(m_alg)}>
+      loader={rline.text_get_fn(m_alg, data)}>
       <svelte:fragment slot="tools">
         {#each mtran_algos as [algo, hint], index}
           <button
@@ -106,24 +93,21 @@
     <Wpanel
       class="_big"
       title="Dịch bằng Google:"
-      wdata={rline.qtran['gg_zv']}
-      loader={load_qtran('gg_zv')} />
+      wdata={rline.trans['gg_zv'].toString()}
+      loader={rline.text_get_fn('gg_zv', data)} />
     <Wpanel
       class="_big"
       title="Dịch bằng Bing:"
-      wdata={rline.qtran['ms_zv']}
-      loader={load_qtran('ms_zv')} />
+      wdata={rline.trans['ms_zv'].toString()}
+      loader={rline.text_get_fn('ms_zv', data)} />
 
     <Wpanel
       class="_big"
       title="GPT Tiên hiệp:"
-      wdata={rline.qtran['c_gpt']}
-      loader={load_qtran('c_gpt')} />
+      wdata={rline.trans['c_gpt'].toString()}
+      loader={rline.text_get_fn('c_gpt', data)} />
 
-    <Wpanel
-      class="_big"
-      title="Máy dịch Chivi cũ:"
-      loader={load_qtran('qt_v1')} />
+    <Wpanel class="_big" title="Máy dịch Chivi cũ:" loader={rline.text_get_fn('qt_v1', data)} />
   {/key}
 {:else}
   <div class="d-empty-sm">

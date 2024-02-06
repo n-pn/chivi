@@ -6,8 +6,8 @@ export const load = (() => {
       {
         href: '/uc',
         text: 'Nội dung từ người dùng',
-        hd_icon: 'users',
-        hd_kind: 'title',
+        icon: 'users',
+        kind: 'title',
       },
     ],
   }

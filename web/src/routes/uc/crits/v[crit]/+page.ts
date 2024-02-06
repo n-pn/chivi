@@ -23,15 +23,14 @@ export const load = (async ({ fetch, parent, params: { crit } }) => {
       title: `Đánh giá của @${vcdata.crit.u_uname.replace(/ /g, '+')} `,
       mdesc: vcdata.crit.ohtml.substring(0, 150),
     },
-
+    _curr: { text: vcdata.crit.b_title },
     _navs: [
       ..._navs,
       {
         href: `v${crit}`,
         text: `Truyện: ${vcdata.crit.b_title}`,
-        hd_icon: 'book',
-        hd_text: vcdata.crit.b_title,
-        hd_kind: 'title',
+        icon: 'book',
+        kind: 'title',
       },
     ],
   }

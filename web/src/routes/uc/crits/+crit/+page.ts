@@ -25,6 +25,6 @@ export const load = (async ({ url, fetch, parent }) => {
     ...fdata,
     ontab: 'crits',
     _meta: { title },
-    _navs: [..._navs, { href: url.pathname, text: title, hd_icon: 'ballpen' }],
+    _navs: [..._navs, { href: url.pathname, text: title, icon: 'ballpen' }],
   }
 }) satisfies PageLoad

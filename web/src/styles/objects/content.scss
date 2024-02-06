@@ -141,7 +141,9 @@ cv-user,
   }
 
   &[data-privi='6'] {
-    --color: #{color(yellow, 5)};
+    --color: #{color(harmful, 5)};
+    padding: 0 0.375em;
+    border: 1px solid color(harmful, 5, 5);
   }
 }
 
