@@ -1,6 +1,6 @@
 -- +micrate Up
 -- SQL in section 'Up' is executed when this migration is applied
-CREATE TABLE IF NOT EXISTS vcoin_xlogs(
+CREATE TABLE IF NOT EXISTS xvcoins(
   id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   kind smallint NOT NULL DEFAULT 0,
   --
@@ -15,10 +15,10 @@ CREATE TABLE IF NOT EXISTS vcoin_xlogs(
   updated_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX IF NOT EXISTS vcoin_xlogs_sender_idx ON vcoin_xlogs(sender_id);
+CREATE INDEX IF NOT EXISTS xvcoins_sender_idx ON xvcoins(sender_id);
 
-CREATE INDEX IF NOT EXISTS vcoin_xlogs_target_idx ON vcoin_xlogs(target_id);
+CREATE INDEX IF NOT EXISTS xvcoins_target_idx ON xvcoins(target_id);
 
 -- +micrate Down
 -- SQL section 'Down' is executed when this migration is rolled back
-DROP TABLE IF EXISTS vcoin_xlogs;
+DROP TABLE IF EXISTS xvcoins;

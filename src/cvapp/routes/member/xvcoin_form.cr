@@ -9,7 +9,7 @@ struct CV::XvcoinForm
 
   def after_initialize
     @target = @target.strip
-    @amount = @amount.round(2)
+    @amount = @amount.round(3)
     @amount = 0.01 if @amount < 0.01
   end
 
@@ -32,7 +32,7 @@ struct CV::XvcoinForm
         sender_id: sender.id,
         target_id: target.id,
         target_name: @target,
-        amount: @amount,
+        amount: (@amount * 1000).to_i,
         reason: @reason,
       ).insert!
 
@@ -42,7 +42,7 @@ struct CV::XvcoinForm
 
   private def send_vcoin_notification(sender : Viuser, target : Viuser, xlog : Xvcoin)
     content = <<-HTML
-      <p>Bạn nhận được: <strong>#{xlog.amount}</strong> vcoin từ <strong>#{sender.uname}</strong>.</p>
+      <p>Bạn nhận được: <strong>#{xlog.amount / 1000}</strong> vcoin từ <strong>#{sender.uname}</strong>.</p>
       <p>Chú thích của người tặng: #{xlog.reason}</p>
       HTML
 
@@ -53,13 +53,11 @@ struct CV::XvcoinForm
     ).insert!
 
     MailUtil.send(to: target.email, name: target.uname) do |mail|
-      mail.subject "Chivi: Bạn nhận được #{xlog.amount} vcoin"
+      mail.subject "Chivi: Bạn nhận được #{xlog.amount / 1000} vcoin"
 
       mail.message_html <<-HTML
         <h2>Thông báo từ Chivi:</h2>
         #{content}
-        <p>Bạn có thể vào <a href="https://chivi.app/hd/tat-ca-ve-vcoin">Tất cả về Vcoin</a>
-          để tìm hiểu các cách dùng của vcoin.</p>
       HTML
     end
   end

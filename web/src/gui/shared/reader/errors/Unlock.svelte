@@ -10,8 +10,7 @@
 
   $: ({ ch_no, p_idx } = rdata)
 
-  $: privi = $_user.privi + 1
-  $: vcost = Math.floor(((5 - privi) * rdata.zsize) / 200) / 1000
+  $: vcost = Math.floor(((5 - $_user.privi) * rdata.zsize) / 200) / 1000
 
   let msg_text = ''
   let msg_type = ''
@@ -55,16 +54,15 @@
 {#if $_user.uname == 'Khách'}
   <p>
     <em
-      >Bạn chưa đăng nhập. Nếu bạn đã có tài khoản, đăng nhập tại đây: <a
-        href="/_u/login">Đăng nhập</a>
+      >Bạn chưa đăng nhập. Nếu bạn đã có tài khoản, đăng nhập tại đây: <a href="/_u/login"
+        >Đăng nhập</a>
       . Nếu chưa có tài khoản, hãy đăng ký mới tại đây:
       <a href="/_u/signup">Đăng ký tài khoản mới</a>
     </em>
   </p>
 {:else}
   <p>
-    Phần hiện tại có <strong class="u-warn">{rdata.zsize}</strong> ký tự. Bạn
-    cần thiết
+    Phần hiện tại có <strong class="u-warn">{rdata.zsize}</strong> ký tự. Bạn cần thiết
     <x-vcoin
       >{vcost}
       <SIcon name="vcoin" iset="icons" /></x-vcoin>
@@ -76,20 +74,15 @@
 
   <p>
     <em> Công thức tính: </em>
-    <code
-      >[5 - quyền hạn] * [Số ký tự] / 200_000 = [Số vcoin cần thanh toán]</code>
+    <code>[5 - quyền hạn] * [Số ký tự] / 200_000 = [Số vcoin cần thanh toán]</code>
   </p>
 
   <p class="u-fg-tert">
-    <em>
-      Gợi ý 1: Giảm chi phí mở khoá chương bằng nâng cấp quyền hạn tài khoản.
-    </em>
+    <em> Gợi ý 1: Giảm chi phí mở khoá chương bằng nâng cấp quyền hạn tài khoản. </em>
   </p>
 
   <p class="u-fg-tert">
-    <em>
-      Gợi ý 2: Vào [Cài đặt] phía trên để bật chế độ Tự động mở khóa chương.
-    </em>
+    <em> Gợi ý 2: Vào [Cài đặt] phía trên để bật chế độ Tự động mở khóa chương. </em>
   </p>
 
   <footer class="actions">
@@ -110,8 +103,8 @@
     {:else if $_user.vcoin < vcost}
       <div class="u-warn">
         <em>
-          Bạn chưa đủ vcoin để mở khóa cho chương. Nạp vcoin theo <a
-            href="/hd/donation">hướng dẫn ở đây</a
+          Bạn chưa đủ vcoin để mở khóa cho chương. Nạp vcoin theo <a href="/hd/donation"
+            >hướng dẫn ở đây</a
           >.
         </em>
       </div>

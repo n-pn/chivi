@@ -58,7 +58,7 @@ struct CV::UpriviForm
     reason = "Nâng cấp quyền hạn Chivi lên #{@privi} trong #{dura_days} ngày."
     xvcoin = Xvcoin.new(
       kind: :privi_ug, sender_id: viuser.id, target_id: -1,
-      amount: vcoin_req.to_f64, reason: reason, target_name: "Chivi",
+      amount: vcoin_req * 1000, reason: reason, target_name: "Chivi",
     ).insert!
 
     content = String.build do |io|

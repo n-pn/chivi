@@ -50,11 +50,11 @@ class CV::XvcoinCtrl < CV::BaseCtrl
     xform.exchange!(sender: _viuser, target: target, xvkind: 0)
 
     _log_action("send-vcoin", xform)
-    render json: {target: target.uname, remain: _viuser.vcoin}
+    render json: {target: target.uname, remain: _viuser.vcoin.round(3)}
   end
 
   @[AC::Route::POST("/donate", body: :xform)]
-  def log_donate(xform : XvcoinForm)
+  def patron(xform : XvcoinForm)
     guard_privi 5, "thêm donation"
 
     unless target = xform.find_target
@@ -63,7 +63,7 @@ class CV::XvcoinCtrl < CV::BaseCtrl
 
     xform.exchange!(sender: Viuser.system, target: target, xvkind: 60)
 
-    _log_action("log-donate", xform)
+    _log_action("patron", xform)
     render json: {target: target.uname, amount: target.vcoin.round(3)}
   end
 end
