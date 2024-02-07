@@ -43,8 +43,8 @@ class Uquota
     returning vcoin_bonus, quota_limit
   SQL
 
-  def add_vcoin_bonus!(vcoin : Int32, @mtime = Time.utc.to_unix)
-    @vcoin_bonus, @quota_limit = @@db.query_one ADD_VCOIN_SQL, @vu_id, @idate, @mtime, vcoin, as: {Int64, Int64}
+  def add_vcoin_bonus!(bonus : Int32, @mtime = Time.utc.to_unix)
+    @vcoin_bonus, @quota_limit = @@db.query_one ADD_VCOIN_SQL, @vu_id, @idate, @mtime, bonus, as: {Int64, Int64}
   end
 
   ADD_KARMA_SQL = <<-SQL
@@ -56,8 +56,8 @@ class Uquota
     returning karma_bonus, quota_limit
   SQL
 
-  def add_karma_bonus!(karma : Int32, @mtime = Time.utc.to_unix)
-    @karma_bonus, @quota_limit = @@db.query_one ADD_KARMA_SQL, @vu_id, @idate, @mtime, karma, as: {Int64, Int64}
+  def add_karma_bonus!(bonus : Int32, @mtime = Time.utc.to_unix)
+    @karma_bonus, @quota_limit = @@db.query_one ADD_KARMA_SQL, @vu_id, @idate, @mtime, bonus, as: {Int64, Int64}
   end
 
   def self.gen_idate(time = Time.local)

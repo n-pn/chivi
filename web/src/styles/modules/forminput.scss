@@ -123,8 +123,9 @@ textarea {
 
   &._err { @include fgcolor(harmful, 5); }
 
-  :global(svg) {
+  svg {
+    // vertical-align: top;
     display: inline-block;
-    margin-bottom: 0.1em;
+    margin-top: -0.2em;
   }
 }

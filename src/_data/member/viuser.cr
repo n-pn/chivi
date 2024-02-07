@@ -64,7 +64,7 @@ class CV::Viuser
     self.save!
   end
 
-  SPEN_VCOIN_SQL = <<-SQL
+  SPEND_VCOIN_SQL = <<-SQL
     update viusers set vcoin = vcoin - $1
     where vcoin >= $1 and id = $2
     returning vcoin
@@ -73,7 +73,7 @@ class CV::Viuser
   def spend_vcoin!(value : Float64 | Int32)
     raise "invalid!" if value < 0
 
-    return nil unless vcoin = PGDB.query_one query, value, self.id, as: Int32
+    return nil unless vcoin = PGDB.query_one SPEND_VCOIN_SQL, value, self.id, as: Float64
     self.vcoin = vcoin
   end
 

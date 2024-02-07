@@ -8,6 +8,8 @@
 </script>
 
 <script lang="ts">
+  import { get_user } from '$lib/stores'
+
   import Cztext from '$gui/shared/upload/Cztext.svelte'
   import Csplit from '$gui/shared/upload/Csplit.svelte'
   import { split_parts, type Czdata } from '$gui/shared/upload/czdata'
@@ -20,6 +22,7 @@
   let ztext = ''
   let state = 0
   let regen = 1
+  let fname = ''
 
   let chaps: Czdata[] = []
   let trans: string[] = []
@@ -28,23 +31,38 @@
   let err_text = ''
 
   $: if (chaps) err_text = ''
+  const _user = get_user()
+
+  const qcost_map = { qt_v1: 2, mtl_1: 4, mtl_2: 5, mtl_3: 5, ms_zv: 8, bd_zv: 10, c_gpt: 10 }
+  $: vcoin_needed = (ztext.length * (qcost_map[data.qkind] || 1)) / 100_000
 
   const translate = async () => {
+    const quota_increased = await increase_quota(vcoin_needed)
+
+    if (!quota_increased) {
+      err_text = 'Lượng vcoin hiện có của bạn không đủ!'
+      state = 2
+      return
+    }
+
     err_text = ''
     state = 1
 
     try {
-      const trans = await do_translate(chaps, 0)
-      const file = new Blob([trans.join('\n\n\n')], { type: 'text/plain' })
-      state = 2
-
+      const tran = await do_translate(chaps, 0)
+      const file = new Blob([tran.join('\n\n\n')], { type: 'text/plain' })
       const elem = document.createElement('a')
+      const name = `${fname || new Date().getTime()} [1-${chaps.length}]`
+
       elem.setAttribute('href', URL.createObjectURL(file))
-      elem.setAttribute('download', `${new Date().getTime()} [1-${chaps.length}].${data.qkind}.txt`)
+      elem.setAttribute('download', `${name}.${data.qkind}.txt`)
       elem.style.display = 'none'
+
       document.body.appendChild(elem)
       elem.click()
       document.body.removeChild(elem)
+
+      state = 2
     } catch (ex) {
       err_text = ex
       state = 0
@@ -52,11 +70,29 @@
     }
   }
 
+  const increase_quota = async (amount = 10) => {
+    const headers = { 'Content-type': 'application/json' }
+    const body = JSON.stringify({ amount, reason: 'batch translation' })
+    const res = await fetch('/_db/xvcoins/to_quota', { method: 'POST', headers, body })
+
+    if (!res.ok) {
+      alert(await res.text())
+      return false
+    }
+
+    const rdata = await res.json()
+    $_user.vcoin = rdata.remain || 0
+
+    return true
+  }
+
   const do_translate = async (chaps: Czdata[], start = 0) => {
+    const limit = data.qkind == 'c_gpt' ? 500 : 2000
+
     for (on_ch_no = start; on_ch_no < chaps.length; on_ch_no++) {
       const { chdiv, lines } = chaps[on_ch_no]
 
-      let [fpart, ...extra] = split_parts(lines, 1000)
+      let [fpart, ...extra] = split_parts(lines, limit)
       if (chdiv && chdiv != '正文') fpart = `［${chdiv}］${fpart}`
 
       let vtran = await call_qtran(fpart, 1)
@@ -82,20 +118,8 @@
   }
 </script>
 
-<div class="zform">
-  <div class="input">
-    <Cztext bind:ztext bind:state />
-  </div>
-
-  <div class="split">
-    <Csplit {ztext} bind:state bind:chaps />
-  </div>
-</div>
-
-<Footer>
-  {#if err_text}
-    <div class="form-msg _err">{err_text}</div>
-  {:else}
+<article class="article island">
+  <header class="m-flex">
     <div class="x-label">
       <label class="u-show-tm" for="qkind">Chọn cách dịch:</label>
 
@@ -115,30 +139,52 @@
         disabled={['c_gpt', 'bd_zv', 'ms_zv'].includes(data.qkind)}
         bind:value={data.pdict} />
     </div>
-  {/if}
+  </header>
+  <div class="zform">
+    <div class="input">
+      <Cztext bind:ztext bind:state />
+    </div>
 
-  {#if state == 0}
-    <button
-      class="m-btn _warning _fill u-right"
-      disabled={data._user.privi < 2 || chaps.length == 0}
-      on:click={translate}>
-      <span>Bắt đầu</span>
-    </button>
-  {:else if state == 1}
-    <button class="m-btn _warning _fill u-right" disabled>
-      <SIcon name="loader-2" spin={true} />
-      <span>{on_ch_no + 1}/{chaps.length}</span>
-    </button>
-  {:else}
-    <button
-      class="m-btn _success _fill u-right"
-      disabled={data._user.privi < 2 || chaps.length == 0}
-      on:click={() => (state = 0)}>
-      <SIcon name="refresh-ccw" />
-      <span>Dịch mới</span>
-    </button>
-  {/if}
-</Footer>
+    <div class="split">
+      <Csplit {ztext} bind:state bind:chaps />
+    </div>
+  </div>
+
+  <footer class="m-flex _cy">
+    {#if err_text}
+      <div class="form-msg _err">{err_text}</div>
+    {:else if ztext}
+      <div class="form-msg">
+        Bạn cần thiết {vcoin_needed}
+        <SIcon name="vcoin" iset="icons" /> để dịch văn bản này
+      </div>
+    {:else}
+      <div class="form-msg">Nhập văn bản phía trên để dịch</div>
+    {/if}
+
+    <div class="u-right">
+      {#if state == 0}
+        <button
+          class="m-btn _warning _fill"
+          disabled={chaps.length == 0 || $_user.privi < 0}
+          on:click={translate}>
+          <SIcon name="language" />
+          <span>Dịch đoạn văn</span>
+        </button>
+      {:else if state == 1}
+        <button class="m-btn _primary _fill" disabled>
+          <SIcon name="loader-2" spin={true} />
+          <span>{on_ch_no + 1}/{chaps.length}</span>
+        </button>
+      {:else}
+        <button class="m-btn _success _fill" on:click={() => (state = 0)}>
+          <SIcon name="rotate" />
+          <span>Dịch mới</span>
+        </button>
+      {/if}
+    </div>
+  </footer>
+</article>
 
 <style lang="scss">
   .zform {
@@ -177,5 +223,9 @@
       padding-left: 0.5rem;
       padding-right: 0.5rem;
     }
+  }
+
+  footer {
+    margin-top: 1rem;
   }
 </style>

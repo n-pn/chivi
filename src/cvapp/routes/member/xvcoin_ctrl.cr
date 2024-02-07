@@ -70,7 +70,7 @@ class CV::XvcoinCtrl < CV::BaseCtrl
   struct XquotaForm
     include JSON::Serializable
 
-    getter amount : Int32
+    getter amount : Float64
     getter reason : String = ""
 
     def after_initialize
@@ -87,7 +87,9 @@ class CV::XvcoinCtrl < CV::BaseCtrl
       raise BadRequest.new("Số vcoin khả dụng của bạn ít hơn số vcoin bạn muốn tặng")
     end
 
-    spawn Uquota.load(vuser.id).add_vcoin_bonus!(vcoin: form.amount)
-    return json: {remain: remain}
+    vcoin_bonus = (form.amount * 100_000).round.to_i
+    Uquota.load(vuser.id).add_vcoin_bonus!(bonus: vcoin_bonus)
+
+    render json: {remain: remain}
   end
 end
