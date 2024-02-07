@@ -23,6 +23,8 @@ class M1::MtCore
     init(ViDict.get_id(dname), user: user)
   end
 
+  getter dicts
+
   def initialize(@dicts : Array(MtDict))
   end
 

@@ -10,7 +10,7 @@
     <span class="index">{index}.</span>
     <span class="title">{zdata.title}</span>
     <em class="u-right"
-      ><span class="u-fg-tert">Vị trí chương:</span>
+      ><span class="u-fg-tert">Vị trí:</span>
       <strong class="u-warn">{zdata.ch_no}.</strong></em>
   </div>
 
@@ -19,10 +19,6 @@
 
     <span class="c_len u-right">
       Số chữ: <strong class="u-warn">{zdata.size}</strong>
-    </span>
-
-    <span class="c_len">
-      Chia phần: <strong class="u-warn">{zdata.parts.length}</strong>
     </span>
   </div>
 </div>

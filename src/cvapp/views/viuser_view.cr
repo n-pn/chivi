@@ -12,7 +12,6 @@ struct CV::ViuserView
 
       jb.field "uname", @data.uname
       jb.field "privi", @data.privi
-      jb.field "level", @data.level
 
       if @full
         jb.field "vcoin", @data.vcoin.round(3)

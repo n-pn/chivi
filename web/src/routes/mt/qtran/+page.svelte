@@ -13,13 +13,13 @@
   export let data: PageData
 
   let ztext = data.ztext
-  let tmode = data.tmode
+  let qkind = data.qkind
   let pdict = data.pdict
 
   let vtext: string[] = []
   let error: string = ''
 
-  $: if (browser && (ztext || tmode || pdict)) instant_translate()
+  $: if (browser && (ztext || qkind || pdict)) instant_translate()
 
   $: rpage = new Rdpage(ztext)
   let rword = new Rdword()
@@ -37,8 +37,8 @@
     let start = 0
 
     while (start < rpage.lines.length) {
-      start = await rpage.load_more(tmode, pdict)
-      vtext = rpage.get_texts(tmode)
+      start = await rpage.load_more(qkind, pdict)
+      vtext = rpage.get_texts(qkind)
     }
 
     tspan = performance.now() - tspan_start
@@ -89,7 +89,7 @@
 
   const on_term_change = async (ztext = '') => {
     if (!ztext) return
-    await rpage.reload(ztext, tmode, pdict)
+    await rpage.reload(ztext, qkind, pdict)
     vtext = vtext
   }
 </script>
@@ -99,7 +99,7 @@
 
   <section class="output">
     <header>
-      <select class="m-input _xs" name="tmode" id="tmode" bind:value={tmode}>
+      <select class="m-input _xs" name="qkind" id="qkind" bind:value={qkind}>
         {#each Object.entries(mode_names) as [value, label]}
           <option {value}>{label}</option>
         {/each}
@@ -153,14 +153,14 @@
     bind:rword
     bind:state
     bind:l_idx
-    ropts={{ pdict, rmode: tmode, mt_rm: tmode }}
+    ropts={{ pdict, rmode: qkind, mt_rm: qkind }}
     l_max={vtext.length} />
 {/if}
 
 {#if $vtform_ctrl.actived}
   <Vtform
     rline={rpage.lines[l_idx]}
-    ropts={{ pdict, rmode: tmode, mt_rm: tmode }}
+    ropts={{ pdict, rmode: qkind, mt_rm: qkind }}
     {rword}
     on_close={on_term_change} />
 {/if}

@@ -3,7 +3,7 @@ require "../src/mt_v1/core/m1_core"
 
 def extract_zip(sname, sn_id, fname)
   zip_path = "/2tb/zroot/ztext/#{sname}/#{sn_id}.zip"
-  out_path = raw_path = "/2tb/qtran/#{fname}-#{sname}-#{sn_id}"
+  out_path = "/2tb/qtran/#{fname}-#{sname}-#{sn_id}"
 
   Dir.mkdir_p(out_path)
 
@@ -38,7 +38,8 @@ def extract_zip(sname, sn_id, fname)
 end
 
 def call_qt(inp_dir, wndic = "combine")
-  engine = M1::MtCore.init(wndic)
+  wn_id = wndic.starts_with?("wn") ? wndic[2..].to_i : 0
+  engine = M1::MtCore.init(wn_id)
 
   out_file = "#{inp_dir}.qt_v1.txt"
 
@@ -84,6 +85,7 @@ end
 inputs = [
   {"@Kak31", 878, "hua-tien-chi", "qt_v1", "wn350"},
   {"@Kak31", 886, "ma-hon-khai-lam", "qt_v1", "wn5344"},
+  {"@Kak31", 143, "ngu-lac-xuan-thu", "qt_v1", "wn26017"},
 ]
 
 output = inputs.map do |sname, sn_id, fname, mtype, margs|

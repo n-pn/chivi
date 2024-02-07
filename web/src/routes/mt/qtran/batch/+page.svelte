@@ -10,19 +10,16 @@
 <script lang="ts">
   import Cztext from '$gui/shared/upload/Cztext.svelte'
   import Csplit from '$gui/shared/upload/Csplit.svelte'
-  import type { Czdata } from '$gui/shared/upload/czdata'
+  import { split_parts, type Czdata } from '$gui/shared/upload/czdata'
 
   import { SIcon, Footer } from '$gui'
 
   import type { PageData } from './$types'
   export let data: PageData
 
-  export let tmode = 'qt_v1'
-  export let pdict = 'combine'
-
   let ztext = ''
   let state = 0
-  let reuse = true
+  let regen = 1
 
   let chaps: Czdata[] = []
   let trans: string[] = []
@@ -32,22 +29,22 @@
 
   $: if (chaps) err_text = ''
 
-  let out_time = 0
-  let out_href = ''
-
-  $: wn_id = pdict.startsWith('wn') ? +pdict.slice(2) : 0
-
   const translate = async () => {
     err_text = ''
     state = 1
-    out_href = ''
 
     try {
       const trans = await do_translate(chaps, 0)
       const file = new Blob([trans.join('\n\n\n')], { type: 'text/plain' })
-      out_time = new Date().getTime()
-      out_href = URL.createObjectURL(file)
       state = 2
+
+      const elem = document.createElement('a')
+      elem.setAttribute('href', URL.createObjectURL(file))
+      elem.setAttribute('download', `${new Date().getTime()} [1-${chaps.length}].${data.qkind}.txt`)
+      elem.style.display = 'none'
+      document.body.appendChild(elem)
+      elem.click()
+      document.body.removeChild(elem)
     } catch (ex) {
       err_text = ex
       state = 0
@@ -57,9 +54,9 @@
 
   const do_translate = async (chaps: Czdata[], start = 0) => {
     for (on_ch_no = start; on_ch_no < chaps.length; on_ch_no++) {
-      const { chdiv, parts } = chaps[on_ch_no]
+      const { chdiv, lines } = chaps[on_ch_no]
 
-      let [fpart, ...extra] = parts
+      let [fpart, ...extra] = split_parts(lines, 1000)
       if (chdiv && chdiv != '正文') fpart = `［${chdiv}］${fpart}`
 
       let vtran = await call_qtran(fpart, 1)
@@ -76,10 +73,8 @@
     return trans
   }
 
-  const call_qtran = async (ztext: string, title = 0) => {
-    let url = `/_sp/qtran/${tmode}?redo=${!reuse}`
-    if (tmode == 'qt_v1') url += `&opts=${wn_id},${title}`
-
+  const call_qtran = async (ztext: string, h_sep = 0) => {
+    const url = `/_sp/qtran/${data.qkind}?pd=${data.pdict}&rg=${regen}&hs=${h_sep}`
     const res = await fetch(url, { method: 'POST', body: ztext })
     const txt = await res.text()
     if (res.ok) return txt.trim()
@@ -102,9 +97,9 @@
     <div class="form-msg _err">{err_text}</div>
   {:else}
     <div class="x-label">
-      <label class="u-show-tm" for="tmode">Chọn cách dịch:</label>
+      <label class="u-show-tm" for="qkind">Chọn cách dịch:</label>
 
-      <select class="m-input _sm" name="tmode" id="tmode" bind:value={tmode}>
+      <select class="m-input _sm" name="qkind" id="qkind" bind:value={data.qkind}>
         {#each Object.entries(available_modes) as [value, label], index}
           <option {value}>{label}</option>
         {/each}
@@ -117,8 +112,8 @@
         class="m-input _sm"
         name="pdict"
         id="pdict"
-        disabled={['c_gpt', 'bd_zv', 'ms_zv'].includes(tmode)}
-        bind:value={pdict} />
+        disabled={['c_gpt', 'bd_zv', 'ms_zv'].includes(data.qkind)}
+        bind:value={data.pdict} />
     </div>
   {/if}
 
@@ -132,17 +127,16 @@
   {:else if state == 1}
     <button class="m-btn _warning _fill u-right" disabled>
       <SIcon name="loader-2" spin={true} />
-      <span class="u-show-ts">Đang dịch</span>
       <span>{on_ch_no + 1}/{chaps.length}</span>
     </button>
-  {:else if state == 2}
-    <a
-      href={out_href}
+  {:else}
+    <button
       class="m-btn _success _fill u-right"
-      download="{out_time}-{tmode}.txt">
-      <SIcon name="download" />
-      <span>Tải xuống</span>
-    </a>
+      disabled={data._user.privi < 2 || chaps.length == 0}
+      on:click={() => (state = 0)}>
+      <SIcon name="refresh-ccw" />
+      <span>Dịch mới</span>
+    </button>
   {/if}
 </Footer>
 

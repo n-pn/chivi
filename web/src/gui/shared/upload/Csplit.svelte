@@ -157,12 +157,6 @@
     <span class="u-right u-fg-main">{chaps[0].size}</span>
     <SIcon name={chaps[0].size > 100000 ? 'x' : 'check'} />
   </div>
-
-  <div class="x-field">
-    <span class="v-label">Số phần: </span>
-    <span class="u-right u-fg-main">{chaps[0].parts.length}</span>
-    <SIcon name={chaps[0].parts.length > 30 ? 'x' : 'check'} />
-  </div>
 {:else}
   <div class="d-label">Các chương đầu</div>
   {#each chaps.slice(0, 3) as zdata, index}

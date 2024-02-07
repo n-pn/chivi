@@ -42,14 +42,11 @@ export class Czdata {
   lines: string[]
   title: string
 
-  parts: string[]
-
   constructor(ch_no: number, chdiv = '', lines: string[] = []) {
     this.ch_no = ch_no
     this.chdiv = chdiv
     this.lines = lines
     this.title = lines[0]
-    this.parts = split_parts(lines)
   }
 
   get size() {
