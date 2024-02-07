@@ -39,7 +39,8 @@ class SP::TranCtrl < AC::Base
 
     wcount, charge = qdata.quota_using(qkind)
 
-    quota = Uquota.load(self._vu_id)
+    vu_id = self._vu_id != 0 ? self._vu_id : Uquota.guest_id(self.client_ip)
+    quota = Uquota.load(vu_id)
     quota.add_quota_spent!(wcount)
 
     if qkind.starts_with?("mtl_")

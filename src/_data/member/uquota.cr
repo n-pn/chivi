@@ -43,10 +43,9 @@ class Uquota
     returning vcoin_bonus, quota_limit
   SQL
 
-  def add_vcoin_bonus!(karma : Int32, @mtime = Time.utc.to_unix)
+  def add_vcoin_bonus!(vcoin : Int32, @mtime = Time.utc.to_unix)
     @vcoin_bonus, @quota_limit = @@db.query_one ADD_VCOIN_SQL, @vu_id, @idate, @mtime, vcoin, as: {Int64, Int64}
   end
-
 
   ADD_KARMA_SQL = <<-SQL
     insert into uquotas(vu_id, idate, mtime, karma_bonus)
@@ -57,7 +56,7 @@ class Uquota
     returning karma_bonus, quota_limit
   SQL
 
-  def add_vcoin_bonus!(karma : Int32, @mtime = Time.utc.to_unix)
+  def add_karma_bonus!(karma : Int32, @mtime = Time.utc.to_unix)
     @karma_bonus, @quota_limit = @@db.query_one ADD_KARMA_SQL, @vu_id, @idate, @mtime, karma, as: {Int64, Int64}
   end
 
@@ -70,7 +69,6 @@ class Uquota
     @@db.query_one? query, vu_id, idate, as: self
   end
 
-
   def self.load(vu_id : Int32, idate = gen_idate)
     self.find(vu_id, idate) || begin
       model = new(vu_id, idate)
@@ -80,5 +78,12 @@ class Uquota
 
       model.upsert!
     end
+  end
+
+  def self.guest_id(client_ip : String) : Int32
+    _, _, a, b = client_ip.split('.')
+    -a.to_i * 256 - b.to_i
+  rescue
+    0
   end
 end

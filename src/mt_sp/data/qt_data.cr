@@ -52,22 +52,23 @@ class SP::QtData
   end
 
   MULTP_MAP = {
-    "mtl_0" => 1,
-    "mtl_1" => 2,
-    "mtl_2" => 3,
-    "mtl_3" => 3,
-    "ms_zv" => 4,
-    "ms_ze" => 4,
-    "bd_zv" => 5,
-    "bd_ze" => 5,
-    "dl_ze" => 8,
-    "dl_je" => 8,
+    "qt_v1" => 2,
+    "mtl_0" => 3,
+    "mtl_1" => 4,
+    "mtl_2" => 5,
+    "mtl_3" => 5,
+    "ms_zv" => 8,
+    "ms_ze" => 8,
+    "bd_zv" => 10,
+    "bd_ze" => 10,
     "c_gpt" => 10,
+    "dl_ze" => 20,
+    "dl_je" => 20,
   }
 
   def quota_using(qtype : String)
-    wcount = @lines.sum(&.size) + @lines.size
-    charge = MULTP_MAP[qtype]?.try { |x| x * wcount } || wcount // 2
+    wcount = @lines.sum { |x| x.size &+ 1 }
+    charge = MULTP_MAP.fetch(qtype, 10) * wcount
     {wcount, charge}
   end
 

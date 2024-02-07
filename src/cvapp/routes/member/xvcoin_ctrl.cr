@@ -66,4 +66,28 @@ class CV::XvcoinCtrl < CV::BaseCtrl
     _log_action("patron", xform)
     render json: {target: target.uname, amount: target.vcoin.round(3)}
   end
+
+  struct XquotaForm
+    include JSON::Serializable
+
+    getter amount : Int32
+    getter reason : String = ""
+
+    def after_initialize
+      @amount = 10 if @amount < 0
+    end
+  end
+
+  @[AC::Route::POST("/to_quota", body: :form)]
+  def to_quota(form : XquotaForm)
+    guard_privi 0, "đổi vcoin sang quota"
+    vuser = self._viuser
+
+    unless remain = vuser.spend_vcoin!(form.amount)
+      raise BadRequest.new("Số vcoin khả dụng của bạn ít hơn số vcoin bạn muốn tặng")
+    end
+
+    spawn Uquota.load(vuser.id).add_vcoin_bonus!(vcoin: form.amount)
+    return json: {remain: remain}
+  end
 end
