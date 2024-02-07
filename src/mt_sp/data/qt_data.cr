@@ -43,12 +43,12 @@ class SP::QtData
   property regen = 0
   property h_sep = 0
   property l_sep = 0
-  property otype = "mtl"
+  property otype = "json"
 
   def initialize(@lines, @fbase, @cache = true)
   end
 
-  def set_opts(@pdict, @regen, @h_sep, @l_sep, @otype = "mtl")
+  def set_opts(@pdict, @regen, @h_sep, @l_sep, @otype = "json")
   end
 
   MULTP_MAP = {
@@ -93,10 +93,8 @@ class SP::QtData
 
   MT_AI_API = "#{CV_ENV.ai_host}/_ai/qtran"
 
-  def get_mtran(qtype : String,
-
-                udict : String = "")
-    url = "#{MT_AI_API}?qtype=#{qtype}&&pdict=#{@pdict}&udict=#{udict}&h_sep=#{h_sep}&l_sep=#{l_sep}&regen=#{regen}"
+  def get_mtran(qtype : String, udict : String = "")
+    url = "#{MT_AI_API}?qt=#{qtype}&op=#{@otype}&pd=#{@pdict}&ud=#{udict}&hs=#{h_sep}&ls=#{l_sep}&rg=#{regen}"
     mdata = HTTP::Client.post(url, body: @lines.join('\n'), &.body_io.gets_to_end)
 
     {mdata, Time.utc.to_unix}

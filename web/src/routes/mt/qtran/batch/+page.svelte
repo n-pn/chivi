@@ -1,6 +1,9 @@
 <script lang="ts" context="module">
   const available_modes = {
     qt_v1: 'Máy dịch cũ',
+    mtl_1: 'Máy dịch AI 1',
+    mtl_2: 'Máy dịch AI 2',
+    mtl_3: 'Máy dịch AI 3',
     bd_zv: 'Dịch bằng Baidu',
     ms_zv: 'Dịch bằng Bing',
     c_gpt: 'GPT Tiên Hiệp',
@@ -8,13 +11,14 @@
 </script>
 
 <script lang="ts">
+  import { beforeNavigate } from '$app/navigation'
   import { get_user } from '$lib/stores'
 
   import Cztext from '$gui/shared/upload/Cztext.svelte'
   import Csplit from '$gui/shared/upload/Csplit.svelte'
   import { split_parts, type Czdata } from '$gui/shared/upload/czdata'
 
-  import { SIcon, Footer } from '$gui'
+  import { SIcon } from '$gui'
 
   import type { PageData } from './$types'
   export let data: PageData
@@ -110,12 +114,17 @@
   }
 
   const call_qtran = async (ztext: string, h_sep = 0) => {
-    const url = `/_sp/qtran/${data.qkind}?pd=${data.pdict}&rg=${regen}&hs=${h_sep}`
+    const url = `/_sp/qtran/${data.qkind}?pd=${data.pdict}&op=text&rg=${regen}&hs=${h_sep}`
     const res = await fetch(url, { method: 'POST', body: ztext })
     const txt = await res.text()
     if (res.ok) return txt.trim()
     else throw txt
   }
+
+  beforeNavigate(({ cancel }) => {
+    if (state != 1) return
+    if (!confirm('Hủy bỏ chương trình đang chạy?')) cancel()
+  })
 </script>
 
 <article class="article island">
@@ -124,7 +133,7 @@
       <label class="u-show-tm" for="qkind">Chọn cách dịch:</label>
 
       <select class="m-input _sm" name="qkind" id="qkind" bind:value={data.qkind}>
-        {#each Object.entries(available_modes) as [value, label], index}
+        {#each Object.entries(available_modes) as [value, label]}
           <option {value}>{label}</option>
         {/each}
       </select>
