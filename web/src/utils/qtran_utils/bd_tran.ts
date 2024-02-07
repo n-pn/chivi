@@ -1,8 +1,5 @@
 import { detitlize, send_vcache } from './shared'
 
-const api =
-  'https://fetch.nipin.workers.dev?q=https://fanyi.baidu.com/ait/text/translate'
-
 export async function call_baidu(text: string, tl = 'vie') {
   const init = {
     method: 'POST',
@@ -17,7 +14,7 @@ export async function call_baidu(text: string, tl = 'vie') {
       domain: 'common',
     }),
   }
-  const res = await fetch(api, init)
+  const res = await fetch(import.meta.env.VITE_BD_HREF, init)
   const data = await res.text().then((x) => x.split('\n'))
 
   const json = extract_tran(data)
@@ -29,10 +26,7 @@ export async function call_baidu(text: string, tl = 'vie') {
 
 function extract_tran(data: string[]) {
   for (let i = 0; i < data.length; i++) {
-    if (
-      data[i].includes('event: message') &&
-      data[i + 1].includes('event":"Translating"')
-    ) {
+    if (data[i].includes('event: message') && data[i + 1].includes('event":"Translating"')) {
       // Extract the JSON data associated with the "Translating" event
       return JSON.parse(data[i + 1].replace('data: ', ''))
     }

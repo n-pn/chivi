@@ -37,7 +37,7 @@ class M1::ZvTrie
     idx.upto(chars.size - 1) do |i|
       break unless trie = node.trie
 
-      char = chars.unsafe_fetch(i)
+      char = chars[i]
       char = CharUtil.to_canon(char, true)
 
       break unless node = trie[char]?

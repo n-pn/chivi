@@ -2,7 +2,7 @@ module M1::MTL
   extend self
 
   def ner_recog(input : Array(Char), index = 0, mode = 1_i8)
-    char = input.unsafe_fetch(index)
+    return unless char = input[index]?
 
     case
     when letter = map_letter(char)
@@ -24,7 +24,7 @@ module M1::MTL
     index = start
 
     while index < input.size
-      char = input.unsafe_fetch(index)
+      char = input[index]
       index += 1
 
       case
@@ -59,7 +59,7 @@ module M1::MTL
 
   def recog_anchor(input : Array(Char), key_io, val_io, index)
     while index < input.size
-      char = input.unsafe_fetch(index)
+      char = input[index]
       index += 1
 
       case
@@ -90,7 +90,7 @@ module M1::MTL
     val_io << val
 
     while index < input.size
-      char = input.unsafe_fetch(index)
+      char = input[index]
       # puts [char, index, "current_char"]
 
       index += 1
@@ -157,7 +157,7 @@ module M1::MTL
     count = 1 # number of `char` occurence
 
     while index < input.size
-      char = input.unsafe_fetch(index)
+      char = input[index]
       index += 1
 
       if char == char_half || char == char_full

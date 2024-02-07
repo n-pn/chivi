@@ -82,7 +82,7 @@ class M1::MtCore
     ner_idx = 0
 
     input.size.times do |idx|
-      base_cost = costs.unsafe_fetch(idx)
+      base_cost = costs[idx]
 
       if idx >= ner_idx && (ner_term = MTL.ner_recog(input, idx))
         ner_idx = idx &+ ner_term.key.size

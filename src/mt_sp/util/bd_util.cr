@@ -2,7 +2,6 @@ require "json"
 require "../../_util/http_util"
 
 struct SP::BdAuth
-  # WEB_URL = "https://fetch.nipin.workers.dev?q=https://fanyi.baidu.com"
   WEB_URL = "https://fanyi.baidu.com"
   WEB_URI = URI.parse(WEB_URL)
 

@@ -40,7 +40,7 @@ class SP::TranCtrl < AC::Base
     wcount, charge = qdata.quota_using(qkind)
 
     quota = Uquota.load(self._vu_id)
-    quota.add_using!(wcount)
+    quota.add_quota_spent!(wcount)
 
     if qkind.starts_with?("mtl_")
       vdata, mtime = qdata.get_mtran(qkind, udict: "qt#{self._vu_id}")

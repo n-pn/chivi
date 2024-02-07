@@ -41,9 +41,7 @@ def call_qt(inp_dir, wndic = "combine")
   wn_id = wndic.starts_with?("wn") ? wndic[2..].to_i : 0
   engine = M1::MtCore.init(wn_id)
 
-  out_file = "#{inp_dir}.qt_v1.txt"
-
-  output = File.open(out_file, "w")
+  output = [] of String
 
   inputs = Dir.glob(inp_dir + "/*.raw.txt")
 
@@ -53,27 +51,35 @@ def call_qt(inp_dir, wndic = "combine")
 
   inputs.each_with_index do |inp_file, idx|
     puts "#{idx}: #{inp_file}"
-    title = true
+    tmp_path = inp_file.sub(".raw", ".qt_v1")
 
-    File.each_line(inp_file) do |line|
-      next if line.empty?
-
-      data = title ? engine.cv_chead(line) : engine.cv_plain(line)
-      data.to_txt(output)
-
-      output.puts if title
-      output.puts
-
-      title = false
+    if File.file?(tmp_path)
+      output << File.read(tmp_path)
+      next
     end
 
-    output.puts
-    output.puts
+    sleep 500.millisecond
+
+    title = true
+
+    File.open(tmp_path, "w") do |file|
+      File.each_line(inp_file) do |line|
+        next if line.empty?
+
+        data = title ? engine.cv_chead(line) : engine.cv_plain(line)
+        data.to_txt(file)
+
+        file.puts if title
+        file.puts
+
+        title = false
+      end
+    end
   end
 
-  output.close
-
-  puts "#{out_file} saved!"
+  out_path = "#{inp_dir}.qt_v1.txt"
+  File.write(out_path, output.join("\n\n"))
+  puts "#{out_path} saved!"
 end
 
 # total += export "@Kak31", 337, "the-tu-ngan-hung", "wn47172"
@@ -83,9 +89,10 @@ end
 # total += export "@Kak31", 899, "diep-vu-dai-duong-xuan", "wn54612"
 
 inputs = [
-  {"@Kak31", 878, "hua-tien-chi", "qt_v1", "wn350"},
-  {"@Kak31", 886, "ma-hon-khai-lam", "qt_v1", "wn5344"},
-  {"@Kak31", 143, "ngu-lac-xuan-thu", "qt_v1", "wn26017"},
+  # {"@Kak31", 878, "hua-tien-chi", "qt_v1", "wn350"},
+  # {"@Kak31", 886, "ma-hon-khai-lam", "qt_v1", "wn5344"},
+  # {"@Kak31", 143, "ngu-lac-xuan-thu", "qt_v1", "wn26017"},
+  {"@Numeron", 1234, "thau-huong-cao-thu", "qt_v1", "wn7567"},
 ]
 
 output = inputs.map do |sname, sn_id, fname, mtype, margs|

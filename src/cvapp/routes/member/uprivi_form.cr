@@ -43,10 +43,8 @@ struct CV::UpriviForm
 
     viuser.vcoin -= vcoin_req
 
-    if viuser.privi < @privi
-      viuser.privi = @privi
-      viuser.p_exp = pdata.first.p_til
-    end
+    viuser.privi = @privi
+    viuser.p_exp = pdata.first.p_til
 
     viuser.save!
 

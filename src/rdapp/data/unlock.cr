@@ -48,7 +48,7 @@ class RD::Unlock
       return 415 unless remain && remain >= 0
 
       uquota = Uquota.load(@vu_id)
-      uquota.add_karma!(@user_lost * 100)
+      uquota.add_vcoin_bonus!(@user_lost * 100)
     end
 
     if @owner > 0
