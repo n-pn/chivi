@@ -13,7 +13,7 @@ class RD::CzdataCtrl < AC::Base
 
     ch_no = crepo.chmax &+ 1 if ch_no < 1
 
-    unless ztext = crepo.text_db.get_chap_text(ch_no)
+    unless ztext = crepo.text_db.get_ztext(ch_no)
       chdiv = crepo.get_chdiv(ch_no)
       ztext = chdiv.empty? ? "" : "///#{chdiv}"
     end

@@ -24,7 +24,7 @@
     try {
       for (let ch_no = from_ch; ch_no <= upto_ch; ch_no++) {
         msg_text = `Đang tải chương thứ ${ch_no}`
-        const chap_text = await load_raw_chap(ch_no)
+        const chap_text = await load_ztext(ch_no)
         full_text += chap_text + '\n\n\n'
       }
     } catch (ex) {
@@ -36,26 +36,12 @@
     send_file(to_half_width(full_text), fname)
   }
 
-  const load_raw_chap = async (ch_no: number) => {
-    const first = await load_raw_part(ch_no, 1)
-    let ctext = first.zname + '\n\n' + first.ztext
-
-    if (first.p_max > 1) {
-      for (let p_idx = 2; p_idx <= first.p_max; p_idx++) {
-        const cpart = await load_raw_part(ch_no, p_idx)
-        ctext += '\n\n' + cpart.ztext
-      }
-    }
-
-    return ctext
-  }
-
-  const load_raw_part = async (ch_no: number, p_idx: number) => {
-    const url = `/_rd/cdata/${crepo.sname}/${crepo.sn_id}/${ch_no}/${p_idx}?force=${auto_unlock}`
+  const load_ztext = async (ch_no: number) => {
+    const url = `/_rd/cdata/${crepo.sname}/${crepo.sn_id}/${ch_no}?force=${auto_unlock}`
     const res = await fetch(url)
 
     if (!res.ok) throw await res.text()
-    const cpart: CV.Chpart = await res.json()
+    const cpart: CV.Chinfo = await res.json()
 
     if (cpart.error == 414) {
       cpart.ztext = 'Chương hiện tại chưa có trên hệ thống!'
@@ -84,38 +70,24 @@
   <div class="x-field _flex">
     <div class="x-group">
       <div class="x-label">Từ chương:</div>
-      <input
-        class="m-input"
-        type="number"
-        name="from_ch"
-        bind:value={from_ch} />
+      <input class="m-input" type="number" name="from_ch" bind:value={from_ch} />
     </div>
 
     <div class="x-group">
       <div class="x-label">Tới chương:</div>
-      <input
-        class="m-input"
-        type="number"
-        name="upto_ch"
-        bind:value={upto_ch} />
+      <input class="m-input" type="number" name="upto_ch" bind:value={upto_ch} />
     </div>
   </div>
 
   <div class="x-field">
     <label class="x-label x-check">
-      <input
-        type="checkbox"
-        name="force"
-        class="check"
-        bind:checked={auto_unlock} />
+      <input type="checkbox" name="force" class="check" bind:checked={auto_unlock} />
       <span>Tự động mở khóa chương bằng Vcoin</span>
     </label>
   </div>
 
   <footer>
-    <button class="m-btn _primary _fill" on:click={load_raw_text}>
-      Tải text gốc!
-    </button>
+    <button class="m-btn _primary _fill" on:click={load_raw_text}> Tải text gốc! </button>
 
     <div class="form_msg _{msg_type}">{msg_text}</div>
   </footer>

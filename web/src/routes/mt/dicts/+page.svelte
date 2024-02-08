@@ -21,7 +21,7 @@
   ]
 </script>
 
-<Section {tabs} _now={data._ontab}>
+<Section {tabs} _now={data.ontab}>
   <h2>Danh sách từ điển <em>({data.total})</em></h2>
 
   <div class="dicts">
@@ -44,10 +44,7 @@
   </div>
 
   <Footer>
-    <Mpager
-      pager={new Pager($page.url)}
-      pgidx={data.pgidx}
-      pgmax={data.pgmax} />
+    <Mpager pager={new Pager($page.url)} pgidx={data.pgidx} pgmax={data.pgmax} />
   </Footer>
 </Section>
 

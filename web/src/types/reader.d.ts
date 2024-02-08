@@ -12,34 +12,24 @@ declare namespace CV {
     rlink: string
   }
 
-  interface Chpart {
+  interface Chlist extends Paginate {
+    chaps: Wnchap[]
+  }
+
+  interface Chinfo {
     ch_no: number
-    p_idx: number
-    p_max: number
-
-    zname: string
-    rlink: string
-
     title: string
-    chdiv: string
 
-    fpath: string
     ztext: string
+    cksum: string
     zsize: number
 
     error: number
     plock: number
-    multp: number
 
+    rlink: string
     mtime: number
     uname: string
-
-    _prev: string
-    _next: string
-  }
-
-  interface Chlist extends Paginate {
-    chaps: Wnchap[]
   }
 
   interface Rdopts {
@@ -117,7 +107,6 @@ declare namespace CV {
     lc_title: string
     lc_mtype: number
     lc_ch_no: number
-    lc_p_idx: number
 
     vu_atime: number
     vu_rtime: number

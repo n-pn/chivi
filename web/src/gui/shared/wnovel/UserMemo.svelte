@@ -3,27 +3,15 @@
   import { chap_path } from '$lib/kit_path'
   import { upsert_memo } from '$lib/common/rdmemo'
 
-  import {
-    rstate_labels,
-    rstate_icons,
-    rstate_colors,
-  } from '$lib/consts/rd_states'
+  import { rstate_labels, rstate_icons, rstate_colors } from '$lib/consts/rd_states'
 
-  const star_names = [
-    '--',
-    'Như mứt',
-    'Hơi nhạt',
-    'Đọc ổn',
-    'Cũng khá',
-    'Tuyệt vời',
-  ]
+  const star_names = ['--', 'Như mứt', 'Hơi nhạt', 'Đọc ổn', 'Cũng khá', 'Tuyệt vời']
 
   function gen_quick_read({ chmax, sroot }, rmemo: CV.Rdmemo) {
     const ch_no = rmemo.lc_ch_no || 1
-    const p_idx = rmemo.lc_p_idx || 1
 
     return {
-      ch_href: chap_path(`/ts/${sroot}`, ch_no, { ...rmemo, p_idx }),
+      ch_href: chap_path(`/ts/${sroot}`, ch_no, rmemo),
       ch_icon: ['player-play', 'player-skip-forward', 'pin'][rmemo.lc_mtype],
       ch_mute: chmax == 0,
     }

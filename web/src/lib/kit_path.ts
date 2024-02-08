@@ -1,7 +1,4 @@
-export function scrub_params(
-  params: URLSearchParams,
-  ommits: Record<string, any>
-) {
+export function scrub_params(params: URLSearchParams, ommits: Record<string, any>) {
   for (const [name, ommit] of Object.entries(ommits)) {
     const param = params.get(name)
     if (param == ommit) params.delete(name)
@@ -21,9 +18,9 @@ export const stem_path = (sroot: string, pg_no = 1) => {
 export function chap_path(
   sroot: string,
   ch_no: number | string,
-  { p_idx = 1, rmode = 'qt', qt_rm = 'qt_v1', mt_rm = 'mtl_1' } = {}
+  { rmode = 'qt', qt_rm = 'qt_v1', mt_rm = 'mtl_1' } = {}
 ) {
-  const cpath = p_idx > 1 ? `${sroot}/c${ch_no}_${p_idx}` : `${sroot}/c${ch_no}`
+  const cpath = `${sroot}/c${ch_no}`
 
   const params = new URLSearchParams()
   if (rmode != 'qt') params.append('rm', rmode)

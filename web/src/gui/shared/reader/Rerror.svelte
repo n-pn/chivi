@@ -6,7 +6,7 @@
   import Unlock from './errors/Unlock.svelte'
 
   export let crepo: CV.Tsrepo
-  export let rdata: CV.Chpart
+  export let rdata: CV.Chinfo
   export let state = 0
 </script>
 
@@ -15,8 +15,8 @@
     <h1 class="u-warn">Lỗi: Chưa đủ quyền hạn xem chương</h1>
     <p>
       <em
-        >Bạn chưa đăng nhập. Nếu bạn đã có tài khoản, đăng nhập tại đây: <a
-          href="/_u/login">Đăng nhập</a>
+        >Bạn chưa đăng nhập. Nếu bạn đã có tài khoản, đăng nhập tại đây: <a href="/_u/login"
+          >Đăng nhập</a>
         . Nếu chưa có tài khoản, hãy đăng ký mới tại đây:
         <a href="/_u/signup">Đăng ký tài khoản mới</a>
       </em>
@@ -27,8 +27,7 @@
         Lỗi: Bạn cần thiết quyền hạn tối thiểu là {rdata.plock} để xem nội dung chương!
       </h1>
       <p>
-        Đọc thêm về hướng dẫn nâng cấp tài khoản <a
-          href="/hd/nang-cap-quyen-han">tại đây.</a>
+        Đọc thêm về hướng dẫn nâng cấp tài khoản <a href="/hd/nang-cap-quyen-han">tại đây.</a>
       </p>
     </div>
   {:else if rdata.error == 414}

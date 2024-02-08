@@ -9,6 +9,6 @@ export interface DictData {
 }
 
 export const load = (async ({ fetch, params: { dname } }) => {
-  const { dinfo, users } = await api_get<DictData>(`/_ai/dicts/${dname}`, fetch)
+  const { dinfo, users } = await api_get<DictData>(`/_sp/dicts/${dname}`, fetch)
   return { dname, dinfo, users }
 }) satisfies LayoutLoad

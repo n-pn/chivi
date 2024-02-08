@@ -1,8 +1,8 @@
-require "./_mt_ctrl_base"
+require "./_sp_ctrl_base"
 require "../data/pg_dict"
 
-class MT::ZvdictCtrl < AC::Base
-  base "/_ai/dicts"
+class SP::ZvdictCtrl < AC::Base
+  base "/_sp/dicts"
 
   @[AC::Route::GET("/")]
   def index(kind = "")
@@ -29,7 +29,6 @@ class MT::ZvdictCtrl < AC::Base
 
   @[AC::Route::GET("/:dname")]
   def show(dname : String)
-    dname = dname.sub("book:", "wn").sub(":", "")
     dinfo = PgDict.load!(dname)
     json = {dinfo: dinfo, users: dinfo.users}
     render json: json

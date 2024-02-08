@@ -86,28 +86,21 @@ class RD::Tsrepo
 
   ###
 
-  def load_raw_part(cinfo : Chinfo, p_idx = 1, regen : Bool = false)
-    ztext = self.text_db.get_chap_text(cinfo.ch_no)
+  def load_ztext(cinfo : Chinfo, regen : Bool = false)
+    ztext = self.text_db.get_ztext(cinfo.ch_no)
 
     if (regen || !ztext) && !cinfo.rlink.empty?
       ztext = self.seed_ztext!(cinfo, force: regen)
     end
 
-    if ztext
-      parts = ztext.split("\n\n")
-      title = parts[0].lines.last
-      ptext = parts[p_idx]? || ""
-
-      cpart = "#{title}\n#{ptext}"
-      cksum = HashUtil.fnv_1a(cpart)
-      p_max = parts.size &- 1
-    else
-      cpart = cinfo.ztitle
-      cksum = 0
-      p_max = 0
+    if !ztext
+      ztext = cinfo.ztitle
+    elsif ztext.starts_with?('/')
+      ztext = ztext.sub(/^\/{3,}.*\n/, "")
     end
 
-    {cpart.gsub('　', ""), cksum, p_max}
+    cksum = HashUtil.fnv_1a(ztext)
+    {ztext, cksum}
   end
 
   def seed_ztext!(cinfo : Chinfo, force : Bool = false)

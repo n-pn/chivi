@@ -11,7 +11,7 @@
   import Rdpage from './Rdpage.svelte'
 
   export let crepo: CV.Tsrepo
-  export let rdata: CV.Chpart
+  export let rdata: CV.Chinfo
   export let ropts: CV.Rdopts
 
   $: pager = new Pager($page.url, { rm: 'qt', qt: 'qt_v1', mt: 'mtl_1' })

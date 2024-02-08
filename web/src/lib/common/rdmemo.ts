@@ -1,6 +1,6 @@
 export const mark_rdchap = async (
   rmemo: CV.Rdmemo,
-  rdata: CV.Chpart,
+  rdata: CV.Chinfo,
   ropts: CV.Rdopts,
   mtype = -1
 ) => {
@@ -12,14 +12,13 @@ export const mark_rdchap = async (
     if (mtype >= 0) rmemo.lc_mtype = mtype
 
     rmemo.lc_ch_no = rdata.ch_no
-    rmemo.lc_p_idx = rdata.p_idx
     rmemo.lc_title = rdata.title
   }
 
   return await upsert_memo(rmemo, 'chmark')
 }
 
-function is_new_chmark(mtype: number, rmemo: CV.Rdmemo, rdata: CV.Chpart) {
+function is_new_chmark(mtype: number, rmemo: CV.Rdmemo, rdata: CV.Chinfo) {
   if (rmemo.lc_mtype < 1) return true
   if (rmemo.lc_mtype > 1) return mtype >= 0
   return rdata.ch_no == rmemo.lc_ch_no || rdata.ch_no == rmemo.lc_ch_no + 1

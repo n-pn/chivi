@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import type { Writable } from 'svelte/store'
 
   import { afterNavigate } from '$app/navigation'
@@ -14,7 +14,7 @@
   import Footer from '$gui/sects/Footer.svelte'
 
   export let crepo: CV.Tsrepo
-  export let rdata: CV.Chpart
+  export let rdata: CV.Chinfo
   export let ropts: CV.Rdopts
   export let rmemo: Writable<CV.Rdmemo>
 
@@ -23,13 +23,8 @@
 
   $: stem_path = pg_no < 2 ? $rmemo.rpath : $rmemo.rpath + '?pg=' + pg_no
 
-  $: prev_path = rdata._prev
-    ? chap_path($rmemo.rpath, rdata._prev, ropts)
-    : stem_path
-
-  $: next_path = rdata._next
-    ? chap_path($rmemo.rpath, rdata._next, ropts)
-    : stem_path
+  $: prev_path = ch_no > 1 ? chap_path($rmemo.rpath, ch_no - 1, ropts) : stem_path
+  $: next_path = ch_no < crepo.chmax ? chap_path($rmemo.rpath, ch_no + 1, ropts) : stem_path
 
   afterNavigate(async () => await save_rmchap())
 
@@ -47,9 +42,7 @@
   const reload_chap = async () => {
     _onload = true
 
-    const { ch_no, p_idx } = rdata
-
-    const url = `/_rd/chaps/${crepo.sroot}/${ch_no}/${p_idx}?regen=true`
+    const url = `/_rd/chaps/${crepo.sroot}/${rdata.ch_no}?regen=true`
     const res = await fetch(url, { cache: 'no-cache' })
 
     _onload = false
@@ -71,11 +64,7 @@
 
 <Footer>
   <div class="navi">
-    <a
-      href={prev_path}
-      class="m-btn _primary navi-item"
-      class:_disable={!rdata._prev}
-      data-kbd="⌃←">
+    <a href={prev_path} class="m-btn _primary navi-item" class:_disable={ch_no < 2} data-kbd="⌃←">
       <SIcon name="chevron-left" />
       <span>Trước</span>
     </a>
@@ -94,19 +83,18 @@
 
         <a
           class="gmenu-item"
-          class:_disable={$_user.privi < 1}
+          class:_disable={$_user.privi < 0}
           href="{$rmemo.rpath}/+text?ch_no={ch_no}">
           <SIcon name="pencil" />
           <span>Sửa text gốc</span>
+          <SIcon class="u-right" name="privi-0" iset="icons" />
         </a>
 
         {#if rdata.rlink}
-          <button
-            class="gmenu-item"
-            disabled={$_user.privi < 1}
-            on:click={reload_chap}>
+          <button class="gmenu-item" disabled={$_user.privi < 0} on:click={reload_chap}>
             <SIcon name="rotate-rectangle" spin={_onload} />
             <span>Tải lại nguồn</span>
+            <SIcon class="u-right" name="privi-0" iset="icons" />
           </button>
         {/if}
 
@@ -114,8 +102,7 @@
           {#each mark_types as [icon, hint], mtype}
             <button
               class="mchap"
-              class:_active={ch_no == $rmemo.lc_ch_no &&
-                mtype == $rmemo.lc_mtype}
+              class:_active={ch_no == $rmemo.lc_ch_no && mtype == $rmemo.lc_mtype}
               disabled={$_user.privi < 0}
               data-tip={hint}
               on:click={() => save_rmchap(mtype)}>
@@ -142,7 +129,7 @@
     <a
       href={next_path}
       class="m-btn _fill navi-item"
-      class:_primary={rdata._next}
+      class:_primary={ch_no <= crepo.chmax}
       data-key="75"
       data-kbd="⌃→">
       <span>Kế tiếp</span>
@@ -170,4 +157,4 @@
       @include fgcolor(primary, 5);
     }
   }
-</style>
+</style> -->

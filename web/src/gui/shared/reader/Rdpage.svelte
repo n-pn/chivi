@@ -15,12 +15,9 @@
   import Ctmenu, { ctrl as ctmenu_ctrl } from './qtdata/Ctmenu.svelte'
   import type { SvelteComponent } from 'svelte'
 
-  export let rdata: CV.Chpart
+  export let rdata: CV.Chinfo
   export let ropts: CV.Rdopts
   export let state = 3
-
-  // $: pager = new Pager($page.url, { rm: 'qt', qt: 'qt_v1', mt: 'mtl_1' })
-  $: label = rdata.p_max > 1 ? `[${rdata.p_idx}/${rdata.p_max}]` : ''
 
   afterNavigate(() => {
     l_idx = -1
@@ -32,7 +29,7 @@
 
   let l_idx = -1
   $: l_max = rdata.ztext ? rdata.ztext.length : 0
-  $: rpage = init_page(rdata.fpath, rdata.ztext || '', ropts)
+  $: rpage = init_page(rdata.cksum, rdata.ztext || '', ropts)
 
   $: r_mode = $config.r_mode == 1 ? 1 : 2
   $: show_z = $config.show_z
@@ -172,17 +169,11 @@
 
   {#each qtran_lines as vline, l_id}
     {@const elem = l_id == 0 ? 'h1' : 'p'}
-
     <cv-data id="L{l_id}" data-line={l_id}>
       {#if show_z}
-        <svelte:element this={elem} class="zdata">
-          {rpage.lines[l_id].ztext}
-        </svelte:element>
+        <svelte:element this={elem} class="zdata">{rpage.lines[l_id].ztext}</svelte:element>
       {/if}
-      <svelte:element this={elem} class="cdata">
-        {@html gen_vdata(vline, r_mode)}
-        {#if l_id == 0 && label}{label}{/if}
-      </svelte:element>
+      <svelte:element this={elem} class="cdata">{@html gen_vdata(vline, r_mode)}</svelte:element>
     </cv-data>
   {/each}
 

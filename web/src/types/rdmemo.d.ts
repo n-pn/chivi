@@ -1,7 +1,6 @@
 declare namespace CV {
   interface Rdchap {
     title: string
-    p_idx: number
     rmode: string
     qt_rm: string
     mt_rm: string
@@ -26,7 +25,6 @@ declare namespace CV {
 
     lc_mtype: number
     lc_ch_no: number
-    lc_p_idx: number
     lc_title: string
 
     atime: number

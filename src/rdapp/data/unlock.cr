@@ -28,10 +28,10 @@ class RD::Unlock
   def initialize(@vu_id, @ulkey,
                  @owner, @zsize,
                  @cksum = 0,
-                 @user_multp = 4_i16,
-                 @real_multp = 4_i16)
-    @user_lost = (zsize * user_multp) // 200
-    @owner_got = (zsize * real_multp) // 200
+                 @user_multp = 3_i16,
+                 @real_multp = 3_i16)
+    @user_lost = (zsize * user_multp) // 100
+    @owner_got = (zsize * real_multp) // 100
   end
 
   # Return status code

@@ -7,21 +7,14 @@
   export let crepo: CV.Tsrepo
   export let rmemo: CV.Rdmemo
   export let chaps: CV.Wnchap[]
-
-  $: ({ lc_ch_no } = rmemo)
-
-  const gen_chap_href = (cinfo: CV.Wnchap) => {
-    const p_idx = cinfo.ch_no == rmemo.lc_ch_no ? rmemo.lc_p_idx : 1
-    return chap_path(`/ts/${crepo.sroot}`, cinfo.ch_no, { p_idx, ...rmemo })
-  }
 </script>
 
 <div class="chaps">
   {#each chaps as cinfo}
     <a
-      href={gen_chap_href(cinfo)}
+      href={chap_path(`/ts/${crepo.sroot}`, cinfo.ch_no, rmemo)}
       class="cinfo"
-      class:_active={cinfo.ch_no == lc_ch_no}
+      class:_active={cinfo.ch_no == rmemo.lc_ch_no}
       rel="nofollow">
       <div class="ctext">
         <span class="title">{cinfo.title}</span>
@@ -62,11 +55,7 @@
     width: 100%;
     grid-gap: 0 var(--gutter-pl);
 
-    @include bps(
-      grid-template-columns,
-      100%,
-      $tm: repeat(auto-fill, minmax(20rem, 1fr))
-    );
+    @include bps(grid-template-columns, 100%, $tm: repeat(auto-fill, minmax(20rem, 1fr)));
   }
 
   .cinfo {

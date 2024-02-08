@@ -5,12 +5,10 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let crepo: CV.Tsrepo
-  export let rdata: CV.Chpart
+  export let rdata: CV.Chinfo
   export let state = 0
 
-  $: ({ ch_no, p_idx } = rdata)
-
-  $: vcost = Math.floor(((5 - $_user.privi) * rdata.zsize) / 200) / 1000
+  $: vcost = Math.round(rdata.zsize / 100) / 1000
 
   let msg_text = ''
   let msg_type = ''
@@ -24,7 +22,7 @@
     msg_text = 'Đang mở khoá chương...'
     msg_type = ''
 
-    const url = `/_rd/chaps/${crepo.sroot}/${ch_no}/${p_idx}?force=true`
+    const url = `/_rd/chaps/${crepo.sroot}/${rdata.ch_no}?force=true`
     const res = await fetch(url, { method: 'GET' })
 
     if (!res.ok) return alert(await res.text())
@@ -48,7 +46,7 @@
 </script>
 
 <h1 class="u-warn">
-  Lỗi: Chương {ch_no} phần {p_idx} cần thiết mở khóa bằng vcoin.
+  Lỗi: Chương thứ {rdata.ch_no} cần thiết mở khóa bằng vcoin.
 </h1>
 
 {#if $_user.uname == 'Khách'}
@@ -74,15 +72,11 @@
 
   <p>
     <em> Công thức tính: </em>
-    <code>[5 - quyền hạn] * [Số ký tự] / 200_000 = [Số vcoin cần thanh toán]</code>
+    <code>[Số vcoin cần thanh toán] = [Số ký tự gốc] / 100_000</code>
   </p>
 
-  <p class="u-fg-tert">
-    <em> Gợi ý 1: Giảm chi phí mở khoá chương bằng nâng cấp quyền hạn tài khoản. </em>
-  </p>
-
-  <p class="u-fg-tert">
-    <em> Gợi ý 2: Vào [Cài đặt] phía trên để bật chế độ Tự động mở khóa chương. </em>
+  <p>
+    <em> Gợi ý: Vào [Cài đặt] phía trên để bật chế độ Tự động mở khóa chương với Vcoin.</em>
   </p>
 
   <footer class="actions">

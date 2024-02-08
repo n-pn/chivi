@@ -14,12 +14,12 @@ class RD::Cztext
     Dir.mkdir_p(@tmp_path)
   end
 
-  def get_chap_text(ch_no : Int32, smode : Int32 = 1)
+  def get_ztext(ch_no : Int32, smode : Int32 = 1)
     return unless self.has_zip?
 
     Compress::Zip::File.open(@zip_path) do |zip|
       entry = zip["#{ch_no}#{smode}.zh"]? || zip["#{ch_no}0.zh"]?
-      entry.try(&.open(&.gets_to_end))
+      entry.try(&.open(&.gets_to_end.gsub("\n\n", '\n')))
     end
   end
 

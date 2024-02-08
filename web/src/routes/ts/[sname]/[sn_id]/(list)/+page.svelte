@@ -48,10 +48,7 @@
 </script>
 
 {#if crepo.wn_id}
-  <RepoList
-    wn_id={crepo.wn_id}
-    pg_no={+$page.url.searchParams.get('pg')}
-    sname={crepo.sname} />
+  <RepoList wn_id={crepo.wn_id} pg_no={+$page.url.searchParams.get('pg')} sname={crepo.sname} />
 {/if}
 
 <header class="pinfo">
@@ -82,9 +79,8 @@
     <a href={crepo.rm_slink} class="m-link" target="_blank">
       <strong>nguồn ngoài</strong>
     </a>
-    khoảng <strong class="u-warn"><RTime mtime={crepo.mtime} /></strong>. Bấm
-    biểu tượng <SIcon name={'refresh'} /> phía trên để cập nhật lại nếu thấy cần
-    thiết.
+    khoảng <strong class="u-warn"><RTime mtime={crepo.mtime} /></strong>. Bấm biểu tượng <SIcon
+      name={'refresh'} /> phía trên để cập nhật lại nếu thấy cần thiết.
   </div>
 {/if}
 
@@ -100,9 +96,8 @@
       <strong class="u-warn">thanh toán vcoin</strong> để mở khoá.
     </span>
     <span
-      >Theo quyền hạn của bạn (<strong class="u-warn">{privi}</strong>), bạn cần
-      thanh toán
-      <x-vcoin>{price} <SIcon name="vcoin" iset="icons" /></x-vcoin>
+      >Cụ thể, bạn sẽ phải trả
+      <x-vcoin>0.01<SIcon name="vcoin" iset="icons" /></x-vcoin>
       cho mỗi một nghìn chữ khi mở khoá.</span>
   </div>
 
@@ -114,10 +109,7 @@
 
   <Footer>
     <div class="pager">
-      <Mpager
-        {pager}
-        pgidx={pg_no}
-        pgmax={Math.floor((crepo.chmax - 1) / 32) + 1} />
+      <Mpager {pager} pgidx={pg_no} pgmax={Math.floor((crepo.chmax - 1) / 32) + 1} />
     </div>
   </Footer>
 {:else}
@@ -125,17 +117,16 @@
     <h1>Chưa có text gốc.</h1>
 
     <p class="p-empty u-warn">
-      Hãy thử đổi sang các nguồn chương khác ở phía trên nếu có. Hoặc liên hệ
-      với ban quản trị thông qua các kênh thông tin
+      Hãy thử đổi sang các nguồn chương khác ở phía trên nếu có. Hoặc liên hệ với ban quản trị thông
+      qua các kênh thông tin
       <a class="m-link" href="https://www.facebook.com/chivi.fb">Facebook</a>
       hoặc <a class="m-link" href="https://discord.gg/mdC3KQH">Discord</a>
       để được hỗ trợ.
     </p>
 
     <p class="p-empty">
-      Nếu bạn có đủ quyền hạn, có thể bấm vào <a
-        href="/ts/{crepo.sroot}/+text"
-        class="m-link">Đăng tải</a> để tự thêm text gốc.
+      Nếu bạn có đủ quyền hạn, có thể bấm vào <a href="/ts/{crepo.sroot}/+text" class="m-link"
+        >Đăng tải</a> để tự thêm text gốc.
     </p>
   </div>
 {/if}
@@ -201,6 +192,7 @@
 
     > :global(svg) {
       font-size: 1.1em;
+      vertical-align: text-top;
     }
   }
 

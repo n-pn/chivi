@@ -19,36 +19,27 @@ class RD::ChinfoCtrl < AC::Base
 
   ###########
 
-  @[AC::Route::GET("/:sname/:sn_id/:ch_no/:p_idx")]
-  def show_path(sname : String, sn_id : String, ch_no : Int32, p_idx : Int32,
-                force : Bool = false, regen : Bool = false)
+  @[AC::Route::GET("/:sname/:sn_id/:ch_no")]
+  def show(sname : String, sn_id : String, ch_no : Int32, force : Bool = false, regen : Bool = false)
     crepo = Tsrepo.load!("#{sname}/#{sn_id}")
     cinfo = get_cinfo(crepo, ch_no)
-    ztext, cksum, p_max, error, ulkey, multp = build_cpart(crepo, cinfo, p_idx, force, regen)
+    ztext, cksum, error = load_chap(crepo, cinfo, force, regen)
     spawn { inc_view_count!(crepo, crepo.sname) } if error == 0
 
     json = {
       ch_no: cinfo.ch_no,
-      p_max: p_max,
-      p_idx: p_idx,
+      title: cinfo.vchdiv.empty? ? cinfo.vtitle : "#{cinfo.vtitle} - #{cinfo.vchdiv}",
 
-      title: cinfo.vtitle,
-      chdiv: cinfo.vchdiv,
-      rlink: cinfo.rlink,
+      ztext: error > 0 ? "" : ztext,
+      zsize: ztext.size,
+      cksum: cksum,
 
       error: error,
       plock: crepo.read_privi,
 
-      fpath: ulkey,
-      ztext: error > 0 ? "" : ztext,
-      zsize: ztext.size,
-
-      multp: multp,
+      rlink: cinfo.rlink,
       mtime: cinfo.mtime,
       uname: cinfo.uname,
-
-      _prev: prev_part(crepo, cinfo.ch_no, p_idx),
-      _next: next_part(crepo, cinfo.ch_no, p_idx, cinfo.psize),
     }
 
     render 200, json: json
@@ -57,48 +48,31 @@ class RD::ChinfoCtrl < AC::Base
     render 500, text: ex.message
   end
 
-  private def build_cpart(crepo, cinfo, p_idx, force, regen)
+  private def load_chap(crepo, cinfo, force, regen)
     vu_id, privi = self._vu_id, self._privi
-    user_multp, real_multp = crepo.chap_multp(cinfo.ch_no, vu_id: vu_id, privi: privi)
+    multp = vu_id == crepo.owner || cinfo.ch_no < crepo.free_until ? 0_i16 : 1_i16
 
-    ztext, cksum, p_max = crepo.load_raw_part(cinfo, p_idx, regen: regen)
-
-    if cinfo.cksum.empty?
-      ulkey = "#{crepo.sname}/#{crepo.sn_id}/#{cksum.to_s(32)}"
-    else
-      ulkey = "#{crepo.sroot}/#{cinfo.ch_no}-#{cinfo.cksum}-#{p_idx}"
-    end
+    ztext, cksum = crepo.load_ztext(cinfo, regen: regen)
+    ulkey = "#{crepo.sroot}/#{cinfo.ch_no}"
 
     if privi < crepo.read_privi
       error = 403
     elsif cksum == 0
       error = 414
-    elsif real_multp == 0 || Unlock.unlocked?(vu_id, ulkey, cksum.unsafe_as(Int32))
+    elsif multp == 0 || Unlock.unlocked?(vu_id, ulkey, cksum.unsafe_as(Int32))
       error = 0
     elsif force
       error = Unlock.new(
         vu_id: vu_id, ulkey: ulkey,
         owner: crepo.owner, zsize: ztext.size,
         cksum: cksum.unsafe_as(Int32),
-        user_multp: user_multp, real_multp: real_multp,
+        user_multp: multp, real_multp: multp,
       ).unlock!
     else
       error = 413
     end
 
-    {ztext, cksum, p_max, error, error > 0 ? "" : ulkey, user_multp}
-  end
-
-  private def prev_part(crepo, ch_no, p_idx)
-    return "#{ch_no}_#{p_idx &- 1}" if p_idx > 1
-    return "" unless pchap = Chinfo.find_prev(crepo.info_db, ch_no)
-    psize = pchap.psize
-    psize > 1 ? "#{pchap.ch_no}_#{psize}" : pchap.ch_no.to_s
-  end
-
-  private def next_part(crepo, ch_no : Int32, p_idx : Int32, psize : Int32)
-    return "#{ch_no}_#{p_idx &+ 1}" if p_idx < psize
-    Chinfo.find_next(crepo.info_db, ch_no).try(&.ch_no).to_s
+    {ztext, cksum, error}
   end
 
   private def inc_view_count!(crepo : Tsrepo, sname : String)

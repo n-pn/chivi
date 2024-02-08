@@ -5,22 +5,21 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   export let crepo: CV.Tsrepo
-  export let rdata: CV.Chpart
+  export let rdata: CV.Chinfo
   export let state = 0
 
-  $: search = crepo.zname ? `${crepo.zname} ${rdata.zname}` : ''
+  $: ztitle = rdata.ztext.split('\n')[0]
+  $: search = crepo.zname ? `${crepo.zname} ${ztitle}` : ''
 
-  let _loading = false
+  let _onload = false
 
-  const reload_chap = async () => {
-    _loading = true
+  const reinit_chap = async () => {
+    _onload = true
 
-    const { ch_no, p_idx } = rdata
-
-    const url = `/_rd/chaps/${crepo.sroot}/${ch_no}/${p_idx}?regen=true`
+    const url = `/_rd/chaps/${crepo.sroot}/${rdata.ch_no}?regen=true`
     const res = await fetch(url, { cache: 'no-cache' })
 
-    _loading = false
+    _onload = false
 
     if (res.ok) {
       state = 3
@@ -39,51 +38,50 @@
     <p class="u-warn">
       <em
         >Bạn chưa đăng nhập. Nếu bạn đã có tài khoản, đăng nhập tại đây: <a
+          class="m-link"
           href="/_u/login">Đăng nhập</a>
         . Nếu chưa có tài khoản, hãy đăng ký mới tại đây:
-        <a href="/_u/signup">Đăng ký tài khoản mới</a>
+        <a class="m-link" href="/_u/signup">Đăng ký tài khoản mới</a>
       </em>
     </p>
-  {:else if $_user.privi == -1}
+  {:else if $_user.privi < rdata.plock}
     <p class="u-warn">
-      Tài khoản của bạn chưa được kích hoạt, bạn cần nâng cấp lên ít nhất là 0
-      để xem các chương tiết chưa được tải xuống.
+      Bạn cần quyền hạn tối thiểu là {rdata.plock} để đọc nội dung của chương.
     </p>
   {/if}
 
   {#if crepo.stype == 1}
     <p>
-      Bạn đang đọc nội dung do người dùng Chivi tự quản lý. Thử liên hệ với chủ
-      sở hữu của dự án để họ tìm cách khắc phục.
+      Bạn đang đọc nội dung do người dùng Chivi tự quản lý. Thử liên hệ với chủ sở hữu của dự án để
+      họ tìm cách khắc phục.
     </p>
   {:else if crepo.stype == 2}
     <p>
-      Bạn đang xem chương tiết được liên kết với nguồn ngoài. Khả năng cao là do
-      nguồn ngoài đã chết nên text gốc không tải xuống được.
+      Bạn đang xem chương tiết được liên kết với nguồn ngoài. Khả năng cao là do nguồn ngoài đã chết
+      nên text gốc không tải xuống được.
     </p>
     <p>
-      Hãy thử đổi sang các nguồn nhúng ngoài khác, hoặc thử các danh sách chương
-      tiết khác được liên kết với bộ truyện.
+      Hãy thử đổi sang các nguồn nhúng ngoài khác, hoặc thử các danh sách chương tiết khác được liên
+      kết với bộ truyện.
     </p>
   {:else}
     <p>
-      Liên hệ ban quản trị để tìm cách khắc phục. Hoặc bạn có thể tự thêm text
-      gốc cho chương nếu đủ quyền hạn.
+      Liên hệ ban quản trị để tìm cách khắc phục. Hoặc bạn có thể tự thêm text gốc cho chương nếu đủ
+      quyền hạn.
     </p>
   {/if}
 
   {#if rdata.rlink}
     <p>
-      Chương tiết có liên kết tới trang ngoài. Bấm <a
-        href={rdata.rlink}
-        target="_blank">vào đây</a> để kiểm tra xem nguồn còn sống hay không. Nếu
-      nguồn còn sống, hãy thử bấm vào [Tải lại nguồn] phía dưới.
+      Chương tiết có liên kết tới trang ngoài. Bấm <a href={rdata.rlink} target="_blank">vào đây</a>
+      để kiểm tra xem nguồn còn sống hay không. Nếu nguồn còn sống, hãy thử bấm vào [Tải lại nguồn] phía
+      dưới.
     </p>
     <p>
       <em
-        >Lưu ý: Một số nguồn còn sống, nhưng có cài đặt tường lửa phía trước thì
-        hệ thống cũng không tải xuống được. Một số nguồn khác có thể cấm truy
-        cập theo vùng địa lý. Liên hệ với ban quản trị nếu còn gặp lỗi.
+        >Lưu ý: Một số nguồn còn sống, nhưng có cài đặt tường lửa phía trước thì hệ thống cũng không
+        tải xuống được. Một số nguồn khác có thể cấm truy cập theo vùng địa lý. Liên hệ với ban quản
+        trị nếu còn gặp lỗi.
       </em>
     </p>
   {/if}
@@ -92,7 +90,7 @@
   {#if $_user.privi >= crepo.plock}
     <p>
       Bạn có đủ quyền hạn để thêm text gốc cho bộ truyện, bấm vào nút
-      <a href="up?start={rdata.ch_no}">Thêm text gốc</a>
+      <a href="+text?start={rdata.ch_no}">Thêm text gốc</a>
       bên dưới để tự thêm text của chương.
     </p>
 
@@ -100,15 +98,10 @@
       <p class="flow">
         <em>
           Gợi ý: Thử tìm text gốc thông qua
-          <a
-            href="https://www.google.com/search?q={search}"
-            target="_blank"
-            rel="noreferrer">Google</a>
+          <a href="https://www.google.com/search?q={search}" target="_blank" rel="noreferrer"
+            >Google</a>
           hoặc
-          <a
-            href="https://www.baidu.com/s?wd={search}"
-            target="_blank"
-            rel="noreferrer">Baidu</a>
+          <a href="https://www.baidu.com/s?wd={search}" target="_blank" rel="noreferrer">Baidu</a>
           .
         </em>
       </p>
@@ -116,56 +109,50 @@
   {:else if crepo.stype < 1}
     <p>
       Các danh sách chương tiết <x-sname>Tổng hợp</x-sname>,
-      <x-sname>Tạm thời</x-sname> và <x-sname>Chính thức</x-sname> của truyện chữ
-      cho phép các bạn tải text gốc lên nếu bạn có đủ quyền hạn.
+      <x-sname>Tạm thời</x-sname> và <x-sname>Chính thức</x-sname> của truyện chữ cho phép các bạn tải
+      text gốc lên nếu bạn có đủ quyền hạn.
     </p>
 
     <p>
-      Để nâng cấp quyền hạn bạn có thể tham khảo: <a
-        href="/hd/nang-cap-quyen-han"
-        target="_blank">Hướng dẫn nâng cấp quyền hạn</a
+      Để nâng cấp quyền hạn bạn có thể tham khảo: <a href="/hd/nang-cap-quyen-han" target="_blank"
+        >Hướng dẫn nâng cấp quyền hạn</a
       >.
     </p>
   {:else if crepo.stype == 2}
     <p>Chương tiết do chủ sưu tầm quản lý.</p>
   {:else}
     <p>
-      Text từ nguồn nhúng ngoài thường được tải tự động, nhưng bạn có thể tự sửa
-      text gốc nếu quyền hạn của bạn tối thiểu là <strong class="u-warn"
-        >3</strong>
+      Text từ nguồn nhúng ngoài thường được tải tự động, nhưng bạn có thể tự sửa text gốc nếu quyền
+      hạn của bạn tối thiểu là <strong class="u-warn">3</strong>
     </p>
 
     <p>
-      Để nâng cấp quyền hạn bạn có thể tham khảo: <a
-        href="/hd/nang-cap-quyen-han"
-        target="_blank">Hướng dẫn nâng cấp quyền hạn</a
+      Để nâng cấp quyền hạn bạn có thể tham khảo: <a href="/hd/nang-cap-quyen-han" target="_blank"
+        >Hướng dẫn nâng cấp quyền hạn</a
       >.
     </p>
   {/if}
 
   <div class="actions">
-    <a class="m-btn _primary _fill" href="up?start={rdata.ch_no}">
+    <a class="m-btn _primary _fill" href="+text?start={rdata.ch_no}">
       <SIcon name="edit" />
       <span>Thêm text gốc</span>
+      <SIcon name="privi-0" iset="icons" />
     </a>
 
     <button
       class="m-btn _harmful"
-      on:click={reload_chap}
+      on:click={reinit_chap}
       disabled={$_user.privi < 0 || !rdata.rlink}
       data-umami-event="reinit-chap">
-      <SIcon name="rotate-rectangle" spin={_loading} />
+      <SIcon name="rotate-rectangle" spin={_onload} />
       <span>Tải lại nguồn</span>
+      <SIcon name="privi-0" iset="icons" />
     </button>
   </div>
 
   <div class="actions">
-    <a
-      class="m-btn _success"
-      href="https://discord.gg/mdC3KQH"
-      target="_blank"
-      rel="noreferrer"
-      data-umami-event="goto-discord">
+    <a class="m-btn _success" href="https://discord.gg/mdC3KQH" target="_blank" rel="noreferrer">
       <SIcon name="brand-discord" />
       <span>Liên hệ ban quản trị</span>
     </a>

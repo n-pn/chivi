@@ -10,13 +10,12 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Gmenu from '$gui/molds/Gmenu.svelte'
   import Footer from '$gui/sects/Footer.svelte'
+  import Reader from '$gui/shared/reader/Reader.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
 
   $: ({ crepo, rdata, ropts, rmemo } = data)
-
-  import Reader from '$gui/shared/reader/Reader.svelte'
 
   $: ch_no = rdata.ch_no
   $: pg_no = _pgidx(ch_no)
@@ -24,33 +23,26 @@
   $: base_path = `/ts/${crepo.sroot}`
   $: memo_path = pg_no < 2 ? base_path : base_path + '?pg=' + pg_no
 
-  $: prev_path = rdata._prev
-    ? chap_path(base_path, rdata._prev, ropts)
-    : memo_path
+  $: prev_path = ch_no > 1 ? chap_path(base_path, ch_no - 1, ropts) : base_path
+  $: next_path = ch_no < crepo.chmax ? chap_path(base_path, ch_no + 1, ropts) : memo_path
 
-  $: next_path = rdata._next
-    ? chap_path(base_path, rdata._next, ropts)
-    : memo_path
-
-  afterNavigate(async () => await save_rmchap())
+  afterNavigate(async () => await save_chmemo())
 
   const main_menu_icon = ({ ch_no }, { lc_mtype, lc_ch_no }) => {
     if (ch_no == lc_ch_no) return ['list', 'bookmark', 'pin'][lc_mtype]
     return ['list', 'bookmark-off', 'pinned-off'][lc_mtype]
   }
 
-  const save_rmchap = async (mtype = -1) => {
+  const save_chmemo = async (mtype = -1) => {
     $rmemo = await mark_rdchap($rmemo, rdata, ropts, mtype)
   }
 
   let _onload = false
 
-  const reload_chap = async () => {
+  const reseed_chap = async () => {
     _onload = true
 
-    const { ch_no, p_idx } = rdata
-
-    const url = `/_rd/chaps/${crepo.sroot}/${ch_no}/${p_idx}?regen=true`
+    const url = `/_rd/chaps/${crepo.sroot}/${crepo.ch_no}?regen=true`
     const res = await fetch(url, { cache: 'no-cache' })
 
     _onload = false
@@ -74,11 +66,7 @@
 
 <Footer>
   <div class="navi">
-    <a
-      href={prev_path}
-      class="m-btn _primary navi-item"
-      class:_disable={!rdata._prev}
-      data-kbd="⌃←">
+    <a href={prev_path} class="m-btn _primary navi-item" class:_disable={ch_no < 2} data-kbd="⌃←">
       <SIcon name="chevron-left" />
       <span>Trước</span>
     </a>
@@ -97,19 +85,18 @@
 
         <a
           class="gmenu-item"
-          class:_disable={$_user.privi < 1}
+          class:_disable={$_user.privi < 0}
           href="{base_path}/+text?ch_no={ch_no}">
           <SIcon name="pencil" />
           <span>Sửa text gốc</span>
+          <SIcon class="u-right" name="privi-0" iset="icons" />
         </a>
 
         {#if rdata.rlink}
-          <button
-            class="gmenu-item"
-            disabled={$_user.privi < 1}
-            on:click={reload_chap}>
+          <button class="gmenu-item" disabled={$_user.privi < 0} on:click={reseed_chap}>
             <SIcon name="rotate-rectangle" spin={_onload} />
             <span>Tải lại nguồn</span>
+            <SIcon class="u-right" name="privi-0" iset="icons" />
           </button>
         {/if}
 
@@ -117,11 +104,10 @@
           {#each mark_types as [icon, hint], mtype}
             <button
               class="mchap"
-              class:_active={ch_no == $rmemo.lc_ch_no &&
-                mtype == $rmemo.lc_mtype}
+              class:_active={ch_no == $rmemo.lc_ch_no && mtype == $rmemo.lc_mtype}
               disabled={$_user.privi < 0}
               data-tip={hint}
-              on:click={() => save_rmchap(mtype)}>
+              on:click={() => save_chmemo(mtype)}>
               <SIcon name={icon} />
             </button>
           {/each}
@@ -145,7 +131,7 @@
     <a
       href={next_path}
       class="m-btn _fill navi-item"
-      class:_primary={rdata._next}
+      class:_primary={ch_no <= crepo.chmax}
       data-key="75"
       data-kbd="⌃→">
       <span>Kế tiếp</span>
