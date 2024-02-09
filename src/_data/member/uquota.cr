@@ -73,8 +73,14 @@ class Uquota
     self.find(vu_id, idate) || begin
       model = new(vu_id, idate)
 
-      privi = @@db.query_one "select privi from viusers where id = $1", vu_id, as: Int32
-      model.privi_bonus = 100_000 * 2 << (privi - 1)
+      if vu_id > 0
+        query = "select coalesce(privi, -1) from viusers where id = $1"
+        privi = @@db.query_one(query, vu_id, as: Int32)
+      else
+        privi = -1
+      end
+
+      model.privi_bonus = privi >= 0 ? 100_000 * 2 ** privi : 50_000
 
       model.upsert!
     end
