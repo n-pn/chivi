@@ -1,11 +1,12 @@
 <div class="app-vessel">
-  <div class="pledge">
-    <em class="u-warn">
-      Thông báo mới nhất: Nhân dịp năm mới, quyền hạn của mỗi thành viên sẽ được
-      +1. Hạn chế về yêu cầu quyền hạn không đổi. Chi tiết liên hệ các kênh liên
-      lạc bên dưới.
-    </em>
-  </div>
+  <a class="pledge" href="/me/event/li-xi">
+    <strong class="u-warn">
+      <em>
+        Bấm vào đây để nhận lì xì mừng năm mới. Chương trình sẽ kéo dài tới hết ngày mồng 3 tết Âm
+        lịch.
+      </em>
+    </strong>
+  </a>
 </div>
 
 <style lang="scss">

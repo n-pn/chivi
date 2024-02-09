@@ -1,3 +1,4 @@
+import { error, type NumericRange } from '@sveltejs/kit'
 import type { PageLoad } from './$types'
 
 export const load = (async ({ fetch, url: { searchParams } }) => {
@@ -7,14 +8,18 @@ export const load = (async ({ fetch, url: { searchParams } }) => {
   const sort = searchParams.get('sort') || '-mtime'
   const user = searchParams.get('user')
 
-  let api_url = `/_db/li-xi/2023?pg=${pg}&lm=${lm}&sort=${sort}`
+  let api_url = `/_db/li-xi/tet-2024?pg=${pg}&lm=${lm}&sort=${sort}`
   if (user) api_url += `&user=${user}`
 
-  const { rolls, pg_no, avail } = await fetch(api_url).then((r) => r.json())
+  const res = await fetch(api_url)
+  if (!res.ok) throw error(res.status as NumericRange<400, 599>, await res.text())
+  const { rolls, pg_no, avail } = await res.json()
 
-  const _meta = {
-    left_nav: [{ text: 'Lì xì năm mới', icon: 'gift', href: '/li-xi' }],
-  } satisfies App.PageMeta
-
-  return { rolls, pg_no, avail, _meta, _title: 'Chúc mừng năm mới!' }
+  return {
+    rolls,
+    pg_no,
+    avail,
+    _navs: [{ text: 'Lì xì năm mới', icon: 'gift', href: '/me/event/li-xi' }],
+    _meta: { title: 'Lì xì năm mới' },
+  }
 }) satisfies PageLoad

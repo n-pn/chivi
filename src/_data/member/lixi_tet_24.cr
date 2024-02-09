@@ -33,6 +33,32 @@ class CV::LixiTet24
 
   def self.roll_count(uname : String)
     stmt = "select count(*) from rolls where uname = $1"
-    open_db(&.query_one(stmt, uname, as: Int32))
+    @@db.open_ro(&.query_one(stmt, uname, as: Int32))
+  end
+
+  def self.get_rolls(limit : Int32, offset : Int32, uname : String?, sort : String = "")
+    Log.info { [limit, offset, uname, sort] }
+    @@db.open_ro do |db|
+      args = [] of String | Int32
+
+      query = String.build do |sql|
+        sql << "select * from rolls"
+
+        if uname
+          args << uname
+          sql << " where uname = $1"
+        end
+
+        case sort
+        when "-vcoin" then sql << " order by vcoin desc"
+        else               sql << " order by id desc"
+        end
+
+        sql << " limit $#{args.size + 1} offset $#{args.size + 2}"
+        args << limit << offset
+      end
+
+      db.query_all query, args: args, as: self
+    end
   end
 end

@@ -16,11 +16,11 @@
       _msg = await res.text()
       _stt = 'err'
     } else {
-      const data = await res.json()
+      const rdata = await res.json()
       _stt = 'ok'
-      _msg = `Chúc mừng, bạn đã nhận được ${data.roll.vcoin} vcoin!`
-      rolls = data.rolls
-      avail = data.avail
+      _msg = `Chúc mừng, bạn đã nhận được ${rdata.vcoin} vcoin!`
+      rolls = rdata.rolls
+      avail = rdata.avail
     }
   }
 
@@ -29,19 +29,15 @@
 </script>
 
 <article class="article island md-post">
-  <h1>Chúc mừng năm mới!</h1>
-  <p class="tip">
+  <h1>Chúc mừng năm mới 2024!</h1>
+  <p class="u-warn">
     <em
-      >Bấm nút bên dưới để nhận lì xì. Bạn sẽ nhận được ngẫu nhiên từ 1 tới 20
-      vcoin từ mỗi lượt bấm. Số lượt bấm của bạn được tính bằng quyền hạn của
-      bạn + 1.</em>
+      >Bấm nút bên dưới để nhận lì xì. Bạn sẽ nhận được ngẫu nhiên từ 1 tới 50 vcoin từ mỗi lượt
+      bấm. Số lượt bấm của bạn được tính bằng quyền hạn của bạn + 1.</em>
   </p>
 
   <div class="roll">
-    <button
-      class="m-btn _xl _fill _harmful"
-      on:click={roll}
-      disabled={avail < 1}>
+    <button class="m-btn _xl _fill _harmful" on:click={roll} disabled={avail < 1}>
       <SIcon name="gift" />
       <span>Nhận lì xì</span>
     </button>
@@ -52,9 +48,9 @@
   <table>
     <thead>
       <tr>
-        <th><a href="/li-xi">#</a></th>
+        <th><a href="/me/event/li-xi">#</a></th>
         <th>Người nhận</th>
-        <th><a href="/li-xi?sort=-vcoin">Số vcoin</a></th>
+        <th><a href="/me/event/li-xi?sort=-vcoin">Số vcoin</a></th>
         <th>Thời gian</th>
       </tr>
     </thead>
@@ -63,7 +59,7 @@
       {#each rolls as { id, uname, vcoin, mtime }}
         <tr>
           <td>{id}</td>
-          <td><a href="/li-xi?user={uname}">{uname}</a></td>
+          <td><a href="/me/event/li-xi?user={uname}">{uname}</a></td>
           <td>{vcoin}</td>
           <td>{rel_time(mtime)}</td>
         </tr>
@@ -73,14 +69,6 @@
 </article>
 
 <style lang="scss">
-  article {
-    margin-top: var(--gutter);
-  }
-
-  .tip {
-    @include fgcolor(warning, 5);
-  }
-
   p {
     margin-top: 0.5rem;
   }
