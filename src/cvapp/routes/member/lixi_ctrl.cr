@@ -18,7 +18,7 @@ class CV::LixiCtrl < CV::BaseCtrl
     }
   end
 
-  EXPIRY = Time.utc(2024, 2, 10, 7, 0, 0)
+  EXPIRY = Time.local(2024, 2, 13, 1, 0, 0)
 
   @[AC::Route::PUT("/roll")]
   def roll

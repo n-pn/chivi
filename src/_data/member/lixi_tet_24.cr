@@ -50,7 +50,9 @@ class CV::LixiTet24
         end
 
         case sort
+        when "vcoin"  then sql << " order by vcoin asc"
         when "-vcoin" then sql << " order by vcoin desc"
+        when "mtime"  then sql << " order by id asc"
         else               sql << " order by id desc"
         end
 

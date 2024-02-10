@@ -43,6 +43,10 @@ class CV::XvcoinCtrl < CV::BaseCtrl
       raise BadRequest.new("Người bạn muốn tặng vcoin không tồn tại")
     end
 
+    if target.id == _viuser.id
+      raise BadRequest.new("Bạn không thể tặng vcoin cho bản thân!")
+    end
+
     if _viuser.vcoin < xform.amount
       raise BadRequest.new("Số vcoin khả dụng của bạn ít hơn số vcoin bạn muốn tặng")
     end
