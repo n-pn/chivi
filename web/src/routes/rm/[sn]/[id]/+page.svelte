@@ -6,7 +6,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ rstem, binfo, chaps } = data)
+  $: ({ rstem, binfo, chaps, rmemo, crepo } = data)
 
   $: intro = rstem.intro_vi || rstem.intro_zh
   $: dhtml = intro
@@ -64,7 +64,7 @@
     <span>Chương mới nhất:</span>
     <a href={repo_path} class="sub-link">Xem tất cả</a>
   </h3>
-  <ChapList {chaps} bhref={repo_path} />
+  <ChapList {crepo} rmemo={$rmemo} {chaps} />
 </section>
 
 <style lang="scss">

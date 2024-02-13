@@ -9,11 +9,10 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import RTime from '$gui/atoms/RTime.svelte'
   import Footer from '$gui/sects/Footer.svelte'
+  import ChapList from '$gui/parts/wnchap/ChapList.svelte'
   import RepoList from '$gui/shared/wnovel/RepoList.svelte'
 
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
-
-  import ChapList from './ChapList.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData

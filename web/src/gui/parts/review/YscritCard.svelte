@@ -27,7 +27,7 @@
   const check_locking = (stars = 3): [number, string, string] => {
     if (stars == 5) return [-1, 'đăng nhập', 'bình luận 5 sao']
     if (stars < 4) return [1, 'quyền hạn tối thiểu là 1', 'tất cả các bình luận']
-    return [0, 'kích hoạt tài khoản', 'bình luận từ 4 sao trở lên']
+    return [0, 'đăng nhập', 'bình luận từ 4 sao trở lên']
   }
 
   crit.stars < 4 ? 10 : crit.stars > 4 ? 5 : 0
@@ -35,7 +35,7 @@
 
 <section class="crit island">
   <header>
-    <a class="m-meta _user" href="/uc/crits?from=ys&user={user.id}">{user.uname}</a>
+    <a class="m-meta _user" href="/uc/crits?og=ysapp&by={user.id}">{user.uname}</a>
     <span class="m-meta">&middot;</span>
     <a class="m-meta" href="/mt/qtran/yc{crit.id}">
       <span>{rel_time(crit.utime)}{crit.utime != crit.ctime ? '*' : ''}</span>

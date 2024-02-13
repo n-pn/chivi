@@ -5,11 +5,12 @@ declare namespace CV {
     title: string
     chdiv: string
 
-    psize: number
     mtime: number
+    zsize: number
 
-    flags: string
     rlink: string
+
+    uname: string
   }
 
   interface Chlist extends Paginate {

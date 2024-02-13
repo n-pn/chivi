@@ -91,13 +91,14 @@ class RD::Chinfo
   def to_json(jb : JSON::Builder)
     jb.object {
       jb.field "ch_no", @ch_no
-      jb.field "psize", self.psize
+      jb.field "zsize", self.sizes.sum
 
       jb.field "title", @vtitle.empty? ? @ztitle : @vtitle
       jb.field "chdiv", @vchdiv.empty? ? @zchdiv : @vchdiv
 
       jb.field "mtime", @mtime
       jb.field "uname", @uname
+      jb.field "rlink", @rlink
 
       # jb.field "flags", Chflag.new(@_flag).to_s
     }

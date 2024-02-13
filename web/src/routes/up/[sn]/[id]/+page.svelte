@@ -6,7 +6,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ ustem, binfo, chaps } = data)
+  $: ({ ustem, binfo, chaps, rmemo } = data)
 
   $: intro = ustem.vdesc || ''
   $: dhtml = intro
@@ -63,7 +63,7 @@
     <span>Chương mới nhất:</span>
     <a href={repo_path} class="sub-link">Xem tất cả</a>
   </h3>
-  <ChapList {chaps} bhref={repo_path} />
+  <ChapList crepo={data.crepo} rmemo={$rmemo} {chaps} />
 </section>
 
 <style lang="scss">
