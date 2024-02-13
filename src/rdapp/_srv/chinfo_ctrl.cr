@@ -23,7 +23,7 @@ class RD::ChinfoCtrl < AC::Base
   def show(sname : String, sn_id : String, ch_no : Int32, force : Bool = false, regen : Bool = false)
     crepo = Tsrepo.load!("#{sname}/#{sn_id}")
     cinfo = get_cinfo(crepo, ch_no)
-    ztext, cksum, error = load_chap(crepo, cinfo, force, regen)
+    ztext, cksum, error, multp = load_chap(crepo, cinfo, force, regen)
     spawn { inc_view_count!(crepo, crepo.sname) } if error == 0
 
     json = {
@@ -35,7 +35,8 @@ class RD::ChinfoCtrl < AC::Base
       cksum: cksum,
 
       error: error,
-      plock: crepo.read_privi,
+      plock: crepo.read_privi(cinfo.ch_no),
+      multp: multp,
 
       rlink: cinfo.rlink,
       mtime: cinfo.mtime,
@@ -50,29 +51,30 @@ class RD::ChinfoCtrl < AC::Base
 
   private def load_chap(crepo, cinfo, force, regen)
     vu_id, privi = self._vu_id, self._privi
-    multp = vu_id == crepo.owner || cinfo.ch_no < crepo.free_until ? 0_i16 : 1_i16
+
+    user_cost, owner_got = crepo.mt_multp(cinfo.ch_no, vu_id, privi)
 
     ztext, cksum = crepo.load_ztext(cinfo, regen: regen)
     ulkey = "#{crepo.sroot}/#{cinfo.ch_no}"
 
-    if privi < crepo.read_privi
+    if privi < crepo.read_privi(cinfo.ch_no)
       error = 403
     elsif cksum == 0
       error = 414
-    elsif multp == 0 || Unlock.unlocked?(vu_id, ulkey, cksum.unsafe_as(Int32))
+    elsif user_cost == 0 || Unlock.unlocked?(vu_id, ulkey, cksum.unsafe_as(Int32))
       error = 0
     elsif force
       error = Unlock.new(
         vu_id: vu_id, ulkey: ulkey,
         owner: crepo.owner, zsize: ztext.size,
         cksum: cksum.unsafe_as(Int32),
-        user_multp: multp, real_multp: multp,
+        user_multp: user_cost, real_multp: owner_got,
       ).unlock!
     else
       error = 413
     end
 
-    {ztext, cksum, error}
+    {ztext, cksum, error, user_cost}
   end
 
   private def inc_view_count!(crepo : Tsrepo, sname : String)

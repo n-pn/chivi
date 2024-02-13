@@ -51,14 +51,15 @@ class RD::Unlock
       uquota.add_vcoin_bonus!(@user_lost * 100)
     end
 
-    if @owner > 0
+    if @owner > 0 && @owner_got > 0
       CV::Xvcoin.increase(vu_id: @owner, value: @owner_got / 1000)
     end
 
     self.upsert!(db: db)
 
     0
-  rescue
+  rescue ex
+    Log.error(exception: ex) { self.to_json }
     500
   end
 

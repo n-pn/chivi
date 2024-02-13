@@ -178,7 +178,7 @@
           disabled={chaps.length == 0 || $_user.privi < 0}
           on:click={translate}>
           <SIcon name="language" />
-          <span>Dịch đoạn văn</span>
+          <span>Dịch văn bản</span>
         </button>
       {:else if state == 1}
         <button class="m-btn _primary _fill" disabled>

@@ -8,7 +8,7 @@
   export let rdata: CV.Chinfo
   export let state = 0
 
-  $: vcost = Math.round(rdata.zsize / 100) / 1000
+  $: vcost = (Math.round(rdata.zsize / 100) / 1000) * rdata.multp
 
   let msg_text = ''
   let msg_type = ''

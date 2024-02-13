@@ -55,26 +55,26 @@ def call_qt(inp_dir, wndic = "combine")
 
     if File.file?(tmp_path)
       output << File.read(tmp_path)
-      next
-    end
+    else
+      File.open(tmp_path, "w") do |file|
+        title = true
+        File.each_line(inp_file) do |line|
+          next if line.empty?
 
-    sleep 500.millisecond
+          data = title ? engine.cv_chead(line) : engine.cv_plain(line)
+          data.to_txt(file)
 
-    title = true
+          file.puts if title
+          file.puts
 
-    File.open(tmp_path, "w") do |file|
-      File.each_line(inp_file) do |line|
-        next if line.empty?
-
-        data = title ? engine.cv_chead(line) : engine.cv_plain(line)
-        data.to_txt(file)
-
-        file.puts if title
-        file.puts
-
-        title = false
+          title = false
+        end
       end
+
+      sleep 500.millisecond
     end
+
+    output << File.read(tmp_path)
   end
 
   out_path = "#{inp_dir}.qt_v1.txt"
@@ -92,7 +92,11 @@ inputs = [
   # {"@Kak31", 878, "hua-tien-chi", "qt_v1", "wn350"},
   # {"@Kak31", 886, "ma-hon-khai-lam", "qt_v1", "wn5344"},
   # {"@Kak31", 143, "ngu-lac-xuan-thu", "qt_v1", "wn26017"},
-  {"@Numeron", 1234, "thau-huong-cao-thu", "qt_v1", "wn7567"},
+  # {"@Numeron", 1234, "thau-huong-cao-thu", "qt_v1", "wn7567"},
+  # {"@Kak31", 659, "ngoc-dich-bach-ma", "qt_v1", "wn106581"},
+  # {"@Kak31", 805, "huyen-mi-kiem", "qt_v1", "wn110743"},
+  # {"@Numeron", 1314, "nga-gia-nuong-tu-bat-thi-yeu", "qt_v1", "wn1314"},
+  {"@Kak31", 1626, "ma-mon-yeu-nu", "qt_v1", "wn123863"},
 ]
 
 output = inputs.map do |sname, sn_id, fname, mtype, margs|

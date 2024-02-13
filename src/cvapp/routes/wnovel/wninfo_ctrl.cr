@@ -14,8 +14,8 @@ class CV::WninfoCtrl < CV::BaseCtrl
     pg_no, limit, offset = _paginate(max: 100)
     query = Wninfo.query.sort_by(order)
 
-    query.filter_btitle(btitle) if btitle
-    query.filter_author(author) if author
+    query.filter_btitle(btitle.strip) if btitle
+    query.filter_author(author.strip) if author
     query.filter_origin(from) if from
 
     query.filter_genres(genres)

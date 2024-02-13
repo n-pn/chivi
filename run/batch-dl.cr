@@ -2,25 +2,21 @@ require "http/client"
 require "log"
 require "colorize"
 
-def download(link, label = "")
-  uri = URI.parse(link)
-  path = uri.path.split('/')
-  hash, name = path[-2], path[-1]
+def download(link, fpath, label = "")
+  host = URI.parse(link).hostname
 
-  fname = "#{hash[0..6]}-#{URI.decode(name)}"
-  out_path = "#{OUT_DIR}/#{fname}"
-
-  return {out_path, -1} if File.file?(out_path)
+  out_path = "#{OUT_DIR}/#{fpath}"
+  return {out_path, -1_i64} if File.file?(out_path)
 
   HTTP::Client.get(link) do |res|
-    if !res.success?
-      Log.warn { "<#{label}> #{fname} invalid, skipping!".colorize.red }
-      File.open("#{uri.hostname}-to_redo.txt", "a", &.puts(link))
-      return {out_path, -1}
-    end
+    res_size = res.headers["Content-Length"].to_i64
+    Log.info { "<#{label}> #{fpath} #{res_size.humanize}" }
 
-    res_size = res.headers["Content-Length"].to_i
-    Log.info { "<#{label}> #{fname} #{res_size.humanize}" }
+    if !res.success? || res_size > 30_000_000
+      Log.warn { "<#{label}> #{fpath} is either invalid or too large, skipping!".colorize.red }
+      File.open("#{host}-redo.tsv", "a", &.puts("#{fpath}\t#{link}"))
+      return {out_path, -1_i64}
+    end
 
     tmp_path = "#{out_path}-tmp"
     File.open(tmp_path, "wb") { |file_io| IO.copy(res.body_io, file_io) }
@@ -28,31 +24,36 @@ def download(link, label = "")
     sleep 50.milliseconds # ensure file is flushed fully
     tmp_size = File.size(tmp_path)
 
-    if tmp_size == res_size && tmp_size > 368
+    if tmp_size == res_size
       File.rename(tmp_path, out_path)
       return {out_path, res_size}
     end
 
     Log.error { "#{out_path} size mismatch (src: #{res_size}, dst: #{tmp_size})".colorize.red }
     Log.info { link.colorize.yellow }
-    File.open("to_redo.txt", "a", &.puts(link))
+    File.open("too_large-#{host}.txt", "a", &.puts("#{fpath}\t#{link}"))
 
     err_file = "#{out_path}.err"
     File.delete?(err_file)
     File.rename(tmp_path, err_file)
 
     {out_path, res_size}
+  rescue
+    {out_path, -1_i64}
   end
 end
 
 def download_all(host, links : Array(String), threads = 5)
   threads = {links.size, threads}.min
 
-  pending = Channel({String, String}).new(links.size)
-  results = Channel({String, Int32}).new(threads)
+  pending = Channel({String, String, String}).new(links.size)
+  results = Channel({String, Int64}).new(threads)
 
   spawn do
-    links.each_with_index(1) { |link, idx| pending.send({link, "#{idx}/#{links.size}"}) }
+    links.each_with_index(1) do |line, idx|
+      link, name = line.split('\t')
+      pending.send({link, name, "#{idx}/#{links.size}"})
+    end
   end
 
   threads.times do
@@ -67,19 +68,9 @@ def download_all(host, links : Array(String), threads = 5)
   end
 end
 
-links = File.read_lines(ARGV[0]).reject!(&.blank?).uniq!
 OUT_DIR = ARGV[1]? || "download"
 
-queues = links.group_by { |link| URI.parse(link).hostname }
+host = File.basename(ARGV[0], ".tsv")
+list = File.read_lines(ARGV[0]).reject!(&.blank?).uniq!.shuffle!
 
-out_ch = Channel(Nil).new(queues.size)
-
-queues.each do |host, links|
-  spawn do
-    puts host
-    download_all(host, links)
-    out_ch.send(nil)
-  end
-end
-
-queues.size.times { out_ch.receive }
+download_all(host, list)

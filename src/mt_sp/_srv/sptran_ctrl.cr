@@ -14,9 +14,10 @@ class SP::TranCtrl < AC::Base
   def tl_text(qkind : String, pd pdict = "combine", op otype = "mtl",
               rg regen : Int32 = 0, hs h_sep : Int32 = 1, ls l_sep : Int32 = 0)
     ztext = self._read_body
-    if ztext.size > 3000 &+ 1000 * self._privi
-      raise BadRequest.new("Nội dung dịch không hợp lệ!")
-    end
+    # Log.info { ztext.size }
+    # if ztext.size > 3000 &+ 2000 * self._privi
+    #   raise BadRequest.new("Nội dung dịch không hợp lệ!")
+    # end
 
     qdata = QtData.from_ztext(ztext)
     qdata.set_opts(pdict, regen, h_sep, l_sep, otype)

@@ -10,7 +10,7 @@ export const load = (async ({ url, fetch, parent, params }) => {
   const lasts = await api_get<CV.Wnchap[]>(`${rdurl}?lm=4&_last=true`, fetch)
 
   const { crepo } = await parent()
-  const _title = `Chương tiết - ${crepo.vname}`
+  const title = `Chương tiết - ${crepo.vname}`
 
-  return { chaps, lasts, pg_no, _title, ontab: 'ch' }
+  return { chaps, lasts, pg_no, _meta: { title }, ontab: 'ch' }
 }) satisfies PageLoad

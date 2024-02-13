@@ -60,8 +60,12 @@ class RD::Tsrepo
     end
   end
 
-  def read_privi
-    @stype > 1 ? 0 : -1
+  # def read_privi
+  #   @stype > 1 ? 0 : -1
+  # end
+
+  def read_privi(ch_no : Int32)
+    ch_no > 48 ? 0_i16 : -1_i16
   end
 
   def conf_privi(vu_id : Int32 = 0)
@@ -95,11 +99,12 @@ class RD::Tsrepo
 
     if !ztext
       ztext = cinfo.ztitle
-    elsif ztext.starts_with?('/')
-      ztext = ztext.sub(/^\/{3,}.*\n/, "")
+      cksum = 0_u32
+    else
+      ztext = ztext.sub(/^\/{3,}.*\n/, "") if ztext.starts_with?('/')
+      cksum = HashUtil.fnv_1a(ztext)
     end
 
-    cksum = HashUtil.fnv_1a(ztext)
     {ztext, cksum}
   end
 
@@ -175,8 +180,7 @@ class RD::Tsrepo
   end
 
   def free_until : Int32
-    auto_free = @chmax // 4
-    auto_free < 150 ? auto_free : 150
+    {@chmax // 4, 120}.min
   end
 
   @[AlwaysInline]
@@ -184,10 +188,25 @@ class RD::Tsrepo
     ch_no < self.free_until
   end
 
-  # returning user multp and real multp
-  def chap_multp(ch_no : Int32, vu_id : Int32, privi : Int32)
-    return {0_i16, 0_i16} if free_chap?(ch_no)
-    vu_id == @owner ? {1_i16, 0_i16} : {5_i16 &- privi, 4_i16}
+  # returning user_cost multp and owner_get multp
+  #
+  def mt_multp(ch_no : Int32, vu_id : Int32, privi : Int32)
+    return {0_i16, 0_i16} if ch_no <= self.free_until || self.multp == -1
+
+    user_cost = privi > 3 ? 0_i16 : privi > 2 ? 1_i16 : 2_i16
+    owner_got = 1_i16
+
+    case @sname[0]?
+    when '~'
+      user_cost &-= 1_i16
+    when '@'
+      if vu_id == @owner
+        owner_got &-= 1_i16
+        user_cost &-= 1_i16
+      end
+    end
+
+    {user_cost > 0 ? user_cost : 0_i16, owner_got}
   end
 
   ###

@@ -26,6 +26,7 @@ declare namespace CV {
 
     error: number
     plock: number
+    multp: number
 
     rlink: string
     mtime: number

@@ -42,9 +42,18 @@
     }
   }
 
-  $: gifts = crepo.chmax > 600 ? 150 : Math.floor(crepo.chmax / 4)
-  $: privi = data._user.privi
-  $: price = (5 - privi - 1) * 0.005
+  $: gifts = crepo.chmax > 480 ? 120 : Math.floor(crepo.chmax / 4)
+  $: vcost = calc_vcost(crepo, $_user) * 0.01
+
+  const calc_vcost = ({ sname }, { privi, uname }) => {
+    if (privi > 3) return 0
+    const multp = privi > 2 ? 1 : 2
+
+    if (sname[0] == '~') return multp - 1
+    if (sname[0] != '@') return multp
+
+    return sname.substring(1) == uname ? multp - 1 : multp
+  }
 </script>
 
 {#if crepo.wn_id}
@@ -86,7 +95,7 @@
 
 {#if err_msg}<div class="phint _error">{err_msg}</div>{/if}
 
-{#if crepo.chmax > 0}
+{#if gifts > 0 && vcost > 0}
   <div class="phint">
     <SIcon name="alert-circle" />
     <span>
@@ -95,12 +104,15 @@
       cần
       <strong class="u-warn">thanh toán vcoin</strong> để mở khoá.
     </span>
+
     <span
       >Cụ thể, bạn sẽ phải trả
-      <x-vcoin>0.01<SIcon name="vcoin" iset="icons" /></x-vcoin>
+      <x-vcoin>{vcost}<SIcon name="vcoin" iset="icons" /></x-vcoin>
       cho mỗi một nghìn chữ khi mở khoá.</span>
   </div>
+{/if}
 
+{#if crepo.chmax > 0}
   <section>
     <ChapList {crepo} rmemo={$rmemo} chaps={data.lasts} />
     <hr class="ruler" />

@@ -23,6 +23,6 @@ export const load = async ({ fetch, params }: LoadEvent) => {
 }
 
 const load_ycrits = async (wn: number, fetch = globalThis.fetch) => {
-  const path = `/_ys/crits?book=${wn}&sort=score&lm=3`
+  const path = `/_ys/crits?wn=${wn}&_s=score&lm=3`
   return await api_get<CV.YscritList>(path, fetch)
 }
