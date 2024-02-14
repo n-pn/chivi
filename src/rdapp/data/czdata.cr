@@ -11,7 +11,11 @@ class RD::Czdata
       chdiv text NOT NULL DEFAULT '',
       --
       ztext text NOT NULL default '',
-      mtime integer NOT NULL DEFAULT 0
+      mtime integer NOT NULL DEFAULT 0,
+      zsize integer not null default 0,
+      --
+      zorig text not null default '',
+      zlink text not null default ''
     ) strict;
     SQL
 
@@ -19,7 +23,11 @@ class RD::Czdata
 
   @[AlwaysInline]
   def self.db_path(sname : String, sn_id : String | Int32)
-    "#{CZ_DIR}/#{sname}/#{sn_id}-zdata.db3"
+    "#{CZ_DIR}/#{sname}/#{sn_id}-zdata.dbx"
+  end
+
+  def self.db(db_path : String)
+    Crorm::SQ3.new(db_path, self.init_sql)
   end
 
   ###

@@ -37,6 +37,22 @@ class CV::WninfoCtrl < CV::BaseCtrl
     render json: json
   end
 
+  @[AC::Route::GET("/all/:ids")]
+  def by_ids(ids : String, _s order : String = "")
+    ids = ids.split(",").map(&.to_i)
+    books = Wninfo.preload(ids).to_a
+
+    case order
+    when "update" then books.sort_by!(&.utime.-)
+    when "access" then books.sort_by!(&.atime.-)
+    when "weight" then books.sort_by!(&.weight.-)
+    when "rating" then books.sort_by!(&.rating.-)
+    end
+
+    json = WninfoView.as_list(books)
+    render json: json
+  end
+
   @[AC::Route::GET("/find/:bslug")]
   def find(bslug : String) : Nil
     # TODO: remove this

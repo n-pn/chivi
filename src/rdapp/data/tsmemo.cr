@@ -102,14 +102,23 @@ class RD::Rdmemo
     end
   end
 
-  def self.get_all(vu_id : Int32, sname : String, rtype : String = "", limit : Int32 = 20, offset : Int32 = 0)
+  def self.get_all(vu_id : Int32, sname : String,
+                   state : Int32 = -1, rtype : String = "",
+                   limit : Int32 = 20, offset : Int32 = 0)
     self.get_all(vu_id, sname, limit, offset) do |sql|
       sql << " where vu_id = $1 and sname like $2 || '%'"
+      sql << (state < 0 ? " and rd_state > -1" : " and rd_state = #{state}")
+
       case rtype
       when "liked" then sql << " and rd_track > 0"
       when "rdlog" then sql << " and lc_ch_no > 0"
       end
+
       sql << " order by rtime desc limit $3 offset $4"
     end
+  end
+
+  def self.get_vu_id(uname : String)
+    PGDB.query_one?("select id from viusers where uname = $1", uname, as: Int32)
   end
 end

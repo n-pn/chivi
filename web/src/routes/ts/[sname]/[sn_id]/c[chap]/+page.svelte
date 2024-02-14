@@ -42,7 +42,7 @@
   const reseed_chap = async () => {
     _onload = true
 
-    const url = `/_rd/chaps/${crepo.sroot}/${crepo.ch_no}?regen=true`
+    const url = `/_rd/chaps/${crepo.sroot}/${rdata.ch_no}?regen=true`
     const res = await fetch(url, { cache: 'no-cache' })
 
     _onload = false

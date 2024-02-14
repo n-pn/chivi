@@ -72,34 +72,12 @@
 
 <style lang="scss">
   .article {
-    padding-bottom: 1rem;
-  }
-  .article + .article {
     margin-top: var(--gutter);
+    padding-bottom: 1rem;
   }
 
   .head {
     align-items: baseline;
     margin: 0.75rem 0 0.5rem;
-  }
-
-  .qtran {
-    @include flex-ca;
-    margin: 0.75rem 0 1.5rem;
-    width: 100%;
-
-    > input {
-      flex: 1;
-      @include bdradi(0, $loc: right);
-      height: 2.25rem;
-    }
-    > button {
-      @include bdradi(0, $loc: left);
-      height: 2.25rem;
-    }
-  }
-
-  .nav-list {
-    margin: 1.5rem 0 0.75rem;
   }
 </style>

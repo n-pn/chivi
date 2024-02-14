@@ -1,19 +1,19 @@
 <script lang="ts">
   import WninfoCard from '$gui/parts/wninfo/WninfoCard.svelte'
+
   export let books: CV.Wninfo[] = []
-  export let nvtab = ''
 </script>
 
-<div class="list">
-  {#each books as nvinfo (nvinfo)}
-    <WninfoCard {nvinfo} {nvtab} />
+<div class="blist">
+  {#each books as binfo (binfo)}
+    <WninfoCard {binfo} />
   {:else}
     <div class="d-empty">Danh sách trống</div>
   {/each}
 </div>
 
 <style lang="scss">
-  .list {
+  .blist {
     display: grid;
     grid-gap: 0.5rem;
 

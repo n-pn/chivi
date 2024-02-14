@@ -14,9 +14,6 @@ class RD::RdmemoCtrl < AC::Base
       stype: stype,
       state: state,
       rtype: rtype,
-      order: order,
-      limit: limit == 24 ? 25 : limit,
-      offset: offset
     )
 
     total = offset
@@ -28,6 +25,24 @@ class RD::RdmemoCtrl < AC::Base
     end
 
     json = {items: items, pgidx: pg_no, pgmax: _pgidx(total, limit)}
+    render json: json
+  end
+
+  @[AC::Route::GET("/reading")]
+  def reading(vu uname : String = self._uname, st state : Int32 = -1)
+    pg_no, limit, offset = self._paginate(min: 1, max: 50)
+    total = offset
+
+    vu_id = Rdmemo.get_vu_id(uname) || self._vu_id
+    memos = Rdmemo.get_all(vu_id: vu_id, sname: "~avail", state: state, rtype: "", limit: limit, offset: offset)
+
+    if memos.size < limit
+      total &+= memos.size
+    else
+      total &+= Rdmemo.get_all(vu_id: vu_id, sname: "~avail", state: state, rtype: "", limit: limit * 3, offset: offset).size
+    end
+
+    json = {memos: memos, pgidx: pg_no, pgmax: self._pgidx(total, limit)}
     render json: json
   end
 

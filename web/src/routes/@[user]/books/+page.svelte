@@ -9,23 +9,20 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ books, pgidx, pgmax, uname, bmark } = data)
+  $: ({ books, pgidx, pgmax, state } = data)
 
-  $: pager = new Pager($page.url)
+  $: pager = new Pager($page.url, { st: 'default' })
 </script>
 
 <div class="m-chips">
-  {#each status_types as status}
-    <a
-      href="/@{uname}/books/{status}"
-      class="m-chip"
-      class:_active={status == bmark}>
+  {#each status_types as status, value}
+    <a href={pager.gen_url({ st: status })} class="m-chip" class:_active={value == state}>
       {status_names[status]}
     </a>
   {/each}
 </div>
 
-<WninfoList {books} nvtab="" />
+<WninfoList {books} />
 
 <Footer>
   <Mpager {pager} {pgidx} {pgmax} />

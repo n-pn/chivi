@@ -127,6 +127,8 @@ class CV::Wninfo
     input ? where("vlabels @> ?", input.split("+").map(&.strip)) : self
   end
 
+  RD_STATE = {"reading", "finished", "onhold", "dropped", "pending"}
+
   scope :sort_by do |order|
     case order
     when "weight" then order_by(weight: :desc)

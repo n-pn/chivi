@@ -2,37 +2,35 @@
   import BCover from '$gui/atoms/BCover.svelte'
   import { gen_stars } from '$utils/star_utils'
 
-  export let nvinfo: CV.Wninfo
-  export let nvtab = ''
+  export let binfo: CV.Wninfo
 
-  $: stars = gen_stars(nvinfo.rating, nvinfo.voters)
-  $: route = nvtab == 'index' ? '' : nvtab
+  $: stars = gen_stars(binfo.rating, binfo.voters)
 </script>
 
-<a class="book" href="/wn/{nvinfo.id}/{route}">
-  <div class="tooltip">{nvinfo.vtitle} - {nvinfo.vauthor}</div>
+<a class="bcard" href="/wn/{binfo.id}">
+  <div class="tooltip">{binfo.vtitle} - {binfo.vauthor}</div>
 
   <div class="cover">
-    <BCover srcset={nvinfo.bcover} />
-    {#if nvinfo.voters > 10}
+    <BCover srcset={binfo.bcover} />
+    {#if binfo.voters > 10}
       <div class="extra">
         <div class="score">
           <span class="-star">{stars}</span>
-          <span class="-text">{nvinfo.rating}</span>
+          <span class="-text">{binfo.rating}</span>
         </div>
       </div>
     {/if}
   </div>
-  <div class="title">{nvinfo.vtitle}</div>
-  <div class="genre">{nvinfo.genres[0] || 'Loại khác'}</div>
+  <div class="title">{binfo.vtitle}</div>
+  <div class="genre">{binfo.genres[0] || 'Loại khác'}</div>
 </a>
 
 <style lang="scss">
-  .book:nth-child(25) {
+  .bcard:nth-child(25) {
     @include bps(display, none, $tm: block, $ls: none);
   }
 
-  .book {
+  .bcard {
     position: relative;
   }
   .cover {
@@ -57,7 +55,7 @@
     @include ftsize(xs);
     @include bdradi(0.25rem);
 
-    .book:hover & {
+    .bcard:hover & {
       display: initial;
     }
   }

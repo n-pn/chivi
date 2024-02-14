@@ -5,18 +5,18 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ gdroot, rplist, viuser } = data)
+  $: ({ gdroot, rplist, vuser } = data)
 </script>
 
 <h2 class="head">
-  Trang cá nhân của <cv-user data-privi={viuser.privi}
-    >{viuser.uname}
-    <SIcon name="privi-{viuser.privi}" iset="icons" />
+  Trang cá nhân của <cv-user data-privi={vuser.privi}
+    >{vuser.uname}
+    <SIcon name="privi-{vuser.privi}" iset="icons" />
   </cv-user>
 </h2>
 
 <p class="u-fg-tert"><em>(Trang đang hoàn thiện)</em></p>
-<p>Bạn có thể thêm lời nhắn cho {viuser.uname} tại đây.</p>
+<p>Bạn có thể thêm lời nhắn cho {vuser.uname} tại đây.</p>
 
 <section>
   <h3>Lời nhắn <span class="m-badge">{rplist.repls.length}</span>:</h3>
