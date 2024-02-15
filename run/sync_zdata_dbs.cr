@@ -4,6 +4,7 @@ require "../src/rdapp/data/czdata"
 
 DB3_DIR = "/2tb/app.chivi/var/stems"
 ZIP_DIR = "/2tb/app.chivi/var/stems"
+INP_DIR = "/2tb/zroot/zdata"
 
 struct Chinfo
   include DB::Serializable
@@ -38,8 +39,10 @@ struct Chinfo
     @zchdiv.empty? ? "" : CharUtil.normalize(@zchdiv)
   end
 
-  def zorig(sname)
-    @uname.empty? ? sname : "?#{@uname}"
+  def zorig(sname : String)
+    return "?#{@uname}" unless @uname.empty?
+    return sname if @rlink.empty?
+    URI.parse(@rlink).hostname.as(String).sub(/^www\./, "")
   end
 
   SQL = <<-SQL
@@ -73,36 +76,32 @@ def read_ztexts(zip_path)
     zip.entries.map do |entry|
       ch_no = File.basename(entry.filename, ".zh").to_i
 
-      input = entry.open(&.gets_to_end)
-
       title = chdiv = ""
-      zsize = 0
+      state = zsize = 0
 
-      ztext = String.build do |strio|
-        entry.open do |input|
-          state = 0
+      strio = String::Builder.new
 
-          input.each_line do |line|
-            next if line.blank?
-            line = CharUtil.normalize(line)
+      entry.open do |input|
+        input.each_line do |line|
+          next if line.blank?
+          line = CharUtil.normalize(line)
 
-            if state > 1
-              strio << '\n' << line
-              zsize &+= line.size &+ 1
-            elsif state == 1 || !line.starts_with?("///")
-              title = line
-              strio << line
-              zsize &+= line.size
-              state = 2
-            else
-              chdiv = line.lstrip('/').lstrip(' ') if chdiv.size > 3
-              state = 1
-            end
+          if state > 1
+            strio << '\n' << line
+            zsize &+= line.size &+ 1
+          elsif state == 1 || !line.starts_with?("///")
+            title = line
+            strio << line
+            zsize &+= line.size
+            state = 2
+          else
+            chdiv = line.lstrip('/').lstrip(' ') if chdiv.size > 3
+            state = 1
           end
         end
       end
 
-      {ch_no, ztext, zsize, title, chdiv}
+      {ch_no, strio.to_s, zsize, title, chdiv}
     end
   end
 end
@@ -124,25 +123,28 @@ def migrate(out_db3_path, inp_db3_path, inp_zip_path, sname)
     puts "#{inp_zip_path} not found".colorize.dark_gray
   end
 
-  RD::Czdata.db(out_db3_path).open_tx do |db|
-    db.exec "alter table czdata add column zlink text not null default ''" rescue nil
-    cinfos.each(&.upsert!(db: db, sname: sname)) if cinfos
+  return unless cinfos || ztexts
 
-    next unless ztexts
+  # RD::Czdata.db(out_db3_path).open_tx do |db|
+  #   cinfos.each(&.upsert!(db: db, sname: sname)) if cinfos
 
-    ztexts.each do |ch_no, ztext, zsize, title, chdiv|
-      db.exec <<-SQL, ch_no // 10, title, chdiv, ztext, zsize
-        insert into czdata(ch_no, s_cid, title, chdiv, ztext, zsize)
-        values ($1, 0, $2, $3, $4, $5)
-        on conflict(ch_no) do update set
-          title = IIF(excluded.title = '', czdata.title, excluded.title),
-          chdiv = IIF(excluded.chdiv = '', czdata.chdiv, excluded.chdiv),
-          ztext = excluded.ztext,
-          zsize = excluded.zsize
-        SQL
-    end
-  end
+  #   next unless ztexts
+
+  #   ztexts.each do |ch_no, ztext, zsize, title, chdiv|
+  #     db.exec <<-SQL, ch_no // 10, title, chdiv, ztext, zsize
+  #       insert into czdata(ch_no, s_cid, title, chdiv, ztext, zsize)
+  #       values ($1, 0, $2, $3, $4, $5)
+  #       on conflict(ch_no) do update set
+  #         title = IIF(excluded.title = '', czdata.title, excluded.title),
+  #         chdiv = IIF(excluded.chdiv = '', czdata.chdiv, excluded.chdiv),
+  #         ztext = excluded.ztext,
+  #         zsize = excluded.zsize
+  #       SQL
+  #   end
+  # end
 end
+
+FRESH = Time.local(2024, 2, 15, 12, 0, 0)
 
 def migrate_all(old_sname)
   new_sname = old_sname.sub(/^rm|wn|up/, "")
@@ -152,20 +154,16 @@ def migrate_all(old_sname)
   puts "#{new_sname}: #{files.size}"
 
   files.each do |inp_db3_path|
+    next if File.info(inp_db3_path).modification_time < FRESH
+
     sn_id = File.basename(inp_db3_path, "-cinfo.db3")
-    out_db3_path = RD::Czdata.db_path(new_sname, sn_id)
 
-    new_db3_path = out_db3_path.sub(".dbx", ".v1.db3").sub("zdata", "wn_db")
-    # next if File.file?(new_db3_path)
-    File.rename(new_db3_path, out_db3_path) if File.file?(new_db3_path)
-
+    out_db3_path = "/2tb/zroot/wn_db/#{new_sname}/#{sn_id}.v1.db3"
     inp_zip_path = "/2tb/zroot/ztext/#{new_sname}/#{sn_id}.zip"
-    migrate(out_db3_path, inp_db3_path, inp_zip_path, new_sname)
 
-    File.rename(out_db3_path, new_db3_path)
+    migrate(out_db3_path, inp_db3_path, inp_zip_path, new_sname)
   end
 end
 
-ARGV.each do |sname|
-  migrate_all(sname)
-end
+# ARGV.each { |sname| migrate_all(sname) }
+Dir.each_child(DB3_DIR) { |sname| migrate_all(sname) }

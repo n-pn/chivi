@@ -15,7 +15,7 @@ export const load = (async ({ url, params: { user }, fetch }) => {
   const rdurl = `/_rd/rdmemos/reading?lm=25&pg=${pg_no}&vu=${user}&st=${state}`
   const { memos, pgidx, pgmax } = await api_get<JsonData>(rdurl, fetch)
 
-  const b_ids = memos.map((x) => x.sn_id).join(',')
+  const b_ids = memos.map((x) => x.sn_id).join(',') || '-1'
   const books = await api_get<CV.Wninfo[]>(`/_db/books/all/${b_ids}`, fetch)
 
   return {

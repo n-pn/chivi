@@ -118,9 +118,10 @@
   {#if bdata.users.length > 0}
     <div class="users">
       {#each bdata.users as { uname, privi, track }}
+        {@const query = track >= 0 ? `?st=${rstate_slugs[track]}` : ''}
         <a
           class="m-chip _{rstate_colors[track]}"
-          href="/@{uname}/books/{rstate_slugs[track]}"
+          href="/@{uname}/books{query}"
           data-tip={track > 0 ? rstate_labels[track] : 'Chưa đánh dấu'}>
           <cv-user data-privi={privi}>{uname}</cv-user>
           <SIcon name={track > 0 ? rstate_icons[track] : 'eye'} />

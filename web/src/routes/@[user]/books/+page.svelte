@@ -16,7 +16,7 @@
 
 <div class="m-chips">
   {#each status_types as status, value}
-    <a href={pager.gen_url({ st: status })} class="m-chip" class:_active={value == state}>
+    <a href={pager.gen_url({ st: status, pg: 1 })} class="m-chip" class:_active={value == state}>
       {status_names[status]}
     </a>
   {/each}
