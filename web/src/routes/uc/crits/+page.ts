@@ -17,13 +17,13 @@ export const load = (async ({ url, fetch }) => {
 
   const limit = qdata.og == 'mixed' ? 4 : 8
   const query = (url.search || '?_s=utime') + `&lm=${limit}`
-
   const { vdata, ydata } = await load_crits(qdata.og, query, fetch)
+
   return {
     vdata,
     ydata,
     qdata,
-    pager: new Pager(url, qdata),
+    pager: new Pager(url, { _s: 'score', og: 'mixed', gt: 1, lt: 5, pg: 1 }),
     ontab: 'crits',
     _meta: { title: 'Đánh giá truyện chữ' },
   }

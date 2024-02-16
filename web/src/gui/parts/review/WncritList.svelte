@@ -69,7 +69,7 @@
 
     <div class="m-filter">
       {#each Object.entries(sort_types) as [_s, name]}
-        {@const href = pager.gen_url({ _s, pg: 1 })}
+        {@const href = pager.gen_url({ ...qdata, _s, pg: 1 })}
         <a {href} class="-child" class:_active={_s == qdata._s}>
           <span>{name}</span>
         </a>

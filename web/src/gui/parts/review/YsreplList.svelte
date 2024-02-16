@@ -2,56 +2,28 @@
   import { get_rtime } from '$gui/atoms/RTime.svelte'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
+  import YsreplCard from '$gui/parts/review/YsreplCard.svelte'
+
   export let replies: CV.YsreplPage
   export let _active = true
-
-  const gen_avatar_url = (yu_id: number, u_pic: string) => {
-    if (!u_pic) return '/img/blank.png'
-    return `https://image.lkong.com/avatar/${yu_id}/${u_pic}`
-  }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-<div
-  class="wrap"
-  data-kbd="esc"
-  on:click={() => (_active = false)}
-  role="dialog">
+<div class="wrap" data-kbd="esc" on:click={() => (_active = false)} role="dialog">
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div class="main island" on:click={(e) => e.stopPropagation()}>
     <header class="head">
       <div class="title">Phản hồi bình luận</div>
-      <button on:click={() => (_active = false)}>
-        <SIcon name="x" />
-      </button>
+      <button on:click={() => (_active = false)}><SIcon name="x" /></button>
     </header>
 
     <section class="body">
       <div class="repls">
-        {#each replies.repls as repl}
-          {@const src = gen_avatar_url(repl.yu_id, repl.u_pic)}
-          <div class="repl">
-            <img class="u-pic" {src} alt={repl.uname} />
-
-            <header class="repl-head">
-              <a class="repl-user" href="/uc/crits?from=ys&user={repl.yu_id}"
-                >{repl.uname}</a>
-              <span class="u-fg-tert">·</span>
-              <time class="repl-time">{get_rtime(repl.ctime)}</time>
-
-              <div class="repl-like">
-                <SIcon name="thumb-up" />
-                <span>{repl.like_count}</span>
-              </div>
-            </header>
-
-            <section class="repl-body">
-              {@html repl.vhtml}
-            </section>
-          </div>
+        {#each replies.repls as yrepl}
+          <YsreplCard {yrepl} />
         {:else}
-          <div class="d-empty">Không có phản hồi</div>
+          <div class="d-empty-sm">Không có phản hồi.</div>
         {/each}
       </div>
     </section>
@@ -117,54 +89,6 @@
     &::-webkit-scrollbar {
       cursor: pointer;
       width: 8px;
-    }
-  }
-
-  .repl {
-    @include border(--bd-soft, $loc: top);
-  }
-
-  .repl-head {
-    @include flex($gap: 0.3rem);
-
-    line-height: 1.5rem;
-    padding-top: 0.375rem;
-
-    @include bps(font-size, rem(13px), rem(14px), rem(15px));
-  }
-
-  .repl-time {
-    @include fgcolor(tert);
-  }
-
-  .repl-user {
-    font-weight: 500;
-    max-width: min(50vw, 12rem);
-
-    @include clamp($width: null);
-    @include fgcolor(secd);
-
-    &:hover {
-      @include fgcolor(primary, 5);
-    }
-  }
-
-  .repl-like {
-    margin-left: auto;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-
-    > span {
-      @include ftsize(sm);
-    }
-  }
-
-  .repl-body {
-    @include bps(font-size, rem(15px), rem(16px));
-    padding-bottom: 0.5rem;
-    > :global(*) + :global(*) {
-      margin-top: 0.75rem;
     }
   }
 </style>

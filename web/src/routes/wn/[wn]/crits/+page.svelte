@@ -8,7 +8,7 @@
   export let data: PageData
 
   $: ({ ydata, vdata, qdata } = data)
-  $: pager = new Pager($page.url, qdata)
+  $: pager = new Pager($page.url, { _s: 'score', og: 'mixed', gt: 1, lt: 5, pg: 1 })
 </script>
 
 <WncritList {vdata} {ydata} {qdata} {pager} show_book={false} />
