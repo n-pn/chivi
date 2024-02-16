@@ -126,19 +126,19 @@ class MT::MtNode
 
   ###
 
-  # def reverse_each(& : self ->)
-  #   case body = @body
-  #   when MtDefn
-  #     yield self
-  #   when MtNode
-  #     yield body
-  #   when MtPair
-  #     yield body.tail
-  #     yield body.head
-  #   when Array
-  #     body.reverse_each { |term| yield term }
-  #   end
-  # end
+  def reverse_each(& : self ->)
+    case body = @body
+    when MtDefn
+      yield self
+    when MtNode
+      yield body
+    when MtPair
+      yield body.tail
+      yield body.head
+    when Array
+      body.reverse_each { |term| yield term }
+    end
+  end
 
   def each_child(& : self ->)
     case body = @body
@@ -215,7 +215,7 @@ class MT::MtNode
     when MtDefn
       io << ' ' << @attr.colorize.light_gray unless @attr.none?
       io << ' ' << @zstr.colorize.dark_gray
-      io << ' ' << body.vstr.colorize(COLORS[body.dnum.value % 10])
+      io << ' ' << body.vstr.colorize(COLORS[body.dnum.value % 10]? || :dark_gray)
     when MtNode
       io << ' '
       body.inspect(io: io, deep: deep)
@@ -226,12 +226,14 @@ class MT::MtNode
       deep.times { io << ' ' }
       body.tail.inspect(io: io, deep: deep)
     else
-      io << ' '
-      body.first.inspect(io: io, deep: deep)
-      body[1..].each do |term|
-        io << '\n'
-        deep.times { io << ' ' }
-        term.inspect(io: io, deep: deep)
+      body.each_with_index do |node, i|
+        if i > 0
+          io << '\n'
+          deep.times { io << ' ' }
+        else
+          io << ' '
+        end
+        node.inspect(io: io, deep: deep)
       end
     end
 

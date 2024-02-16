@@ -37,6 +37,14 @@ class MT::AiCore
       # TODO: split vnv
     end
 
+    while last = preps.last?
+      break unless last.attr.prfx?
+      ad_node = preps.pop
+
+      fix_d_v_pair!(ad_node: ad_node, vv_node: vv_node)
+      vv_node = init_pair_node(ad_node, vv_node, epos: vv_node.epos, attr: vv_node.attr, flip: ad_node.attr.at_t?)
+    end
+
     vp_node = vv_node
 
     while pos < max
@@ -110,35 +118,29 @@ class MT::AiCore
 
   private def init_vp_as_pair(vp_node, as_node, hide_as_node : Bool = false)
     init_pair_node(vp_node, as_node, epos: :VAS, attr: :none) do
-      if hide_as_node
-        as_node.attr = :hide unless as_node == "过"
-        flip = false
-      else
-        flip = fix_as_node!(as_node)
-      end
-
-      MtPair.new(vp_node, as_node, flip: flip)
+      as_node.attr = :hide unless as_node == "过"
+      MtPair.new(vp_node, as_node, flip: false)
     end
   end
 
-  private def fix_as_node!(as_node)
-    case as_node.zstr
-    when "着"
-      as_node.body = "đang"
-      as_node.attr = :none
-      true
-    when "了"
-      as_node.body = "đã"
-      as_node.attr = :none
-      true
-    when "过"
-      as_node.body = "từng"
-      as_node.attr = :none
-      true
-    else
-      false
-    end
-  end
+  # private def fix_as_node!(as_node)
+  #   case as_node.zstr
+  #   when "着"
+  #     as_node.body = "đang"
+  #     as_node.attr = :none
+  #     true
+  #   when "了"
+  #     as_node.body = "đã"
+  #     as_node.attr = :none
+  #     true
+  #   when "过"
+  #     as_node.body = "từng"
+  #     as_node.attr = :none
+  #     true
+  #   else
+  #     false
+  #   end
+  # end
 
   private def init_vp_np_pair(vp_node, np_node, vv_node)
     init_pair_node(vp_node, np_node, epos: :VP, attr: :none) do
