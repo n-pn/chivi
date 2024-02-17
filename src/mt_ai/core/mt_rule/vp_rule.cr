@@ -53,7 +53,7 @@ class MT::AiCore
       when .is?(:AS)
         pos &+= 1
         # hide_as_node = vp_body[pos]?.try(&.epos.verb?) || false
-        vp_node = init_vp_as_pair(vp_node, node, pos < max)
+        vp_node = init_vp_as_pair(vp_node, node)
       when .np?
         vp_node = init_vp_np_pair(vp_node, np_node: node, vv_node: vv_node)
         pos &+= 1
@@ -118,7 +118,7 @@ class MT::AiCore
 
   private def init_vp_as_pair(vp_node, as_node, hide_as_node : Bool = false)
     init_pair_node(vp_node, as_node, epos: :VAS, attr: :none) do
-      as_node.attr = :hide unless as_node == "过"
+      as_node.attr = :hide unless as_node.zstr == "过"
       MtPair.new(vp_node, as_node, flip: false)
     end
   end

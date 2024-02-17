@@ -8,13 +8,7 @@ class RD::RdmemoCtrl < AC::Base
   def index(stype : Int32 = -1, state : Int32 = -1,
             rtype : String = "", order : String = "rtime")
     pg_no, limit, offset = self._paginate(min: 1, max: 50)
-
-    items = TsmemoView.get_all(
-      self._vu_id,
-      stype: stype,
-      state: state,
-      rtype: rtype,
-    )
+    items = TsmemoView.get_all(self._vu_id, stype: stype, state: state, rtype: rtype)
 
     total = offset
 

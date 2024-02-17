@@ -57,10 +57,11 @@ class RawRmchap
   getter sname = ""
   getter title = ""
   getter paras = [] of String
+  getter zorig = ""
 
   def initialize(html : String, @host : Rmhost, @extra = "")
-    @sname = host.seedname
     @page = Rmpage.new(html)
+    @zorig = @host.hostname.sub(/^wwww./, "")
   end
 
   def extract_title(selector : String)
@@ -71,7 +72,7 @@ class RawRmchap
       .sub(/^\d+\.第/, "第")
       .sub(/(^章节目录|(《.+》)?正文)/, "")
 
-    TextUtil.canon_clean(title)
+    TextUtil.format_and_clean(title)
   end
 
   def extract_paras(chap_type : String, selector : String)
@@ -98,7 +99,7 @@ class RawRmchap
     container.inner_text('\n').each_line do |line|
       scrub_re.try { |re| line = line.sub(re, "") }
 
-      line = TextUtil.canon_clean(line)
+      line = TextUtil.format_and_clean(line)
       next if line.empty?
 
       @paras << line
@@ -131,7 +132,7 @@ class RawRmchap
         ord -= jmp
       end
 
-      @paras[ord] = TextUtil.canon_clean(node.inner_text(deep: false))
+      @paras[ord] = TextUtil.format_and_clean(node.inner_text(deep: false))
     end
 
     @paras

@@ -2,7 +2,7 @@ require "json"
 require "../../_util/text_util"
 require "../data/czdata"
 
-struct RD::ZcdataForm
+struct RD::CzdataForm
   include JSON::Serializable
 
   getter ch_no : Int32
@@ -15,16 +15,16 @@ struct RD::ZcdataForm
     raise "Nội dung quá dài!" if @ztext.size > 100_000
 
     @title, @chdiv = ChapUtil.split_ztitle(@title, @chdiv, cleaned: false)
-    @ztext = Cztext.fix_raw(@ztext)
   end
 
-  def persist!(crepo : Tsrepo, smode = 1, uname : String = "", mtime : Int64 = 0)
-    crepo.save_chap!(
-      ch_no: @ch_no, title: @title,
-      ztext: @ztext, chdiv: @chdiv,
-      smode: smode, spath: "",
-      uname: uname, mtime: mtime,
-      persist: false
-    )
+  def to_czdata(db, zorig : String, mtime : Int64 = Time.utc.to_unix) : Czdata
+    zdata = Czdata.find_or_init(db, @ch_no)
+    # TODO: skip if immutable
+
+    zdata.title = @title
+    zdata.chdiv = @chdiv
+    zdata.set_ztext(input: @ztext, mtime: mtime, zorig: zorig)
+
+    zdata
   end
 end

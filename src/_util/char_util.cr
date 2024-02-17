@@ -6,6 +6,14 @@ module CharUtil
   #
 
   NORMALIZE = {
+    '\u00A0' => ' ',
+    '\u2002' => ' ',
+    '\u2003' => ' ',
+    '\u2004' => ' ',
+    '\u2007' => ' ',
+    '\u2008' => ' ',
+    '\u205F' => ' ',
+
     '〈' => '⟨',
     '〉' => '⟩',
     '《' => '⟨',
@@ -68,10 +76,12 @@ module CharUtil
     end
   end
 
+  @[AlwaysInline]
   def normalize(char : Char) : Char
     fullwidth?(char) ? to_halfwidth(char) : NORMALIZE.fetch(char, char)
   end
 
+  @[AlwaysInline]
   def downcase_normalize(char : Char) : Char
     fullwidth?(char) ? to_halfwidth(char).downcase : NORMALIZE.fetch(char) { char.downcase }
   end

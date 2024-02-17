@@ -1,5 +1,5 @@
 require "./_remote"
-require "../data/chinfo"
+require "../data/czdata"
 
 class RawRmstem
   ####
@@ -32,6 +32,7 @@ class RawRmstem
                  base : String = host.stem_url(b_id))
     @base = base.ends_with?('/') ? base.rchop('/') : File.dirname(base)
     @page = Rmpage.new(html)
+    @zorig = @host.hostname.sub(/^wwww./, "")
   end
 
   getter latest_cid : String { @host.extract_cid(@page.get!(@host.cata_latest)) }
@@ -63,7 +64,7 @@ class RawRmstem
     end
   end
 
-  @clist = [] of RD::Chinfo
+  @clist = [] of RD::Czdata
 
   def extract_clist!
     return @clist unless @clist.empty?
@@ -90,14 +91,19 @@ class RawRmstem
     return if ctitle.empty?
 
     ch_no = @clist.size &+ 1
-    rlink = self.full_url(href)
+    zlink = self.full_url(href)
 
-    sc_id = @host.extract_cid(rlink) rescue ch_no
-    spath = "rm#{@host.seedname}/#{@b_id}/#{sc_id}"
-
+    s_cid = @host.extract_cid(zlink) rescue "0"
     ctitle, subdiv = ChapUtil.split_ztitle(ctitle, subdiv)
 
-    @clist << RD::Chinfo.new(ch_no: ch_no, rlink: rlink, spath: spath, ztitle: ctitle, zchdiv: subdiv)
+    @clist << RD::Czdata.new(
+      ch_no: ch_no,
+      s_cid: s_cid.to_i? || 0,
+      title: ctitle,
+      chdiv: subdiv,
+      zlink: zlink,
+      zorig: @zorig,
+    )
   rescue ex
     Log.error(exception: ex) { ex.message.colorize.red }
   end

@@ -125,26 +125,26 @@ def migrate(out_db3_path, inp_db3_path, inp_zip_path, sname)
 
   return unless cinfos || ztexts
 
-  # RD::Czdata.db(out_db3_path).open_tx do |db|
-  #   cinfos.each(&.upsert!(db: db, sname: sname)) if cinfos
+  RD::Czdata.db(out_db3_path).open_tx do |db|
+    cinfos.each(&.upsert!(db: db, sname: sname)) if cinfos
 
-  #   next unless ztexts
+    next unless ztexts
 
-  #   ztexts.each do |ch_no, ztext, zsize, title, chdiv|
-  #     db.exec <<-SQL, ch_no // 10, title, chdiv, ztext, zsize
-  #       insert into czdata(ch_no, s_cid, title, chdiv, ztext, zsize)
-  #       values ($1, 0, $2, $3, $4, $5)
-  #       on conflict(ch_no) do update set
-  #         title = IIF(excluded.title = '', czdata.title, excluded.title),
-  #         chdiv = IIF(excluded.chdiv = '', czdata.chdiv, excluded.chdiv),
-  #         ztext = excluded.ztext,
-  #         zsize = excluded.zsize
-  #       SQL
-  #   end
-  # end
+    ztexts.each do |ch_no, ztext, zsize, title, chdiv|
+      db.exec <<-SQL, ch_no // 10, title, chdiv, ztext, zsize
+        insert into czdata(ch_no, s_cid, title, chdiv, ztext, zsize)
+        values ($1, 0, $2, $3, $4, $5)
+        on conflict(ch_no) do update set
+          title = IIF(excluded.title = '', czdata.title, excluded.title),
+          chdiv = IIF(excluded.chdiv = '', czdata.chdiv, excluded.chdiv),
+          ztext = excluded.ztext,
+          zsize = excluded.zsize
+        SQL
+    end
+  end
 end
 
-FRESH = Time.local(2024, 2, 15, 12, 0, 0)
+FRESH = Time.local(2024, 2, 17, 7, 0, 0)
 
 def migrate_all(old_sname)
   new_sname = old_sname.sub(/^rm|wn|up/, "")

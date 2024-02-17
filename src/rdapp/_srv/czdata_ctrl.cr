@@ -12,11 +12,10 @@ class RD::CzdataCtrl < AC::Base
     guard_owner owner, plock, "truy cập text gốc của chương"
 
     ch_no = crepo.chmax &+ 1 if ch_no < 1
+    zdata = crepo.get_zdata(ch_no, rmode: 1)
 
-    unless ztext = crepo.text_db.get_ztext(ch_no)
-      chdiv = crepo.get_chdiv(ch_no)
-      ztext = chdiv.empty? ? "" : "///#{chdiv}"
-    end
+    chdiv = zdata.chdiv.empty? ? crepo.suggest_chdiv(ch_no) : zdata.chdiv
+    ztext = chdiv.empty? ? zdata.ztext : "///#{chdiv}\n#{zdata.ztext}"
 
     render json: {ch_no: ch_no, ztext: ztext}
   end
@@ -30,33 +29,40 @@ class RD::CzdataCtrl < AC::Base
 
   @[AC::Route::POST("/:sname/:sn_id", body: :clist)]
   def upsert(sname : String, sn_id : Int32,
-             clist : Array(ZcdataForm), ukind : Int32 = 1)
+             clist : Array(CzdataForm), ukind : Int32 = 1)
     raise "Bạn chỉ được đăng tải nhiều nhất 64 chương một lúc!" if clist.size > 64
+
     ukind = UploadKind.from_value(ukind)
     crepo = Tsrepo.load!("#{sname}/#{sn_id}")
 
     owner, plock = crepo.edit_privi(self._vu_id)
     guard_owner owner, plock, "thêm text gốc cho nguồn truyện"
 
-    smode = ukind.edit? ? 1 : 0
     mtime = Time.utc.to_unix
 
     spawn do
       save_dir = "var/ulogs/ztext/#{sname}-#{sn_id}"
       Dir.mkdir_p(save_dir) if ukind.first?
-      fpath = "#{save_dir}/#{mtime}-#{self._uname}-#{clist[0].ch_no}-#{ukind}.json"
+      fpath = "#{save_dir}/#{mtime}-#{_uname}-#{clist[0].ch_no}-#{ukind}.json"
       File.write(fpath, clist.to_json)
     end
 
-    chaps = clist.map(&.persist!(crepo, smode, uname: self._uname, mtime: mtime))
+    chaps = [] of Chinfo
+
+    crepo.zdata_db.open_tx do |db|
+      zorig = ukind.edit? ? "*#{_uname}" : "+#{_uname}"
+      clist.each do |cform|
+        zdata = cform.to_czdata(db: db, zorig: zorig, mtime: mtime)
+        zdata.save_ztext!(db)
+        chaps << crepo.get_cinfo(zdata.ch_no).inherit!(zdata)
+      end
+    end
 
     crepo.info_db.open_tx { |db| chaps.each(&.upsert!(db: db)) }
-    crepo.text_db.zipping_text!
 
     chmin, chmax = clist.minmax_of(&.ch_no)
     spawn update_stats!(crepo, sname, chmax: chmax)
 
-    crepo.rm_chmin = chmax if crepo.rm_chmin < chmax
     crepo.set_chmax(chmax: chmax, force: false, persist: true)
     crepo.update_vinfos!(start: chmin, limit: chmax &- chmin &+ 1)
 
@@ -65,15 +71,15 @@ class RD::CzdataCtrl < AC::Base
 
   private def update_stats!(crepo : Tsrepo, sname : String, chmax : Int32)
     # puts "#{crepo.chmax}/#{chmax}/#{crepo.stype}"
-    case crepo.stype
-    when 0_i16
-      wbook = get_wbook(crepo.sn_id)
+    case crepo.sname[0]
+    when '~'
+      wbook = get_wbook(wn_id: crepo.sn_id)
       wbook.update_stats!(chmax: chmax, persist: true)
-    when 1_i16
-      ustem = get_ustem(crepo.sn_id, sname)
+    when '@'
+      ustem = get_ustem(crepo.sn_id, sname: sname)
       ustem.update_stats!(chmax: chmax)
-    when 2_i16
-      rstem = get_rstem(sname, crepo.sn_id)
+    when '!'
+      rstem = get_rstem(sname: sname, sn_id: crepo.sn_id)
       rstem.update_stats!(chmax: chmax, persist: true)
     else
       raise "invalid type: #{sname}"

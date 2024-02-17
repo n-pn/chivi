@@ -32,21 +32,15 @@ module TextUtil
     clean_spaces(input).strip
   end
 
+  @[AlwaysInline]
+  def format_and_clean(input : String) : String
+    CharUtil.normalize(input).strip
+  end
+
   # convert all halfwidth to fullwidth and group similar characters
   @[AlwaysInline]
   def canon_clean(input : String, upcase : Bool = false) : String
     CharUtil.to_canon(input, upcase: upcase).strip('　')
-  end
-
-  # Convert chinese punctuations to english punctuations
-  # and full width characters to ascii characters
-  def normalize(input : String) : String
-    normalize(input.chars).join
-  end
-
-  # :ditto:
-  def normalize(input : Array(Char)) : Array(Char)
-    input.map { |char| CharUtil.normalize(char) }
   end
 
   # convert all halfwidth to fullwidth and group similar characters

@@ -15,8 +15,6 @@ class RD::Unlock
   field owner : Int32 = -1 # target who will receive vcoin
   field zsize : Int32 = 0
 
-  field cksum : Int32 = 0
-
   field user_multp : Int16 = 0
   field real_multp : Int16 = 0
 
@@ -27,7 +25,6 @@ class RD::Unlock
 
   def initialize(@vu_id, @ulkey,
                  @owner, @zsize,
-                 @cksum = 0,
                  @user_multp = 3_i16,
                  @real_multp = 3_i16)
     @user_lost = (zsize * user_multp) // 100
@@ -72,13 +69,13 @@ class RD::Unlock
 
   CHECK_BY_UKEY_SQL = <<-SQL
     select owner from unlocks
-    where vu_id = $1 and ( ulkey = $2 or cksum = $3)
+    where vu_id = $1 and ulkey = $2
     limit 1
     SQL
 
-  def self.unlocked?(vu_id : Int32, ulkey : String, cksum : Int32)
+  def self.unlocked?(vu_id : Int32, ulkey : String)
     return false if vu_id == 0
-    @@db.query_one?(CHECK_BY_UKEY_SQL, vu_id, ulkey, cksum, as: Int32)
+    @@db.query_one?(CHECK_BY_UKEY_SQL, vu_id, ulkey, as: Int32)
   end
 
   # def self.init(vu_id : Int32, ulkey : String)

@@ -60,7 +60,22 @@ class RD::Chinfo
   def initialize(@ch_no)
   end
 
-  def initialize(@ch_no, @rlink, @spath, @ztitle, @zchdiv)
+  def initialize(zdata : Czdata)
+    @ch_no = zdata.ch_no
+    self.inherit!(zdata)
+  end
+
+  def inherit!(czdata : Czdata)
+    @ztitle = czdata.title
+    @zchdiv = czdata.chdiv
+
+    @uname = czdata.zorig
+    @mtime = czdata.mtime
+
+    @rlink = czdata.zlink unless czdata.zlink.empty?
+    @sizes = czdata.zsize.to_s
+
+    self
   end
 
   def inspect(io : IO)

@@ -1,5 +1,5 @@
 require "./chinfo"
-require "./cztext"
+require "./czdata"
 
 require "./unlock"
 require "../_raw/raw_rmchap"
@@ -46,7 +46,7 @@ class RD::Tsrepo
 
   @[DB::Field(ignore: true, auto: true)]
   @[JSON::Field(ignore: true)]
-  getter text_db : Cztext { Cztext.new(sroot) }
+  getter zdata_db : Crorm::SQ3 { Czdata.db(@sname, @sn_id) }
 
   def initialize(@sroot)
   end
@@ -88,90 +88,36 @@ class RD::Tsrepo
     @stype == 1 ? @owner : vu_id
   end
 
-  ###
+  @[AlwaysInline]
+  def get_zdata(ch_no : Int32, rmode : Int32 = 0)
+    self.zdata_db.open_rw do |db|
+      zdata = Czdata.find_or_init(db, ch_no: ch_no)
+      if rmode > 0 && zdata.init_by_zlink(force: rmode > 1)
+        zdata.save_ztext!(db: db)
+      end
 
-  def load_ztext(cinfo : Chinfo, regen : Bool = false)
-    ztext = self.text_db.get_ztext(cinfo.ch_no)
-
-    if (regen || !ztext) && !cinfo.rlink.empty?
-      ztext = self.seed_ztext!(cinfo, force: regen)
+      zdata
     end
-
-    if !ztext
-      ztext = cinfo.ztitle
-      cksum = 0_u32
-    else
-      ztext = ztext.sub(/^\/{3,}.*\n/, "") if ztext.starts_with?('/')
-      cksum = HashUtil.fnv_1a(ztext)
-    end
-
-    {ztext, cksum}
-  end
-
-  def seed_ztext!(cinfo : Chinfo, force : Bool = false)
-    stale = Time.utc - (force ? 2.minutes : 20.years)
-    raw_chap = RawRmchap.from_link(cinfo.rlink, stale: stale)
-
-    title, lines = raw_chap.parse_page!
-    ztext = Cztext.fix_raw(lines, title: title)
-
-    self.text_db.save_text!(
-      ch_no: cinfo.ch_no, ztext: ztext,
-      chdiv: cinfo.zchdiv, smode: 0,
-      zipping: true
-    )
-
-    cinfo.uname = raw_chap.sname
-    cinfo.mtime = Time.utc.to_unix
-    cinfo.sizes = ztext.split("\n\n").map(&.size).join(' ')
-
-    cinfo.upsert!(db: self.info_db)
-
-    ztext
-  rescue ex
-    Log.error(exception: ex) { cinfo.rlink }
-    nil
-  end
-
-  def save_chap!(
-    ch_no : Int32, title : String,
-    ztext : String, chdiv : String = "",
-    smode : Int32 = 0, spath : String = "",
-    uname : String = "", mtime = 0,
-    persist : Bool = true
-  )
-    self.text_db.save_text!(
-      ch_no: ch_no, ztext: ztext,
-      chdiv: chdiv, smode: smode,
-      zipping: persist
-    )
-
-    cinfo = self.get_cinfo(ch_no)
-
-    cinfo.ztitle = title
-    cinfo.zchdiv = chdiv
-
-    cinfo.uname = uname
-    cinfo.mtime = mtime
-    cinfo.spath = spath
-    cinfo.sizes = ztext.split("\n\n").map(&.size).join(' ')
-
-    cinfo.upsert!(db: self.info_db) if persist
-    cinfo
   end
 
   ###
 
-  SET_CHMAX_SQL = "update tsrepos set chmax = $1 where sroot = $2"
+  SET_CHMAX_SQL = <<-SQL
+    update tsrepos set chmax = $1, mtime = $2, rm_chmin = $3
+    where sname = $4 and sn_id = $5
+    SQL
 
   def set_chmax(chmax : Int32, force : Bool = false, persist : Bool = false)
     return unless force || chmax > @chmax
+    @rm_chmin = chmax if @rm_chmin < chmax
 
     @chmax = chmax
     @mtime = Time.utc.to_unix
 
     return unless persist
-    @@db.query(SET_CHMAX_SQL, chmax, @sroot) rescue self.upsert!
+    @@db.query(SET_CHMAX_SQL, chmax, @mtime, @rm_chmin, @sname, @sn_id)
+  rescue
+    self.upsert!
   end
 
   def get_sname
@@ -255,8 +201,9 @@ class RD::Tsrepo
   end
 
   @[AlwaysInline]
-  def get_chdiv(ch_no : Int32)
-    Chinfo.get_chdiv(self.info_db, ch_no)
+  def suggest_chdiv(ch_no : Int32)
+    query = "select chdiv from czdata where ch_no <= $1 and chdiv <> '' order by ch_no desc limit 1"
+    self.zdata_db.open_ro { |db| db.query_one?(query, ch_no, as: String) || "" }
   end
 
   @[AlwaysInline]
@@ -290,10 +237,18 @@ class RD::Tsrepo
   end
 
   @[AlwaysInline]
-  def upsert_zinfos!(clist : Array(Chinfo))
+  def upsert_zinfos!(clist : Array(Czdata))
     # latest = clist.last.ch_no
     # @chmax = latest if @chmax < latest
-    Chinfo.upsert_zinfos!(self.info_db, clist)
+    chaps = [] of Chinfo
+    self.zdata_db.open_tx do |db|
+      clist.each do |zdata|
+        zdata.save_zinfo!(db: db)
+        chaps << Chinfo.new(zdata)
+      end
+    end
+
+    Chinfo.upsert_zinfos!(self.info_db, chaps)
   end
 
   @[AlwaysInline]
@@ -302,28 +257,6 @@ class RD::Tsrepo
   end
 
   ####
-
-  # def save_raw_from_text!(cinfo : Chinfo, ztext : String, uname : String = "")
-  #   lines = ChapUtil.split_lines(ztext)
-  #   cinfo.ztitle = lines.first if cinfo.ztitle.empty?
-
-  #   self.do_save_raw!(cinfo, lines)
-  # end
-
-  # private def do_save_raw!(cinfo : Chinfo, paras : Array(String), title : String = paras.shift)
-  #   parts, sizes, cksum = ChapUtil.split_parts(paras: paras, title: title)
-
-  #   cinfo.cksum = ChapUtil.cksum_to_s(cksum)
-  #   cinfo.sizes = sizes.join(' ')
-
-  #   parts.each_with_index do |ptext, p_idx|
-  #     cdata = Chpart.new(part_name(cinfo, p_idx))
-  #     cdata.save_raw!(ptext, p_idx > 0 ? title : nil)
-  #   end
-
-  #   cinfo.mtime = Time.utc.to_unix
-  #   cinfo.upsert!(db: self.info_db)
-  # end
 
   def update_stats!(chmax : Int32, mtime : Int64 = Time.utc.to_unix)
     @mtime = mtime if @mtime < mtime

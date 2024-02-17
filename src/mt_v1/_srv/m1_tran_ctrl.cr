@@ -116,7 +116,7 @@ class M1::TranCtrl < AC::Base
     cv_mt = MtCore.init(wn_id)
 
     vtran = Hash(String, String).new do |hash, zstr|
-      vstr = cv_mt.cv_chead(TextUtil.normalize(zstr)).to_txt
+      vstr = cv_mt.cv_chead(CharUtil.normalize(zstr)).to_txt
       hash[zstr] = vstr
     end
 
