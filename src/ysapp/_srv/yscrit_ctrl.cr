@@ -78,13 +78,25 @@ class YS::CritCtrl < AC::Base
     render :not_found, text: "Đánh giá không tồn tại"
   end
 
+  @[AC::Route::GET("/:crit_id/ztext")]
+  def ztext(crit_id : Int32)
+    guard_privi 1, "xem text gốc bình luận"
+
+    unless ycrit = Yscrit.find({id: crit_id})
+      raise NotFound.new("Đánh giá không tồn tại")
+    end
+
+    wn_id = ycrit.nvinfo_id
+    response.headers["X-PDICT"] = wn_id > 0 ? "wn#{wn_id}" : "combine"
+
+    render text: ycrit.ztext
+  end
+
   @[AC::Route::GET("/:crit_id/:type")]
-  def show_body(crit_id : Int32, type : String)
+  def vtran(crit_id : Int32, type : String)
     ycrit = Yscrit.find!({id: crit_id})
-    response.headers["X-WN_ID"] = ycrit.nvinfo_id.to_s
 
     case type
-    when "ztext" then text = ycrit.ztext
     when "vi_mt" then text = ycrit.vi_mt || ycrit.ztext
     when "vi_bd" then text = ycrit.vi_bd || ycrit.ztext
     when "vi_ms" then text = ycrit.vi_ms || ycrit.ztext

@@ -10,11 +10,11 @@ class YS::YsreplCtrl < AC::Base
     render json: repls
   end
 
-  @[AC::Route::GET("/ztext/:id")]
+  @[AC::Route::GET("/:crit_id/ztext")]
   def ztext(id : Int32)
-    response.headers["X-WN_ID"] = "0"
+    guard_privi 1, "xem text gốc phản hồi"
+    response.headers["X-PDICT"] = "combine"
     ztext = YsreplPeek.get_ztext(id)
-
     render text: ztext
   end
 end

@@ -207,12 +207,12 @@
 
   .vhtml {
     padding: 0.375rem 0.75rem;
-    @include ftsize(lg);
+    // @include ftsize(lg);
     max-height: 70vh;
     overflow-y: scroll;
     overflow-block: scroll;
     p {
-      margin-bottom: 0.75em;
+      margin-bottom: 0.25em;
       &:global(.focus),
       &:hover {
         cursor: pointer;

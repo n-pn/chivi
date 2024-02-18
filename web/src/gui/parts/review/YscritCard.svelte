@@ -30,14 +30,16 @@
     return [0, 'đăng nhập', 'bình luận từ 4 sao trở lên']
   }
 
-  crit.stars < 4 ? 10 : crit.stars > 4 ? 5 : 0
+  // crit.stars < 4 ? 10 : crit.stars > 4 ? 5 : 0
+
+  $: pdict = crit.book_id ? 'wn' + crit.book_id : 'combine'
 </script>
 
 <section class="crit island">
   <header>
     <a class="m-meta _user" href="/uc/crits?og=ysapp&by={user.id}">{user.uname}</a>
     <span class="m-meta">&middot;</span>
-    <a class="m-meta" href="/mt/qtran/yc{crit.id}">
+    <a class="m-meta" href="/mt/qtran?id=yc{crit.id}&pd={pdict}">
       <span>{rel_time(crit.utime)}{crit.utime != crit.ctime ? '*' : ''}</span>
     </a>
 
