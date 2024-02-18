@@ -11,7 +11,7 @@ class SP::QtData
     lines = [] of String
 
     ztext.each_line do |line|
-      line = TextUtil.canon_clean(line)
+      line = CharUtil.canonize(line).strip('　')
       lines << line unless line.empty?
     end
 

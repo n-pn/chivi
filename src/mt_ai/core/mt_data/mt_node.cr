@@ -177,14 +177,15 @@ class MT::MtNode
   end
 
   def to_json : String
-    JSON.build { |jb| to_json(jb) }
+    JSON.build { |jb| self.to_json(jb) }
   end
 
   def to_json(io : IO) : Nil
-    JSON.build(io) { |jb| to_json(jb) }
+    JSON.build(io) { |jb| self.to_json(jb) }
   end
 
   def to_json(jb : JSON::Builder) : Nil
+    jb.max_nesting = 9999
     jb.array do
       jb.string @epos
       jb.string @attr.to_str

@@ -117,7 +117,7 @@ class MT::MCache
     SQL
 
   def self.find_con!(inp : Array(String), ver : Int16 = 1_i16)
-    inp = inp.map! { |str| CharUtil.to_canon(str).tr("　", "") }
+    inp = inp.map! { |str| CharUtil.canonize(str).tr("　", "") }
 
     rids = inp.map { |str| gen_rid(str) }
     hash = {} of Int64 => RawCon

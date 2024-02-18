@@ -27,7 +27,7 @@ class MT::ZvdefnForm
 
   def after_initialize
     @zstr = @zstr.gsub(/\p{C}+/, " ").strip
-    @zstr = CharUtil.to_canon(@zstr, upcase: true)
+    @zstr = CharUtil.upcase_canonize(@zstr)
 
     @vstr = @vstr.gsub(/\p{C}+/, " ").strip.unicode_normalize(:nfkc)
     @vstr = VietUtil.fix_tones(@vstr)

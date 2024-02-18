@@ -72,7 +72,7 @@ class RawRmchap
       .sub(/^\d+\.第/, "第")
       .sub(/(^章节目录|(《.+》)?正文)/, "")
 
-    TextUtil.format_and_clean(title)
+    CharUtil.trim_sanitize(title)
   end
 
   def extract_paras(chap_type : String, selector : String)
@@ -99,7 +99,7 @@ class RawRmchap
     container.inner_text('\n').each_line do |line|
       scrub_re.try { |re| line = line.sub(re, "") }
 
-      line = TextUtil.format_and_clean(line)
+      line = CharUtil.trim_sanitize(line)
       next if line.empty?
 
       @paras << line
@@ -132,7 +132,7 @@ class RawRmchap
         ord -= jmp
       end
 
-      @paras[ord] = TextUtil.format_and_clean(node.inner_text(deep: false))
+      @paras[ord] = CharUtil.trim_sanitize(node.inner_text(deep: false))
     end
 
     @paras

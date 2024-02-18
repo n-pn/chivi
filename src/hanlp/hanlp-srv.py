@@ -7,8 +7,18 @@ os.environ["HANLP_HOME"] = "/2tb/var.hanlp/.hanlp"
 
 import hanlp, torch
 from flask import Flask, request
+from hanlp_trie import DictInterface, TrieDict
+
+COMBINE_FILE = '/app/hanlp/dict-combine.tsv'
+DICT_COMBINE = TrieDict()
+
+FORCE_FILE = '/app/hanlp/dict-force.tsv'
+DICT_FORCE = TrieDict()
 
 TASKS_CACHE = {}
+
+SAVED_TERMS = set()
+KEEP_ENTITY = ['PERSON', 'LOCATION', 'ORGANIZATION']
 
 def load_task(kind):
     if kind in TASKS_CACHE:
@@ -30,11 +40,29 @@ def load_task(kind):
     del mtl_task['ner/ontonotes']
     del mtl_task['pos/pku']
     del mtl_task['pos/863']
-    del mtl_task['tok/coarse']
+    del mtl_task['tok/fine']
 
     TASKS_CACHE[kind] = mtl_task
     return mtl_task
 
+def add_names_to_task(mtl_line):
+    msra_line = mtl_line['ner/msra']
+
+    for item in msra_line:
+        word = item[0]
+        entm = item[1]
+
+        if not entm in KEEP_ENTITY:
+            continue
+
+        if word in SAVED_TERMS:
+            continue
+
+        SAVED_TERMS.add(word)
+        DICT_COMBINE[word] = word
+
+        with open(COMBINE_FILE, 'a', encoding='UTF-8') as out_file:
+            out_file.write(word + '\n')
 
 def call_mtl_task(mtl_task, inp_lines):
     mtl_data = mtl_task([inp_lines[0]])
@@ -44,6 +72,8 @@ def call_mtl_task(mtl_task, inp_lines):
 
         for key in mtl_line:
             mtl_data[key].append(mtl_line[key])
+
+        add_names_to_task(mtl_line)
 
     torch.cuda.empty_cache()
     gc.collect()
@@ -58,6 +88,8 @@ def call_mtl_task_tokenized(mtl_task, inp_lines):
 
         for key in mtl_line:
             mtl_data[key].append(mtl_line[key])
+
+        add_names_to_task(mtl_line)
 
     torch.cuda.empty_cache()
     gc.collect()
@@ -80,6 +112,25 @@ def mtl_from_toks(kind):
     mtl_data = call_mtl_task_tokenized(load_task(kind), inp_data)
 
     return mtl_data.to_json()
+
+@app.route("/force_term", methods=['GET'])
+def force_term(key, val):
+    with open(FORCE_FILE, 'a', encoding='UTF-8') as out_file:
+        out_file.write(key + '\t' + val + '\n')
+
+    SAVED_TERMS.add(word)
+    return key
+
+@app.route("/combine_term", methods=['GET'])
+def combine_term(word):
+    with open(CONBINE_FILE, 'a', encoding='UTF-8') as out_file:
+        out_file.write(word + '\n')
+
+    SAVED_TERMS.add(word)
+    DICT_COMBINE[word] = word
+
+    return word
+
 
 ## start app
 if __name__ == '__main__':

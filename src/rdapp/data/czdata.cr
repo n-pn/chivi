@@ -1,5 +1,8 @@
 require "crorm"
+
 require "../../_util/chap_util"
+require "../../_util/zstd_util"
+
 require "../_raw/raw_rmchap"
 
 class RD::Czdata
@@ -28,8 +31,20 @@ class RD::Czdata
   end
 
   @[AlwaysInline]
+  def self.db(sname : String, sn_id : String | Int32)
+    self.db(db_path(sname, sn_id))
+  end
+
   def self.db(db_path : String)
-    Crorm::SQ3.new(db_path, self.init_sql)
+    Crorm::SQ3.new(db_path) do |db|
+      zst_path = "#{db_path}.zst"
+
+      if File.file?(zst_path)
+        ZstdUtil.unzip_file(zst_path, db_path)
+      else
+        db.init_db(self.init_sql)
+      end
+    end
   end
 
   ###
@@ -92,7 +107,7 @@ class RD::Czdata
     zsize = state = 0
 
     input.each_line do |line|
-      line = CharUtil.normalize(line).strip
+      line = CharUtil.trim_sanitize(line)
       next if line.empty?
 
       if state > 1

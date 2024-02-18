@@ -46,7 +46,7 @@ class RD::Tsrepo
 
   @[DB::Field(ignore: true, auto: true)]
   @[JSON::Field(ignore: true)]
-  getter zdata_db : Crorm::SQ3 { Czdata.db(@sname, @sn_id) }
+  getter zdata_db : Crorm::SQ3 { Czdata.db(Czdata.db_path(@sname, @sn_id)) }
 
   def initialize(@sroot)
   end

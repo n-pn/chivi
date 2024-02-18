@@ -34,20 +34,14 @@ module TextUtil
 
   @[AlwaysInline]
   def format_and_clean(input : String) : String
-    CharUtil.normalize(input).strip
-  end
-
-  # convert all halfwidth to fullwidth and group similar characters
-  @[AlwaysInline]
-  def canon_clean(input : String, upcase : Bool = false) : String
-    CharUtil.to_canon(input, upcase: upcase).strip('　')
+    CharUtil.fast_sanitize(input).strip
   end
 
   # convert all halfwidth to fullwidth and group similar characters
   def to_canon(input : String, upcase : Bool = false) : String
     String.build do |io|
       input.each_line do |line|
-        line = canon_clean(line)
+        line = CharUtil.canonize(line).strip('　')
         io << line << '\n' unless line.empty?
       end
     end

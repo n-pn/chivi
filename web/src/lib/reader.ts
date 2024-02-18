@@ -211,7 +211,7 @@ export class Rdpage {
     let input = ''
     let count = 0
 
-    const limit = qkind == 'c_gpt' ? 300 : 1000
+    const limit = qkind == 'c_gpt' ? 300 : qkind.startsWith('mtl') ? 600 : 1200
 
     for (; new_start < total; new_start++) {
       const ztext = this.lines[new_start].ztext

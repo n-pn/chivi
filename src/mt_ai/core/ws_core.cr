@@ -103,32 +103,15 @@ class MT::WsCore
     words
   end
 
-  # private def get_best_ner_term(table, index, terms)
-  #   best_term = nil
-  #   ner_terms = terms.reject(&.bner.none?)
+  ###
 
-  #   while term = ner_terms.shift?
-  #     next unless tails = table[index + term.size]?
+  def self.split_sents(line : String)
+    sents = [] of String
 
-  #     tails.each do |tail|
-  #       new_bner = term.bner & tail.iner
-  #       next if new_bner.none?
+    was_end = true
+    str_buf = String::Builder.new
 
-  #       new_term = MtWseg.new(
-  #         zstr: "#{term.zstr}#{tail.zstr}",
-  #         bner: new_bner,
-  #         iner: term.iner,
-  #         oner: tail.oner
-  #       )
-
-  #       ner_terms << new_term
-  #       next if (new_bner & ~tail.oner).none?
-
-  #       next if best_term && (best_term.size > new_term.size || best_term.bner > new_bner)
-  #       best_term = new_term
-  #     end
-  #   end
-
-  #   best_term
-  # end
+    line.each_char do |char|
+    end
+  end
 end

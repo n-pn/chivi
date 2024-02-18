@@ -1,6 +1,8 @@
 require "json"
 require "http/client"
 
+require "../../cv_env"
+
 require "./raw_con"
 require "./raw_dep"
 require "./raw_ent"
@@ -9,10 +11,13 @@ struct MT::RawMtl
   include JSON::Serializable
 
   @[JSON::Field(key: "tok")]
-  getter tok : Array(String) { @tok_fine }
+  getter tok : Array(String) { @tok_coarse.empty? ? @tok_fine : @tok_coarse }
+
+  @[JSON::Field(key: "tok/coarse")]
+  getter tok_coarse : Array(String)
 
   @[JSON::Field(key: "tok/fine")]
-  getter tok_fine : Array(String)
+  getter tok_fine : Array(String) = [] of String
 
   @[JSON::Field(key: "con")]
   getter con : RawCon
@@ -35,10 +40,13 @@ struct MT::RawMtlBatch
   include JSON::Serializable
 
   @[JSON::Field(key: "tok")]
-  getter tok : Array(Array(String)) { @tok_fine }
+  getter tok : Array(Array(String)) { @tok_coarse.empty? ? @tok_fine : @tok_coarse }
+
+  @[JSON::Field(key: "tok/coarse")]
+  getter tok_coarse : Array(Array(String))
 
   @[JSON::Field(key: "tok/fine")]
-  getter tok_fine : Array(Array(String))
+  getter tok_fine : Array(Array(String)) = [] of Array(String)
 
   @[JSON::Field(key: "con")]
   getter con = [] of RawCon
@@ -73,8 +81,8 @@ struct MT::RawMtlBatch
   end
 
   def self.call_hanlp(text : String, ver : Int16 = 1_i16) : self
-    link = "http://localhost:5555/mtl_text/mtl_#{ver}"
-
+    # link = "#{CV_ENV.lp_host}/mtl_text/mtl_#{ver}"
+    link = "http://192.168.1.22:5555/mtl_text/mtl_#{ver}"
     HTTP::Client.post(link, body: text) do |res|
       raise "error: #{res.body_io.gets_to_end}" unless res.status.success?
       from_json(res.body_io)

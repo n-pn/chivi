@@ -35,8 +35,6 @@ module CV_ENV
   class_getter sp_port = ENV["CV_SP_PORT"]?.try(&.to_i?) || 5300 # mt_sp helper
   class_getter ys_port = ENV["CV_YS_PORT"]?.try(&.to_i?) || 5400 # ysapp server
 
-  class_getter lp_port = ENV["HANLP_PORT"]?.try(&.to_i?) || 5555 # hanlp server
-
   class_getter be_host = "http://localhost:#{be_port}"
   class_getter wn_host = "http://localhost:#{wn_port}"
   class_getter up_host = "http://localhost:#{up_port}"
@@ -49,5 +47,5 @@ module CV_ENV
   class_getter sp_host = "http://localhost:#{sp_port}"
   class_getter ys_host = "http://localhost:#{ys_port}"
 
-  class_getter lp_host = "http://localhost:#{lp_port}"
+  class_getter lp_host = ENV["HANLP_HOST"]? || "http://localhost:5555"
 end
