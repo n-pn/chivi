@@ -38,7 +38,7 @@ class M1::ZvTrie
       break unless trie = node.trie
 
       char = chars[i]
-      char = CharUtil.to_canon(char, true)
+      char = CharUtil.upcase_canonize(char)
 
       break unless node = trie[char]?
       node.term.try { |term| yield term }
@@ -47,123 +47,54 @@ class M1::ZvTrie
 end
 
 class M1::MtDict
-  DB_PATH = "var/mtapp/v1dic/v1_defns.dic"
+  DICT_IDS = {
+    "verb_obj"  => -31,
+    "v_ditran"  => -30,
+    "v_rescom"  => -29,
+    "v_dircom"  => -28,
+    "qt_times"  => -27,
+    "qt_verbs"  => -26,
+    "qt_nouns"  => -25,
+    "fix_u_zhi" => -24,
+    "fix_advbs" => -23,
+    "fix_adjts" => -22,
+    "fix_verbs" => -21,
+    "fix_nouns" => -20,
+    "surname"   => -12,
+    "pin_yin"   => -11,
+    "hanviet"   => -10,
+    "fixture"   => -3,
+    "essence"   => -2,
+    "regular"   => -1,
+  } of String => Int32
 
-  MAINS = {} of Int32 => self
-  AUTOS = {} of Int32 => self
-  USERS = {} of String => self
+  CACHE = {} of Int32 => self
 
-  class_getter regular_main : self do
-    MAINS[-1] ||= new(2).load!(-2).load_main!(-1).load!(-3)
+  class_getter regular : self do
+    new(dnum: 2, d_id: -1)
   end
 
-  # class_getter regular_temp : self do
-  #   TEMPS[-1] ||= new(3).load_temp!(-1)
-  # end
-
-  def self.regular_user(uname : String) : self
-    USERS["@#{uname}"] ||= new(4).load_user!(-1, uname)
-  end
-
-  class_getter regular_init : self do
-    new(5).load_init!
-  end
-
-  def self.unique_main(wn_id : Int32) : self
-    MAINS[wn_id] ||= new(6).load_main!(wn_id)
-  end
-
-  # def self.unique_temp(wn_id : Int32) : self
-  #   TEMPS[wn_id] ||= new(7).load_temp!(wn_id)
-  # end
-
-  def self.unique_auto(wn_id : Int32) : self
-    AUTOS[wn_id] ||= new(5)
-  end
-
-  def self.unique_user(wn_id : Int32, uname : String) : self
-    USERS["#{wn_id}@#{uname}"] ||= new(8).load_user!(wn_id, uname)
+  def self.wn_dic(wn_id : Int32) : self
+    CACHE[wn_id] ||= new(dnum: 6, d_id: wn_id)
   end
 
   getter trie = ZvTrie.new
   delegate scan, to: @trie
 
-  def initialize(@lbl : Int32)
-  end
+  LOAD_SQL = <<-SQL
+    select zstr, vstr, ptag, rank from defns
+    where d_id = $1
+    SQL
 
-  private def open_db(&)
-    DB.open("sqlite3:#{DB_PATH}") { |db| yield db }
-  end
+  DB_PATH = "var/mt_db/v1_defns.db3"
 
-  def load!(dic : Int32) : self
-    do_load!(dic) { "and tab >= 0" }
-  end
-
-  def load_main!(dic : Int32) : self
-    do_load!(dic) { "and tab = 1" }
-  end
-
-  # def load_temp!(dic : Int32) : self
-  #   do_load!(dic) { "and tab > 1" }
-  # end
-
-  def load_user!(dic : Int32, uname : String) : self
-    do_load!(dic, uname) { "and tab > 1 and uname = ?" }
-  end
-
-  private def do_load!(*args : DB::Any, &) : self
-    open_db do |db|
-      sql = String.build do |io|
-        io << "select key, val, ptag, prio from defns"
-        io << " where dic = ? "
-        io << yield
-        io << " order by id asc"
-      end
-
-      db.query_each(sql, *args) do |rs|
-        key, val, ptag, prio = rs.read(String, String, String, Int32)
-        add_term(key, val, ptag, prio)
+  def initialize(@dnum : Int32, d_id : Int32)
+    DB.open("sqlite3:#{DB_PATH}") do |db|
+      db.query_each(LOAD_SQL, d_id) do |rs|
+        zstr, vstr, ptag, rank = rs.read(String, String, String, Int32)
+        node = @trie.find!(zstr)
+        node.term = vstr.empty? ? nil : MtDefn.new(zstr, vstr, dic: @dnum, ptag: ptag, prio: rank)
       end
     end
-
-    self
-  end
-
-  def load_init!
-    DB.open("sqlite3:var/mtdic/fixed/v1_init.dic") do |db|
-      sql = "select zstr, tags, mtls from terms where _flag >= 0 and mtls <> ''"
-
-      db.query_each(sql) do |rs|
-        key, tags, mtls = rs.read(String, String, String)
-
-        val = mtls.split(/[|ǀ\t]/).first
-        tag = PosTag.map_ctb(tags.split(' ')[0], key)
-
-        node = @trie.find!(key)
-        node.term = MtDefn.new(key, val, tag: tag, dic: @lbl, prio: 1)
-      end
-    end
-
-    self
-  end
-
-  def add_defn(defn : DbDefn)
-    add_term(defn.key, defn.val, defn.ptag, defn.prio)
-  end
-
-  def add_term(key : String, val : String, ptag : String = "", prio : Int32 = 2)
-    node = @trie.find!(key)
-
-    if val.empty?
-      node.term = nil
-    else
-      val = val.split(/[ǀ|\t]/).first
-      node.term = MtDefn.new(key, val, dic: @lbl, ptag: ptag, prio: prio)
-    end
-  end
-
-  def remove_term(key : String) : Nil
-    return unless node = @trie.find(key)
-    node.term = nil
   end
 end

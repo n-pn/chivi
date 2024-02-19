@@ -54,7 +54,7 @@ module M1::TlUtil
 
   def tl_btitle(ztitle : String, wn_id : Int32 = 0)
     btitle = self.wn_btitles.fetch(ztitle) do
-      engine = MtCore.init(wn_id)
+      engine = MtCore.new(wn_id)
 
       if match = ztitle.match(BTITLE_RE)
         _, prefix, ztitle = match
