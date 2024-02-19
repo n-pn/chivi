@@ -6,13 +6,18 @@ class SP::VCache
   enum Obj : Int16
     Ztext = 0 # original text
     Py_tm = 1 # pinyin with tone marks
-    Hviet = 5 # hanviet
+    Hviet = 2 # hanviet
+    Hname = 4 # name
 
     Vi_lv = 10 # translation from lacviet
     Vi_vp = 11 # translation from vietphrase dicts
 
-    Vi_qt = 15 # translated by old translator
-    Vi_mt = 16 # translated by new translator
+    Qt_v1 = 14 # translated by old translator
+    Mtl_0 = 15 # translated by new translator
+    Mtl_1 = 16 # translated by new translator
+    Mtl_2 = 17 # translated by new translator
+    Mtl_3 = 18 # translated by new translator
+    Mtl_4 = 19 # translated by new translator
 
     Vi_uc = 20 # chivi user submitted content
 
@@ -88,19 +93,17 @@ class SP::VCache
 
     cached = [] of String
     remain = [] of Int32
-    mtime = TimeUtil.cv_mtime
 
     rids.each_with_index do |rid, idx|
       if found = hash[rid]?
         cached << found[0]
-        mtime = found[1] if mtime > found[1]
       else
         cached << "<!>"
         remain << idx
       end
     end
 
-    {cached, remain, TimeUtil.cv_utime(mtime)}
+    {cached, remain}
   end
 
   def self.upsert!(raw : String, obj : String, val : String, mcv = TimeUtil.cv_mtime)

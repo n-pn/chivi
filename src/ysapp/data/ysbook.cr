@@ -5,7 +5,6 @@ require "../../_util/tran_util"
 
 require "../../_data/wnovel/wninfo"
 require "../../_data/wnovel/wnlink"
-require "../../mt_v1/data/v1_dict"
 require "../../wnapp/_raw/raw_ysbook"
 
 require "./wninfo"

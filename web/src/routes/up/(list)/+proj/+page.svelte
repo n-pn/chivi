@@ -27,12 +27,12 @@
   }
 
   const qt_hviet = async (ztext: string) => {
-    const res = await fetch(`/_m1/qtran/hvname?ztext=${ztext}`)
+    const res = await fetch(`/_sp/qtran/hname?zh=${ztext}`)
     return await res.text()
   }
 
-  const tl_intro = async () => {
-    const url = `/_m1/qtran?format=txt`
+  const tl_bintro = async (qkind = 'qt_v1') => {
+    const url = `/_sp/qtran/${qkind}?op=txt&hs=0&ls=1`
     const res = await fetch(url, { method: 'POST', body: uform.zdesc })
     uform.vdesc = await res.text()
   }
@@ -66,7 +66,7 @@
         name="zname"
         placeholder="Tên gốc tiếng Trung"
         required
-        on:change={tl_btitle}
+        on:change={() => tl_btitle()}
         bind:value={uform.zname} />
     </form-field>
 
@@ -90,7 +90,7 @@
         class="m-input"
         required
         placeholder="Tên tác giả Tiếng Trung"
-        on:change={tl_author}
+        on:change={() => tl_author()}
         bind:value={uform.au_zh} />
     </form-field>
 
@@ -113,7 +113,7 @@
         class="m-input"
         rows="8"
         placeholder="Giới thiệu tiếng Trung"
-        on:change={tl_intro}
+        on:change={() => tl_bintro()}
         bind:value={uform.zdesc} />
     </form-field>
 
@@ -169,11 +169,7 @@
     {#if uform.id}
       <div class="delete">
         <span class="label">Xóa dự án:</span>
-        <input
-          type="number"
-          class="m-input"
-          placeholder="ID dự án"
-          bind:value={confirm} />
+        <input type="number" class="m-input" placeholder="ID dự án" bind:value={confirm} />
         <button
           type="button"
           class="m-btn _harmful _fill"
@@ -185,10 +181,7 @@
       </div>
     {/if}
 
-    <button
-      class="m-btn _primary _fill u-right"
-      type="submit"
-      disabled={$_user.privi < 1}>
+    <button class="m-btn _primary _fill u-right" type="submit" disabled={$_user.privi < 1}>
       <SIcon name="send" />
       <span class="-txt">Đăng tải</span>
       <SIcon name="privi-1" iset="icons" />

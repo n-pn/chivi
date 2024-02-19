@@ -1,34 +1,10 @@
 <script context="module" lang="ts">
-  export function capitalize(str: String) {
-    return str.charAt(0).toUpperCase() + str.slice(1)
-  }
-
-  export function titleize(str: string, count = 9) {
-    if (!str) return ''
-    if (typeof count == 'boolean') count = count ? 9 : 0
-
-    const res = str.split(' ')
-    if (count > res.length) count = res.length
-
-    for (let i = 0; i < count; i++) res[i] = capitalize(res[i])
-    for (let i = count; i < res.length; i++) res[i] = res[i].toLowerCase()
-
-    return res.join(' ')
-  }
-
-  function detitleize(str: String, count = 9) {
-    const res = str.split(' ')
-    if (count > res.length) count = res.length
-    for (let i = 0; i < count; i++) res[i] = res[i].toLowerCase()
-    for (let i = count; i < res.length; i++) res[i] = capitalize(res[i])
-
-    return res.join(' ')
-  }
-
   const v1_cache = new Map<string, string>()
 </script>
 
 <script lang="ts">
+  import { titleize, detitleize } from '$utils/text_utils'
+
   import { deepl_word } from '$utils/qtran_utils/dl_tran'
   import { btran_word } from '$utils/qtran_utils/ms_tran'
   import { gtran_word } from '$utils/qtran_utils/gg_tran'
@@ -98,7 +74,7 @@
     let cached = v1_cache.get(ztext)
     if (cached) return cached
 
-    const url = `/_m1/qtran/suggest?input=${ztext}&w_cap=false`
+    const url = `/_m1/qtran?zh=${ztext}&wc=false`
     const res = await fetch(url)
     if (!res.ok) return res.status
     cached = await res.text()

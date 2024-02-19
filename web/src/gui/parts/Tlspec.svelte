@@ -79,7 +79,7 @@
   async function handle_submit(evt: Event) {
     evt.preventDefault()
 
-    const path = `/_mt/specs/${$entry._ukey}`
+    const path = `/_mt/mt_err/${$entry._ukey}`
     const body = { ztext: $ztext, lower, upper, ...$vdict, ...$entry }
 
     try {
@@ -94,7 +94,7 @@
 
   async function delete_tlspec() {
     try {
-      await api_call(`/_mt/specs/${$entry._ukey}`, {}, 'DELETE', fetch)
+      await api_call(`/_sp/errors/${$entry._ukey}`, {}, 'DELETE', fetch)
       ctrl.hide()
       on_destroy()
     } catch (ex) {
@@ -140,11 +140,7 @@
   }
 </script>
 
-<Dialog
-  actived={$ctrl.actived}
-  --z-idx={80}
-  class="tlspec"
-  on_close={ctrl.hide}>
+<Dialog actived={$ctrl.actived} --z-idx={80} class="tlspec" on_close={ctrl.hide}>
   <tlspec-title slot="header">
     <title-lbl><SIcon name="flag" /></title-lbl>
     <title-dic>{$vdict.vd_id} [{$vdict.label}]</title-dic>
@@ -189,10 +185,7 @@
           <SIcon name="arrow-right" />
         </button>
 
-        <button
-          data-kbd="c"
-          on:click={copy_ztext}
-          data-tip="Copy đoạn text vào clipboard">
+        <button data-kbd="c" on:click={copy_ztext} data-tip="Copy đoạn text vào clipboard">
           <SIcon name="clipboard" />
         </button>
       </btn-group>
@@ -203,9 +196,8 @@
         {#each Array.from($ztext) as char, index}
           <!-- svelte-ignore a11y-click-events-have-key-events -->
           <!-- svelte-ignore a11y-no-static-element-interactions -->
-          <x-z
-            class:active={index >= lower && index < upper}
-            on:click={() => change_focus(index)}>{char}</x-z>
+          <x-z class:active={index >= lower && index < upper} on:click={() => change_focus(index)}
+            >{char}</x-z>
         {/each}
       </tlspec-hanzi>
 
@@ -213,11 +205,7 @@
       <tlspec-cvmtl>{$entry.cvmtl}</tlspec-cvmtl>
     </tlspec-input>
 
-    <form
-      action="/_db/tlspecs"
-      method="POST"
-      class="form"
-      on:submit={handle_submit}>
+    <form action="/_db/tlspecs" method="POST" class="form" on:submit={handle_submit}>
       <form-group>
         <form-label>
           <span>Kết quả dịch chính xác</span>
@@ -228,10 +216,7 @@
               data-tip="Xoá hết kết quả dịch">
               <SIcon name="eraser" />
             </button>
-            <button
-              type="button"
-              on:click={apply_gtran}
-              data-tip="Lấy kết quả từ Google Translate">
+            <button type="button" on:click={apply_gtran} data-tip="Lấy kết quả từ Google Translate">
               <SIcon name="language" />
             </button>
             <!-- svelte-ignore security-anchor-rel-noreferrer -->
@@ -241,10 +226,7 @@
               data-tip="Mở bằng trang dịch nhanh">
               <SIcon name="external-link" />
             </a>
-            <button
-              type="button"
-              on:click={appy_cvmtl}
-              data-tip="Copy từ kết quả dịch máy">
+            <button type="button" on:click={appy_cvmtl} data-tip="Copy từ kết quả dịch máy">
               <SIcon name="copy" />
             </button>
           </btn-group>
@@ -258,10 +240,7 @@
 
       <form-group>
         <form-label>Giải thích thêm nếu cần</form-label>
-        <textarea
-          class="m-input _extra"
-          name="extra"
-          bind:value={$entry.extra} />
+        <textarea class="m-input _extra" name="extra" bind:value={$entry.extra} />
       </form-group>
 
       {#if error}
@@ -270,21 +249,13 @@
 
       <form-action>
         {#if $entry._ukey}
-          <button
-            type="button"
-            class="m-btn _harmful"
-            data-kbd="delete"
-            on:click={delete_tlspec}>
+          <button type="button" class="m-btn _harmful" data-kbd="delete" on:click={delete_tlspec}>
             <SIcon name="trash" />
             <span>Xoá bỏ</span>
           </button>
         {/if}
 
-        <button
-          type="submit"
-          class="m-btn _primary _fill"
-          data-kbd="⇧↵"
-          disabled={!$entry.match}>
+        <button type="submit" class="m-btn _primary _fill" data-kbd="⇧↵" disabled={!$entry.match}>
           {#if $entry._ukey}
             <SIcon name="device-floppy" />
             <span>Lưu lại</span>

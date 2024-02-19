@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { titleize } from '$utils/text_utils'
+
   import { bgenres } from '$lib/constants'
   import { goto } from '$app/navigation'
 
@@ -49,18 +51,24 @@
   let show_genres_menu = false
   let show_genres_more = false
 
-  const tl_btitle = async (value: string) => {
-    const href = `/_m1/qtran/btitle?ztext=${value}&wn_id=${data.id}`
-    form.btitle_vi = await fetch_text(href)
+  let bt_qt = 'hname'
+  let au_qt = 'hname'
+  let in_qt = 'qt_v1'
+
+  const tl_btitle = async (value: string, qkind = 'hname') => {
+    const href = `/_sp/qtran/${qkind}?zh=${value}&pd=wn${data.id}`
+    const text = await fetch_text(href)
+    form.btitle_vi = titleize(text.trim())
   }
 
-  const tl_author = async (value: string) => {
-    const href = `/_m1/qtran/author?ztext=${value}`
-    form.author_vi = await fetch_text(href)
+  const tl_author = async (value: string, qkind = 'hname') => {
+    const href = `/_sp/qtran/${qkind}?zh=${value}&pd=wn${data.id}`
+    const text = await fetch_text(href)
+    form.author_vi = titleize(text.trim())
   }
 
-  const tl_bintro = async (body: string) => {
-    const href = `/_m1/qtran?wn_id=${data.id}&format=txt&title=0`
+  const tl_bintro = async (body: string, qkind = 'qt_v1') => {
+    const href = `/_sp/qtran/${qkind}?op=txt&hs=0&ls=1&pd=wn${data.id}`
     const headers = { 'Content-Type': 'text/plain' }
     form.intro_vi = await fetch_text(href, { method: 'POST', body, headers })
   }
@@ -86,7 +94,7 @@
           name="btitle_zh"
           placeholder="Tựa bộ truyện"
           disabled={data.id != 0}
-          on:change={() => tl_btitle(form.btitle_zh)}
+          on:change={() => tl_btitle(form.btitle_zh, bt_qt)}
           required
           bind:value={form.btitle_zh} />
       </form-field>
@@ -104,8 +112,7 @@
 
     <form-group>
       <form-field>
-        <label class="form-label" for="author_zh"
-          >Tên tác giả tiếng Trung</label>
+        <label class="form-label" for="author_zh">Tên tác giả tiếng Trung</label>
         <input
           type="text"
           class="m-input"
@@ -113,7 +120,7 @@
           placeholder="Tên tác giả bộ truyện"
           required
           disabled={data.id != 0}
-          on:change={() => tl_author(form.author_zh)}
+          on:change={() => tl_author(form.author_zh, au_qt)}
           bind:value={form.author_zh} />
       </form-field>
 
@@ -136,7 +143,7 @@
           name="intro_zh"
           rows="8"
           placeholder="Giới thiệu vắn tắt nội dung"
-          on:change={() => tl_bintro(form.intro_zh)}
+          on:change={() => tl_bintro(form.intro_zh, in_qt)}
           bind:value={form.intro_zh} />
       </form-field>
 
@@ -169,10 +176,7 @@
 
         <div class="m-chips">
           {#each form.genres as genre}
-            <button
-              type="button"
-              class="m-chip _success"
-              on:click={() => remove_genre(genre)}>
+            <button type="button" class="m-chip _success" on:click={() => remove_genre(genre)}>
               <span>{genre}</span>
               <SIcon name="x" />
             </button>
@@ -205,8 +209,7 @@
               type="button"
               class="m-chip _xs"
               on:click={() => (show_genres_more = !show_genres_more)}>
-              <SIcon
-                name={show_genres_more ? 'chevron-left' : 'chevron-right'} />
+              <SIcon name={show_genres_more ? 'chevron-left' : 'chevron-right'} />
             </button>
           </div>
         {/if}
@@ -220,11 +223,7 @@
         <form-radio>
           {#each book_status as label, value}
             <label class="radio">
-              <input
-                type="radio"
-                bind:group={form.status}
-                name="status"
-                {value} />
+              <input type="radio" bind:group={form.status} name="status" {value} />
               <span>{label}</span>
             </label>
           {/each}
@@ -237,10 +236,7 @@
     {/if}
 
     <form-group class="action">
-      <button
-        class="m-btn _primary _fill _lg"
-        type="submit"
-        disabled={$_user.privi < 1}>
+      <button class="m-btn _primary _fill _lg" type="submit" disabled={$_user.privi < 1}>
         <SIcon name="send" />
         <span class="-txt">Lưu thông tin</span>
         <SIcon name="privi-1" iset="icons" />

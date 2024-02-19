@@ -11,8 +11,9 @@ class SP::QtData
     lines = [] of String
 
     ztext.each_line do |line|
-      line = CharUtil.canonize(line).strip('　')
-      lines << line unless line.empty?
+      # TODO: remove line.empty? check
+      # TODO: remove canonize?
+      lines << CharUtil.canonize(line) unless line.empty?
     end
 
     from_ztext(lines, cache: cache, cache_dir: cache_dir)
@@ -48,10 +49,12 @@ class SP::QtData
   def initialize(@lines, @fbase, @cache = true)
   end
 
-  def set_opts(@pdict, @regen, @h_sep, @l_sep, @otype = "json")
+  def set_opts(@pdict, @udict, @regen, @h_sep, @l_sep, @otype = "json")
   end
 
   MULTP_MAP = {
+    "hviet" => 1,
+    "hname" => 1,
     "qt_v1" => 2,
     "mtl_0" => 3,
     "mtl_1" => 4,
@@ -72,8 +75,19 @@ class SP::QtData
     {wcount, charge}
   end
 
-  def get_vtran(qtype : String)
-    return {"", 0_i64} if @lines.empty?
+  def get_vtran(qtype : String) : String
+    return "" if @lines.empty?
+    return call_mtran(qtype) if qtype.starts_with?("mtl")
+
+    case qtype
+    when "qt_v1"
+      return call_qt_v1(chunk: 3000)
+    when "hname"
+      return @lines.join('\n') { |line| MT::QtCore.tl_hvname(line) }
+    when "hviet"
+      return @lines.join('\n') { |line| MT::QtCore.tl_hvword(line) }
+    end
+
     fpath = "#{@fbase}.#{qtype}.txt"
 
     read_file(fpath, regen > 1 ? 5.minutes : 2.weeks) || begin
@@ -84,29 +98,16 @@ class SP::QtData
     end
   end
 
-  def read_file(fpath : String, tspan = 2.weeks) : {String, Int64}?
+  def read_file(fpath : String, tspan = 2.weeks) : String?
     return unless @cache && (info = File.info?(fpath))
-    return unless info.modification_time >= Time.utc - tspan
-
-    {File.read(fpath), info.modification_time.to_unix}
+    File.read(fpath) if info.modification_time >= Time.utc - tspan
   end
 
-  MT_AI_API = "#{CV_ENV.ai_host}/_ai/qtran"
+  def load_vtext(qtype : String) : String?
+    vobj = VCache::Obj.parse(qtype)
 
-  def get_mtran(qtype : String, udict : String = "")
-    url = "#{MT_AI_API}?qt=#{qtype}&op=#{@otype}&pd=#{@pdict}&ud=#{udict}&hs=#{h_sep}&ls=#{l_sep}&rg=#{regen}"
-    mdata = HTTP::Client.post(url, body: @lines.join('\n'), &.body_io.gets_to_end)
-
-    {mdata, Time.utc.to_unix}
-  end
-
-  def load_vtext(type : String) : {String, Int64}?
-    return {call_qt_v1, Time.utc.to_unix} if type == "qt_v1"
-
-    vobj = VCache::Obj.parse(type)
-
-    cached, remain, mtime = VCache.get_val(obj: vobj, raws: @lines)
-    return {cached.join('\n'), mtime} if remain.empty?
+    cached, remain = VCache.get_val(obj: vobj, raws: @lines)
+    return cached.join('\n') if remain.empty?
 
     missing = remain.map { |idx| @lines[idx] }
 
@@ -124,21 +125,26 @@ class SP::QtData
     when .c_gpt? # GPT Tien Hiep
       vlines = call_c_gpt(missing)
     else
-      raise "Không hỗ trợ cách dịch nhanh [#{type}]"
+      raise "Không hỗ trợ cách dịch nhanh [#{qtype}]"
     end
 
     return unless vlines
     VCache.cache!(obj: vobj, raws: missing, vals: vlines)
 
     vlines.each_with_index { |vtext, idx| cached[remain[idx]] = vtext }
-    {cached.join('\n'), mtime}
+    cached.join('\n')
   end
 
-  QT_V1_API = "#{CV_ENV.m1_host}/_m1/qtran"
-
-  private def call_qt_v1
+  private def call_qt_v1(chunk = 3000)
     wn_id = @pdict.starts_with?("wn") ? @pdict[2..].to_i : 0
-    url = "#{QT_V1_API}?format=text&wn_id=#{wn_id}&title=#{@h_sep}"
+    q_url = "#{CV_ENV.m1_host}/_m1/qtran?wn=#{wn_id}&hs=#{@h_sep}&op=txt"
+    HTTP::Client.post(q_url, body: @lines.join('\n'), &.body_io.gets_to_end)
+  end
+
+  MT_AI_API = "#{CV_ENV.ai_host}/_ai/qtran"
+
+  def call_mtran(qtype : String)
+    url = "#{MT_AI_API}?qt=#{qtype}&op=#{@otype}&pd=#{@pdict}&ud=#{@udict}&hs=#{h_sep}&ls=#{l_sep}&rg=#{regen}"
     HTTP::Client.post(url, body: @lines.join('\n'), &.body_io.gets_to_end)
   end
 

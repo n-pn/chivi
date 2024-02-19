@@ -62,11 +62,7 @@ export function diff_html(orig: string, edit: string, show_deleted = false) {
 
 const text_headers = { 'Content-Type': 'text_plain' }
 
-export async function translate(
-  input: string,
-  wn_id: number = 0,
-  fetch = globalThis.fetch
-) {
+export async function translate(input: string, wn_id: number = 0, fetch = globalThis.fetch) {
   if (!input) return ''
   const href = `/_m1/qtran?wn_id=${wn_id}&format=txt`
   const init = { method: 'POST', headers: text_headers, body: input }
@@ -84,4 +80,32 @@ export function unaccent(input: string) {
 export function slugify(input: string) {
   input = unaccent(input)
   return input.split(/\W+/).filter(Boolean).join('-')
+}
+
+export function capitalize(str: String) {
+  return str.replace(/\p{L}/, (x) => x.toUpperCase())
+}
+
+export function titleize(str: string, count = 9999) {
+  if (!str) return ''
+  if (typeof count != 'number') count = count ? 9999 : 0
+
+  const res = str.split(' ')
+  if (count > res.length) count = res.length
+
+  for (let i = 0; i < count; i++) res[i] = capitalize(res[i])
+  for (let i = count; i < res.length; i++) res[i] = res[i].toLowerCase()
+
+  return res.join(' ')
+}
+
+export function detitleize(str: String, count = 9999) {
+  const res = str.split(' ')
+  if (typeof count != 'number') count = count ? 9999 : 0
+
+  if (count > res.length) count = res.length
+  for (let i = 0; i < count; i++) res[i] = res[i].toLowerCase()
+  for (let i = count; i < res.length; i++) res[i] = capitalize(res[i])
+
+  return res.join(' ')
 }

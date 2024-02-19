@@ -135,10 +135,14 @@ export class Rdpage {
   track: Record<string, number>
 
   constructor(ztext: string) {
-    let lines = ztext.split('\n').filter(Boolean)
-    this.lines = lines.map((x) => new Rdline(x.trim()))
+    this.lines = []
     this.state = {}
     this.track = {}
+
+    for (let line of ztext.split('\n')) {
+      line = line.replaceAll(/\s/g, '')
+      if (line) this.lines.push(new Rdline(line))
+    }
   }
 
   gen_rinit(cache: number, method = 'GET'): RequestInit {
