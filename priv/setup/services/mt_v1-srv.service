@@ -6,7 +6,7 @@ AllowIsolate=yes
 
 StartLimitIntervalSec=400
 StartLimitBurst=20
-StartLimitAction=reboot
+# StartLimitAction=reboot
 
 [Service]
 Type=simple
@@ -17,11 +17,11 @@ TimeoutSec=600
 User=nipin
 Environment=PORT=5110
 Environment=CV_ENV=production
-WorkingDirectory=/2tb/app.chivi
-ExecStart=/2tb/app.chivi/bin/mt_v1-srv
+WorkingDirectory=/app/chivi
+ExecStart=/app/chivi/bin/mt_v1-srv
 
-StandardOutput=file:/2tb/app.chivi/log/mt_v1-srv.log
-StandardError=append:/2tb/app.chivi/log/mt_v1-err.log
+StandardOutput=file:/app/chivi/log/mt_v1-srv.log
+StandardError=append:/app/chivi/log/mt_v1-err.log
 
 [Install]
 WantedBy=multi-user.target
