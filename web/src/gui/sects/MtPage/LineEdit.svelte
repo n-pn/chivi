@@ -94,21 +94,21 @@
     newtxt = (<HTMLElement>e.target).innerText
   }
 
-  async function update_preview(input: string) {
-    const url = `/_m1/qtran/debug?wn_id=${vd_id}&w_cap=true`
-    const res = await fetch(url, { method: 'PUT', body: input })
+  // async function update_preview(input: string) {
+  //   const url = `/_m1/qtran/debug?wn_id=${vd_id}&w_cap=true`
+  //   const res = await fetch(url, { method: 'PUT', body: input })
 
-    const text = await res.text()
+  //   const text = await res.text()
 
-    if (!res.ok) {
-      alert(text)
-    } else {
-      const lines = text.split('\n')
+  //   if (!res.ok) {
+  //     alert(text)
+  //   } else {
+  //     const lines = text.split('\n')
 
-      convert = lines[0]
-      hanviet = lines[1]
-    }
-  }
+  //     convert = lines[0]
+  //     hanviet = lines[1]
+  //   }
+  // }
 
   function save_change() {
     if (rawtxt != newtxt) {
@@ -148,11 +148,7 @@
   }
 </script>
 
-<Dialog
-  class="fixraw"
-  _size="lg"
-  actived={fix_raw}
-  on_close={() => (fix_raw = false)}>
+<Dialog class="fixraw" _size="lg" actived={fix_raw} on_close={() => (fix_raw = false)}>
   <header slot="header">Sửa text gốc</header>
 
   <div class="body">
@@ -162,8 +158,7 @@
       <div class="suggests">
         {#each suggests as [from, to]}
           <button class="suggest-btn" on:click={() => replace_text(from, to)}
-            >{from}<span class="mute"><SIcon name="chevron-right" /></span
-            >{to}</button>
+            >{from}<span class="mute"><SIcon name="chevron-right" /></span>{to}</button>
         {:else}
           <div class="no-suggest">Không có gợi ý sửa từ</div>
         {/each}
@@ -226,10 +221,7 @@
       <SIcon name="arrow-back-up" />
     </button>
 
-    <button
-      class="m-btn _primary _fill"
-      on:click={save_change}
-      disabled={newtxt == rawtxt}>
+    <button class="m-btn _primary _fill" on:click={save_change} disabled={newtxt == rawtxt}>
       <span>Lưu thay đổi</span>
       <SIcon name="send" />
     </button>

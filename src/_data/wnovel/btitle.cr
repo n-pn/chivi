@@ -12,17 +12,17 @@ class CV::Btitle
   field bt_vi : String = ""        # vietnamese
   field bt_en : String = ""        # english name
 
-  field vi_uc : String = "" # user provided
-  field vi_qt : String = "" # from qt_v1
-  field vi_ms : String = "" # bing translator
-  field vi_gg : String = "" # google translator
-  field vi_bd : String = "" # baidu translator
+  # field vi_uc : String = "" # user provided
+  # field vi_qt : String = "" # from qt_v1
+  # field vi_ms : String = "" # bing translator
+  # field vi_gg : String = "" # google translator
+  # field vi_bd : String = "" # baidu translator
 
-  field en_uc : String = "" # user provided
-  field en_dl : String = "" # deepl translator
-  field en_ms : String = "" # bing translator
-  field en_gg : String = "" # google translator
-  field en_bd : String = "" # baidu translator
+  # field en_uc : String = "" # user provided
+  # field en_dl : String = "" # deepl translator
+  # field en_ms : String = "" # bing translator
+  # field en_gg : String = "" # google translator
+  # field en_bd : String = "" # baidu translator
 
   def initialize(@bt_zh)
   end

@@ -9,6 +9,8 @@
     "push-dev": "bash priv/push-dev.sh",
     "push-app": "bash priv/push-app.sh",
     "push-cmd": "bash priv/push-cmd.sh",
+    "push-prod": "bash priv/push-prod.sh",
+    "sync-prod": "bash priv/sync-prod.sh",
     "db-up": "bash priv/remote/filedb-upload.sh",
     "db-bk": "bash priv/remote/filedb-backup.sh",
     "ys-up": "bash priv/remote/yousuu-upload.sh",

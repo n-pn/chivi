@@ -104,14 +104,4 @@ class MT::WsCore
   end
 
   ###
-
-  def self.split_sents(line : String)
-    sents = [] of String
-
-    was_end = true
-    str_buf = String::Builder.new
-
-    line.each_char do |char|
-    end
-  end
 end

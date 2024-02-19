@@ -92,7 +92,7 @@ class CV::Wninfo
 
   scope :filter_btitle do |input|
     if input =~ /\p{Han}/
-      where("btitle_zh %> ?", CharUtil.to_canon(input))
+      where("btitle_zh %> ?", CharUtil.upcase_canonize(input))
     else
       where("_btitle_ts_ like '%' || scrub_name(?) || '%'", CharUtil.normalize(input))
     end
@@ -100,7 +100,7 @@ class CV::Wninfo
 
   scope :filter_author do |input|
     if input =~ /\p{Han}/
-      where("author_zh %> ?", CharUtil.to_canon(input))
+      where("author_zh %> ?", CharUtil.upcase_canonize(input))
     else
       where("_author_ts_ like '%' || scrub_name(?) || '%'", CharUtil.normalize(input))
     end

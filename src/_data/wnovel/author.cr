@@ -17,6 +17,17 @@ class CV::Author
 
   field _flag : Int16 = 0
 
+  # field vi_uc : String = "" # user provided
+  # field vi_ms : String = "" # bing translator
+  # field vi_gg : String = "" # google translator
+  # field vi_bd : String = "" # baidu translator
+
+  # field en_uc : String = "" # user provided
+  # field en_dl : String = "" # deepl translator
+  # field en_ms : String = "" # bing translator
+  # field en_gg : String = "" # google translator
+  # field en_bd : String = "" # baidu translator
+
   timestamps
 
   ####################

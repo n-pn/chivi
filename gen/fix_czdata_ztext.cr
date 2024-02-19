@@ -145,9 +145,10 @@ snames.each do |sname|
       file << word_count << '\n'
     end
 
-    cctx = Zstd::Compress::Context.new(level: 3)
-    ibuf = File.read(db_path).to_slice
-    File.write(zst_path, cctx.compress(ibuf))
+    # cctx = Zstd::Compress::Context.new(level: 3)
+    # ibuf = File.read(db_path).to_slice
+    # File.write(zst_path, cctx.compress(ibuf))
+
   rescue ex
     Log.error(exception: ex) { db_path }
   end

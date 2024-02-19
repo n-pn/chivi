@@ -82,13 +82,16 @@ export function slugify(input: string) {
   return input.split(/\W+/).filter(Boolean).join('-')
 }
 
-export function capitalize(str: String) {
-  return str.replace(/\p{L}/, (x) => x.toUpperCase())
+export function capitalize(str: string) {
+  return str.replace(/[\w\p{L}\p{N}]/u, (x) => x.toUpperCase())
+}
+
+export function uncapitalize(str: string) {
+  return str.replace(/[\w\p{L}\p{N}]/u, (x) => x.toLowerCase())
 }
 
 export function titleize(str: string, count = 9999) {
   if (!str) return ''
-  if (typeof count != 'number') count = count ? 9999 : 0
 
   const res = str.split(' ')
   if (count > res.length) count = res.length
@@ -99,9 +102,8 @@ export function titleize(str: string, count = 9999) {
   return res.join(' ')
 }
 
-export function detitleize(str: String, count = 9999) {
+export function detitleize(str: string, count = 9999) {
   const res = str.split(' ')
-  if (typeof count != 'number') count = count ? 9999 : 0
 
   if (count > res.length) count = res.length
   for (let i = 0; i < count; i++) res[i] = res[i].toLowerCase()

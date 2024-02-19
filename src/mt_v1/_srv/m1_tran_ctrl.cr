@@ -5,11 +5,8 @@ class M1::TranCtrl < AC::Base
 
   @[AC::Route::GET("/")]
   def qt_line(zh ztext : String, wn wn_id : Int32 = 0, wc w_cap : Bool = false)
-    guard_privi 0, "dùng máy dịch v1"
-
     cv_mt = MtCore.new(wn_id)
     otext = cv_mt.cv_plain(ztext, w_cap).to_txt
-
     render text: otext
   end
 

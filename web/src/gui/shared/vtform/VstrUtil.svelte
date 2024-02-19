@@ -1,15 +1,58 @@
 <script context="module" lang="ts">
-  const v1_cache = new Map<string, string>()
-</script>
+  import { titleize, detitleize, uncapitalize } from '$utils/text_utils'
 
-<script lang="ts">
-  import { titleize, detitleize } from '$utils/text_utils'
+  import { gtran_word } from '$utils/qtran_utils'
 
   import { deepl_word } from '$utils/qtran_utils/dl_tran'
   import { btran_word } from '$utils/qtran_utils/ms_tran'
-  import { gtran_word } from '$utils/qtran_utils/gg_tran'
   import { baidu_word } from '$utils/qtran_utils/bd_tran'
 
+  const cached_map = new Map<string, string[]>()
+
+  const fetch_trans = async (ztext: string, qkind: string, w_cap = false) => {
+    const c_ukey = `${qkind}-${ztext}`
+
+    const cached = cached_map.get(c_ukey)
+    if (cached) {
+      if (w_cap || qkind == 'prevs') return cached
+      return cached.map((x) => uncapitalize(x))
+    }
+
+    let trans: string[] = []
+
+    switch (qkind) {
+      case 'gtran':
+        trans = await gtran_word(ztext, 'vi')
+        break
+      case 'btran':
+        trans = await btran_word(ztext, 'zh')
+        break
+      case 'baidu':
+        trans = await baidu_word(ztext, 'vie')
+
+        break
+      case 'deepl':
+        trans = [await deepl_word(ztext, 0)]
+        break
+
+      case 'prevs':
+        const resp = await fetch(`/_sp/utils/defns?zh=${ztext}`)
+        const text = await resp.text()
+        trans = resp.ok ? text.split('\n') : [resp.status.toString()]
+        break
+    }
+
+    if (trans.length == 0) return trans
+
+    if (!ztext.endsWith('。')) trans = trans.map((x) => x.replace(/\.$/, ''))
+    cached_map.set(c_ukey, trans)
+
+    if (w_cap || qkind == 'prevs') return trans
+    return trans.map((x) => uncapitalize(x))
+  }
+</script>
+
+<script lang="ts">
   import { tooltip } from '$lib/actions'
   import type { Viform } from './zvdefn_form'
 
@@ -65,22 +108,16 @@
     }
   }
 
-  $: keep_caps = tform.cpos[0] == 'N'
-
   $: all_lower = tform.vstr.toLowerCase()
   $: all_title = titleize(tform.vstr, 99)
 
-  const call_mt_v1 = async (ztext: string) => {
-    let cached = v1_cache.get(ztext)
-    if (cached) return cached
-
-    const url = `/_m1/qtran?zh=${ztext}&wc=false`
-    const res = await fetch(url)
-    if (!res.ok) return res.status
-    cached = await res.text()
-    v1_cache.set(ztext, cached)
-    return cached
-  }
+  const tran_types = [
+    ['prevs', 'img', 'chivi'],
+    ['baidu', 'brand-baidu', 'extra'],
+    ['gtran', 'brand-google'],
+    ['btran', 'brand-bing'],
+    ['deepl', 'img', 'deepl'],
+  ]
 </script>
 
 <div class="util">
@@ -100,25 +137,25 @@
     <button
       type="button"
       class="btn"
-      data-kbd="v"
-      class:_same={more_type == 'prevs'}
-      on:click={() => trigger_more('prevs')}
-      use:tooltip={'Tải các nghĩa có sẵn từ hệ thống'}
-      data-anchor=".vtform"
-      disabled>
-      <span>Có sẵn</span>
+      data-kbd="t"
+      class:_same={more_type == 'trans'}
+      on:click={() => trigger_more('trans')}
+      use:tooltip={'Dịch cụm từ bằng các công cụ dịch'}
+      data-anchor=".vtform">
+      <span>Gợi ý sẵn</span>
       <SIcon name="caret-down" />
     </button>
 
     <button
       type="button"
       class="btn"
-      data-kbd="t"
-      class:_same={more_type == 'trans'}
-      on:click={() => trigger_more('trans')}
-      use:tooltip={'Chọn nghĩa từ gợi ý của các dịch vụ online'}
+      data-kbd="y"
+      class:_same={more_type == 'names'}
+      disabled={tform.cpos[0] != 'N'}
+      on:click={() => trigger_more('names')}
+      use:tooltip={'Dịch tên riêng, viết hoa chữ đầu'}
       data-anchor=".vtform">
-      <span>Dịch ngoài</span>
+      <span>Tên riêng</span>
       <SIcon name="caret-down" />
     </button>
 
@@ -173,57 +210,21 @@
             {vstr}
           </span>
         {/each}
-      {:else if more_type == 'trans'}
-        <img src="/icons/chivi.svg" alt="chivi" />
-        {#await call_mt_v1(tform.ztext)}
-          <SIcon name="loader-2" spin={true} />
-        {:then vstr}
-          <span class="txt" class:_same={tform.vstr == vstr} data-vstr={vstr}>
-            {vstr}
-          </span>
-        {/await}
-
-        <SIcon name="brand-google" />
-        {#await gtran_word(tform.ztext, 'vi', keep_caps)}
-          <SIcon name="loader-2" spin={true} />
-        {:then vstr_list}
-          {#each vstr_list as vstr}
-            <span class="txt" class:_same={tform.vstr == vstr} data-vstr={vstr}>
-              {vstr}
-            </span>
-          {/each}
-        {/await}
-
-        <SIcon name="brand-baidu" iset="extra" />
-        {#await baidu_word(tform.ztext, 'vie', keep_caps)}
-          <SIcon name="loader-2" spin={true} />
-        {:then vstr_list}
-          {#each vstr_list as vstr}
-            <span class="txt" class:_same={tform.vstr == vstr} data-vstr={vstr}>
-              {vstr}
-            </span>
-          {/each}
-        {/await}
-
-        <SIcon name="brand-bing" />
-        {#await btran_word(tform.ztext, 'zh', keep_caps)}
-          <SIcon name="loader-2" spin={true} />
-        {:then vstr_list}
-          {#each vstr_list as vstr}
-            <span class="txt" class:_same={tform.vstr == vstr} data-vstr={vstr}>
-              {vstr}
-            </span>
-          {/each}
-        {/await}
-
-        <img src="/icons/deepl.svg" alt="deepl" />
-        {#await deepl_word(tform.ztext, 0)}
-          <SIcon name="loader-2" spin={true} />
-        {:then vstr}
-          <span class="txt" class:_same={tform.vstr == vstr} data-vstr={vstr}>
-            {vstr}
-          </span>
-        {/await}
+      {:else}
+        {#each tran_types as [qkind, itype, iname]}
+          {#if itype == 'img'}
+            <img src="/icons/{iname}.svg" alt={iname} />
+          {:else}
+            <SIcon name={itype} iset={iname || 'tabler'} />
+          {/if}
+          {#await fetch_trans(tform.ztext, qkind, more_type == 'names')}
+            <SIcon name="loader-2" spin={true} />
+          {:then list}
+            {#each list as tran}
+              <span class="txt" class:_same={tform.vstr == tran} data-vstr={tran}>{tran}</span>
+            {/each}
+          {/await}
+        {/each}
       {/if}
     </div>
   {/if}

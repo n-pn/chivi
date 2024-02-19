@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<!-- <script context="module" lang="ts">
   import { config, vdict, zfrom } from '$lib/stores'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
@@ -265,4 +265,4 @@
       }
     }
   }
-</style>
+</style> -->

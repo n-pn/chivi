@@ -1,4 +1,4 @@
-import { detitlize, send_vcache } from './shared'
+import { send_vcache } from './shared'
 
 let api_key = ''
 let api_exp = 0
@@ -16,8 +16,7 @@ export async function ms_api_key() {
   return api_key
 }
 
-async function gen_headers() {
-  const api_key = ms_api_key()
+async function gen_headers(api_key: string) {
   if (!api_key) throw 'Không lấy được api key free!'
 
   return {
@@ -32,25 +31,19 @@ const tl_root = `${api_url}/translate`
 
 const word_cached = new Map<string, string[]>()
 
-export async function btran_word(text: string, sl = 'auto', keep_caps = false) {
-  const key = `${text}-${sl}`
-  let res = word_cached.get(key)
+export async function btran_word(text: string, sl = 'auto') {
+  const c_ukey = `${text}-${sl}`
+  let trans = word_cached.get(c_ukey)
+  if (trans) return trans
 
-  if (!res) {
-    res = await call_btran_word(text, sl)
-    if (res.length > 0) word_cached.set(key, res)
-  }
-
-  const res2 = res.map((x: string) => detitlize(x))
-  if (!keep_caps) res = res2
-  else res = res.concat(res2)
-
-  return [...new Set(res)]
+  trans = await call_btran_word(text, sl)
+  if (trans.length > 0) word_cached.set(c_ukey, trans)
+  return trans
 }
 
 async function call_btran_word(text: string, sl = 'auto') {
   const body = JSON.stringify([{ text }])
-  const headers = await gen_headers()
+  const headers = await gen_headers(await ms_api_key())
 
   try {
     if (sl == 'zh') sl = 'zh-Hans'
@@ -72,7 +65,7 @@ async function call_btran_word(text: string, sl = 'auto') {
 export async function btran_text(lines: string[]) {
   const url = `${tl_root}&to=vi&from=zh-Hans`
   const body = JSON.stringify(lines.map((text) => ({ text })))
-  const headers = await gen_headers()
+  const headers = await gen_headers(await ms_api_key())
 
   try {
     const res = await fetch(url, { method: 'POST', body, headers })
