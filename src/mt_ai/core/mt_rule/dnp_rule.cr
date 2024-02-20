@@ -11,7 +11,7 @@ class MT::AiCore
     case
     when head.epos.noun?
       head = head.inner_tail
-      is_jj = head.attr.any?(MtAttr[Ndes, Ntmp])
+      is_jj = !head.epos.noun? || head.attr.any?(MtAttr[Ndes, Ntmp])
       tail.body = is_jj ? MtDefn::DEG0 : MtDefn::DEG1
     when head.epos.pn? && (head.attr.nper? || head.attr.nloc?)
       tail.body = MtDefn::DEG1

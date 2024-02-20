@@ -70,23 +70,6 @@ class MT::MtNode
     @attr = @attr & ~attr
   end
 
-  def prepend!(term : self) : self
-    case body = @body
-    in MtDefn
-      frag = MtNode.new(body, zstr: @zstr, epos: :FRAG, from: @from)
-      @body = MtPair.new(term, frag)
-    in MtNode
-      @body = MtPair.new(term, body)
-    in MtPair
-      @body = [term, body.head, body.tail]
-    in Array(MtNode)
-      body.unshift(term)
-    end
-
-    @from = term.from
-    self
-  end
-
   @[AlwaysInline]
   def upto : Int32
     @from &+ @zstr.size
@@ -176,10 +159,54 @@ class MT::MtNode
     end
   end
 
+  @[AlwaysInline]
+  def to_mtl : String
+    String.build { |io| self.to_mtl(io: io) }
+  end
+
+  def to_mtl(io : IO) : Nil
+    queue = [self] of MtNode
+
+    while node = queue.pop?
+      JSON.build(io) do |jb|
+        jb.array do
+          case body = node.body
+          in MtDefn
+            jb.string body.vstr
+            dnum = 100 &* body.rank &+ body.dnum.value
+          in MtNode
+            jb.number 1
+            queue << body
+          in MtPair
+            jb.number 2
+            if body.flip?
+              queue << body.head << body.tail
+            else
+              queue << body.tail << body.head
+            end
+          in Array
+            jb.number body.size
+            body.reverse_each { |node| queue << node }
+          end
+
+          jb.number node.from
+          jb.number node.upto
+          jb.string node.epos
+          jb.string node.attr.to_str
+          jb.number dnum || 0
+        end
+      end
+
+      io << '\t'
+    end
+  end
+
+  @[AlwaysInline]
   def to_json : String
     JSON.build { |jb| self.to_json(jb) }
   end
 
+  @[AlwaysInline]
   def to_json(io : IO) : Nil
     JSON.build(io) { |jb| self.to_json(jb) }
   end

@@ -43,11 +43,13 @@ module MT::TlUnit
     "兆" => "nghìn tỉ",
   }
 
-  def self.translate_cd(input : String)
-    translate_mq(input).try { |x| return x }
-    parts = input.split("分之", 2)
+  def self.translate_cd(zstr : String)
+    return "thứ #{translate(zstr[1..])}" if zstr[0] == '第'
 
-    return translate(input) unless tail = parts[1]?
+    translate_mq(zstr).try { |x| return x }
+    parts = zstr.split("分之", 2)
+
+    return translate(zstr) unless tail = parts[1]?
 
     head = parts[0]
     vstr = translate(tail)

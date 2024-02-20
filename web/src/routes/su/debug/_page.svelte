@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import { onMount } from 'svelte'
   import { Rdpage, Rdword } from '$lib/reader'
   import Vtform, { ctrl as vtform_ctrl } from '$gui/shared/vtform/Vtform.svelte'
@@ -49,11 +49,10 @@
     console.log({ l_ids })
     rpage = rpage
   }
-</script>
+</script> -->
 
+<!--
 <article class="article island">
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div class="preview" on:click={handle_click}>
     <div class="left">
       <h3 class="label">Tiếng Trung:</h3>
@@ -83,7 +82,7 @@
 
       <div class="cdata debug _ct">
         {#each rpage.lines as rline}
-          {@html rline.ctree_html(ropts.mt_rm)}
+          TODO
         {/each}
       </div>
     </div>
@@ -92,11 +91,11 @@
   <button class="m-btn _primary _fill" on:click={call_debug}>
     <span>Parse data!</span>
   </button>
-</article>
+</article> -->
 
-{#if $vtform_ctrl.actived}
+<!-- {#if $vtform_ctrl.actived}
   <Vtform rline={rpage.lines[0]} {rword} {ropts} on_close={on_vtform_close} />
-{/if}
+{/if} -->
 
 <style lang="scss">
   .preview {

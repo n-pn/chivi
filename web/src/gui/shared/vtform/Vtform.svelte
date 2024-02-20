@@ -2,7 +2,6 @@
   import { writable } from 'svelte/store'
   import { Rdword, type Rdline } from '$lib/reader'
   import { tooltip } from '$lib/actions'
-  import { flatten_tree } from '$lib/mt_data_2'
 
   export const ctrl = {
     ...writable({ actived: false, tab: 0 }),
@@ -44,7 +43,7 @@
 
   let tform: Viform = new Viform([], rword, '')
 
-  $: mlist = flatten_tree(rline.trans[ropts.mt_rm] as CV.Cvtree)
+  $: mlist = rline.trans[ropts.mt_rm] as CV.Mtnode[]
   $: mtree = filter_mtree(mlist, rword.from, rword.upto)
 
   $: tform = make_form(mlist, rword)
@@ -59,25 +58,25 @@
   let show_log = false
   let show_dfn = false
 
-  const filter_mtree = (input: CV.Cvtree[], from: number, upto: number) => {
+  const filter_mtree = (input: CV.Mtnode[], from: number, upto: number) => {
     let mtree = []
 
     for (const node of input) {
-      if (node[2] <= from && node[3] >= upto) mtree.push(node)
+      if (node[1] <= from && node[2] >= upto) mtree.push(node)
     }
 
-    if (mtree.length > 4) mtree = mtree.slice(mtree.length - 4)
+    if (mtree.length > 3) mtree = mtree.slice(mtree.length - 3)
 
     for (const node of input) {
-      if (node[2] >= from && node[3] < upto) mtree.push(node)
+      if (node[1] >= from && node[2] < upto) mtree.push(node)
     }
 
-    return mtree.slice(0, 6)
+    return mtree.slice(0, 5)
   }
 
   const cached = new Map<string, Viform>()
 
-  function make_form(mlist: CV.Cvtree[], { from, upto, cpos }) {
+  function make_form(mlist: CV.Mtnode[], { from, upto, cpos }) {
     const key = `${from}-${upto}-${cpos}`
 
     const existed = cached.get(key)
@@ -112,7 +111,7 @@
       ...tform.fdata,
       pdict: ropts.pdict,
       m_alg: ropts.mt_rm,
-      m_con: rline.ctree_text(ropts.mt_rm),
+      // m_con: rline.ctree_text(ropts.mt_rm),
       zfrom: rword.from,
     })
 
@@ -162,7 +161,7 @@
 
   <form class="body" {method} {action} on:submit|preventDefault={submit_action}>
     <div class="tree">
-      {#each mtree as [cpos, _body, from, upto], index}
+      {#each mtree as [_, from, upto, cpos], index}
         {@const cpos_data = cpos_info[cpos] || { name: cpos }}
         {#if index > 0}<span class="sep u-fg-mute">/</span>{/if}
         <button

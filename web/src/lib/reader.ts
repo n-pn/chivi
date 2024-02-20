@@ -4,8 +4,6 @@ import {
   gen_hviet_html,
   gen_mt_ai_html,
   gen_mt_ai_text,
-  gen_ctree_html,
-  gen_ctree_text,
 } from '$lib/mt_data_2'
 import { call_qtran } from '$utils/qtran_utils'
 
@@ -14,7 +12,7 @@ export class Rdword {
   upto: number
   cpos: string
 
-  constructor(from: number = 0, upto: number = 1, cpos: string = 'X') {
+  constructor(from: number = 0, upto: number = 0, cpos: string = 'X') {
     this.from = from
     this.upto = upto
     this.cpos = cpos
@@ -31,8 +29,8 @@ export class Rdword {
 
   static from(node: HTMLElement) {
     if (!node) return new Rdword()
-    const { b, e, c } = node.dataset
-    return new Rdword(+b || 0, +e || 1, c || 'X')
+    const { f, u, p } = node.dataset
+    return new Rdword(+f || 0, +u || 0, p || 'X')
   }
 }
 
@@ -40,7 +38,7 @@ export class Rdline {
   ztext: string
   hviet: string[]
 
-  trans: Record<string, string | CV.Cvtree>
+  trans: Record<string, string | CV.Mtnode[]>
   edits: string[]
 
   constructor(ztext: string) {
@@ -62,14 +60,14 @@ export class Rdline {
     return async (rmode = 1) => {
       const qdata = await this.load_qtran(rmode, qkind, ropts)
       if (typeof qdata == 'string') return qdata
-      return gen_mt_ai_html(qdata, { mode: 2, cap: true, und: true, _qc: 0 })
+      return gen_mt_ai_html(qdata, 2)
     }
   }
 
   async load_qtran(rmode = 1, qtype = 'qt_v1', ropts = {}) {
     const cached = this.trans[qtype]
     if (rmode == 0 || (rmode == 1 && cached)) return cached
-    this.trans[qtype] = qtype.startsWith('mtl') ? ['', '', 0, 0, '', 0] : '...'
+    this.trans[qtype] = qtype.startsWith('mtl') ? [[0, 0, 0, '', '', 0]] : '...'
 
     const [qtran] = await call_qtran(this.ztext, qtype, ropts)
     this.trans[qtype] = qtran
@@ -101,24 +99,24 @@ export class Rdline {
     return gen_ztext_html(this.ztext)
   }
 
-  ctree_text(mtype = 'mtl_2') {
-    const mdata = this.trans[mtype] as CV.Cvtree
-    return mdata ? gen_ctree_text(mdata) : ''
-  }
+  // ctree_text(mtype = 'mtl_2') {
+  //   const mdata = this.trans[mtype] as CV.Mtnode[]
+  //   return mdata ? gen_ctree_text(mdata) : ''
+  // }
 
-  ctree_html(mtype = 'mtl_2') {
-    const mdata = this.trans[mtype] as CV.Cvtree
-    return mdata ? gen_ctree_html(mdata) : ''
-  }
+  // ctree_html(mtype = 'mtl_2') {
+  //   const mdata = this.trans[mtype] as CV.Mtnode[]
+  //   return mdata ? gen_ctree_html(mdata) : ''
+  // }
 
   mtran_text(mtype = 'mtl_2') {
-    const mdata = this.trans[mtype] as CV.Cvtree
+    const mdata = this.trans[mtype] as CV.Mtnode[]
     return mdata ? gen_mt_ai_text(mdata) : ''
   }
 
   mtran_html(mtype = 'mtl_2') {
-    const mdata = this.trans[mtype] as CV.Cvtree
-    return mdata ? gen_mt_ai_html(mdata, { mode: 2, cap: true, und: true, _qc: 0 }) : ''
+    const mdata = this.trans[mtype] as CV.Mtnode[]
+    return mdata ? gen_mt_ai_html(mdata, 2) : ''
   }
 
   qtran_text(qkind = 'qt_v1') {

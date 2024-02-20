@@ -44,15 +44,6 @@ declare namespace CV {
     mt_rm: string
   }
 
-  interface Mtdata {
-    lines: Array<CV.Cvtree>
-    tspan: number
-    dsize?: [number, number, number]
-    mtime?: number
-    error?: string
-    m_alg?: string
-  }
-
   interface Qtdata {
     lines: Array<string>
     tspan: number
@@ -130,4 +121,13 @@ declare namespace CV {
   //   zname: string
   //   gifts: number = 2
   // }
+
+  export type Mtnode = [
+    number | string, // body, number mean nested,
+    number, // from
+    number, // upto
+    string, // cpos
+    string, // attr
+    number // dnum,
+  ]
 }

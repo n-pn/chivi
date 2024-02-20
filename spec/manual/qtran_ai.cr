@@ -21,8 +21,10 @@ input = [
   # "升级经验：22/40",
   # "不是今晚，白鸦先生想，不是今晚。我太冷了，太饿了，太难受了，我得让自己好受些，然后再往下跳。这种时候，更要体面，人总是在奇怪的时刻想着奇怪的讲究，想走得体面并不过分，走得舒服，来生会少些遗憾。",
   # "不是今晚，白鸦先生想，不是今晚。我太冷了，太饿了，太难受了，我得让自己好受些，然后再往下跳",
-  "深夜，一间破落的筒子楼的单间租房内。",
-  "晚风透过窗户，给狭小破旧的卧室内带来了几分凉意。",
+  # "深夜，一间破落的筒子楼的单间租房内。",
+  # "晚风透过窗户，给狭小破旧的卧室内带来了几分凉意。",
+  # "这个世界上总是不缺含着金汤匙出身的人，王令就是其中的一份子。但他的出身，却又宛如一台金汤匙中的战斗机，几乎是颠覆了整个修真界的文明和秩序。",
+  "年轻的女法师在长剑附上晦暗的魔力，走到紧关着护窗板的卧室窗前声音发出的地方，小心翼翼的传进一道揭示术。一缕蓝色的阴晦的微光一闪而逝，但没有传来任何回应。或许真的没什么事。",
 ]
 
 ch_rm = 1
@@ -34,7 +36,7 @@ ch_rm.times do |index|
   cheads << split
 end
 
-zdata = MT::MCache.find_con!(input, ver: 1_i8)
+zdata = MT::MCache.find_con!(input, ver: 3_i8)
 ai_mt = MT::AiCore.new("wn15542")
 
 zdata.each_with_index do |rcon, l_id|
@@ -52,6 +54,6 @@ zdata.each_with_index do |rcon, l_id|
   puts "--------------------------------".colorize.dark_gray
   puts data.to_txt.colorize.yellow
   # puts "--------------------------------".colorize.dark_gray
-  # puts data.to_json.colorize.cyan
+  # puts data.to_mtl.colorize.cyan
   puts "--------------------------------".colorize.dark_gray
 end

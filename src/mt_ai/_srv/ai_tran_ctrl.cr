@@ -1,5 +1,6 @@
 require "./_mt_ctrl_base"
 require "../data/m_cache"
+require "../core/text_cut"
 
 class MT::AiTranCtrl < AC::Base
   base "/_ai"
@@ -28,26 +29,18 @@ class MT::AiTranCtrl < AC::Base
             hs h_sep : UInt32 = 1_u32, ls l_sep : UInt32 = 0_u32)
     # raise "invalid!" unless self.client_ip == "127.0.0.1"
 
-    zdata = self._read_body.lines(chomp: true)
-    heads = [] of MtNode | Nil
-
-    h_sep.times do |index|
-      title, split = TlChap.split(zdata[index])
-      zdata[index] = title
-      heads << split
-    end
-
-    cdata = MCache.find_con!(zdata, ver: qtype[-1].to_i16)
-
+    bases, texts, l_ids = TextCut.split_ztext(self._read_body.strip)
     ai_mt = udict.empty? ? AiCore.load(pdict) : AiCore.load(pdict, udict)
-    qdata = cdata.map_with_index { |line, l_id| ai_mt.translate!(line, prfx: heads[l_id]?) }
 
-    if otype == "text"
-      text = qdata.join('\n', &.to_txt)
-      render text: text
-    else
-      render json: qdata
+    mcons = MCache.find_con!(texts, ver: qtype[-1].to_i16)
+    mcons.each_with_index do |cdata, c_id|
+      base_node, base_body = bases[l_ids[c_id]]
+      curr_node = ai_mt.translate!(cdata, from: base_body.last?.try(&.upto) || 0)
+      curr_node.each_child { |node| base_body << node }
     end
+
+    vdata = String.build { |io| bases.join(io, '\n', &.[0].to_mtl(io)) }
+    render text: vdata
   rescue ex
     Log.error(exception: ex) { ex.message }
     render 455, ex.message

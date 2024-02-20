@@ -89,7 +89,7 @@
 
       <div class="cdata debug _ct">
         {#each rpage.lines as rline}
-          {@html rline.ctree_html}
+          TODO!
         {/each}
       </div>
     </div>

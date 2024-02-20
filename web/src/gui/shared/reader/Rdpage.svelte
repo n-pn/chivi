@@ -87,7 +87,7 @@
     if (!qdata) return 'Có lỗi dịch, mời liên hệ ban quản trị!'
 
     if (typeof qdata == 'string') return qdata
-    return gen_mt_ai_html(qdata, { mode, cap: true, und: true, _qc: 0 })
+    return gen_mt_ai_html(qdata, mode)
   }
 
   const move_node_left = (evt: Event) => {

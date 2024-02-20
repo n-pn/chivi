@@ -21,8 +21,13 @@ module MT::TlChap
   TITLE_RE_1 = /^(第　*([#{NUMS}]+)　*([#{DIVS}]))([\p{P}　]*)(.*)$/
   TITLE_RE_2 = /^([０-９]*\p{Ps}?([#{NUMS}]+)\p{Pe}?([#{DIVS}]))([\p{P}　]*)(.*)$/
 
-  TITLE_RE_3 = /^([０-９]+)([\p{P}　]+)(.*)$/
-  TITLE_RE_4 = /^(楔　*子)(　+)(.+)$/
+  TITLE_RE_3 = /^([０-９]+)([\p{P}\s　]*)(.*)$/
+  TITLE_RE_4 = /^(序章|楔子)([\s　]*)(.+)$/
+
+  TRANS = {
+    "序章" => "Mở đầu",
+    "楔子" => "Phần đệm",
+  }
 
   # returning chap zh_label, vi_label, padding (trash) + zh_title
   def self.split(title : String)
@@ -34,7 +39,7 @@ module MT::TlChap
       vi_ch = CharUtil.normalize(zh_ch)
     elsif match = TITLE_RE_4.match(title)
       _, zh_ch, trash, title = match
-      vi_ch = "Phần đệm"
+      vi_ch = TRANS[zh_ch]
     else
       return {title, nil}
     end

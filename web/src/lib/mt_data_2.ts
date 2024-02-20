@@ -96,19 +96,7 @@ export function gen_ctree_text(node: CV.Cvtree, level = 0, on_nl = false) {
   return text + ')'
 }
 
-const same_level_tags = [
-  'VCD',
-  'VRD',
-  'VNV',
-  'VPT',
-  'VCP',
-  'VAS',
-  'DVP',
-  'QP',
-  'DNP',
-  'DP',
-  'CLP',
-]
+const same_level_tags = ['VCD', 'VRD', 'VNV', 'VPT', 'VCP', 'VAS', 'DVP', 'QP', 'DNP', 'DP', 'CLP']
 
 export function gen_ctree_html(node: CV.Cvtree, level = 0, on_nl = false) {
   const [cpos, _attr, from, upto, body, dnum] = node
@@ -155,7 +143,7 @@ function render_mtl(vstr: string, cpos: string) {
     case 'EM':
       return `<x-em>${vstr}</x-em>`
     case 'URL':
-      return `<a href="${vstr}" target=_blank rel=noreferrer>${vstr}</a>`
+      return `<a href="${vstr}" target="_blank" rel="noreferrer">${vstr}</a>`
     default:
       return vstr
   }
@@ -177,50 +165,61 @@ function should_add_cap(list: Array<CV.Cvtree>) {
   return !is_quote_final(tail[1]) || list[list.length - 2][0] == 'PU'
 }
 
-export function gen_mt_ai_html(
-  node: CV.Cvtree,
-  opts = { mode: 1, cap: true, und: true, _qc: 0 },
-  _lvl = 0
-) {
-  opts.cap ??= true
-  opts.und ??= true
-  opts._qc ??= 0
+export function gen_mt_ai_text(list: CV.Mtnode[], _cap = true, _und = true, _raw = false) {
+  let text = ''
 
-  const [cpos, attr, from, upto, body, dnum = 0] = node
-  if (attr.includes('Hide')) return ''
+  for (const node of list) {
+    const body = node[0]
+    if (typeof body == 'number') continue
 
-  let html = ''
-
-  if (Array.isArray(body)) {
-    opts.cap ||= should_add_cap(body)
-
-    for (let i = 0; i < body.length; i++) {
-      html += gen_mt_ai_html(body[i], opts, _lvl + 1)
+    const attr = node[4]
+    if (attr.includes('Hide')) {
+      if (_raw) text += body
+      continue
     }
-  } else {
+
+    if (!_und && !attr.includes('Undb')) text += ' '
+    _und = attr.includes('Undn')
+
+    const asis = /Capx|Asis/.test(attr)
+    text += _cap && !asis ? capitalize(body) : body
+    _cap = (_cap && asis) || attr.includes('Capn')
+  }
+
+  return text
+}
+
+export function gen_mt_ai_html(list: CV.Mtnode[], mode = 2, _cap = true, _und = true) {
+  let html = ''
+  let _lvl = 0
+  let _emc = 0
+
+  for (const [body, from, upto, cpos, attr, dnum] of list) {
+    if (typeof body == 'number') continue
+    if (attr.includes('Hide')) continue
+
     if (body.charAt(0) == '⟨') {
       html += '<cite>'
     } else if (is_quote_start(body)) {
       html += '<em>'
-      opts._qc += 1
+      _emc += 1
     }
 
-    if (!opts.und && !attr.includes('Undb')) html += ' '
-    opts.und = attr.includes('Undn')
+    if (!_und && !attr.includes('Undb')) html += ' '
+    _und = attr.includes('Undn')
 
     const asis = /Capx|Asis/.test(attr)
     let vesc = escape_htm(body)
 
-    if (opts.cap && !asis) vesc = capitalize(body)
-    opts.cap = (opts.cap && asis) || attr.includes('Capn')
+    if (_cap && !asis) vesc = capitalize(body)
+    _cap = (_cap && asis) || attr.includes('Capn')
 
-    if (opts.mode == 2) {
+    if (mode == 2) {
       const dtyp = dnum == 16 ? 7 : dnum % 10
-
-      html += `<x-n d=${dtyp} data-b=${from} data-e=${upto} data-c=${cpos}>`
+      html += `<x-n d=${dtyp} data-f=${from} data-u=${upto} data-p=${cpos}>`
       html += render_mtl(vesc, cpos)
       html += `</x-n>`
-    } else if (opts.mode == 1) {
+    } else if (mode == 1) {
       html += render_mtl(vesc, cpos)
     } else {
       html += vesc
@@ -230,85 +229,21 @@ export function gen_mt_ai_html(
       html += '</cite>'
     } else if (is_quote_final(body)) {
       html += '</em>'
-      opts._qc -= 1
+      _emc -= 1
     }
   }
 
   if (_lvl == 0) {
-    while (opts._qc < 0) {
-      opts._qc += 1
+    while (_emc < 0) {
+      _emc += 1
       html = '<em>' + html
     }
 
-    while (opts._qc > 0) {
-      opts._qc -= 1
+    while (_emc > 0) {
+      _emc -= 1
       html += '</em>'
     }
   }
 
   return html
-}
-
-export function gen_mt_ai_text(
-  node: CV.Cvtree,
-  opts = { cap: true, und: true },
-  _raw = false
-) {
-  if (!node) return ''
-  const [_pos, attr, _from, _upto, body] = node
-  if (attr.includes('Hide')) return _raw ? body.toString() : ''
-
-  let text = ''
-
-  if (Array.isArray(body)) {
-    opts.cap ||= should_add_cap(body)
-
-    for (let i = 0; i < body.length; i++) {
-      text += gen_mt_ai_text(body[i], opts)
-    }
-  } else {
-    if (!opts.und && !attr.includes('Undb')) text += ' '
-    opts.und = attr.includes('Undn')
-
-    const asis = /Capx|Asis/.test(attr)
-
-    text += opts.cap && !asis ? capitalize(body) : body
-    opts.cap = (opts.cap && asis) || attr.includes('Capn')
-  }
-
-  return text
-}
-
-// export function find_node(input: CV.Cvtree, q_idx = 0, q_len = 0) {
-//   const queue = [input]
-
-//   while (true) {
-//     const node = queue.pop()
-//     if (!node) break
-
-//     const [_cpos, n_idx, n_len, _attr, body] = node
-
-//     if (n_idx < q_idx) continue
-//     if (n_idx > q_idx || n_len < q_len) break
-
-//     if (!Array.isArray(body)) {
-//       if (n_len == q_len) return node
-//     } else {
-//       if (n_len == q_len && body.length > 1) return node
-//       for (let i = body.length - 1; i >= 0; i--) queue.push(body[i])
-//     }
-//   }
-
-//   return null
-// }
-
-export function flatten_tree(node: CV.Cvtree, list: CV.Cvtree[] = []) {
-  list.push(node)
-  const body = node[4]
-
-  if (Array.isArray(body)) {
-    for (const next of body) flatten_tree(next, list)
-  }
-
-  return list
 }

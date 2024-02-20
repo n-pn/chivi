@@ -11,12 +11,7 @@ class Vtdata {
   lock: boolean
   d_no: number
 
-  constructor(
-    vstr: string,
-    cpos: string,
-    attr: string = '',
-    dnum: number = -1
-  ) {
+  constructor(vstr: string, cpos: string, attr: string = '', dnum: number = -1) {
     this.vstr = vstr
     this.cpos = cpos
     this.attr = attr
@@ -35,26 +30,30 @@ export class Viform {
   hviet: string
   vtemp: string
 
-  constructor(
-    mlist: CV.Cvtree[],
-    rword: Rdword,
-    ztext = '',
-    hviet = '',
-    privi = -1,
-    pd_no = 3
-  ) {
+  constructor(mlist: CV.Mtnode[], rword: Rdword, ztext = '', hviet = '', privi = -1, pd_no = 3) {
     this.ztext = ztext
     this.hviet = hviet
 
-    const vnode = find_last<CV.Cvtree>(mlist, (x) => {
-      if (x[2] != rword.from || x[3] != rword.upto) return false
-      return rword.cpos == x[0] || rword.cpos == 'X'
+    let cpos = rword.cpos
+    let dnum = -1
+    let attr = ''
+
+    const vdata = mlist.filter((node) => {
+      if (node[1] < rword.from || node[2] > rword.upto) return false
+      if (node[2] != rword.from || node[2] != rword.upto) return true
+
+      if (node[3] == cpos || cpos == 'X') {
+        cpos = node[3]
+        attr = node[4]
+        dnum = node[5]
+      }
+
+      return true
     })
 
-    if (vnode) {
-      const vstr = gen_mt_ai_text(vnode, { cap: false, und: true })
-      const dnum = vnode[5] || -1
-      this.finit = new Vtdata(vstr, vnode[0], vnode[1], dnum)
+    if (vdata.length > 0) {
+      const vstr = gen_mt_ai_text(vdata, false)
+      this.finit = new Vtdata(vstr, cpos, attr, dnum)
     } else {
       this.finit = new Vtdata(hviet, rword.cpos)
     }

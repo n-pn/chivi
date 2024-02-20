@@ -52,7 +52,7 @@ export const call_qtran = async (
   body: string,
   type: string,
   opts: Record<string, any> = {}
-): Promise<string[] | CV.Cvtree[]> => {
+): Promise<string[] | CV.Mtnode[][]> => {
   if (type == 'gg_zv') return await gtran_text(body)
 
   const { pdict = 'combine', regen = 0, h_sep = 1, l_sep = 0, otype = 'mtl' } = opts
@@ -62,12 +62,17 @@ export const call_qtran = async (
   const res = await fetch(url, { method: 'POST', body })
   if (!res.ok) return [await res.text()]
 
-  let vtran: string[] | CV.Cvtree[]
+  const data = await res.text()
 
-  if (type.startsWith('mtl') && otype != 'text') {
-    vtran = (await res.json()) as CV.Cvtree[]
-  } else {
-    vtran = (await res.text()).trim().split('\n')
+  let vtran: string[] | CV.Mtnode[][] = data.trim().split('\n')
+
+  if (type.startsWith('mtl') && otype == 'mtl') {
+    vtran = vtran.map((vline) => {
+      return vline
+        .trim()
+        .split('\t')
+        .map((x) => JSON.parse(x) as CV.Mtnode)
+    })
   }
 
   const spent = performance.now() - start

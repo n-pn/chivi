@@ -14,12 +14,7 @@
   }
 </script>
 
-<Wpanel
-  title="Cây ngữ pháp:"
-  bind:state={stats.ctree}
-  class="_ct"
-  lines={15}
-  wdata={rline.ctree_text(ropts.mt_rm)}>
+<Wpanel title="Cây ngữ pháp:" bind:state={stats.ctree} class="_ct" lines={15} wdata={'???'}>
   <svelte:fragment slot="tools">
     <button
       type="button"
@@ -32,7 +27,7 @@
     </button>
   </svelte:fragment>
   {#if rline.trans[ropts.mt_rm]}
-    {@html rline.ctree_html(ropts.mt_rm)}
+    TODO!
   {:else}
     <p class="blank">Chưa có cây ngữ pháp</p>
   {/if}
