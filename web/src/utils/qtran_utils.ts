@@ -64,7 +64,7 @@ export const call_qtran = async (
 
   let vtran: string[] | CV.Cvtree[]
 
-  if (type.startsWith('mtl') && otype == 'mtl') {
+  if (type.startsWith('mtl') && otype != 'text') {
     vtran = (await res.json()) as CV.Cvtree[]
   } else {
     vtran = (await res.text()).trim().split('\n')

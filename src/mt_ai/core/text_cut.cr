@@ -1,9 +1,23 @@
 module MT::TextCut
   def self.split_ztext(ztext : String, h_sep = 1, l_sep = 0)
     body = [] of Array(Array(String | MtNode))
+    ztext.each_line do |line|
+      data = [] of String | MtNode
+      if h_sep > 0
+        split_heads.each do |item|
+          data << item
+        end
+      else
+        split_sents.each do |frag|
+          data << frag
+        end
+      end
+    end
   end
 
   def self.split_heads(line : String, &) : Nil
+    yield line
+    # TODO: call split title here
   end
 
   END_CHARS = {'。', '！', '？', '：'}
@@ -41,7 +55,7 @@ module MT::TextCut
       end
 
       if was_end > 1 || (was_end == 1 && char == '“')
-        yield sbuf.to_s, from
+        yield sbuf.to_s
         sbuf = String::Builder.new
         from = upto &- 1
       end
@@ -53,9 +67,7 @@ module MT::TextCut
       on_nest = -1 if on_nest == 0 && (line == 0 || !line[from &- 1].in?(END_CHARS))
     end
 
-    if from < upto
-      yield sbuf.to_s, from
-    end
+    yield sbuf.to_s if from < upto
   end
 
   # test = "“问到了，在那条巷子里面。”安知鱼将自己饮料放在了车前的篮子里面，然后让白可卿上了车，载着她往前面骑了过去。"

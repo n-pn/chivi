@@ -6,10 +6,11 @@ class CV::UsercpCtrl < CV::BaseCtrl
   @[AC::Route::GET("/")]
   def profile
     _viuser.check_privi!(persist: true)
-    response.headers["Cache-Control"] = "private, max-age=5, stale-while-revalidate"
-
     save_current_user!(_viuser)
-    render json: ViuserView.new(_viuser, true)
+    uquota = Uquota.load(self._vu_id, self.client_ip)
+
+    json = ViuserFull.new(_viuser, uquota)
+    render json: json
   end
 
   @[AC::Route::GET("/notifs")]

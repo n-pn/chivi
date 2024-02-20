@@ -65,7 +65,7 @@ class RD::Tsrepo
   # end
 
   def read_privi(ch_no : Int32)
-    ch_no > 48 ? 0_i16 : -1_i16
+    ch_no > 24 ? 0_i16 : -1_i16
   end
 
   def conf_privi(vu_id : Int32 = 0)
@@ -251,9 +251,31 @@ class RD::Tsrepo
     Chinfo.upsert_zinfos!(self.info_db, chaps)
   end
 
-  @[AlwaysInline]
   def update_vinfos!(start : Int32 = 1, limit : Int32 = 99999)
-    Chinfo.update_vinfos!(@sroot, wn_id: @wn_id, start: start, limit: limit)
+    upper = {self.chmax, start &+ limit}.min
+    limit = {limit, 64}.min
+
+    while start < upper
+      clist = Chinfo.get_all(self.info_db, start: start, limit: limit)
+      self.update_vinfos!(clist)
+      start &+= limit
+    end
+  end
+
+  def update_vinfos!(clist : Array(Chinfo))
+    q_url = "#{CV_ENV.m1_host}/_m1/qtran?wn=#{@wn_id}&hs=#{clist.size * 2}&op=txt"
+    ztext = clist.join('\n') { |x| "#{x.ztitle}\n#{x.zchdiv}" }
+
+    lines = HTTP::Client.post(q_url, body: ztext, &.body_io.gets_to_end.lines)
+
+    clist.each_with_index do |cinfo, index|
+      cinfo.vtitle = lines[index * 2]
+      cinfo.vchdiv = lines[index * 2 + 1]? || ""
+    end
+
+    Chinfo.update_vinfos!(db: self.info_db, infos: clist)
+  rescue ex
+    Log.error(exception: ex) { ex }
   end
 
   ####

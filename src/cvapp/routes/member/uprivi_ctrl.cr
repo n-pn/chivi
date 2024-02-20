@@ -15,10 +15,13 @@ class CV::UpriviCtrl < CV::BaseCtrl
     guard_privi 0, "nâng cấp quyền hạn"
     spawn _log_action("upgrade-privi", form)
 
-    viuser = form.do_upgrade!(_vu_id)
-    save_current_user!(viuser)
+    vuser = form.do_upgrade!(_vu_id)
+    save_current_user!(vuser)
 
-    view = ViuserView.new(viuser, true)
+    uquota = Uquota.load(self._vu_id, self.client_ip)
+    uquota.set_privi_bonus!(vuser.privi)
+
+    view = ViuserFull.new(vuser, uquota)
     render json: view
   rescue ex
     Log.error(exception: ex) { ex }

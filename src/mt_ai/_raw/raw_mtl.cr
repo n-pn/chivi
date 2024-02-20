@@ -11,13 +11,13 @@ struct MT::RawMtl
   include JSON::Serializable
 
   @[JSON::Field(key: "tok")]
-  getter tok : Array(String) { @tok_coarse.empty? ? @tok_fine : @tok_coarse }
-
-  @[JSON::Field(key: "tok/coarse")]
-  getter tok_coarse : Array(String)
+  getter tok : Array(String) { @tok_fine.empty? ? @tok_coarse : @tok_fine }
 
   @[JSON::Field(key: "tok/fine")]
   getter tok_fine : Array(String) = [] of String
+
+  @[JSON::Field(key: "tok/coarse")]
+  getter tok_coarse : Array(String) = [] of String
 
   @[JSON::Field(key: "con")]
   getter con : RawCon
@@ -40,13 +40,13 @@ struct MT::RawMtlBatch
   include JSON::Serializable
 
   @[JSON::Field(key: "tok")]
-  getter tok : Array(Array(String)) { @tok_coarse.empty? ? @tok_fine : @tok_coarse }
-
-  @[JSON::Field(key: "tok/coarse")]
-  getter tok_coarse : Array(Array(String))
+  getter tok : Array(Array(String)) { @tok_fine.empty? ? @tok_coarse : @tok_fine }
 
   @[JSON::Field(key: "tok/fine")]
   getter tok_fine : Array(Array(String)) = [] of Array(String)
+
+  @[JSON::Field(key: "tok/coarse")]
+  getter tok_coarse : Array(Array(String)) = [] of Array(String)
 
   @[JSON::Field(key: "con")]
   getter con = [] of RawCon

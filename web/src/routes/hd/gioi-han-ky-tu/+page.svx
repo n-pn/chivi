@@ -1,0 +1,41 @@
+---
+title: Giới hạn ký tự dịch thuật mỗi ngày
+---
+
+Chivi là trang web cung cấp các tiện ích dịch thuật cho các bạn. Để cho các bạn có thể thử các chế độ dịch tự do nhất thì hiện nay phần này đều không tính phí, mặc dù không phải cách dịch nào cũng giống nhau.
+
+Dịch bằng Baidu/Bing thì phải dùng dịch vụ ngoài, phải trả phí. Dịch bằng GPT tiên hiệp hay các chế độ dịch AI thì lại cần thiết tính toán rất nặng. Hay đơn giản mà nói cứ như hiện nay thì một người dùng người khác sẽ nhịn.
+
+## Giới hạn số lượng chữ theo quyền hạn người dùng
+
+| Quyền hạn   | Số lượng chữ |
+| ----------- | ------------ |
+| Khách       | 50000        |
+| Đã đăng ký  | 100000       |
+| Quyền hạn 1 | 200000       |
+| Quyền hạn 2 | 400000       |
+| Quyền hạn 3 | 800000       |
+| Quyền hạn 4 | 1600000      |
+
+Ngoài ra, bạn sẽ được tăng thêm một số lượng số lượng chữ nhất định khi mở khóa chương bằng vcoin.
+
+## Hệ số nhân của các chế độ dịch
+
+Các con số 50000, 100000 ở trên không có nghĩa là mỗi ngày bạn được đọc 50000, 100000 chữ, con số thực tế sẽ nhỏ hơn nhiều, vì tùy thuộc vào chế độ dịch mà cái số chữ gốc sẽ nhân lên thành giới hạn ký tự, cụ thể thì
+
+| Chế độ dịch     | Hệ số nhân |
+| --------------- | ---------- |
+| Hán Việt        | 1          |
+| Máy dịch cũ     | 2          |
+| Máy dịch AI 1   | 4          |
+| Máy dịch AI 2   | 5          |
+| Máy dịch AI 3   | 5          |
+| Dịch bằng Bing  | 8          |
+| Dịch bằng Baidu | 10         |
+| GPT Tiên Hiệp   | 10         |
+
+Hay nói cách khác, nếu bạn đọc chương truyện 1000 chữ bằng chế độ dịch Baidu, giới hạn ký tự sẽ là `10_000` chứ không chỉ là `1000`.
+
+## Các cách gia tăng giới hạn ký tự khác
+
+_Đang hoàn thành_

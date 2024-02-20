@@ -84,6 +84,8 @@
   const gen_vdata = (rline: Rdline, mode: number = 1) => {
     if (!rline) return
     const qdata = rline.trans[qkind]
+    if (!qdata) return 'Có lỗi dịch, mời liên hệ ban quản trị!'
+
     if (typeof qdata == 'string') return qdata
     return gen_mt_ai_html(qdata, { mode, cap: true, und: true, _qc: 0 })
   }

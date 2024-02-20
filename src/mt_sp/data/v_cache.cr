@@ -81,7 +81,7 @@ class SP::VCache
     @@db.query_all("select * from vcache where rid = $1 and obj = $2", gen_rid(raw), obj.value, as: self)
   end
 
-  def self.get_val(obj : Obj, raws : Array(String), mcv = TimeUtil.cv_fresh(2.weeks))
+  def self.get_val(obj : Obj, raws : Array(String), mcv = TimeUtil.cv_fresh(1.weeks))
     query = "select rid, val, mcv from vcache where obj = $1 and rid = any ($2)"
 
     rids = raws.map { |raw| gen_rid(raw) }

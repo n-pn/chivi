@@ -88,11 +88,7 @@
       {#if $_user.unread_notif > 0}{$_user.unread_notif}{/if}
     </button>
 
-    <button
-      class="-btn"
-      on:click={logout}
-      data-tip="Đăng xuất"
-      data-tip-loc="bottom">
+    <button class="-btn" on:click={logout} data-tip="Đăng xuất" data-tip-loc="bottom">
       <SIcon name="logout" />
     </button>
   </svelte:fragment>
@@ -131,8 +127,19 @@
           <SIcon iset="icons" name="vcoin" />
         </div>
 
-        <a href="/me/vcoin" class="m-btn _xs _primary" target="_blank">
+        <a href="/me/vcoin" class="m-btn _xs _warning" target="_blank">
           <span>Trao đổi</span>
+        </a>
+      </div>
+
+      <div class="info">
+        <div>
+          <span class="lbl">Quota còn thừa:</span>
+          <strong>{$_user.quota}</strong>
+        </div>
+
+        <a href="/me/quota" class="m-btn _xs _primary" target="_blank">
+          <span>{$_user.quota > 0 ? 'Chi tiết' : 'Gia tăng'}</span>
         </a>
       </div>
     </section>

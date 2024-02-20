@@ -34,6 +34,20 @@ class Uquota
     @quota_using, @quota_limit = @@db.query_one ADD_USING_SQL, @vu_id, @idate, @mtime, using, as: {Int64, Int64}
   end
 
+  ADD_PRIVI_SQL = <<-SQL
+    insert into uquotas(vu_id, idate, mtime, privi_bonus)
+    values ($1, $2, $3, $4)
+    on conflict (vu_id, idate) do update set
+      mtime = excluded.mtime,
+      privi_bonus = uquotas.privi_bonus
+    returning quota_limit
+  SQL
+
+  def set_privi_bonus!(privi : Int32)
+    @privi_bonus = privi >= 0 ? 100_000_i64 * 2 ** privi : 50_000_i64
+    @quota_limit = @@db.query_one ADD_PRIVI_SQL, @vu_id, @idate, @mtime, @privi_bonus, as: Int64
+  end
+
   ADD_VCOIN_SQL = <<-SQL
     insert into uquotas(vu_id, idate, mtime, vcoin_bonus)
     values ($1, $2, $3, $4)
@@ -69,6 +83,10 @@ class Uquota
     @@db.query_one? query, vu_id, idate, as: self
   end
 
+  def self.load(vu_id : Int32, vu_ip : String, idate = gen_idate)
+    quota = self.load(vu_id == 0 ? guest_id(vu_ip) : vu_id, idate: idate)
+  end
+
   def self.load(vu_id : Int32, idate = gen_idate)
     self.find(vu_id, idate) || begin
       model = new(vu_id, idate)
@@ -80,9 +98,8 @@ class Uquota
         privi = -1
       end
 
-      model.privi_bonus = privi >= 0 ? 100_000 * 2 ** privi : 50_000
-
-      model.upsert!
+      model.set_privi_bonus!(privi)
+      model
     end
   end
 

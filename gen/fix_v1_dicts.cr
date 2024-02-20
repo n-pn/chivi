@@ -43,32 +43,41 @@ end
 #   db.query_all "select dic, key, val, ptag, prio from defns order by id asc", as: DbDefn
 # end
 
-# puts inputs.size
+inputs = [] of DbDefn
 
-# DbDefn.db.open_tx do |db|
-#   inputs.each(&.upsert!(db: db))
-# end
+File.each_line "/2tb/var.chivi/mtdic/inits/vietphrase/lol-names.txt" do |line|
+  next if line.empty?
+  zstr, vstr = line.split('=', 2)
+  inputs << DbDefn.new(15542, zstr, vstr, "Nr")
+  inputs << DbDefn.new(15542, zstr.sub('.', '·'), vstr, "Nr") if zstr.includes?('.')
+end
+
+puts inputs.size
 
 DbDefn.db.open_tx do |db|
-  # delete entry in regular that existed in fixture
-  db.exec <<-SQL
-    delete from defns
-    where d_id = -1 and zstr in (select zstr from defns where d_id = -3)
-  SQL
-
-  # move from fixture to regular
-  db.exec <<-SQL
-    update defns set d_id = -1 where d_id = -3
-  SQL
-
-  # delete entry in essence that existed in regular
-  db.exec <<-SQL
-    delete from defns
-    where d_id = -2 and zstr in (select zstr from defns where d_id = -1)
-  SQL
-
-  # move from essence to regular
-  db.exec <<-SQL
-   update defns set d_id = -1 where d_id = -2
- SQL
+  inputs.each(&.upsert!(db: db))
 end
+
+# DbDefn.db.open_tx do |db|
+#   # delete entry in regular that existed in fixture
+#   db.exec <<-SQL
+#     delete from defns
+#     where d_id = -1 and zstr in (select zstr from defns where d_id = -3)
+#   SQL
+
+#   # move from fixture to regular
+#   db.exec <<-SQL
+#     update defns set d_id = -1 where d_id = -3
+#   SQL
+
+#   # delete entry in essence that existed in regular
+#   db.exec <<-SQL
+#     delete from defns
+#     where d_id = -2 and zstr in (select zstr from defns where d_id = -1)
+#   SQL
+
+#   # move from essence to regular
+#   db.exec <<-SQL
+#    update defns set d_id = -1 where d_id = -2
+#  SQL
+# end

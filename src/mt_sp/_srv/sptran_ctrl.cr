@@ -42,14 +42,21 @@ class SP::TranCtrl < AC::Base
   private def do_translate(qdata : QtData, qkind : String)
     sleep 10.milliseconds * (1 << (5 - self._privi))
 
-    wcount, charge = qdata.quota_using(qkind)
+    case qkind
+    when "baidu", "c_gpt"
+      guard_privi 0, "dịch nội dung thông qua chế độ dịch này"
+    end
 
-    vu_id = self._vu_id != 0 ? self._vu_id : Uquota.guest_id(self.client_ip)
-    quota = Uquota.load(vu_id)
+    wcount, charge = qdata.quota_using(qkind)
+    quota = Uquota.load(self._vu_id, self.client_ip)
+
+    if quota.quota_using > quota.quota_limit
+      raise Unauthorized.new("Bạn đã dùng quá giới hạn số chữ ngày hôm nay, mời quay lại vào ngày mai hoặc nâng cấp quyền hạn!")
+    end
+
     quota.add_quota_spent!(wcount)
 
     vdata = qdata.get_vtran(qkind)
-
     spawn log_activity(charge, wcount, qkind)
 
     response.headers["X-Quota"] = quota.quota_limit.to_s

@@ -11,9 +11,8 @@ class SP::QtData
     lines = [] of String
 
     ztext.each_line do |line|
-      # TODO: remove line.empty? check
       # TODO: remove canonize?
-      lines << CharUtil.canonize(line) unless line.empty?
+      lines << CharUtil.canonize(line)
     end
 
     from_ztext(lines, cache: cache, cache_dir: cache_dir)
@@ -93,7 +92,7 @@ class SP::QtData
     read_file(fpath, regen > 1 ? 5.minutes : 2.weeks) || begin
       mdata = load_vtext(qtype)
       raise "Lỗi dịch nhanh với chế độ #{qtype}" unless mdata
-      File.write(fpath, mdata[0]) if @cache
+      File.write(fpath, mdata) if @cache
       mdata
     end
   end

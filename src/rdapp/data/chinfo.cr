@@ -191,9 +191,4 @@ class RD::Chinfo
       end
     end
   end
-
-  def self.update_vinfos!(ch_db : String, wn_id : Int32 = 0, start = 0, limit = 99999)
-    res = "#{CV_ENV.m1_host}/_m1/qtran/tl_mulu?ch_db=#{ch_db}&wn_id=#{wn_id}&start=#{start}&limit=#{limit}"
-    HTTP::Client.put(res, &.success?)
-  end
 end

@@ -9,11 +9,11 @@
   export let chaps: CV.Wnchap[]
 
   const get_owner = ({ uname, rlink }: CV.Wnchap) => {
-    if (uname) return uname[0] != '!' ? '@' + uname : uname
+    if (uname) return uname
     if (!rlink) return crepo.sname
 
     const hostname = new URL(rlink).hostname
-    return hostname.replace('www.', '')
+    return hostname.replace(/^www\./, '')
   }
 </script>
 

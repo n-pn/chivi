@@ -80,7 +80,7 @@ module CharUtil
   # :ditto:
   @[AlwaysInline]
   def self.canonize(str : String) : String
-    String.build(str.bytesize) do |io|
+    String.build do |io|
       str.each_char { |char| io << canonize(char) }
     end
   end
@@ -104,7 +104,7 @@ module CharUtil
 
   @[AlwaysInline]
   def self.upcase_canonize(str : String) : String
-    String.build(str.bytesize) do |io|
+    String.build do |io|
       str.each_char { |char| io << upcase_canonize(char) }
     end
   end

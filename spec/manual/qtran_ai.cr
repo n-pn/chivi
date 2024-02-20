@@ -20,7 +20,9 @@ input = [
   # "田中太太，你隔壁有住人吗？",
   # "升级经验：22/40",
   # "不是今晚，白鸦先生想，不是今晚。我太冷了，太饿了，太难受了，我得让自己好受些，然后再往下跳。这种时候，更要体面，人总是在奇怪的时刻想着奇怪的讲究，想走得体面并不过分，走得舒服，来生会少些遗憾。",
-  "不是今晚，白鸦先生想，不是今晚。我太冷了，太饿了，太难受了，我得让自己好受些，然后再往下跳",
+  # "不是今晚，白鸦先生想，不是今晚。我太冷了，太饿了，太难受了，我得让自己好受些，然后再往下跳",
+  "深夜，一间破落的筒子楼的单间租房内。",
+  "晚风透过窗户，给狭小破旧的卧室内带来了几分凉意。",
 ]
 
 ch_rm = 1
@@ -32,8 +34,8 @@ ch_rm.times do |index|
   cheads << split
 end
 
-zdata = MT::MCache.find_con!(input, ver: 2_i8)
-ai_mt = MT::AiCore.new("wn18004")
+zdata = MT::MCache.find_con!(input, ver: 1_i8)
+ai_mt = MT::AiCore.new("wn15542")
 
 zdata.each_with_index do |rcon, l_id|
   data = ai_mt.translate!(rcon, prfx: cheads[l_id]?)

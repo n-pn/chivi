@@ -10,13 +10,13 @@ class CV::WninfoForm
   getter wn_id : Int32 = 0
 
   getter btitle_zh : String
-  getter btitle_vi : String?
+  getter btitle_vi : String
 
   getter author_zh : String
-  getter author_vi : String?
+  getter author_vi : String
 
-  getter intro_zh : String?
-  getter intro_vi : String?
+  getter intro_zh : String
+  getter intro_vi : String
 
   getter genres : Array(String)? = nil
   getter bcover : String? = nil
@@ -27,12 +27,12 @@ class CV::WninfoForm
   def after_initialize
     @author_zh, @btitle_zh = BookUtil.fix_names(author: @author_zh, btitle: @btitle_zh)
 
-    @author_vi = nil if @author_vi.try(&.blank?)
-    @btitle_vi = nil if @btitle_vi.try(&.blank?)
+    # @author_vi = nil if @author_vi.try(&.blank?)
+    # @btitle_vi = nil if @btitle_vi.try(&.blank?)
 
-    @intro_vi = nil if @intro_vi.try(&.blank?)
+    # @intro_vi = nil if @intro_vi.try(&.blank?)
 
-    gen_vi_data! unless @author_vi && @btitle_vi && @intro_vi
+    # gen_vi_data! unless @author_vi && @btitle_vi && @intro_vi
   end
 
   record ViData, btitle : String, author : String, bintro : String do
@@ -43,13 +43,13 @@ class CV::WninfoForm
     end
   end
 
-  def gen_vi_data!
-    return unless wndata = TranUtil.tl_wndata(@btitle_zh, @author_zh, @intro_zh || "", wn_id: @wn_id)
+  # def gen_vi_data!
+  #   return unless wndata = TranUtil.tl_wndata(@btitle_zh, @author_zh, @intro_zh || "", wn_id: @wn_id)
 
-    @author_vi ||= wndata.author
-    @btitle_vi ||= wndata.btitle
-    @intro_vi ||= wndata.bintro
-  end
+  #   @author_vi ||= wndata.author
+  #   @btitle_vi ||= wndata.btitle
+  #   @intro_vi ||= wndata.bintro
+  # end
 
   def save!(_uname : String, _privi : Int32) : Wninfo
     Author.upsert!(@author_zh, @author_vi)

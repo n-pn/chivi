@@ -18,6 +18,7 @@ class MT::AiCore
     when head.epos.ip? && dnp_head_is_sv_ip?(head.body)
       tail.body = MtDefn::DEG2
     when head.attr.at_h?
+      tail.body = MtDefn::DEG0
       term.attr = :at_h
     end
   end

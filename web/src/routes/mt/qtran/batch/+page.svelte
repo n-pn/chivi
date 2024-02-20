@@ -175,6 +175,7 @@
       {#if state == 0}
         <button
           class="m-btn _warning _fill"
+          data-umami-event="qtran-batch"
           disabled={chaps.length == 0 || $_user.privi < 0}
           on:click={translate}>
           <SIcon name="language" />
