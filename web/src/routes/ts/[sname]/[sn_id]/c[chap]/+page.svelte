@@ -26,14 +26,16 @@
   $: prev_path = ch_no > 1 ? chap_path(base_path, ch_no - 1, ropts) : base_path
   $: next_path = ch_no < crepo.chmax ? chap_path(base_path, ch_no + 1, ropts) : memo_path
 
-  afterNavigate(async () => await save_chmemo())
+  afterNavigate(async () => await mark_chap())
 
   const main_menu_icon = ({ ch_no }, { lc_mtype, lc_ch_no }) => {
     if (ch_no == lc_ch_no) return ['list', 'bookmark', 'pin'][lc_mtype]
     return ['list', 'bookmark-off', 'pinned-off'][lc_mtype]
   }
 
-  const save_chmemo = async (mtype = -1) => {
+  const mark_chap = async (mtype = -1) => {
+    if (data._user.privi < 0) return
+    $rmemo.rd_id = crepo.id
     $rmemo = await mark_rdchap($rmemo, rdata, ropts, mtype)
   }
 
@@ -107,7 +109,7 @@
               class:_active={ch_no == $rmemo.lc_ch_no && mtype == $rmemo.lc_mtype}
               disabled={$_user.privi < 0}
               data-tip={hint}
-              on:click={() => save_chmemo(mtype)}>
+              on:click={() => mark_chap(mtype)}>
               <SIcon name={icon} />
             </button>
           {/each}

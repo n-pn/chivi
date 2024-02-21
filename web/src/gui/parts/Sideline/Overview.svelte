@@ -12,7 +12,7 @@
     return async (rmode = 1) => {
       const qdata = await rline.load_qtran(rmode, qkind, ropts)
       if (typeof qdata == 'string') return qdata
-      return gen_mt_ai_html(qdata, { mode: 2, cap: true, und: true, _qc: 0 })
+      return gen_mt_ai_html(qdata, 2)
     }
   }
 </script>
@@ -40,18 +40,6 @@
 </Wpanel> -->
 
 <Wpanel
-  class="_sm"
-  title="Dịch bằng Google:"
-  wdata={rline.qtran_text('gg_zv')}
-  loader={rline.text_get_fn('gg_zv', ropts)} />
-
-<Wpanel
-  title="Dịch bằng Bing:"
-  class="_sm"
-  wdata={rline.qtran_text('ms_zv')}
-  loader={rline.text_get_fn('ms_zv', ropts)} />
-
-<Wpanel
   title="Dịch bằng Baidu:"
   class="_sm"
   wdata={rline.qtran_text('bd_zv')}
@@ -62,6 +50,18 @@
   class="_sm"
   wdata={rline.qtran_text('c_gpt')}
   loader={rline.text_get_fn('c_gpt', ropts)} />
+
+<Wpanel
+  class="_sm"
+  title="Dịch bằng Google:"
+  wdata={rline.qtran_text('gg_zv')}
+  loader={rline.text_get_fn('gg_zv', ropts)} />
+
+<Wpanel
+  title="Dịch bằng Bing:"
+  class="_sm"
+  wdata={rline.qtran_text('ms_zv')}
+  loader={rline.text_get_fn('ms_zv', ropts)} />
 
 <Wpanel
   title="Dịch máy cũ:"

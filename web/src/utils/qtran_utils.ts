@@ -34,8 +34,7 @@ export async function gtran_text(text: string, tl = 'vi', sl = 'auto') {
   const body = await resp.text()
   if (!resp.ok) return [body]
 
-  const data = JSON.parse(body)[0][0][0]
-  const tran = data.map(([x]) => x) as string[]
+  const tran = [JSON.parse(body)[0][0][0]]
 
   send_vcache('gtran-line', { tl, sl, text, tran })
   if (tran.length > 0) word_cache.set(c_ukey, tran)

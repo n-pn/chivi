@@ -12,8 +12,7 @@ class RD::Rdmemo
   field sname : String, pkey: true
   field sn_id : Int32, pkey: true
 
-  field vname : String = ""
-  field rpath : String = ""
+  field rd_id : Int32 = 0
 
   field rd_track : Int16 = 0
   field rd_state : Int16 = 0
@@ -47,10 +46,8 @@ class RD::Rdmemo
     when "follow"
       @rd_track = mform.rd_track
     when "chmark"
+      @rd_id = mform.rd_id
       @rtime = Time.utc.to_unix
-
-      @vname = mform.vname
-      @rpath = mform.rpath
 
       @lc_mtype = mform.lc_mtype
       @lc_title = mform.lc_title
@@ -102,23 +99,39 @@ class RD::Rdmemo
     end
   end
 
-  def self.get_all(vu_id : Int32, sname : String,
+  def self.get_all(vu_id : Int32, stype : String = "",
                    state : Int32 = -1, rtype : String = "",
+                   order : String = "",
                    limit : Int32 = 20, offset : Int32 = 0)
-    self.get_all(vu_id, sname, limit, offset) do |sql|
-      sql << " where vu_id = $1 and sname like $2 || '%'"
-      sql << (state < 0 ? " and rd_state > -1" : " and rd_state = #{state}")
+    self.get_all(vu_id, limit, offset) do |sql|
+      sql << " where vu_id = $1 and rd_id > 0"
+      case stype
+      when "wn" then sql << " and sname like '~%'"
+      when "up" then sql << " and sname like '@%'"
+      when "rm" then sql << " and sname like '!%'"
+      end
+
+      sql << " and rd_state = #{state}" if state > -1
 
       case rtype
       when "liked" then sql << " and rd_track > 0"
       when "rdlog" then sql << " and lc_ch_no > 0"
       end
 
-      sql << " order by rtime desc limit $3 offset $4"
+      case order
+      when "atime" then sql << " order by atime desc"
+      else              sql << " order by rtime desc"
+      end
+
+      sql << " limit $2 offset $3"
     end
   end
 
   def self.get_vu_id(uname : String)
     PGDB.query_one?("select id from viusers where uname = $1", uname, as: Int32)
+  end
+
+  def self.fetch_all(vu_id : Int32, rd_ids : Array(Int32))
+    self.get_all(vu_id, rd_ids, db: self.db, &.<< "where vu_id = $1 and rd_id = any($2)")
   end
 end

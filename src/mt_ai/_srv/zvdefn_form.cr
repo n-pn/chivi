@@ -18,7 +18,7 @@ class MT::ZvdefnForm
   getter rank : Int16 = 1
 
   getter d_no : Int32 = 0
-  getter lock : Bool = true
+  getter? lock : Bool = true
 
   getter pdict : String = ""
   getter m_alg : String = ""
@@ -69,13 +69,13 @@ class MT::ZvdefnForm
     {dict, defn}
   end
 
-  def save!(pdict : String, uname : String = "", privi = 4, persist : Bool = true)
-    d_id = gen_d_id(uname)
-    zdict = PgDict.load!(@dname)
+  # def save!(pdict : String, uname : String = "", privi = 4, persist : Bool = true)
+  #   d_id = gen_d_id(uname)
+  #   zdict = PgDict.load!(@dname)
 
-    zterm = init_pg_term(zdict, uname)
-    p_min = zdict.p_min + zterm.plock
+  #   zterm = init_pg_term(zdict, uname)
+  #   p_min = zdict.p_min + zterm.plock
 
-    fresh = zterm.mtime < 0
-  end
+  #   fresh = zterm.mtime < 0
+  # end
 end

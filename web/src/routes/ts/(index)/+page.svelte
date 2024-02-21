@@ -4,7 +4,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: ({ items, pgidx, pgmax } = data.table)
+  $: ({ repos, memos, pgidx, pgmax } = data.table)
 </script>
 
-<TsrepoList {items} {pgidx} {pgmax} />
+<TsrepoList {repos} {memos} {pgidx} {pgmax} />

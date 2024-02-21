@@ -1,55 +1,44 @@
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
   import BCover from '$gui/atoms/BCover.svelte'
-  import { rstate_icons, rstate_labels } from '$lib/consts/rd_states'
   import { _pgidx } from '$lib/kit_path'
 
   export let crepo: CV.Tsrepo
+  export let rmemo: Partial<CV.Rdmemo> = { lc_ch_no: 0, rd_state: 0, rd_stars: 0 }
 
-  $: pg_no = crepo.lc_ch_no > 32 ? _pgidx(crepo.lc_ch_no) : 1
+  $: pg_no = rmemo.lc_ch_no > 32 ? _pgidx(rmemo.lc_ch_no) : 1
   $: query = pg_no > 1 ? `?pg=${pg_no}` : ''
   $: cover = crepo.cover || '//cdn.chivi.app/covers/blank.png'
 
-  $: state = crepo.rd_state || 0
-
-  const stype_colors = [1, 3, 2]
-
   const ratings = ['', '🤮', '🙁', '😐', '🙂', '🤩']
-
   const stype_icons = ['books', 'album', 'world']
+
+  const rstate_types = ['Chưa đánh dấu', 'Đang đọc', 'Hoàn thành', 'Tạm dừng', 'Vứt bỏ', 'Đọc sau']
+  const rstate_icons = ['eye', 'eyeglass', 'square-check', 'player-pause', 'trash', 'calendar']
 </script>
 
 <a class="crepo" href="/ts/{crepo.sroot}{query}">
   <div class="cover">
     <BCover srcset={cover} />
 
-    <div class="badge _tl">
-      <span class="label" data-tip="Loại nguồn">
-        <SIcon name={stype_icons[crepo.stype]} />
-        {crepo.sname.replace('.com', '')}
-      </span>
-      <span class="label _1" data-tip="Số chương">{crepo.chmax}</span>
-    </div>
-
-    <div class="badge _bl">
-      <span class="label _{state}" data-tip="Đánh dấu nguồn">
-        <SIcon name={rstate_icons[state]} />
-        <span>{state > 0 ? rstate_labels[state] : 'Chưa đọc'}</span>
-      </span>
-
-      <span class="label _2" data-tip="Chương đã đọc">{crepo.lc_ch_no}</span>
-    </div>
-
-    {#if crepo.rd_stars > 0}
-      <div class="badge _br">
-        <span class="label _lg" data-tip="Cho điểm">
-          {ratings[crepo.rd_stars]}
-        </span>
+    {#if rmemo.lc_ch_no > 0 || rmemo.rd_state > 0}
+      <div
+        class="badge _tr label _{rmemo.rd_state}"
+        data-tip="{rstate_types[rmemo.rd_state]} / Đã đọc / Tổng chương">
+        <SIcon name={rstate_icons[rmemo.rd_state]} />
+        <span>{rmemo.lc_ch_no}</span>
+        <span>/</span>
+        <span>{crepo.chmax}</span>
+        {#if rmemo.rd_stars > 0}{ratings[rmemo.rd_stars]}{/if}
       </div>
     {/if}
   </div>
 
   <div class="title">{crepo.vname}</div>
+  <div class="sname m-flex _cy">
+    <SIcon name={stype_icons[crepo.stype]} />
+    <span>{crepo.sname}</span>
+  </div>
 </a>
 
 <style lang="scss">
@@ -85,7 +74,7 @@
     z-index: 2;
 
     font-weight: 500;
-    line-height: 0.9rem;
+    line-height: 1rem;
     border-radius: 4px;
     height: 1.25rem;
     @include shadow;
@@ -94,6 +83,7 @@
       top: 0.5rem;
       left: 0.5rem;
     }
+
     &._tr {
       top: 0.5rem;
       right: 0.5rem;
@@ -118,8 +108,9 @@
     }
 
     :global(svg) {
-      height: 0.75rem;
-      width: 0.75rem;
+      height: 0.875rem;
+      width: 0.875rem;
+      // margin-top: -0.15em;
     }
   }
 
@@ -171,5 +162,14 @@
     @include tm-dark {
       @include fgcolor(neutral, 3);
     }
+  }
+
+  .sname {
+    font-weight: 500;
+    font-size: rem(11px);
+    text-transform: uppercase;
+    line-height: 1rem;
+    margin-top: 0.125rem;
+    @include fgcolor(neutral, 5);
   }
 </style>

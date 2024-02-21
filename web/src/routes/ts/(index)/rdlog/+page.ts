@@ -1,12 +1,12 @@
-import { nav_link } from '$utils/header_util'
 import { merge_query, api_get } from '$lib/api_call'
 import type { PageLoad } from './$types'
 
 interface JsonData extends CV.Paginate {
-  items: Array<CV.Rdmemo & CV.Tsrepo>
+  memos: CV.Rdmemo[]
+  repos: Record<number, CV.Tsrepo>
 }
 
-export const load = (async ({ url: { searchParams }, fetch }) => {
+export const load = (async ({ url: { searchParams }, fetch, parent }) => {
   const filter = {
     lm: 15,
     rtype: 'rdlog',
@@ -14,19 +14,16 @@ export const load = (async ({ url: { searchParams }, fetch }) => {
   }
   const search = merge_query(searchParams, filter)
 
-  const path = `/_rd/rdmemos?${search.toString()}`
-  const data = await api_get<JsonData>(path, fetch)
+  const rpath = `/_rd/rdmemos?${search.toString()}`
+  const table = await api_get<JsonData>(rpath, fetch)
+
+  const { _navs } = await parent()
 
   return {
-    props: data,
+    table,
     filter,
     ontab: 'rdlog',
-    _title: `Lịch sử đọc tryện`,
-    _meta: {
-      left_nav: [
-        nav_link(`/ts`, 'Đọc truyện', 'book', { show: 'pl' }),
-        nav_link('/ts/rdlog', 'Lịch sử đọc', 'history'),
-      ],
-    },
+    _meta: { title: `Lịch sử đọc tryện` },
+    _navs: [..._navs, { link: '/ts/rdlog', text: 'Lịch sử đọc', icon: 'history' }],
   }
 }) satisfies PageLoad

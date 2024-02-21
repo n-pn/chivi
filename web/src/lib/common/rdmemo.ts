@@ -10,7 +10,6 @@ export const mark_rdchap = async (
 
   if (is_new_chmark(mtype, rmemo, rdata)) {
     if (mtype >= 0) rmemo.lc_mtype = mtype
-
     rmemo.lc_ch_no = rdata.ch_no
     rmemo.lc_title = rdata.title
   }
@@ -19,8 +18,8 @@ export const mark_rdchap = async (
 }
 
 function is_new_chmark(mtype: number, rmemo: CV.Rdmemo, rdata: CV.Chinfo) {
-  if (rmemo.lc_mtype < 1) return true
-  if (rmemo.lc_mtype > 1) return mtype >= 0
+  if (mtype >= 0 || rmemo.lc_mtype == 0) return true
+  if (rmemo.lc_mtype == 2) return false
   return rdata.ch_no == rmemo.lc_ch_no || rdata.ch_no == rmemo.lc_ch_no + 1
 }
 

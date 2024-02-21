@@ -4,7 +4,7 @@
 </script>
 
 <script lang="ts">
-  import { afterNavigate } from '$app/navigation'
+  import { gen_mt_ai_html } from '$lib/mt_data_2'
 
   import { Rdline } from '$lib/reader'
   import Wpanel from '$gui/molds/Wpanel.svelte'
@@ -13,20 +13,17 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: rline = cache.get(data.input) || new Rdline(data.input)
-  $: cache.set(data.input, rline)
-
-  let m_alg = data.m_alg
-
-  afterNavigate(() => {
-    m_alg = data.m_alg
-  })
-
+  let rline = new Rdline(data.input)
   let mtran_state = 0
 
+  const redo_translation = () => {
+    rline = new Rdline(data.input)
+    mtran_state = 0
+  }
+
   const switch_mtran_algo = async (new_algo: string) => {
-    if (new_algo == m_alg) return
-    m_alg = new_algo
+    if (new_algo == data.mtype) return
+    data.mtype = new_algo
     mtran_state = 0
   }
 
@@ -35,45 +32,61 @@
     ['mtl_2', 'Dùng model Electra Base'],
     ['mtl_3', 'Dùng model Ernie Gram'],
   ]
+
+  const load_qtran = (qkind: string) => {
+    return async (rmode = 1) => {
+      const qdata = await rline.load_qtran(rmode, qkind, data)
+      if (typeof qdata == 'string') return qdata
+      return gen_mt_ai_html(qdata, 2)
+    }
+  }
+
+  // const autoresize = (elem: HTMLElement) => {
+  //   const onchange = () => {
+  //     let height = elem.scrollHeight
+  //     if (height < elem.clientHeight) height = elem.clientHeight
+  //     elem.style.height = `${height}px`
+  //   }
+
+  //   elem.addEventListener('keyup', onchange, true)
+  //   elem.addEventListener('change', onchange, true)
+
+  //   return {
+  //     destroy: () => {
+  //       elem.removeEventListener('keyup', onchange)
+  //       elem.removeEventListener('change', onchange)
+  //     },
+  //   }
+  // }
 </script>
 
-<header>
-  <form action="/qt" method="GET">
-    <div class="input">
-      <input
-        class="m-input"
-        name="zh"
-        placeholder="Nhập tiếng Trung dịch nhanh"
-        value={data.input} />
-
-      <button type="submit" class="m-btn _primary _fill">
-        <SIcon name="bolt" />
-        <span class="u-show-pl">Dịch nhanh</span>
-      </button>
-    </div>
-  </form>
-</header>
+<div class="input">
+  <input
+    class="m-input"
+    name="zh"
+    placeholder="Nhập tiếng Trung dịch nhanh"
+    bind:value={data.input} />
+  <button class="m-btn _primary _fill" on:click={() => redo_translation()}>
+    <SIcon name="bolt" />
+    <span class="u-show-pl">Dịch</span>
+  </button>
+</div>
 
 {#if browser && data.input}
-  {#key data.input}
-    <Wpanel
-      title="Dịch bằng Baidu:"
-      class="_big"
-      wdata={rline.trans['bd_zv'].toString()}
-      loader={rline.text_get_fn('bd_zv', data)} />
-
+  {#key rline}
     <Wpanel
       class="_big"
       title="Máy dịch Chivi mới:"
-      wdata={rline.mtran_text(m_alg)}
-      bind:state={mtran_state}
-      loader={rline.text_get_fn(m_alg, data)}>
+      lines={5}
+      wdata={rline.mtran_text(data.mtype)}
+      loader={load_qtran(data.mtype)}
+      bind:state={mtran_state}>
       <svelte:fragment slot="tools">
         {#each mtran_algos as [algo, hint], index}
           <button
             type="button"
             class="-btn"
-            class:_active={m_alg == algo}
+            class:_active={data.mtype == algo}
             on:click={() => switch_mtran_algo(algo)}
             data-tip={hint}
             data-tip-loc="bottom"
@@ -83,31 +96,43 @@
           </button>
         {/each}
       </svelte:fragment>
-      <div class="d-empty-xs" slot="empty">
-        <button class="m-btn _xs _primary" on:click={() => (mtran_state = 0)}>
-          <span>Gọi máy dịch!</span>
-        </button>
-      </div>
+      {@html rline.mtran_html(data.mtype)}
     </Wpanel>
 
     <Wpanel
+      title="Dịch bằng Baidu:"
       class="_big"
-      title="Dịch bằng Google:"
-      wdata={rline.trans['gg_zv'].toString()}
-      loader={rline.text_get_fn('gg_zv', data)} />
+      lines={5}
+      wdata={rline.qtran_text('bd_zv')}
+      loader={rline.text_get_fn('bd_zv', data)} />
+
+    <Wpanel
+      title="GPT Tiên hiệp:"
+      class="_big"
+      lines={5}
+      wdata={rline.qtran_text('c_gpt')}
+      loader={rline.text_get_fn('c_gpt', data)} />
+
     <Wpanel
       class="_big"
+      lines={5}
+      title="Dịch bằng Google:"
+      wdata={rline.qtran_text('gg_zv')}
+      loader={rline.text_get_fn('gg_zv', data)} />
+
+    <Wpanel
       title="Dịch bằng Bing:"
-      wdata={rline.trans['ms_zv'].toString()}
+      class="_big"
+      lines={5}
+      wdata={rline.qtran_text('ms_zv')}
       loader={rline.text_get_fn('ms_zv', data)} />
 
     <Wpanel
+      title="Dịch máy cũ:"
       class="_big"
-      title="GPT Tiên hiệp:"
-      wdata={rline.trans['c_gpt'].toString()}
-      loader={rline.text_get_fn('c_gpt', data)} />
-
-    <Wpanel class="_big" title="Máy dịch Chivi cũ:" loader={rline.text_get_fn('qt_v1', data)} />
+      lines={5}
+      wdata={rline.qtran_text('qt_v1')}
+      loader={rline.text_get_fn('qt_v1', data)} />
   {/key}
 {:else}
   <div class="d-empty-sm">
@@ -116,10 +141,6 @@
 {/if}
 
 <style lang="scss">
-  header {
-    margin: 0.75rem 0;
-  }
-
   .input {
     @include flex;
     // gap: 0.5rem;
@@ -132,5 +153,10 @@
       @include bdradi(0, $loc: left);
       height: 2.25rem;
     }
+  }
+  textarea {
+    margin: 0.75rem 0;
+    display: block;
+    font-size: rem(15px);
   }
 </style>

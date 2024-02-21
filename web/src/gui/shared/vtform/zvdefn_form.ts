@@ -42,7 +42,7 @@ export class Viform {
       if (node[1] < rword.from || node[2] > rword.upto) return false
       if (node[2] != rword.from || node[2] != rword.upto) return true
 
-      if (node[3] == cpos || cpos == 'X') {
+      if (node[3] == rword.cpos || rword.cpos == 'X') {
         cpos = node[3]
         attr = node[4]
         dnum = node[5]

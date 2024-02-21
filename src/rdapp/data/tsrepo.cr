@@ -10,6 +10,8 @@ class RD::Tsrepo
   include Crorm::Model
   schema "tsrepos", :postgres, strict: false
 
+  field id : Int32, auto: true
+
   field sroot : String, pkey: true
   field owner : Int32 = -1
 
@@ -316,5 +318,61 @@ class RD::Tsrepo
 
   def self.load!(sroot : String)
     load!(sroot) { raise NotFound.new("Nguồn chương không tồn tại!") }
+  end
+
+  def self.get_all(
+    vu_id : Int32 = 0, state : Int32 = -1, stars : Int32 = -1,
+    stype : String = "", wn_id : Int32 = 0, order : String = "mtime",
+    limit : Int32 = 32, offset : Int32 = 0
+  ) : Array(self)
+    args = [] of Int32
+
+    query = String.build do |sql|
+      sql << "where 1 = 1"
+
+      if vu_id > 0 && (state > -1 || stars > -1)
+        args << vu_id
+
+        if state > -1
+          args << state
+          sql << " and id in (select rd_id from rdmemos where vu_id = $1 and rd_state "
+          sql << (state == 0 ? ">=" : "=") << " $2)"
+        end
+
+        if stars > -1
+          args << stars
+          sql << " and id in (select rd_id from rdmemos where vu_id = $1 and rd_stars "
+          sql << (stars == 0 ? ">=" : "=") << " $#{args.size})"
+        end
+      end
+
+      if wn_id > 0
+        args << wn_id
+        sql << "and wn_id = $#{args.size}"
+      end
+
+      case stype
+      when "wn" then sql << " and sname like '~%'"
+      when "up" then sql << " and sname like '@%'"
+      when "rm" then sql << " and sname like '!%'"
+      end
+
+      case order
+      when "ctime" then sql << " order by id desc"
+      when "views" then sql << " order by view_count desc"
+      when "likes" then sql << " order by like_count desc"
+      when "stype" then sql << " order by stype asc"
+      else              sql << " order by mtime desc"
+      end
+
+      sql << " limit $#{args.size + 1} offset $#{args.size + 2}"
+      args << limit << offset
+    end
+
+    self.get_all(args: args, db: self.db, &.<< query)
+  end
+
+  def self.fetch_all(ids : Array(Int32))
+    self.get_all(args: [ids], db: self.db, &.<< "where id = any($1)")
   end
 end

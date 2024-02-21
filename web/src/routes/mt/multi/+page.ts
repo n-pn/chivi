@@ -1,15 +1,13 @@
 import type { PageLoad } from './$types'
 
-export const load = (async ({ url: { searchParams, pathname } }) => {
+export const load = (async ({ parent, url: { searchParams } }) => {
+  const { _navs } = await parent()
+
   return {
     input: (searchParams.get('zh') || '').trim(),
-    pdict: searchParams.get('mt') || 'mtl_2',
-    m_alg: searchParams.get('pd') || 'combine',
+    pdict: searchParams.get('pd') || 'combine',
+    mtype: searchParams.get('mt') || 'mtl_2',
     ontab: 'multi',
-
-    _title: 'Nhiều kết quả',
-    _meta: {
-      left_nav: [{ text: 'Nhiều kết quả', icon: 'bolt', href: pathname }],
-    },
+    _navs: [..._navs, { text: 'Dịch tổng hợp', icon: 'language', href: '/mt/multi' }],
   }
 }) satisfies PageLoad

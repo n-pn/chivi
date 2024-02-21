@@ -24,9 +24,6 @@ export const load = (async ({ fetch, params }) => {
     binfo = await api_get<CV.Wninfo>(bpath, fetch)
   }
 
-  rmemo.vname = ustem.vname
-  rmemo.rpath = sroot
-
   return {
     ustem,
     crepo,

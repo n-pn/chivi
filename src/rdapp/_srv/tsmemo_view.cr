@@ -8,18 +8,6 @@ class RD::TsmemoView
 
   include JSON::Serializable
 
-  getter sroot : String
-
-  getter stype : Int16
-  getter sn_id : Int32
-  getter sname : String
-
-  getter vname : String = ""
-  getter cover : String = ""
-
-  getter chmax : Int32 = 0
-  getter mtime : Int64 = 0_i64
-
   ###
 
   getter rd_track : Int16

@@ -4,6 +4,6 @@
   export let spin = false
 </script>
 
-<svg class="m-icon _{name} {$$props.class}" class:a-spin={spin}>
+<svg class="m-icon _{name} {$$props.class || ''}" class:a-spin={spin}>
   <use xlink:href="/icons/{iset}.svg#{name}" />
 </svg>

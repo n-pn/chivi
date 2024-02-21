@@ -56,13 +56,13 @@
 
   $: newtxt = rawtxt
 
-  const debounce_update_preview = debounce(update_preview, 250)
+  // const debounce_update_preview = debounce(update_preview, 250)
 
-  $: {
-    debounce_update_preview(newtxt)
-    if (underlay) on_update_caret()
-    if (overlay) overlay.focus()
-  }
+  // $: {
+  //   debounce_update_preview(newtxt)
+  //   if (underlay) on_update_caret()
+  //   if (overlay) overlay.focus()
+  // }
 
   function render_rawtxt(input: String) {
     return Array.from(input)

@@ -5,20 +5,21 @@ class RD::RdmemoCtrl < AC::Base
   base "/_rd/rdmemos"
 
   @[AC::Route::GET("/")]
-  def index(stype : Int32 = -1, state : Int32 = -1,
+  def index(stype : String = "", state : Int32 = -1,
             rtype : String = "", order : String = "rtime")
     pg_no, limit, offset = self._paginate(min: 1, max: 50)
-    items = TsmemoView.get_all(self._vu_id, stype: stype, state: state, rtype: rtype)
+    memos = Rdmemo.get_all(self._vu_id, stype: stype, state: state, rtype: rtype, order: order, limit: limit, offset: offset)
 
     total = offset
 
-    if items.size < limit
-      total &+= items.size
+    if memos.size < limit
+      total &+= memos.size
     else
-      total &+= TsmemoView.get_all(self._vu_id, stype, state, rtype, limit: limit * 3, offset: offset).size
+      total &+= Rdmemo.get_all(self._vu_id, stype, state, rtype, order: order, limit: limit * 3, offset: offset).size
     end
 
-    json = {items: items, pgidx: pg_no, pgmax: _pgidx(total, limit)}
+    repos = Tsrepo.fetch_all(memos.map(&.rd_id)).to_h { |x| {x.id, x} }
+    json = {memos: memos, repos: repos, pgidx: pg_no, pgmax: _pgidx(total, limit)}
     render json: json
   end
 
@@ -28,12 +29,12 @@ class RD::RdmemoCtrl < AC::Base
     total = offset
 
     vu_id = Rdmemo.get_vu_id(uname) || self._vu_id
-    memos = Rdmemo.get_all(vu_id: vu_id, sname: "~avail", state: state, rtype: "", limit: limit, offset: offset)
+    memos = Rdmemo.get_all(vu_id: vu_id, stype: "wn", state: state, rtype: "", limit: limit, offset: offset)
 
     if memos.size < limit
       total &+= memos.size
     else
-      total &+= Rdmemo.get_all(vu_id: vu_id, sname: "~avail", state: state, rtype: "", limit: limit * 3, offset: offset).size
+      total &+= Rdmemo.get_all(vu_id: vu_id, stype: "wn", state: state, rtype: "", limit: limit * 3, offset: offset).size
     end
 
     json = {memos: memos, pgidx: pg_no, pgmax: self._pgidx(total, limit)}

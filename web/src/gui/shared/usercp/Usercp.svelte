@@ -26,11 +26,11 @@
     return input <= unit ? 1 : Math.floor(input / unit)
   }
 
-  async function load_rdmemos(): Promise<Array<CV.Rdmemo & CV.Tsrepo>> {
+  type RdmemoData = { memos: CV.Rdmemo[]; repos: Record<number, CV.Tsrepo> }
+  async function load_rdmemos(): Promise<RdmemoData> {
     const res = await fetch(`/_rd/rdmemos?rtype=rdlog&lm=10`)
-    if (!res.ok) return []
-    const { items } = await res.json()
-    return items
+    if (!res.ok) return { memos: [], repos: {} }
+    return await res.json()
   }
 </script>
 
@@ -173,8 +173,8 @@
     <div class="chaps">
       {#await load_rdmemos()}
         <div class="d-empty-sm">Đang tải lịch sử đọc truyện.</div>
-      {:then items}
-        <RdchapList {items} aside={true} />
+      {:then { memos, repos }}
+        <RdchapList {memos} {repos} aside={true} />
       {/await}
     </div>
   </section>

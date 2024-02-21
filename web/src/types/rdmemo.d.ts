@@ -8,12 +8,13 @@ declare namespace CV {
 
   interface Rdmemo {
     vu_id: number
+    rd_id: number
 
     sname: string
     sn_id: string
 
-    vname: string
-    rpath: string
+    // vname: string
+    // rpath: string
 
     rd_state: number
     rd_stars: number

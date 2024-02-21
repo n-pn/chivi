@@ -1,9 +1,9 @@
 <script lang="ts" context="module">
   const stypes = [
     ['', 'Tất cả'],
-    ['0', 'Truyện chữ'],
-    ['1', 'Sưu tầm'],
-    ['2', 'Nguồn nhúng'],
+    ['wn', 'Truyện chữ'],
+    ['up', 'Sưu tầm'],
+    ['rm', 'Nguồn nhúng'],
   ]
 </script>
 
@@ -19,8 +19,7 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  $: props = data.props
-
+  $: ({ memos, repos, pgidx, pgmax } = data.table)
   $: pager = new Pager($page.url, { pg: 1, stype: '' })
 </script>
 
@@ -46,10 +45,10 @@
   </div> -->
 </nav>
 
-<RdchapList items={props.items} empty_class="d-empty" />
+<RdchapList {memos} {repos} empty_class="d-empty" />
 
 <footer>
-  <Mpager {pager} pgidx={props.pgidx} pgmax={props.pgmax} />
+  <Mpager {pager} {pgidx} {pgmax} />
 </footer>
 
 <style lang="scss">

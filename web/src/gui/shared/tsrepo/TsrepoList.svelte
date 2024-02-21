@@ -5,7 +5,8 @@
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
   import TsrepoCard from './TsrepoCard.svelte'
 
-  export let items: CV.Tsrepo[] = []
+  export let repos: CV.Tsrepo[] = []
+  export let memos: Record<number, CV.Rdmemo> = {}
 
   export let pgidx: number
   export let pgmax: number
@@ -14,8 +15,8 @@
 </script>
 
 <div class="list">
-  {#each items as crepo (crepo)}
-    <TsrepoCard {crepo} />
+  {#each repos as crepo (crepo)}
+    <TsrepoCard {crepo} rmemo={memos[crepo.id]} />
   {:else}
     <div class="d-empty">Danh sách trống</div>
   {/each}

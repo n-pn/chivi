@@ -186,7 +186,7 @@ class MT::MtNode
             end
           in Array
             jb.number body.size
-            body.reverse_each { |node| queue << node }
+            body.reverse_each { |child| queue << child }
           end
 
           jb.number node.from

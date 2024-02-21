@@ -60,6 +60,8 @@ declare namespace CV {
   }
 
   interface Tsrepo {
+    id: number
+
     sroot: string
     owner: number
 
@@ -88,21 +90,6 @@ declare namespace CV {
     view_count: number
     like_count: number
     star_count: number
-
-    rd_track: number
-    rd_state: number
-    rd_stars: number
-
-    rmode: string
-    qt_rm: string
-    mt_rm: string
-
-    lc_title: string
-    lc_mtype: number
-    lc_ch_no: number
-
-    vu_atime: number
-    vu_rtime: number
   }
 
   // interface Chstem {

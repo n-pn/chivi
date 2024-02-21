@@ -4,21 +4,18 @@
 
   import type { PageData } from './$types'
   export let data: PageData
-  $: ({ items, pgidx, pgmax } = data.table)
+  $: ({ repos, memos, pgidx, pgmax } = data.table)
 </script>
 
 <div class="tabs">
   {#each rstate_labels as label, value}
-    <a
-      href="/ts/track?state={value}"
-      class="tab"
-      class:_active={value == data.state}>
+    <a href="/ts/track?state={value}" class="tab" class:_active={value == data.state}>
       <span>{value > 0 ? label : 'Tất cả'}</span>
     </a>
   {/each}
 </div>
 
-<TsrepoList {items} {pgidx} {pgmax} />
+<TsrepoList {repos} {memos} {pgidx} {pgmax} />
 
 <style lang="scss">
   .tabs {

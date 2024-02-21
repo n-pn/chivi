@@ -7,7 +7,8 @@
   import { rel_time } from '$utils/time_utils'
 
   import SIcon from '$gui/atoms/SIcon.svelte'
-  export let items: Array<CV.Tsrepo & CV.Rdmemo>
+  export let memos: CV.Rdmemo[]
+  export let repos: Record<number, CV.Tsrepo> = {}
   export let aside = false
 
   const seed_icons = {
@@ -18,8 +19,10 @@
 </script>
 
 <div class="chaps" class:aside>
-  {#each items as rmemo}
-    <a class="cmemo" href="/ts/{chap_path(rmemo.sroot, rmemo.lc_ch_no, rmemo)}">
+  {#each memos as rmemo}
+    {@const sroot = `${rmemo.sname}/${rmemo.sn_id}`}
+    {@const crepo = repos[rmemo.rd_id] || { sroot: sroot, vname: sroot }}
+    <a class="cmemo" href="/ts/{chap_path(crepo.sroot, rmemo.lc_ch_no, rmemo)}">
       <div class="cname">
         <div class="chead">
           <span class="ch_no">{rmemo.lc_ch_no}.</span>
@@ -27,27 +30,25 @@
         </div>
         <div class="cmeta">
           <SIcon name={seed_icons[rmemo.sname[0]]} />
-          <strong class="bname">{rmemo.vname}</strong>
+          <strong class="bname">{crepo.vname}</strong>
         </div>
       </div>
 
       <div class="cstat">
         <div class="chead">
-          <span class="cmeta">
+          <span class="cmeta _time">
             <SIcon name={mark_types[rmemo.lc_mtype]} />
-            {rel_time(rmemo.vu_rtime || rmemo.rtime || 0)}
+            <span>{rel_time(rmemo.rtime || 0)}</span>
           </span>
         </div>
         <div class="cmeta">
           <SIcon name="books" />
-          <span class="bname">{rmemo.sname}</span>
+          <strong class="bname">{rmemo.sname}</strong>
         </div>
       </div>
     </a>
   {:else}
-    <div class={$$props.emty_class || 'd-empty-sm'}>
-      Không có lịch sử đọc truyện
-    </div>
+    <div class={$$props.emty_class || 'd-empty-sm'}>Không có lịch sử đọc truyện</div>
   {/each}
 </div>
 
@@ -119,10 +120,6 @@
     @include fgcolor(secd);
     @include clamp($width: null);
 
-    .cmemo:visited & {
-      @include fgcolor(neutral, 5);
-    }
-
     .cmemo:hover & {
       @include fgcolor(primary, 5);
     }
@@ -136,6 +133,11 @@
     :global(svg) {
       @include fgcolor(mute);
       font-size: 1.2em;
+    }
+
+    &._time > span {
+      @include clamp($width: null);
+      max-width: 7rem;
     }
   }
 

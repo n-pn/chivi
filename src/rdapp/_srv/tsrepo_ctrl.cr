@@ -4,8 +4,40 @@ class RD::TsrepoCtrl < AC::Base
   base "/_rd/tsrepos"
 
   @[AC::Route::GET("/")]
+  def index(stype : String = "",
+            rtype : String = "",
+            order : String = "mtime",
+            state : Int32 = -1,
+            stars : Int32 = -1,
+            wn_id : Int32 = 0)
+    pg_no, limit, offset = self._paginate(min: 1, max: 50)
+    repos = Tsrepo.get_all(
+      vu_id: self._vu_id, state: state, stars: stars,
+      stype: stype, wn_id: wn_id, order: order,
+      limit: limit == 24 ? 25 : limit, offset: offset)
+
+    if repos.size < limit
+      total = offset &+ repos.size
+    else
+      total = offset &+ Tsrepo.get_all(
+        vu_id: self._vu_id, state: state, stars: stars,
+        stype: stype, wn_id: wn_id, order: order,
+        limit: limit * 3, offset: offset).size
+    end
+
+    memos = Rdmemo.fetch_all(self._vu_id, repos.map(&.id.not_nil!)).to_h { |x| {x.rd_id, x} }
+    json = {memos: memos, repos: repos, pgidx: pg_no, pgmax: _pgidx(total, limit)}
+    render json: json
+  end
+
+  @[AC::Route::GET("/for_wn")]
   def for_wn(wn_id : Int32)
-    items = TsrepoView.for_wn(wn_id)
+    query = Tsrepo.schema.select_stmt do |sql|
+      sql << " where wn_id = $1"
+      sql << " order by stype asc, mtime desc"
+    end
+
+    items = PGDB.query_all(query, wn_id, as: Tsrepo)
     render json: items
   end
 

@@ -81,13 +81,23 @@
 <style lang="scss">
   .panel {
     margin: 0.75rem 0;
+
     @include bdradi;
     // @include border(--bd-soft);
     @include bgcolor(tert);
 
-    // &:global(._big) {
-    //   margin: 1rem 0;
-    // }
+    &._big {
+      --lc: 6;
+      margin: 0.5rem 0;
+      padding-bottom: 0.25rem;
+      font-size: rem(17px);
+
+      header,
+      .wbody {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+    }
   }
 
   header {
@@ -98,9 +108,10 @@
     // @include border(--bd-soft, $loc: bottom);
     @include ftsize(sm);
 
-    // :global(._big) > & {
-    //   padding: 0.25rem 0.5rem 0.25rem 0.75rem;
-    // }
+    :global(._big) > & {
+      font-size: rem(15px);
+      padding: 0.25rem 0.5rem 0.25rem 0.75rem;
+    }
   }
 
   .tools {
@@ -151,10 +162,6 @@
 
     &._sm {
       @include ftsize(sm);
-    }
-
-    &._ct {
-      overflow-x: scroll;
     }
 
     &._full {

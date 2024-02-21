@@ -4,11 +4,7 @@ const day_span = hour_span * 24
 const month_span = day_span * 30
 const year_span = month_span * 12
 
-export function rel_time(
-  lower: number,
-  upper: Date = new Date(),
-  suffix = ' trước'
-) {
+export function rel_time(lower: number, upper: Date = new Date(), suffix = ' trước') {
   if (lower < 100000) return 'Không rõ thời gian'
   const diff = upper.getTime() / 1000 - lower
   return rel_time_diff(diff, suffix) || get_dmy(new Date(lower * 1000))

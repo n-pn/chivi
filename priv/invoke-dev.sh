@@ -3,6 +3,7 @@
 
 export GC_INITIAL_HEAP_SIZE=4G
 export CV_ENV=development
+export LOG_LEVEL=debug
 
 TARGET=${1:-"cvapp"}
 WATCH="-w ./src/$TARGET -w ./src/_data -w ./src/_util"

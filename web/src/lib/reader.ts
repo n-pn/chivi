@@ -42,7 +42,7 @@ export class Rdline {
   edits: string[]
 
   constructor(ztext: string) {
-    this.ztext = ztext
+    this.ztext = ztext.replaceAll(/[\t\n]/g, '').trim()
     this.hviet = []
 
     this.trans = {}
