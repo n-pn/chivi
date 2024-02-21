@@ -10,20 +10,27 @@
   // export let sn_id = 0
 
   let repos: Array<CV.Tsrepo> = []
+
   $: chivi = repos.find((x) => x.sname == '~avail' && x.sn_id == wn_id) || {
     sroot: `wn~avail/${wn_id}`,
     sname: '~avail',
     sn_id: wn_id,
     chmax: 0,
   }
+
   $: up_repos = repos.filter((x) => x.stype == 1)
   $: rm_repos = repos.filter((x) => x.stype == 2)
 
-  $: if (browser && wn_id) reload_repos(wn_id)
+  $: if (browser) reload_repos(wn_id)
 
   const reload_repos = async (wn_id: number) => {
-    const res = await fetch(`/_rd/tsrepos?wn_id=${wn_id}`)
-    if (!res.ok) return
+    const res = await fetch(`/_rd/tsrepos/for_wn?wn_id=${wn_id}`)
+
+    if (!res.ok) {
+      console.log(await res.text())
+      return
+    }
+
     repos = (await res.json()) as Array<CV.Tsrepo>
   }
 
@@ -37,10 +44,7 @@
 <h3 class="title">Các nguồn chương tiết khác:</h3>
 
 <div class="rlist">
-  <a
-    href={repo_path(chivi, pg_no)}
-    class="rchip"
-    class:_active={sname == '~avail'}>
+  <a href={repo_path(chivi, pg_no)} class="rchip" class:_active={sname == '~avail'}>
     <div class="sname">Nguồn tổng hợp</div>
     <div class="chmax">
       <strong>{chivi.chmax}</strong> chương
@@ -102,10 +106,7 @@
   <h4 class="title">Nguồn liên kết ngoài:</h4>
   <div class="rlist _extra">
     {#each rm_repos as crepo}
-      <a
-        href={repo_path(crepo, pg_no)}
-        class="rchip _sub"
-        class:_active={crepo.sname == sname}>
+      <a href={repo_path(crepo, pg_no)} class="rchip _sub" class:_active={crepo.sname == sname}>
         <div class="sname">{crepo.sname}</div>
         <div class="chmax"><strong>{crepo.chmax}</strong> chương</div>
       </a>

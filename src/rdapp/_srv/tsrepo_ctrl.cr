@@ -78,11 +78,12 @@ class RD::TsrepoCtrl < AC::Base
     getter slink : String? = nil
     getter pdict : String? = nil
     getter multp : Int16? = nil
+
+    getter cut_from : Int32? = nil
   end
 
   SLINK_PLOCK = {1, 1, 1}
-  PDICT_PLOCK = {2, 1, 2}
-  MULTP_PLOCK = {3, 1, 3}
+  ADMIN_PLOCK = {2, 1, 2}
 
   @[AC::Route::PATCH("/:sname/:sn_id", body: cform)]
   def config(sname : String, sn_id : Int32, cform : TsrepoForm)
@@ -96,14 +97,9 @@ class RD::TsrepoCtrl < AC::Base
       crepo.rm_slink = slink
     end
 
-    if pdict = cform.pdict
-      guard_privi PDICT_PLOCK[crepo.stype], "chọn từ điển chính thức"
-      crepo.pdict = pdict
-    end
-
-    if multp = cform.multp
-      guard_privi MULTP_PLOCK[crepo.stype], "sửa hệ số nhân truyện"
-      crepo.multp = multp
+    if cut_from = cform.cut_from
+      guard_privi ADMIN_PLOCK[crepo.stype], "xóa bỏ các chương thừa"
+      crepo.delete_chaps!(cut_from)
     end
 
     crepo.upsert!

@@ -9,6 +9,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import RTime from '$gui/atoms/RTime.svelte'
   import Footer from '$gui/sects/Footer.svelte'
+
   import ChapList from '$gui/parts/wnchap/ChapList.svelte'
   import RepoList from '$gui/shared/wnovel/RepoList.svelte'
 
@@ -36,7 +37,6 @@
       console.log({ err_msg })
     } else {
       const data = await res.json()
-      console.log(data)
       await invalidateAll()
     }
   }

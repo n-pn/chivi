@@ -15,7 +15,7 @@
   $: tabs = [
     { type: 'ch', href: data.sroot, icon: 'list', text: 'Mục lục' },
     {
-      type: 'ul',
+      type: '+text',
       href: `${data.sroot}/+text`,
       icon: 'upload',
       text: 'Thêm text',

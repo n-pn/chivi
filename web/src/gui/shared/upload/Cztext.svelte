@@ -1,11 +1,11 @@
 <script lang="ts" context="module">
   const get_encoding = async (body: ArrayBuffer) => {
-    const opts = {
+    const init = {
       body,
       method: 'POST',
       headers: { 'content-type': 'text/plain' },
     }
-    return await fetch('/_sp/chardet', opts).then((r) => r.text())
+    return await fetch('/_sp/chardet', init).then((r) => r.text())
   }
 </script>
 
@@ -30,7 +30,7 @@
       const buffer = reader.result as ArrayBuffer
 
       encoding = await get_encoding(buffer.slice(0, 1000))
-      const decoder = new TextDecoder(encoding)
+      const decoder = new TextDecoder(encoding || 'UTF-8')
 
       ztext = decoder.decode(buffer)
       state = 0

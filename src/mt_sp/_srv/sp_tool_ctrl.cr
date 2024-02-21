@@ -5,7 +5,7 @@ require "./_sp_ctrl_base"
 require "../../_util/post_util"
 require "../../_util/tran_util"
 
-class SP::UtilCtrl < AC::Base
+class SP::ToolCtrl < AC::Base
   base "/_sp"
 
   @[AC::Route::POST("/chardet")]

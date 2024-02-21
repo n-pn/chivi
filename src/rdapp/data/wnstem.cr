@@ -153,12 +153,6 @@
 
 #   ###
 
-#   def delete_chaps!(from : Int32 = 1, upto : Int32 = self.chap_total)
-#     query = "delete from chinfos where ch_no >= $1 and ch_no <= $2"
-#     self.crepo.exec query, from, upto
-#     @chap_total = from &- 1
-#   end
-
 #   #######
 
 #   def self.all_by_sname(sname : String) : Array(self)

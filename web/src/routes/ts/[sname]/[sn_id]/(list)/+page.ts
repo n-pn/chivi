@@ -11,6 +11,5 @@ export const load = (async ({ url, fetch, parent, params }) => {
 
   const { crepo } = await parent()
   const title = `Chương tiết - ${crepo.vname}`
-
   return { chaps, lasts, pg_no, _meta: { title }, ontab: 'ch' }
 }) satisfies PageLoad

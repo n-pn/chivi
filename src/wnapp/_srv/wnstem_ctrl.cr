@@ -46,7 +46,7 @@
 #     include JSON::Serializable
 
 #     getter rm_link : String?
-#     getter cut_from : Int32?
+#
 #     getter read_privi : Int32?
 #   end
 
@@ -58,10 +58,6 @@
 #     if rlink = form.rm_link
 #       wnseed.rlink = rlink
 #       spawn wnseed.reload_chlist!(mode: 0)
-#     end
-
-#     if cut_from = form.cut_from
-#       wnseed.delete_chaps!(cut_from)
 #     end
 
 #     if privi = form.read_privi

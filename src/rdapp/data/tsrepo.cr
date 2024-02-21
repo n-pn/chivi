@@ -320,6 +320,18 @@ class RD::Tsrepo
     load!(sroot) { raise NotFound.new("Nguồn chương không tồn tại!") }
   end
 
+  def delete_chaps!(from : Int32 = 1, upto : Int32 = self.chmax)
+    @chmax = {from - 1, 0}.max
+    # @@db.exec "update tsrepos set chmax = $1 where sname = $2 and sn_id = $3", @chmax, @sname, @sn_id
+
+    query_1 = "delete from chinfos where ch_no >= $1 and ch_no <= $2"
+    self.info_db.open_rw(&.exec query_1, from, upto)
+
+    query_2 = "delete from czdata where ch_no >= $1 and ch_no <= $2"
+    self.zdata_db.open_rw(&.exec query_2, from, upto)
+  end
+
+  #
   def self.get_all(
     vu_id : Int32 = 0, state : Int32 = -1, stars : Int32 = -1,
     stype : String = "", wn_id : Int32 = 0, order : String = "mtime",

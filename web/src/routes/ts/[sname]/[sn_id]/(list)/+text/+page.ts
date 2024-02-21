@@ -1,6 +1,5 @@
 import { api_get } from '$lib/api_call'
 import { _pgidx } from '$lib/kit_path'
-import { nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 
@@ -18,16 +17,16 @@ export const load = (async ({ url, fetch, params, parent }) => {
 
   return {
     zform,
-    fixed: !!zform.ztext,
-    ontab: 'ul',
+    fixed: false,
+    ontab: '+text',
     _meta: { title: `Đăng tải text gốc - ${vname}` },
-    // _navs: [
-    //   ..._navs,
-    //   {
-    //     href: '+text',
-    //     text: 'Thêm text gốc',
-    //     icon: 'upload',
-    //   },
-    // ],
+    _navs: [
+      ..._navs,
+      {
+        href: '+text',
+        text: 'Thêm text gốc',
+        icon: 'upload',
+      },
+    ],
   }
 }) satisfies PageLoad
