@@ -109,5 +109,6 @@ export function detitleize(str: string, count = 9999) {
   for (let i = 0; i < count; i++) res[i] = res[i].toLowerCase()
   for (let i = count; i < res.length; i++) res[i] = capitalize(res[i])
 
+  console.log(res)
   return res.join(' ')
 }

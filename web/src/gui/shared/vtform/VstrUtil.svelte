@@ -159,6 +159,15 @@
       <SIcon name="caret-down" />
     </button>
 
+    {#each [1, 2, 3, 4] as value}
+      <button
+        type="button"
+        data-kbd={value}
+        on:click={() => (tform.vstr = titleize(tform.vstr, value))}
+        hidden>
+      </button>
+    {/each}
+
     <button
       type="button"
       class="btn _right"

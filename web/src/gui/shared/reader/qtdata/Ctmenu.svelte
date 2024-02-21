@@ -67,10 +67,18 @@
   style="--top: {p_top}px; --left: {p_left}px; --mid: {p_mid}px">
   <button
     class="btn"
-    data-kbd="["
-    data-tip="Tra nghĩa"
+    data-kbd="q"
+    data-tip="Tra nghĩa từ"
     on:click|capture|stopPropagation={() => show_lookup('glossary')}>
     <SIcon name="search" />
+  </button>
+
+  <button
+    class="btn"
+    data-kbd="w"
+    data-tip="Nhiều cách dịch"
+    on:click|capture|stopPropagation={() => show_lookup('overview')}>
+    <SIcon name="language" />
   </button>
 
   <button
@@ -81,16 +89,12 @@
     <SIcon name="circle-plus" />
   </button>
 
-  <button
-    class="btn"
-    data-kbd="]"
-    data-tip="Cách dịch khác"
-    on:click|capture|stopPropagation={() => show_lookup('overview')}>
-    <SIcon name="language" />
+  <button class="btn" data-kbd="=" data-tip="Sửa text gốc" disabled>
+    <SIcon name="pencil" />
   </button>
 
-  <button class="btn" data-kbd="\\" data-tip="Sửa text gốc" disabled>
-    <SIcon name="pencil" />
+  <button class="btn" data-kbd="-" data-tip="Báo lỗi dịch" disabled>
+    <SIcon name="flag" />
   </button>
 </div>
 

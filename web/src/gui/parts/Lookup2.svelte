@@ -81,7 +81,7 @@
       type="button"
       class="-btn"
       class:_active={$ctrl.panel == 'glossary'}
-      data-kbd="f"
+      data-kbd="q"
       data-tip="Xem nhanh nghĩa từ"
       data-tip-loc="bottom"
       data-umami-event="line-glossary"
@@ -94,7 +94,7 @@
       type="button"
       class="-btn"
       class:_active={$ctrl.panel == 'overview'}
-      data-kbd="d"
+      data-kbd="w"
       data-tip="Xem các kết quả dịch"
       data-tip-loc="bottom"
       data-umami-event="line-overview"

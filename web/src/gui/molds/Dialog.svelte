@@ -1,12 +1,16 @@
 <script lang="ts">
   import { layers } from '$lib/stores'
   import SIcon from '$gui/atoms/SIcon.svelte'
+  import { onMount } from 'svelte'
 
-  export let actived = true
   export let on_close = (_?: any) => {}
   export let _size = 'md'
 
-  $: layers.toggle(actived, '.' + $$props.class)
+  onMount(() => {
+    const layer_name = '.' + $$props.class
+    layers.add(layer_name)
+    return () => layers.remove(layer_name)
+  })
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -15,19 +19,13 @@
 <div class="dialog-wrap" on:click={() => on_close(false)}>
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div
-    class="dialog-main {$$props.class} _{_size}"
-    on:click={(e) => e.stopPropagation()}>
+  <div class="dialog-main {$$props.class} _{_size}" on:click={(e) => e.stopPropagation()}>
     <!-- in:scale={{ duration: 100, easing: backInOut }}> -->
     {#if $$slots.header}
       <header class="dialog-head">
         <slot name="header" />
 
-        <button
-          type="button"
-          class="x-btn"
-          data-kbd="esc"
-          on:click={() => on_close(false)}>
+        <button type="button" class="x-btn" data-kbd="esc" on:click={() => on_close(false)}>
           <SIcon name="x" />
         </button>
       </header>
