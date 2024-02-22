@@ -39,7 +39,13 @@ class MT::AiTranCtrl < AC::Base
       curr_node.each_child { |node| base_body << node }
     end
 
-    vdata = String.build { |io| bases.join(io, '\n', &.[0].to_mtl(io)) }
+    vdata = String.build do |io|
+      bases.each do |bnode, _|
+        otype == "txt" ? bnode.to_txt(io, cap: true, und: true) : bnode.to_mtl(io)
+        io << '\n'
+      end
+    end
+
     render text: vdata
   rescue ex
     Log.error(exception: ex) { ex.message }

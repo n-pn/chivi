@@ -25,10 +25,14 @@
     evt.preventDefault()
 
     try {
-      const { id } = await api_call(action, form, 'POST')
-      await goto(`/wn/${id}`)
+      if (!form.btitle_vi) await tl_btitle()
+      if (!form.author_vi) await tl_author()
+      if (form.intro_zh && !form.intro_vi) await tl_bintro()
+
+      const data = await api_call(action, form, 'POST')
+      await goto(`/wn/${data.id}`)
     } catch (ex) {
-      errors = ex.body.message
+      errors = ex.body?.message || ex
     }
   }
 
@@ -43,26 +47,26 @@
   let show_genres_menu = false
   let show_genres_more = false
 
-  let bt_qt = 'hname'
   let au_qt = 'hname'
-  let in_qt = 'qt_v1'
+  let bt_qt = 'mtl_2'
+  let in_qt = 'mtl_2'
 
-  const tl_btitle = async (value: string, qkind = 'hname') => {
-    const href = `/_sp/qtran/${qkind}?zh=${value}&pd=wn${data.id}`
+  const tl_btitle = async () => {
+    const href = `/_sp/qtran/${bt_qt}?zh=${form.btitle_zh}&pd=wn${data.id}`
     const text = await fetch_text(href)
     form.btitle_vi = titleize(text.trim())
   }
 
-  const tl_author = async (value: string, qkind = 'hname') => {
-    const href = `/_sp/qtran/${qkind}?zh=${value}&pd=wn${data.id}`
+  const tl_author = async () => {
+    const href = `/_sp/qtran/${au_qt}?zh=${form.author_zh}&pd=wn${data.id}`
     const text = await fetch_text(href)
     form.author_vi = titleize(text.trim())
   }
 
-  const tl_bintro = async (body: string, qkind = 'qt_v1') => {
-    const href = `/_sp/qtran/${qkind}?op=txt&hs=0&ls=1&pd=wn${data.id}`
+  const tl_bintro = async () => {
+    const href = `/_sp/qtran/${in_qt}?op=txt&hs=0&ls=1&pd=wn${data.id}`
     const headers = { 'Content-Type': 'text/plain' }
-    form.intro_vi = await fetch_text(href, { method: 'POST', body, headers })
+    form.intro_vi = await fetch_text(href, { method: 'POST', body: form.intro_zh, headers })
   }
 
   const fetch_text = async (href: string, init?: RequestInit) => {
@@ -71,9 +75,9 @@
   }
 </script>
 
-<article class="article">
+<article class="article island">
   <header>
-    <h1>Thêm/sửa thông tin bộ truyện</h1>
+    <h2>Thêm/sửa thông tin bộ truyện</h2>
   </header>
 
   <form {action} method="POST" on:submit={submit}>
@@ -86,7 +90,7 @@
           name="btitle_zh"
           placeholder="Tựa bộ truyện"
           disabled={data.id != 0}
-          on:change={() => tl_btitle(form.btitle_zh, bt_qt)}
+          on:change={tl_btitle}
           required
           bind:value={form.btitle_zh} />
       </form-field>
@@ -112,7 +116,7 @@
           placeholder="Tên tác giả bộ truyện"
           required
           disabled={data.id != 0}
-          on:change={() => tl_author(form.author_zh, au_qt)}
+          on:change={tl_author}
           bind:value={form.author_zh} />
       </form-field>
 
@@ -135,7 +139,7 @@
           name="intro_zh"
           rows="8"
           placeholder="Giới thiệu vắn tắt nội dung"
-          on:change={() => tl_bintro(form.intro_zh, in_qt)}
+          on:change={tl_bintro}
           bind:value={form.intro_zh} />
       </form-field>
 

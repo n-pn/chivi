@@ -49,7 +49,7 @@
   $: genre = binfo.genres[0] || 'Loại khác'
   $: update = new Date(binfo.mftime || 0).toISOString()
 
-  $: star_count = rating_to_stars(binfo.rating)
+  $: star_count = binfo.voters < 10 ? 0 : rating_to_stars(binfo.rating)
 </script>
 
 <svelte:head>

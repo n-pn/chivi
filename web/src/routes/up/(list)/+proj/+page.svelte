@@ -8,6 +8,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   import type { PageData } from './$types'
+  import { titleize } from '$utils/text_utils'
   export let data: PageData
 
   let uform = data.uform
@@ -18,29 +19,41 @@
 
   $: action = uform.id ? `/_rd/upstems/${uform.id}` : '/_rd/upstems'
 
+  let au_qt = 'hname'
+  let bt_qt = 'mtl_2'
+  let in_qt = 'mtl_2'
+
   const tl_btitle = async () => {
-    uform.vname = await qt_hviet(uform.zname)
+    const href = `/_sp/qtran/${bt_qt}?zh=${uform}&pd=wn${uform.wn_id}`
+    const text = await fetch_text(href)
+    uform.vname = titleize(text.trim())
   }
 
   const tl_author = async () => {
-    uform.au_vi = await qt_hviet(uform.au_zh)
+    const href = `/_sp/qtran/${au_qt}?zh=${uform.au_zh}&pd=wn${uform.wn_id}`
+    const text = await fetch_text(href)
+    uform.au_vi = titleize(text.trim())
   }
 
-  const qt_hviet = async (ztext: string) => {
-    const res = await fetch(`/_sp/qtran/hname?zh=${ztext}`)
+  const tl_bintro = async () => {
+    const href = `/_sp/qtran/${in_qt}?op=txt&hs=0&ls=1&pd=wn${uform.wn_id}`
+    const headers = { 'Content-Type': 'text/plain' }
+    uform.vdesc = await fetch_text(href, { method: 'POST', body: uform.zdesc, headers })
+  }
+
+  const fetch_text = async (href: string, init?: RequestInit) => {
+    const res = await fetch(href, init)
     return await res.text()
   }
 
-  const tl_bintro = async (qkind = 'qt_v1') => {
-    const url = `/_sp/qtran/${qkind}?op=txt&hs=0&ls=1`
-    const res = await fetch(url, { method: 'POST', body: uform.zdesc })
-    uform.vdesc = await res.text()
-  }
-
   const submit = async () => {
-    const body = { ...uform, labels: labels.split(',') }
-
     try {
+      if (!uform.vname) await tl_btitle()
+      if (!uform.au_vi) await tl_author()
+      if (uform.zdesc && !uform.vdesc) await tl_bintro()
+
+      const body = { ...uform, labels: labels.split(',') }
+
       const { ustem } = await api_call(action, body, 'POST')
       await goto(`/up/${ustem.sname}/${ustem.id}`)
     } catch (ex) {
@@ -66,7 +79,7 @@
         name="zname"
         placeholder="Tên gốc tiếng Trung"
         required
-        on:change={() => tl_btitle()}
+        on:change={tl_btitle}
         bind:value={uform.zname} />
     </form-field>
 
@@ -90,7 +103,7 @@
         class="m-input"
         required
         placeholder="Tên tác giả Tiếng Trung"
-        on:change={() => tl_author()}
+        on:change={tl_author}
         bind:value={uform.au_zh} />
     </form-field>
 
@@ -113,7 +126,7 @@
         class="m-input"
         rows="8"
         placeholder="Giới thiệu tiếng Trung"
-        on:change={() => tl_bintro()}
+        on:change={tl_bintro}
         bind:value={uform.zdesc} />
     </form-field>
 
