@@ -2,7 +2,7 @@ require "../../src/mt_ai/core/*"
 require "../../src/mt_ai/data/*"
 
 input = [
-  "第２７３８章京师（九十一）",
+  # "第２７３８章京师（九十一）",
   # "“陈源哥哥，还记得高中时候的小瘸子吗？”",
   # "“钱芊雪除外。”",
   # "渡边澈两个手掌那么大、放在铁板上滋滋作响的鱿鱼，整个卖１５００円；",
@@ -27,20 +27,11 @@ input = [
   "年轻的女法师在长剑附上晦暗的魔力，走到紧关着护窗板的卧室窗前声音发出的地方，小心翼翼的传进一道揭示术。一缕蓝色的阴晦的微光一闪而逝，但没有传来任何回应。或许真的没什么事。",
 ]
 
-ch_rm = 1
-cheads = [] of MT::MtNode | Nil
-
-ch_rm.times do |index|
-  title, split = MT::TlChap.split(input[index])
-  input[index] = title
-  cheads << split
-end
-
 zdata = MT::MCache.find_con!(input, ver: 3_i8)
 ai_mt = MT::AiCore.new("wn15542")
 
 zdata.each_with_index do |rcon, l_id|
-  data = ai_mt.translate!(rcon, prfx: cheads[l_id]?)
+  data = ai_mt.translate!(rcon)
 
   puts "--------------------------------".colorize.dark_gray
   puts data.zstr.colorize.cyan

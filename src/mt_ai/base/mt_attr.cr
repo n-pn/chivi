@@ -156,6 +156,7 @@ enum MT::MtAttr : Int32
     '、' => Capx | Undb,
     '･' => Capx | Undb | Undn,
     '‧' => Capx | Undb | Undn,
+    '·' => Capx | Undb | Undn,
     # extra 1
     '〈' => Capn | Undn,
     '〉' => Capx | Undb,

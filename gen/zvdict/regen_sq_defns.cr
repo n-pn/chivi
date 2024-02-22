@@ -28,23 +28,23 @@ record QtDefn, zstr : String, cpos : String, vstr : String, attr : String do
   end
 end
 
-Dir.glob(MT::SqDefn::DIR + "/*.*") { |file| File.delete?(file) }
+# Dir.glob(MT::SqDefn::DIR + "/*.*") { |file| File.delete?(file) }
 
-INIT_DIR = "var/mtdic/seeds"
+# INIT_DIR = "var/mtdic/seeds"
 
-Dir.each_child(INIT_DIR) do |dname|
-  next if dname.starts_with?('_')
-  d_id = MT::MtDtyp.map_id(dname)
+# Dir.each_child(INIT_DIR) do |dname|
+#   next if dname.starts_with?('_')
+#   d_id = MT::MtDtyp.map_id(dname)
 
-  MT::SqDefn.db(d_id).open_tx do |db|
-    files = Dir.glob("#{INIT_DIR}/#{dname}/*.tab").sort!
-    files.each do |file|
-      defns = QtDefn.load_tsv(file)
-      defns.each(&.to_sq(d_id).upsert!(db: db))
-      puts "#{file}: #{defns.size}"
-    end
-  end
-end
+#   MT::SqDefn.db(d_id).open_tx do |db|
+#     files = Dir.glob("#{INIT_DIR}/#{dname}/*.tab").sort!
+#     files.each do |file|
+#       defns = QtDefn.load_tsv(file)
+#       defns.each(&.to_sq(d_id).upsert!(db: db))
+#       puts "#{file}: #{defns.size}"
+#     end
+#   end
+# end
 
 start = Time.monotonic
 zterms = ZR_DB.query_all "select * from zvterm", as: MT::PgDefn

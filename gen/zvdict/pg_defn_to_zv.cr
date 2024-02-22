@@ -1,3 +1,5 @@
+ENV["MT_DIR"] ||= "/2tb/app.chivi/var/mt_db"
+
 require "../../src/mt_ai/data/pg_defn"
 require "../../src/mt_ai/data/zv_defn"
 
@@ -7,8 +9,7 @@ input = MT::PgDefn.get_all(min_mtime, &.<< "where mtime >= $1")
 puts input.size
 
 MT::ZvDefn.db.open_tx do |db|
-  db.exec "delete from zv_defn"
-
+  # db.exec "delete from zv_defn"
   input.each do |entry|
     MT::ZvDefn.new(
       d_id: entry.d_id,

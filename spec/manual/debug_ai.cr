@@ -1,10 +1,12 @@
 require "../../src/mt_ai/core/*"
+require "../../src/mt_ai/data/*"
 
 time = Time.monotonic
 
-def debug(text : String, dict = "combine")
-  text = text.gsub(/\n\s+/, " ")
-  data = MT::AiCore.load(dict).translate!(MT::RawCon.from_text(text))
+def debug(text : String, dict = "combine", malg = 2_i8)
+  rcon = MT::MCache.find_con!([text], ver: malg).first
+
+  data = MT::AiCore.load(dict).translate!(rcon)
 
   puts "--------------------------------".colorize.dark_gray
   puts data.zstr.colorize.cyan
@@ -19,8 +21,9 @@ def debug(text : String, dict = "combine")
   # puts data.to_json.colorize.cyan
 end
 
-text = ARGV[0]? || "(TOP (CP (PU “) (NP (NR 陈源) (NN 哥哥)) (PU ，) (VP (ADVP (AD 还)) (VP (VV 记得) (NP (DNP (NP (NN 高中) (NN 时候)) (DEG 的)) (ADJP (JJ 小)) (NP (NN 瘸子))))) (SP 吗) (PU ？) (PU ”)))"
-dict = ARGV[1]? || "up1234"
+text = ARGV[0]? || "“啊呀呀！”大大的伸了一个懒腰之后，尤里西斯的意识完全清醒了。"
+malg = ARGV[1]?.try(&.to_i8?) || 2_i8
+dict = ARGV[2]? || "up1234"
 
 debug(text, dict)
 puts "--------------------------------".colorize.dark_gray
