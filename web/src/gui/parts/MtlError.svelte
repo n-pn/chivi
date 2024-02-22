@@ -2,32 +2,20 @@
   import { onDestroy } from 'svelte'
   import { writable } from 'svelte/store'
   import { api_call } from '$lib/api_call'
-  import { ztext, zfrom, zupto, vdict } from '$lib/stores'
 
-  const entry = {
-    ...writable({ _ukey: '', match: '', extra: '', cvmtl: '' }),
-    reset() {
-      this.set({ match: '', extra: '', cvmtl: '' })
-    },
+  const data = {
+    ...writable({ _ukey: '', ztext: '', pdict: '', qtran: '', extra: '', uname: '', mtime: '' }),
   }
 
   export const ctrl = {
     ...writable({ actived: false }),
     show: () => ctrl.set({ actived: true }),
     hide: () => {
-      entry.reset()
       ctrl.set({ actived: false })
     },
     load: async (ukey: string) => {
-      const res = await fetch(`/_db/tlspecs/${ukey}`)
-      const { props } = await res.json()
-
-      ztext.set(props.ztext)
-      zfrom.set(props.lower)
-      zupto.set(props.upper)
-      vdict.put(props.dname, props.d_dub)
-
-      entry.set(props.entry)
+      const res = await fetch(`/_sp/mt_errs/${ukey}`)
+      data.set(await res.json())
       ctrl.set({ actived: true })
     },
   }
@@ -36,10 +24,12 @@
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Dialog from '$gui/molds/Dialog.svelte'
-  import { gtran_text } from '$utils/qtran_utils/gg_tran'
 
   export let on_destroy = () => {}
   onDestroy(on_destroy)
+
+  // export let rline
+  // export let ropts
 
   let hvmtl = ''
   let error = ''
@@ -47,40 +37,14 @@
   let hanzi_elem: HTMLElement
   let match_elem: HTMLElement
 
-  $: lower = $zfrom
-  $: upper = $zupto
-  $: try {
-    prefill_match($ztext, lower, upper)
-  } catch (err) {
-    console.log(err)
-  }
-
-  async function prefill_match(ztext: String, lower: number, upper: number) {
-    if (!$ctrl.actived) return
-
-    const input = ztext.substring(lower, upper)
-    if (!input) return
-
-    const body = { input, vd_id: $vdict.vd_id }
-    const data = await api_call('/_m1/qtran/debug', body, 'PUT')
-
-    const [convert, hanviet] = data.split('\n')
-    if (!$entry.match || $entry.match == $entry.cvmtl) $entry.match = convert
-
-    $entry.cvmtl = convert
-    hvmtl = hanviet
-
-    setTimeout(() => {
-      hanzi_elem.querySelector('.active').scrollIntoView()
-      match_elem.focus()
-    }, 10)
-  }
+  let lower = 0
+  let upper = $data.ztext.length
 
   async function handle_submit(evt: Event) {
     evt.preventDefault()
 
-    const path = `/_mt/mt_err/${$entry._ukey}`
-    const body = { ztext: $ztext, lower, upper, ...$vdict, ...$entry }
+    const path = `/_mt/mt_err/${$data._ukey}`
+    const body = { ...$data, lower, upper }
 
     try {
       await api_call(path, body, 'POST', fetch)
@@ -94,7 +58,7 @@
 
   async function delete_tlspec() {
     try {
-      await api_call(`/_sp/errors/${$entry._ukey}`, {}, 'DELETE', fetch)
+      await api_call(`/_sp/mt_errs/${$data._ukey}`, {}, 'DELETE', fetch)
       ctrl.hide()
       on_destroy()
     } catch (ex) {
@@ -110,7 +74,7 @@
 
   function shift_lower(value = 0) {
     value += lower
-    if (value < 0 || value >= $ztext.length) return
+    if (value < 0 || value >= $data.ztext.length) return
 
     lower = value
     if (upper <= value) upper = value + 1
@@ -118,24 +82,19 @@
 
   function shift_upper(value = 0) {
     value += upper
-    if (value < 1 || value > $ztext.length) return
+    if (value < 1 || value > $data.ztext.length) return
 
     upper = value
     if (lower >= value) lower = value - 1
   }
 
   function copy_ztext() {
-    const input = $ztext.substring(lower, upper)
+    const input = $data.ztext.substring(lower, upper)
     navigator.clipboard.writeText(input)
   }
 
   function appy_cvmtl() {
-    $entry.match = $entry.cvmtl
-    match_elem.focus()
-  }
-
-  async function apply_gtran() {
-    $entry.match = await gtran_text($ztext.substring(lower, upper))[0]
+    $data.match = $data.cvmtl
     match_elem.focus()
   }
 </script>
@@ -143,7 +102,6 @@
 <Dialog actived={$ctrl.actived} --z-idx={80} class="tlspec" on_close={ctrl.hide}>
   <tlspec-title slot="header">
     <title-lbl><SIcon name="flag" /></title-lbl>
-    <title-dic>{$vdict.vd_id} [{$vdict.label}]</title-dic>
   </tlspec-title>
 
   <tlspec-body>
@@ -161,7 +119,7 @@
 
         <button
           data-kbd="⇧←"
-          disabled={lower == $ztext.length - 1}
+          disabled={lower == rline.ztext.length - 1}
           on:click={() => shift_lower(1)}
           data-tip="Thu hẹp về trái">
           <SIcon name="arrow-bar-to-right" />
@@ -179,7 +137,7 @@
 
         <button
           data-kbd="→"
-          disabled={lower == $ztext.length}
+          disabled={lower == rline.ztext.length}
           on:click={() => shift_upper(1)}
           data-tip="Mở rộng sang phải">
           <SIcon name="arrow-right" />
@@ -193,7 +151,7 @@
 
     <tlspec-input>
       <tlspec-hanzi bind:this={hanzi_elem}>
-        {#each Array.from($ztext) as char, index}
+        {#each Array.from($data.ztext) as char, index}
           <!-- svelte-ignore a11y-click-events-have-key-events -->
           <!-- svelte-ignore a11y-no-static-element-interactions -->
           <x-z class:active={index >= lower && index < upper} on:click={() => change_focus(index)}
@@ -202,45 +160,13 @@
       </tlspec-hanzi>
 
       <tlspec-cvmtl>{hvmtl}</tlspec-cvmtl>
-      <tlspec-cvmtl>{$entry.cvmtl}</tlspec-cvmtl>
+      <tlspec-cvmtl>{$data.qtran}</tlspec-cvmtl>
     </tlspec-input>
 
     <form action="/_db/tlspecs" method="POST" class="form" on:submit={handle_submit}>
       <form-group>
-        <form-label>
-          <span>Kết quả dịch chính xác</span>
-          <btn-group>
-            <button
-              type="button"
-              on:click={() => ($entry.match = '')}
-              data-tip="Xoá hết kết quả dịch">
-              <SIcon name="eraser" />
-            </button>
-            <button type="button" on:click={apply_gtran} data-tip="Lấy kết quả từ Google Translate">
-              <SIcon name="language" />
-            </button>
-            <!-- svelte-ignore security-anchor-rel-noreferrer -->
-            <a
-              href="/mt/qtran?t={$ztext}&d={$vdict.vd_id}"
-              target="_blank"
-              data-tip="Mở bằng trang dịch nhanh">
-              <SIcon name="external-link" />
-            </a>
-            <button type="button" on:click={appy_cvmtl} data-tip="Copy từ kết quả dịch máy">
-              <SIcon name="copy" />
-            </button>
-          </btn-group>
-        </form-label>
-        <textarea
-          class="m-input _match"
-          name="match"
-          bind:value={$entry.match}
-          bind:this={match_elem} />
-      </form-group>
-
-      <form-group>
         <form-label>Giải thích thêm nếu cần</form-label>
-        <textarea class="m-input _extra" name="extra" bind:value={$entry.extra} />
+        <textarea class="m-input _extra" name="extra" bind:value={$data.extra} />
       </form-group>
 
       {#if error}
@@ -248,15 +174,15 @@
       {/if}
 
       <form-action>
-        {#if $entry._ukey}
+        {#if $data._ukey}
           <button type="button" class="m-btn _harmful" data-kbd="delete" on:click={delete_tlspec}>
             <SIcon name="trash" />
             <span>Xoá bỏ</span>
           </button>
         {/if}
 
-        <button type="submit" class="m-btn _primary _fill" data-kbd="⇧↵" disabled={!$entry.match}>
-          {#if $entry._ukey}
+        <button type="submit" class="m-btn _primary _fill" data-kbd="⇧↵" disabled={!$data.match}>
+          {#if $data._ukey}
             <SIcon name="device-floppy" />
             <span>Lưu lại</span>
           {:else}

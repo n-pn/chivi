@@ -15,7 +15,7 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import type { Rdpage } from '$lib/reader'
 
-  import { ctrl as lookup_ctrl } from '$gui/parts/Lookup2.svelte'
+  import { ctrl as lookup_ctrl } from '$gui/parts/SideLine.svelte'
   import { ctrl as vtform_ctrl } from '$gui/shared/vtform/Vtform.svelte'
 
   export let rpage: Rdpage

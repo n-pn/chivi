@@ -77,8 +77,9 @@ class RD::ChinfoCtrl < AC::Base
   end
 
   private def inc_view_count!(crepo : Tsrepo, sname : String)
-    value = (self._privi &+ 1)
+    value = self._privi &+ 2
     crepo.inc_view_count!(value)
+
     case crepo.stype
     when 1
       get_ustem(crepo.sn_id, sname).inc_view_count!(value)

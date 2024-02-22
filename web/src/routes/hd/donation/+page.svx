@@ -7,8 +7,7 @@ mdesc: Chivi hiện không sống bằng quảng cáo, tiền ủng hộ của c
   import { get_user } from '$lib/stores'
   const _user = get_user()
 
-  $: uname = $_user.uname.normalize("NFD").replace(/[\u0300-\u036f_]/g, "")
-  $: code = `CHIVI ${uname} ID ${$_user.vu_id}`
+  $: code = `CHIVI ID ${$_user.vu_id}`
 </script>
 
 Chivi hiện không sống bằng quảng cáo, tiền ủng hộ của các bạn là đầu vào duy nhất để nuôi sống trang web.
@@ -34,6 +33,7 @@ Trong trường hợp bạn quên chưa cung cấp thông tin định danh, hãy
     <img
     src="https://img.vietqr.io/image/TCB-1606281089-compact.png?amount=50000&addInfo={code}"
     onerror="this.src='https://cdn.chivi.app/imgs/techcombank-fs8.png'" alt="Techcombank"/>
+    <a href="https://img.vietqr.io/image/TCB-1606281089-compact.png?amount=50000&addInfo={code}" download="Techcombank-QR.png" class="m-btn _sm">Tải xuống</a>
   </figure>
 
   <figure>
@@ -42,21 +42,26 @@ Trong trường hợp bạn quên chưa cung cấp thông tin định danh, hãy
    src="https://img.vietqr.io/image/VCB-1035430031-compact.png?amount=50000&addInfo={code}"
     onerror="this.src='https://cdn.chivi.app/imgs/vietcombank-fs8.png'"
     alt="Vietcombank"/>
+    <a href="https://img.vietqr.io/image/VCB-1035430031-compact.png?amount=50000&addInfo={code}" download="Vietcombank-QR.png" class="m-btn _sm">Tải xuống</a>
   </figure>
 
   <figure>
     <figcaption>Ví Mommo</figcaption>
-    <img src="https://cdn.chivi.app/imgs/momo-fs8.png" alt="Momo"/>
+    <img src="https://cdn.chivi.app/imgs/momo2-fs8.png" alt="Momo"/>
+    <a href="https://cdn.chivi.app/imgs/momo2-fs8.png" download="Momo-QR.png" class="m-btn _sm">Tải xuống</a>
   </figure>
 </div>
+
+_Lưu ý: Bạn không cần điền thêm thông tin nếu dùng mã QR của Techcombank hay Vietcombank,
+nhưng bạn phải điền thêm <code>{code}</code> vào nội dung chuyển khoản nếu dùng Momo._
 
 ### Chuyển thủ công:
 
 - Số tài khoản Techcombank: **1606281089**
 - Số tài khoản Vietcombank: **1035430031**
 - Ví Momo: https://me.momo.vn/nipin
-- buymeacoffee: https://www.buymeacoffee.com/chivi
-- Patreon: https://www.patreon.com/n_pn
+- Ko-fi: https://ko-fi.com/chivi
+- Paypal: https://www.paypal.com/paypalme/nipinium
 
 _Khi bạn ủng hộ Chivi bằng tiền mặt, bạn sẽ được tặng một đơn vị tiền tệ ảo là vcoin, bạn có thể dùng vcoin để nâng cấp quyền hạn, gửi tặng người dùng khác, hoặc sử dụng các tính năng nâng cao sẽ dần được phát triển bổ sung._
 
@@ -67,3 +72,15 @@ _Khi bạn ủng hộ Chivi bằng tiền mặt, bạn sẽ được tặng mộ
 Muốn nhận được vcoin nhanh hơn, hãy thử liên hệ qua các kênh liên lạc của trang như [Facebook](https://www.facebook.com/chivi.fb) hoặc [Discord](https://discord.gg/mdC3KQH).
 
 Trong tương lai, nếu có nhiều người ủng hộ hơn thì quá trình này có thể sẽ được cải thiện.
+
+<style>
+  .m-btn {
+    display: block;
+    margin: .5rem auto 0;
+  }
+
+  figure {
+    display: flex;
+    flex-direction: column;
+  }
+</style>

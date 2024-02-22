@@ -50,108 +50,108 @@ export function hint(node: HTMLElement, data: string) {
   }
 }
 
-const mapping = [
-  [0, 0],
-  [-1, 0],
-  [1, 0],
-  [0, 1],
-  [0, -1],
-  [-2, 0],
-  [0, 2],
-  [-1, -1],
-  [-1, 1],
-  // [1, -1],
-  // [1, 1],
-]
+// const mapping = [
+//   [0, 0],
+//   [-1, 0],
+//   [1, 0],
+//   [0, 1],
+//   [0, -1],
+//   [-2, 0],
+//   [0, 2],
+//   [-1, -1],
+//   [-1, 1],
+//   // [1, -1],
+//   // [1, 1],
+// ]
 
-export const related_words = (ztext: string, zfrom: number, zupto: number) => {
-  return mapping
-    .map(([x, y]) => ztext.substring(zfrom + x, zupto + y))
-    .filter(Boolean)
-}
+// export const related_words = (ztext: string, zfrom: number, zupto: number) => {
+//   return mapping
+//     .map(([x, y]) => ztext.substring(zfrom + x, zupto + y))
+//     .filter(Boolean)
+// }
 
-export const req_privi = (dic: number, tab: number = 1) => {
-  const privi = [0, 2, 1, 3][tab]
-  return dic < 0 ? privi : privi - 1
-}
+// export const req_privi = (dic: number, tab: number = 1) => {
+//   const privi = [0, 2, 1, 3][tab]
+//   return dic < 0 ? privi : privi - 1
+// }
 
-export class CvtermForm {
-  init: Partial<CV.Cvterm>
+// export class CvtermForm {
+//   init: Partial<CV.Cvterm>
 
-  static from(key: string, dic: number = 0, privi = -1) {
-    const term = { key, val: '', ptag: '', wseg: 2, dic, tab: 1 }
-    return new CvtermForm(term, dic, privi)
-  }
+//   static from(key: string, dic: number = 0, privi = -1) {
+//     const term = { key, val: '', ptag: '', wseg: 2, dic, tab: 1 }
+//     return new CvtermForm(term, dic, privi)
+//   }
 
-  key: string
-  val: string
+//   key: string
+//   val: string
 
-  ptag: string
-  prio: number
+//   ptag: string
+//   prio: number
 
-  dic: number = 0
-  tab: number = 0
+//   dic: number = 0
+//   tab: number = 0
 
-  constructor(init: Partial<CV.Cvterm>, wn_id = 0, privi = 0) {
-    this.init = init
+//   constructor(init: Partial<CV.Cvterm>, wn_id = 0, privi = 0) {
+//     this.init = init
 
-    this.key = init.key
-    this.val = init.val
-    this.ptag = init.ptag
-    this.prio = init.prio
+//     this.key = init.key
+//     this.val = init.val
+//     this.ptag = init.ptag
+//     this.prio = init.prio
 
-    if (privi < 1) {
-      this.dic = wn_id
-      this.tab = 2
-    } else if (privi == 1) {
-      this.dic = wn_id
-      this.tab = 1
-    } else {
-      this.dic = this.init.dic
-      this.tab = Math.abs(this.init.tab)
-    }
-  }
+//     if (privi < 1) {
+//       this.dic = wn_id
+//       this.tab = 2
+//     } else if (privi == 1) {
+//       this.dic = wn_id
+//       this.tab = 1
+//     } else {
+//       this.dic = this.init.dic
+//       this.tab = Math.abs(this.init.tab)
+//     }
+//   }
 
-  reset() {
-    this.val = this.init.val || ''
-    this.ptag = this.init.ptag || ''
-    this.prio = this.init.prio || 2
+//   reset() {
+//     this.val = this.init.val || ''
+//     this.ptag = this.init.ptag || ''
+//     this.prio = this.init.prio || 2
 
-    return this
-  }
+//     return this
+//   }
 
-  clear() {
-    if (this.val) this.val = ''
-    else this.ptag = ''
+//   clear() {
+//     if (this.val) this.val = ''
+//     else this.ptag = ''
 
-    return this
-  }
+//     return this
+//   }
 
-  changed() {
-    if (!this.val) return false
-    if (this.init.id == 0) return true
+//   changed() {
+//     if (!this.val) return false
+//     if (this.init.id == 0) return true
 
-    const fields = ['val', 'ptag', 'prio', 'dic', 'tab']
+//     const fields = ['val', 'ptag', 'prio', 'dic', 'tab']
 
-    for (const field of fields) {
-      if (this[field] != this.init[field]) return true
-    }
+//     for (const field of fields) {
+//       if (this[field] != this.init[field]) return true
+//     }
 
-    return false
-  }
+//     return false
+//   }
 
-  get req_privi() {
-    return req_privi(this.dic, this.tab)
-  }
+//   get req_privi() {
+//     return req_privi(this.dic, this.tab)
+//   }
 
-  toJSON(wn_id: number, input: string, index: number) {
-    return JSON.stringify({
-      key: this.key,
-      val: this.val,
-      ptag: this.ptag,
-      prio: this.prio,
-      dic: this.dic,
-      _ctx: { wn_id, input, index },
-    })
-  }
-}
+//   toJSON(wn_id: number, input: string, index: number) {
+//     return JSON.stringify({
+//       key: this.key,
+//       val: this.val,
+//       ptag: this.ptag,
+//       prio: this.prio,
+//       dic: this.dic,
+//       _ctx: { wn_id, input, index },
+//     })
+//   }
+// }

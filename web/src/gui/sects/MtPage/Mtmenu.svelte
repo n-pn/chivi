@@ -56,9 +56,6 @@
 <script lang="ts">
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  import Lookup, { ctrl as lookup } from '$gui/parts/Lookup.svelte'
-  import Upsert, { ctrl as upsert } from '$gui/parts/Upsert.svelte'
-
   export let article: HTMLElement
   export let fix_raw = false
 
@@ -66,19 +63,19 @@
   export let l_focus: number
   export let l_hover: number
 
-  export let on_change = () => {}
+  // export let on_change = () => {}
 
-  const on_destroy = () => {
-    article.focus()
-    const nodes = []
+  // const on_destroy = () => {
+  //   article.focus()
+  //   const nodes = []
 
-    const elem = article.querySelector(`#L${l_focus}`)
-    for (let lower = $zfrom; lower < $zupto; lower++) {
-      const node = elem.querySelector(`v-n[data-l="${lower}"]`)
-      if (node) nodes.push(node)
-    }
-    change_focus(nodes, l_focus)
-  }
+  //   const elem = article.querySelector(`#L${l_focus}`)
+  //   for (let lower = $zfrom; lower < $zupto; lower++) {
+  //     const node = elem.querySelector(`v-n[data-l="${lower}"]`)
+  //     if (node) nodes.push(node)
+  //   }
+  //   change_focus(nodes, l_focus)
+  // }
 
   onMount(() => {
     setTimeout(() => article.addEventListener('mouseup', handle_mouse), 40)
@@ -170,12 +167,7 @@
 
   let timeout: number
 
-  function change_focus(
-    nodes: HTMLElement[],
-    index: number,
-    target = null,
-    delay = 0
-  ) {
+  function change_focus(nodes: HTMLElement[], index: number, target = null, delay = 0) {
     if (index != l_focus) l_focus = index
     $ztext = lines[index]
 
@@ -354,9 +346,6 @@
     <SIcon name="arrow-right-square" />
   </button>
 </div>
-
-{#if $lookup.enabled || $lookup.actived}<Lookup {on_destroy} />{/if}
-{#if $upsert.state > 0}<Upsert {on_change} {on_destroy} />{/if}
 
 <style lang="scss">
   $width: 1.875rem;

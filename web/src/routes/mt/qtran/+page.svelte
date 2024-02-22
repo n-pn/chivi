@@ -6,7 +6,7 @@
 
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Cztext from '$gui/shared/upload/Cztext.svelte'
-  import Lookup, { ctrl as lookup_ctrl } from '$gui/parts/Lookup2.svelte'
+  import SideLine, { ctrl as lookup_ctrl } from '$gui/parts/SideLine.svelte'
   import Vtform, { ctrl as vtform_ctrl } from '$gui/shared/vtform/Vtform.svelte'
 
   import type { PageData } from './$types'
@@ -148,7 +148,7 @@
 </div>
 
 {#if ztext && $lookup_ctrl.actived}
-  <Lookup
+  <SideLine
     bind:rpage
     bind:rword
     bind:state

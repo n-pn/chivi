@@ -10,7 +10,7 @@
   import { type Rdline, Rdword } from '$lib/reader'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
-  import Lookup, { ctrl as lookup_ctrl } from '$gui/parts/Lookup2.svelte'
+  import SideLine, { ctrl as lookup_ctrl } from '$gui/parts/SideLine.svelte'
   import Vtform, { ctrl as vtform_ctrl } from '$gui/shared/vtform/Vtform.svelte'
   import Ctmenu, { ctrl as ctmenu_ctrl } from './qtdata/Ctmenu.svelte'
   import type { SvelteComponent } from 'svelte'
@@ -208,7 +208,7 @@
 </div>
 
 {#if rpage && $lookup_ctrl.actived}
-  <Lookup bind:rpage bind:rword bind:state bind:l_idx {ropts} {l_max} {set_focus_line} />
+  <SideLine bind:rpage bind:rword bind:state bind:l_idx {ropts} {l_max} {set_focus_line} />
 {/if}
 
 {#if $vtform_ctrl.actived}

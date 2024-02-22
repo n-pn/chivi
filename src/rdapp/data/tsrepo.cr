@@ -226,8 +226,6 @@ class RD::Tsrepo
 
   ###
 
-  ###
-
   @[AlwaysInline]
   def last_ch_no
     Chinfo.find_last(self.info_db).try(&.ch_no) || 0

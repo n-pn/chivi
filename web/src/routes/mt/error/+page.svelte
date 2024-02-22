@@ -4,44 +4,42 @@
 
   import { get_rtime } from '$gui/atoms/RTime.svelte'
   import Mpager, { Pager } from '$gui/molds/Mpager.svelte'
-  import Tlspec, { ctrl as tlspec } from '$gui/parts/Tlspec.svelte'
+  import MtlError, { ctrl as tlspec } from '$gui/parts/MtlError.svelte'
 
   import type { PageData } from './$types'
   export let data: PageData
 
-  const on_destroy = () => invalidate(`/_db/tlspecs${$page.url.search}`)
+  const on_destroy = () => invalidate(`/_sp/mt_errs${$page.url.search}`)
 
   $: pager = new Pager($page.url)
 </script>
 
 <article class="md-article">
-  <h1>Lỗi máy dịch (Đỏ: Đang lỗi, Xanh: Đã sửa đúng)</h1>
+  <h1>Lỗi máy dịch</h1>
 
   <table class="m-table">
     <thead>
       <tr>
         <th class="id">#</th>
         <th class="ztext">Từ gốc</th>
-        <th class="mt_v2">Dịch máy</th>
-        <th class="match">Nghĩa đúng</th>
-        <th class="_meta">N. dùng</th>
+        <th class="qtran">Dịch máy</th>
+        <th class="extra">Chú thích</th>
+        <th class="uname">N. dùng</th>
       </tr>
     </thead>
     <tbody>
-      {#each data.items as { _ukey, ztext, d_dub, mtime, uname, match, mt_v2 }, idx}
-        <tr
-          class={mt_v2 == match ? 'ok' : 'err'}
-          on:click={() => tlspec.load(_ukey)}>
+      {#each data.items as { _ukey, ztext, pdict, mtime, qtran, extra, uname }, idx}
+        <tr on:click={() => tlspec.load(_ukey)}>
           <td class="id">{idx + 1 + (data.pgidx - 1) * 50}</td>
           <td class="ztext">
             <div class="txt">{ztext}</div>
-            <div class="dic">{d_dub}</div>
+            <div class="dic">{pdict}</div>
           </td>
-          <td class="mt_v2">
-            <div title={mt_v2}>{mt_v2}</div>
+          <td class="qtran">
+            <div title={qtran}>{qtran}</div>
           </td>
-          <td class="match">
-            <div title={match}>{match}</div>
+          <td class="extra">
+            <div title={extra}>{extra}</div>
           </td>
           <td class="_meta">
             <div class="uname">{uname}</div>
@@ -57,7 +55,7 @@
   </footer>
 </article>
 
-{#if $tlspec.actived}<Tlspec {on_destroy} />{/if}
+{#if $tlspec.actived}<MtlError {on_destroy} />{/if}
 
 <style lang="scss">
   article {
@@ -115,7 +113,7 @@
     }
   }
 
-  .mt_v2,
+  .mtran,
   .match {
     max-width: 12rem;
 
@@ -132,7 +130,7 @@
     }
   }
 
-  ._meta {
+  .uname {
     width: 6.5rem;
   }
 
@@ -144,7 +142,7 @@
     font-size: 0.9em;
   }
 
-  td.mt_v2,
+  td.mtran,
   td.match {
     font-size: rem(15px);
   }
