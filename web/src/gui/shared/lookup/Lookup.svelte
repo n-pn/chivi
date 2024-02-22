@@ -73,7 +73,7 @@
     focused.length = 0
 
     for (let i = zfrom; i < zupto; i++) {
-      const nodes = viewer.querySelectorAll(`[data-b="${i}"]`)
+      const nodes = viewer.querySelectorAll(`[data-f="${i}"]`)
 
       nodes.forEach((x: HTMLElement) => {
         focused.push(x)
@@ -139,8 +139,7 @@
       <h5>Chưa có giải nghĩa cho cụ từ hiện tại.</h5>
       <p>
         Gợi ý: <em
-          >Bấm vào chữ tiếng Trung hoặc Hán Việt phía trên để xem giải nghĩa cho
-          từ ở vị trí đó.</em>
+          >Bấm vào chữ tiếng Trung hoặc Hán Việt phía trên để xem giải nghĩa cho từ ở vị trí đó.</em>
       </p>
     </div>
   {/each}

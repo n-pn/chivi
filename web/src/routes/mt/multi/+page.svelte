@@ -60,85 +60,81 @@
   // }
 </script>
 
-<div class="input">
-  <input
-    class="m-input"
-    name="zh"
-    placeholder="Nhập tiếng Trung dịch nhanh"
-    bind:value={data.input} />
-  <button class="m-btn _primary _fill" on:click={() => redo_translation()}>
-    <SIcon name="bolt" />
-    <span class="u-show-pl">Dịch</span>
-  </button>
-</div>
-
-{#if browser && data.input}
-  {#key rline}
-    <Wpanel
-      class="_big"
-      title="Máy dịch Chivi mới:"
-      lines={5}
-      wdata={rline.mtran_text(data.mtype)}
-      loader={load_qtran(data.mtype)}
-      bind:state={mtran_state}>
-      <svelte:fragment slot="tools">
-        {#each mtran_algos as [algo, hint], index}
-          <button
-            type="button"
-            class="-btn"
-            class:_active={data.mtype == algo}
-            on:click={() => switch_mtran_algo(algo)}
-            data-tip={hint}
-            data-tip-loc="bottom"
-            data-tip-pos="right">
-            <SIcon name="letter-v" />
-            <SIcon name="number-{index + 1}" />
-          </button>
-        {/each}
-      </svelte:fragment>
-      {@html rline.mtran_html(data.mtype)}
-    </Wpanel>
-
-    <Wpanel
-      title="Dịch bằng Baidu:"
-      class="_big"
-      lines={5}
-      wdata={rline.qtran_text('bd_zv')}
-      loader={rline.text_get_fn('bd_zv', data)} />
-
-    <Wpanel
-      title="GPT Tiên hiệp:"
-      class="_big"
-      lines={5}
-      wdata={rline.qtran_text('c_gpt')}
-      loader={rline.text_get_fn('c_gpt', data)} />
-
-    <Wpanel
-      class="_big"
-      lines={5}
-      title="Dịch bằng Google:"
-      wdata={rline.qtran_text('gg_zv')}
-      loader={rline.text_get_fn('gg_zv', data)} />
-
-    <Wpanel
-      title="Dịch bằng Bing:"
-      class="_big"
-      lines={5}
-      wdata={rline.qtran_text('ms_zv')}
-      loader={rline.text_get_fn('ms_zv', data)} />
-
-    <Wpanel
-      title="Dịch máy cũ:"
-      class="_big"
-      lines={5}
-      wdata={rline.qtran_text('qt_v1')}
-      loader={rline.text_get_fn('qt_v1', data)} />
-  {/key}
-{:else}
-  <div class="d-empty-sm">
-    <em>Nhập tiếng Trung để dịch nhanh</em>
+<article class="article island p-multi">
+  <div class="input">
+    <input
+      class="m-input"
+      name="zh"
+      placeholder="Nhập tiếng Trung dịch nhanh"
+      bind:value={data.input} />
+    <button class="m-btn _primary _fill" on:click={() => redo_translation()}>
+      <SIcon name="bolt" />
+      <span class="u-show-pl">Dịch</span>
+    </button>
   </div>
-{/if}
+
+  {#if browser && data.input}
+    {#key rline}
+      <Wpanel
+        title="Máy dịch Chivi mới:"
+        lines={5}
+        wdata={rline.mtran_text(data.mtype)}
+        loader={load_qtran(data.mtype)}
+        bind:state={mtran_state}>
+        <svelte:fragment slot="tools">
+          {#each mtran_algos as [algo, hint], index}
+            <button
+              type="button"
+              class="-btn"
+              class:_active={data.mtype == algo}
+              on:click={() => switch_mtran_algo(algo)}
+              data-tip={hint}
+              data-tip-loc="bottom"
+              data-tip-pos="right">
+              <SIcon name="letter-v" />
+              <SIcon name="number-{index + 1}" />
+            </button>
+          {/each}
+        </svelte:fragment>
+        {@html rline.mtran_html(data.mtype)}
+      </Wpanel>
+
+      <Wpanel
+        title="Dịch bằng Baidu:"
+        lines={5}
+        wdata={rline.qtran_text('bd_zv')}
+        loader={rline.text_get_fn('bd_zv', data)} />
+
+      <Wpanel
+        title="GPT Tiên hiệp:"
+        lines={5}
+        wdata={rline.qtran_text('c_gpt')}
+        loader={rline.text_get_fn('c_gpt', data)} />
+
+      <Wpanel
+        lines={5}
+        title="Dịch bằng Google:"
+        wdata={rline.qtran_text('gg_zv')}
+        loader={rline.text_get_fn('gg_zv', data)} />
+
+      <Wpanel
+        title="Dịch bằng Bing:"
+        lines={5}
+        wdata={rline.qtran_text('ms_zv')}
+        loader={rline.text_get_fn('ms_zv', data)} />
+
+      <Wpanel
+        title="Dịch máy cũ:"
+        lines={5}
+        wdata={rline.qtran_text('qt_v1')}
+        loader={rline.text_get_fn('qt_v1', data)} />
+    {/key}
+  {:else}
+    <div class="d-empty-sm">
+      <em>Nhập tiếng Trung để dịch nhanh</em>
+    </div>
+  {/if}
+</article>
 
 <style lang="scss">
   .input {

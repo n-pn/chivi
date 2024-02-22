@@ -87,7 +87,7 @@ class MT::AiCore
     epos = head.epos.nr? && tail.attr.sufx? ? head.epos : MtEpos::NN
 
     init_pair_node(head: head, tail: tail, epos: epos, attr: attr) do
-      if epos.nr? && head.attr.nper?
+      if !head.attr.ndes? && (epos.nr? || head.attr.nper?)
         tail.epos = MtEpos::NH
 
         if defn = @mt_dict.get_defn?(tail.zstr, :NH, false)

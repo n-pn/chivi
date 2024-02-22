@@ -46,7 +46,6 @@
   function handle_click(event: MouseEvent) {
     const target = event.target as HTMLElement
     if (!node_names.includes(target.nodeName)) return
-
     rword = Rdword.from(target)
     if ($ctrl.panel != 'glossary') vtform_ctrl.show(0)
   }

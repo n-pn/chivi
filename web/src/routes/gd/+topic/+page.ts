@@ -1,6 +1,4 @@
 import { api_get } from '$lib/api_call'
-import { nav_link } from '$utils/header_util'
-
 import type { PageLoad } from './$types'
 
 interface TopicFormPage {
@@ -15,14 +13,15 @@ export const load = (async ({ fetch, url }) => {
   const path = `/_db/topics/form?tb=${tb}&id=${id}`
   const { dboard, dtform } = await api_get<TopicFormPage>(path, fetch)
 
-  const curr_path = `/gd/+topic${url.search}`
+  const href = `/gd/+topic${url.search}`
 
-  const _meta = {
-    left_nav: [
-      nav_link('/gd', 'Diễn đàn', 'messages', { show: 'ts' }),
-      nav_link(curr_path, 'Tạo/sửa chủ đề', 'edit', { show: 'ts' }),
+  return {
+    dboard,
+    dtform,
+    _meta: { title: 'Tạo/sửa chủ đề' },
+    _navs: [
+      { href: '/gd', text: 'Diễn đàn', icon: 'messages', show: 'ts' },
+      { href: href, text: 'Tạo/sửa chủ đề', icon: 'edit' },
     ],
-    right_nav: [],
   }
-  return { dboard, dtform, _meta, _title: 'Tạo/sửa chủ đề' }
 }) satisfies PageLoad

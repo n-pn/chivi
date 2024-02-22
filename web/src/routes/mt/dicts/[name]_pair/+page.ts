@@ -1,4 +1,3 @@
-import { nav_link } from '$utils/header_util'
 import { merge_query, api_get } from '$lib/api_call'
 
 import type { PageLoad } from './$types'
@@ -15,22 +14,18 @@ export const load = (async ({ params, fetch, parent, url }) => {
   const search = merge_query(url.searchParams, { dname, lm: 50 })
   const data = await api_get<Data>(`/_ai/zvpairs?${search}`, fetch)
 
-  const _meta = {
-    left_nav: [
-      nav_link('/mt/dicts', 'Từ điển', 'package', { show: 'ts' }),
-      nav_link(dinfo.name, dinfo.label, '', { kind: 'title' }),
-    ],
+  return {
+    ...data,
+    dname,
+    query: gen_query(url.searchParams),
+    _meta: { title: 'Nghĩa cặp từ' },
+    _navs: [
+      { href: '/mt/dicts', text: 'Từ điển', icon: 'package', show: 'ts' },
 
-    right_nav: [
-      nav_link(`/mt/dicts/${dname}_pair/+pair`, 'Thêm mới', 'plus', {
-        show: 'ts',
-      }),
+      { href: url.pathname, text: dinfo.label, icon: 'list', kind: 'title' },
     ],
+    _alts: [{ href: `+pair`, text: 'Thêm mới', icon: 'plus', show: 'pl' }],
   }
-
-  const query = gen_query(url.searchParams)
-
-  return { ...data, dname, query, _meta, _title: 'Nghĩa cặp từ' }
 }) satisfies PageLoad
 
 function gen_query(params: URLSearchParams) {

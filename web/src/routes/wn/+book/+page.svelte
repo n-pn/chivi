@@ -24,14 +24,6 @@
   async function submit(evt: Event) {
     evt.preventDefault()
 
-    const keeps = /btitle|author/
-
-    for (const key in form) {
-      if (keeps.test(key)) continue
-      const val = form[key]
-      if (val == data.form[key]) delete form[key]
-    }
-
     try {
       const { id } = await api_call(action, form, 'POST')
       await goto(`/wn/${id}`)

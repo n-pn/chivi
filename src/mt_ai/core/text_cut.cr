@@ -89,6 +89,7 @@ module MT::TextCut
   # test = "“呼，原来是幻听啊……”男子攥紧拳头，小声说，“我高似锦无论如何，都要再度回家才行……”"
   # puts test
 
+  # test = "“其它卫兵呢？法师们呢？”"
   # split_sents(test) do |sent|
   #   puts sent
   # end

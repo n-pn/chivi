@@ -38,7 +38,7 @@ export function gen_ztext_html(ztext: string) {
   let html = ''
 
   for (let i = 0; i < ztext.length; i++) {
-    html += `<x-z data-b=${i} data-e=${i + 1}>`
+    html += `<x-z data-f=${i} data-u=${i + 1}>`
     html += escape_htm(ztext.charAt(i))
     html += `</x-z>`
   }
@@ -60,7 +60,7 @@ export function gen_hviet_html(input: string[], cap = true) {
     let vesc = escape_htm(vstr.substring(1))
 
     if (!cap) vesc = vesc.toLowerCase()
-    html += `<x-n d=1 data-b=${from} data-e=${from + 1} >${vesc}</x-n>`
+    html += `<x-n d=4 data-f=${from} data-u=${from + 1} >${vesc}</x-n>`
 
     from += 1
   }
@@ -111,10 +111,10 @@ export function gen_ctree_html(node: CV.Cvtree, level = 0, on_nl = false) {
     }
   }
 
-  html += `<x-g l=${level % 8} data-b=${from} data-e=${upto}>`
+  html += `<x-g l=${level % 8} data-f=${from} data-u=${upto}>`
 
   const { name } = cpos_info[cpos] || {}
-  html += `<x-c data-tip="${name}" data-b=${from} data-e=${upto} data-c=${cpos}>${cpos}</x-c>`
+  html += `<x-c data-tip="${name}" data-f=${from} data-u=${upto} data-p=${cpos}>${cpos}</x-c>`
 
   if (Array.isArray(body)) {
     const child_on_nl = body.length > 1 && !same_level_tags.includes(cpos)
@@ -126,8 +126,8 @@ export function gen_ctree_html(node: CV.Cvtree, level = 0, on_nl = false) {
     }
   } else {
     const vesc = escape_htm(body)
-    html += ` <x-n d=${dpos} data-b=${from} data-e=${upto} data-c=${cpos}>${vesc}</x-n>`
-    // html += ` <x-z d=${dpos} data-b=${from} data-e=${upto} data-c=${cpos}>${zesc}</x-z>`
+    html += ` <x-n d=${dpos} data-f=${from} data-u=${upto} data-p=${cpos}>${vesc}</x-n>`
+    // html += ` <x-z d=${dpos} data-f=${from} data-u=${upto} data-p=${cpos}>${zesc}</x-z>`
   }
 
   html += '</x-g>'

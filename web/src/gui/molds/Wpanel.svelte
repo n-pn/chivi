@@ -80,38 +80,39 @@
 
 <style lang="scss">
   .panel {
-    margin: 0.75rem 0;
+    margin: 0.75rem -0.75rem 0;
+    padding-bottom: 0.25rem;
+    // border-radius: 4px;
+    @include bgcolor(tert);
+    // @include border(--bd-soft, $loc: bottom);
+  }
+
+  :global(.p-multi) > .panel {
+    // @include border(--bd-soft);
+    @include bgcolor(secd);
 
     @include bdradi;
-    // @include border(--bd-soft);
-    @include bgcolor(tert);
+    margin: 1rem 0;
+    font-size: rem(17px);
+    padding-bottom: 0.5rem;
+    > header {
+      font-size: rem(15px);
+      padding: 0.25rem 0.5rem 0.25rem 1rem;
+    }
 
-    &._big {
-      --lc: 6;
-      margin: 0.5rem 0;
-      padding-bottom: 0.25rem;
-      font-size: rem(17px);
-
-      header,
-      .wbody {
-        padding-left: 1rem;
-        padding-right: 1rem;
-      }
+    > .wbody {
+      padding-left: 1rem;
+      padding-right: 1rem;
     }
   }
 
   header {
     @include flex-cy;
-    padding: 0 0.25rem 0 0.5rem;
+    padding: 0 0.5rem 0 0.75rem;
     font-weight: 500;
-    line-height: 1.5rem;
+    line-height: 1.75rem;
     // @include border(--bd-soft, $loc: bottom);
     @include ftsize(sm);
-
-    :global(._big) > & {
-      font-size: rem(15px);
-      padding: 0.25rem 0.5rem 0.25rem 0.75rem;
-    }
   }
 
   .tools {
@@ -143,7 +144,7 @@
   }
 
   .wbody {
-    padding: 0.25rem 0.5rem;
+    padding: 0 0.75rem 0.25rem;
 
     text-align: justify;
     text-justify: auto;

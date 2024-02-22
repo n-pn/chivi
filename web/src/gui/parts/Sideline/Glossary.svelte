@@ -64,7 +64,7 @@
     focused.length = 0
 
     for (let i = rword.from; i < upto; i++) {
-      const nodes = viewer.querySelectorAll(`[data-b="${i}"]`)
+      const nodes = viewer.querySelectorAll(`[data-f="${i}"]`)
 
       nodes.forEach((x: HTMLElement) => {
         focused.push(x)
@@ -89,8 +89,7 @@
   {#each current as [size, terms]}
     <div class="entry">
       <h3 class="word" lang="zh">
-        <span class="ztext"
-          >{rline.get_ztext(rword.from, rword.from + size)}</span>
+        <span class="ztext">{rline.get_ztext(rword.from, rword.from + size)}</span>
         <span class="hviet" />
       </h3>
 
@@ -112,8 +111,7 @@
       <h5>Chưa có giải nghĩa cho cụ từ hiện tại.</h5>
       <p>
         Gợi ý: <em
-          >Bấm vào chữ tiếng Trung hoặc Hán Việt phía trên để xem giải nghĩa cho
-          từ ở vị trí đó.</em>
+          >Bấm vào chữ tiếng Trung hoặc Hán Việt phía trên để xem giải nghĩa cho từ ở vị trí đó.</em>
       </p>
     </div>
   {/each}
