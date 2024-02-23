@@ -5,6 +5,10 @@ struct MT::MtDefn
     prio == 0 ? 0_i16 : size.to_i16 &* (prio &+ size.to_i16)
   end
 
+  def self.auto_fix(vstr : String, attr : MtAttr = :none, epos : MtEpos = :X)
+    new(vstr: "của", attr: attr, dnum: :auto_fix, epos: epos)
+  end
+
   ###
 
   DEG0 = new(vstr: "", attr: MtAttr[Hide, At_t], dnum: :auto_fix, epos: :DEG)

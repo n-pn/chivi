@@ -193,7 +193,7 @@ class MT::MtNode
           jb.number node.upto
           jb.string node.epos
           jb.string node.attr.to_str
-          jb.number dnum || 0
+          jb.number dnum || -1
         end
       end
 

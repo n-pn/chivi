@@ -1,5 +1,5 @@
 require "../../base/*"
-require "../../data/pg_pair"
+require "../../data/sq_pair"
 require "./mt_node"
 
 class MT::PairDict
@@ -21,13 +21,13 @@ class MT::PairDict
   def initialize(@dname : String)
   end
 
-  def add!(data : PgPair)
+  def add!(data : SqPair)
     hash = @hash[data.a_key] ||= {} of String => Item
     hash[data.b_key] = Item.new(data.a_vstr, data.a_attr, data.b_vstr, data.b_attr)
   end
 
   def load_db3!(dname = @dname)
-    PgPair.fetch_each(dname) { |zv_pair| add!(zv_pair) }
+    SqPair.fetch_each(dname) { |zv_pair| add!(zv_pair) }
     self
   end
 
@@ -37,7 +37,7 @@ class MT::PairDict
 
     File.each_line(db_path) do |line|
       cols = line.split('\t')
-      add!(PgPair.new(cols)) if cols.size > 2
+      add!(SqPair.new(cols)) if cols.size > 2
     end
 
     self

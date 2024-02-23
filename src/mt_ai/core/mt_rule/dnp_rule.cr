@@ -9,12 +9,10 @@ class MT::AiCore
     return unless tail.zstr == "的"
 
     case
-    when head.epos.noun?
+    when head.epos.noun? || head.epos.pn?
       head = head.inner_tail
-      is_jj = !head.epos.noun? || head.attr.any?(MtAttr[Ndes, Ntmp])
-      tail.body = is_jj ? MtDefn::DEG0 : MtDefn::DEG1
-    when head.epos.pn? && (head.attr.nper? || head.attr.nloc?)
-      tail.body = MtDefn::DEG1
+      is_modi = head.attr.any?(MtAttr[Ndes, Ntmp]) || !(head.epos.noun? || head.epos.pn?)
+      tail.body = is_modi ? MtDefn::DEG0 : MtDefn::DEG1
     when head.epos.ip? && dnp_head_is_sv_ip?(head.body)
       tail.body = MtDefn::DEG2
     when head.attr.at_h?

@@ -42,7 +42,7 @@ class MT::AiCore
     return nil unless vv_node
 
     if vv_node.epos.vnv?
-      # TODO: split vnv
+      vv_node = split_vnv!(vv_node, vv_node.body, vp_body)
     end
 
     while last = preps.last?
@@ -103,6 +103,7 @@ class MT::AiCore
 
   def fix_p_v_pair!(pp_node : MtNode, vv_node : MtNode) : Nil
     return unless p_node = pp_node.find_by_epos(:P)
+
     PairDict.p_v_pair.fix_if_match!(p_node, vv_node)
     pp_node.attr |= :At_t if p_node.attr.at_t?
   end

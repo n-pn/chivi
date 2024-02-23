@@ -41,17 +41,21 @@ class MT::AiCore
     ad_list = [] of MtNode
     cp_node = vp_body.pop
 
-    while vp_body.first.epos.advb?
+    while vp_body.first?.try(&.epos.advb?)
       ad_list << vp_body.shift
     end
 
     at_tail = ad_list.size
 
-    while vp_body.last.epos.advb?
+    while vp_body.last?.try(&.epos.advb?)
       ad_list.insert(at_tail, vp_body.pop)
     end
 
-    vp_head = vp_body.first.inner_head
+    unless vp_head = vp_body.first?.try(&.inner_head)
+      ad_list.insert(at_tail, cp_node)
+      vp_node.body = ad_list
+      return vp_node
+    end
 
     unless fix_pair_body!(CMP_PAIR, cp_node, vp_head)
       fix_term_body!(CMP_WORD, cp_node)
@@ -68,6 +72,6 @@ class MT::AiCore
 
     vp_node.body = vp_body
     vp_node.attr |= :at_t
-    return vp_node
+    vp_node
   end
 end

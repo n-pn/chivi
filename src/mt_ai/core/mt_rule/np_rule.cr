@@ -8,6 +8,12 @@ class MT::AiCore
     new_body = [] of MtNode
     _pos = np_body.size &- 1
 
+    if np_body.last.zstr == "自己"
+      pn_node = np_body.pop
+      np_node.body = "chính"
+      _pos &-= 1
+    end
+
     while _pos >= 0
       node = np_body.unsafe_fetch(_pos)
       _pos &-= 1
@@ -30,7 +36,11 @@ class MT::AiCore
       np_node.attr |= new_body.first.attr
     end
 
-    np_node
+    return np_node unless pn_node
+
+    init_pair_node(head: pn_node, tail: np_node, epos: np_node.epos, attr: np_node.attr) do
+      MtPair.new(pn_node, np_node, flip: true)
+    end
   end
 
   # def fix_np_pair!(body : MtPair)
@@ -83,11 +93,26 @@ class MT::AiCore
     {nn_node, _pos}
   end
 
+  MAP_PN_PAIR = {
+    "自己" => "của mình",
+    "你"  => "của ngươi",
+  }
+
   private def init_nn_nn_pair(head : MtNode, tail : MtNode, attr : MtAttr)
     epos = head.epos.nr? && tail.attr.sufx? ? head.epos : MtEpos::NN
 
     init_pair_node(head: head, tail: tail, epos: epos, attr: attr) do
-      if !head.attr.ndes? && (epos.nr? || head.attr.nper?)
+      inner_head = head.inner_head
+
+      if head.attr.ndes?
+        flip = true
+      elsif inner_head.epos.pn?
+        if vstr = MAP_PN_PAIR[inner_head.zstr]?
+          inner_head.body = vstr
+        end
+
+        flip = !inner_head.attr.at_h?
+      elsif epos.nr? && head.attr.nper?
         tail.epos = MtEpos::NH
 
         if defn = @mt_dict.get_defn?(tail.zstr, :NH, false)
@@ -124,8 +149,7 @@ class MT::AiCore
         flip = !node.attr.at_h?
         np_node = init_pair_node(head: node, tail: np_node, epos: :NP, attr: attr, flip: flip)
       when .pn?
-        at_h = pron_at_head?(pn_node: node, np_node: np_node)
-        np_node = init_pair_node(head: node, tail: np_node, epos: :NP, attr: attr, flip: !at_h)
+        np_node = iniit_pn_np_pair(np_node: np_node, pn_node: node)
       else
         break
       end
@@ -136,7 +160,14 @@ class MT::AiCore
     {np_node, _pos}
   end
 
-  private def pron_at_head?(pn_node : MtNode, np_node : MtNode)
-    true
+  private def iniit_pn_np_pair(np_node : MtNode, pn_node : MtNode)
+    if pn_node.zstr == "自己"
+      pn_node.body = "của mình"
+      flip = true
+    else
+      flip = false
+    end
+
+    init_pair_node(head: pn_node, tail: np_node, epos: :NP, attr: np_node.attr, flip: flip)
   end
 end

@@ -137,18 +137,6 @@
     <button
       type="button"
       class="btn"
-      data-kbd="t"
-      class:_same={more_type == 'trans'}
-      on:click={() => trigger_more('trans')}
-      use:tooltip={'Dịch cụm từ bằng các công cụ dịch'}
-      data-anchor=".vtform">
-      <span>Gợi ý sẵn</span>
-      <SIcon name="caret-down" />
-    </button>
-
-    <button
-      type="button"
-      class="btn"
       data-kbd="y"
       class:_same={more_type == 'names'}
       disabled={tform.cpos[0] != 'N'}
@@ -156,6 +144,18 @@
       use:tooltip={'Dịch tên riêng, viết hoa chữ đầu'}
       data-anchor=".vtform">
       <span>Tên riêng</span>
+      <SIcon name="caret-down" />
+    </button>
+
+    <button
+      type="button"
+      class="btn"
+      data-kbd="t"
+      class:_same={more_type == 'trans'}
+      on:click={() => trigger_more('trans')}
+      use:tooltip={'Dịch cụm từ bằng các công cụ dịch'}
+      data-anchor=".vtform">
+      <span>Gợi ý sẵn</span>
       <SIcon name="caret-down" />
     </button>
 

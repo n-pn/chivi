@@ -45,7 +45,7 @@ export class Viform {
       if (node[3] == rword.cpos || rword.cpos == 'X') {
         cpos = node[3]
         attr = node[4]
-        dnum = node[5]
+        dnum = node[5] || -1
       }
 
       return true
