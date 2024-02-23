@@ -208,6 +208,8 @@ export class Rdpage {
   async load_more(qkind = 'qt_v1', pdict = 'combine') {
     const start = this.track[qkind] || 0
     const total = this.lines.length
+    if (start >= total) total
+
     let new_start = start
 
     let input = ''
@@ -225,6 +227,7 @@ export class Rdpage {
       if (new_start + 5 < total && count > limit) break
     }
 
+    if (!count) return new_start
     console.log({ from: start, upto: new_start, size: count })
 
     const ropts = { pdict, h_sep: start == 0 ? 1 : 0 }

@@ -66,12 +66,11 @@ export const call_qtran = async (
   let vtran: string[] | CV.Mtnode[][] = data.trim().split('\n')
 
   if (type.startsWith('mtl') && otype == 'mtl') {
-    vtran = vtran.map((vline) => {
-      return vline
-        .trim()
-        .split('\t')
-        .map((x) => JSON.parse(x) as CV.Mtnode)
-    })
+    try {
+      vtran = vtran.map((vline) => split_mtl_data(vline.trim()))
+    } catch (ex) {
+      console.log(ex)
+    }
   }
 
   const spent = performance.now() - start
@@ -79,4 +78,8 @@ export const call_qtran = async (
 
   if (!res.ok) return []
   return vtran
+}
+
+function split_mtl_data(vline: string) {
+  return vline.split('\t').map((x) => JSON.parse(x) as CV.Mtnode)
 }
