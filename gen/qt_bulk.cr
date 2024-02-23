@@ -1,48 +1,33 @@
-require "compress/zip"
+require "sqlite3"
 require "../src/mt_v1/core/m1_core"
 
-def extract_zip(sname, sn_id, fname)
-  zip_path = "/2tb/zroot/ztext/#{sname}/#{sn_id}.zip"
+def extract_txt(sname, sn_id, fname)
+  db3_path = "/2tb/zroot/wn_db/#{sname}/#{sn_id}-zdata.v1.db3"
   out_path = "/2tb/qtran/#{fname}-#{sname}-#{sn_id}"
 
   Dir.mkdir_p(out_path)
+  count = 0
 
-  Compress::Zip::File.open(zip_path) do |zip|
-    input = zip.entries.map do |entry|
-      ch_no = File.basename(entry.filename, ".zh").to_i
-      {ch_no, entry}
+  DB.open("sqlite3:#{db3_path}?immutable=1") do |db|
+    db.query_each "select ch_no, ztext, chdiv from czdata order by ch_no asc" do |rs|
+      ch_no, ztext, chdiv = rs.read(Int32, String, String)
+      count += ztext.size
+      ztext = "［#{chdiv}］#{ztext}" unless chdiv.empty? || chdiv == "正文"
+      File.write("#{out_path}/#{ch_no}.raw.txt", ztext)
     end
-
-    input.sort_by!(&.[0])
-    count = 0
-
-    input.each do |ch_no, entry|
-      raw_data = entry.open(&.gets_to_end)
-      count += raw_data.size
-
-      if raw_data.starts_with?("///")
-        lines = raw_data.lines
-        chdiv = lines.shift.lstrip('/').strip
-        raw_data = lines.join('\n')
-        raw_data = "［#{chdiv}］#{raw_data}" unless chdiv.empty? || chdiv == "正文"
-      end
-
-      File.write("#{out_path}/#{ch_no // 10}.raw.txt", raw_data)
-    end
-
-    size = count // 100000 * 100000
-    puts "#{fname}: #{size}"
-
-    {out_path, size}
   end
+
+  size = count // 100000 * 100000
+  puts "#{fname}: #{size}"
+
+  {out_path, size}
 end
 
 def call_qt(inp_dir, wndic = "combine")
   wn_id = wndic.starts_with?("wn") ? wndic[2..].to_i : 0
-  engine = M1::MtCore.init(wn_id)
+  engine = M1::MtCore.new(wn_id)
 
   output = [] of String
-
   inputs = Dir.glob(inp_dir + "/*.raw.txt")
 
   inputs.sort_by! do |file|
@@ -96,11 +81,12 @@ inputs = [
   # {"@Kak31", 659, "ngoc-dich-bach-ma", "qt_v1", "wn106581"},
   # {"@Kak31", 805, "huyen-mi-kiem", "qt_v1", "wn110743"},
   # {"@Numeron", 1314, "nga-gia-nuong-tu-bat-thi-yeu", "qt_v1", "wn1314"},
-  {"@Kak31", 1626, "ma-mon-yeu-nu", "qt_v1", "wn123863"},
+  # {"@Kak31", 1626, "ma-mon-yeu-nu", "qt_v1", "wn123863"},
+  {"@Nipin", 1641, "tuyet-the-vo-song", "qt_v1", "wn15542"},
 ]
 
 output = inputs.map do |sname, sn_id, fname, mtype, margs|
-  out_path, count = extract_zip(sname, sn_id, fname)
+  out_path, count = extract_txt(sname, sn_id, fname)
   {out_path, count, mtype, margs}
 end
 

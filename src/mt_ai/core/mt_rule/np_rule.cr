@@ -120,7 +120,7 @@ class MT::AiCore
         np_node = init_dp_np_pair(np_node: np_node, dp_node: node)
       when .qp?, .clp?, .cd?
         np_node = init_qp_np_pair(np_node: np_node, qp_node: node)
-      when .adjp?, .dnp?
+      when .adjt?, .dnp?
         flip = !node.attr.at_h?
         np_node = init_pair_node(head: node, tail: np_node, epos: :NP, attr: attr, flip: flip)
       when .pn?

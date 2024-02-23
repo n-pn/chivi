@@ -9,6 +9,14 @@ class MT::AiCore
 
   # ameba:disable Metrics/CyclomaticComplexity
   def fix_vp_node!(vp_node : MtNode, vp_body : Array(MtNode)) : MtNode
+    if vp_body.last.zstr.in?("似的", "一样", "一般", "般")
+      return fix_cmp_type_1!(vp_node, vp_body)
+    end
+
+    fix_vp_body!(vp_body) || vp_node
+  end
+
+  def fix_vp_body!(vp_body : Array(MtNode)) : MtNode?
     pos, max = 0, vp_body.size
     preps = [] of MtNode
 
@@ -31,7 +39,7 @@ class MT::AiCore
       end
     end
 
-    return vp_node unless vv_node
+    return nil unless vv_node
 
     if vv_node.epos.vnv?
       # TODO: split vnv

@@ -33,7 +33,7 @@
     <div class="links">
       <span class="xstat">
         <span class="-text"><SIcon name="edit" /></span>
-        <a class="-data _link" href="/rm?by={author}">{author}</a>
+        <a class="-data _link" href="/up?by={author}">{author}</a>
       </span>
     </div>
 
@@ -87,13 +87,7 @@
 
     font-style: normal;
 
-    @include bps(
-      font-size,
-      rem(14px),
-      $pl: rem(15px),
-      $ts: rem(16px),
-      $tm: rem(17px)
-    );
+    @include bps(font-size, rem(14px), $pl: rem(15px), $ts: rem(16px), $tm: rem(17px));
   }
 
   .stats {
@@ -103,13 +97,7 @@
     line-height: 1em;
     padding: 0.25em;
 
-    @include bps(
-      font-size,
-      rem(13px),
-      $pl: rem(14px),
-      $ts: rem(15px),
-      $tm: rem(16px)
-    );
+    @include bps(font-size, rem(13px), $pl: rem(14px), $ts: rem(15px), $tm: rem(16px));
   }
 
   .xstat {

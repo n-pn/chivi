@@ -16,7 +16,7 @@ class CV::UpriviCtrl < CV::BaseCtrl
     spawn _log_action("upgrade-privi", form)
 
     vuser = form.do_upgrade!(_vu_id)
-    save_current_user!(vuser)
+    self.save_current_user!(vuser)
 
     uquota = Uquota.load(self._vu_id, self.client_ip)
     uquota.set_privi_bonus!(vuser.privi)

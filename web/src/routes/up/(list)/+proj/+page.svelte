@@ -24,7 +24,7 @@
   let in_qt = 'mtl_2'
 
   const tl_btitle = async () => {
-    const href = `/_sp/qtran/${bt_qt}?zh=${uform}&pd=wn${uform.wn_id}`
+    const href = `/_sp/qtran/${bt_qt}?zh=${uform.zname}&pd=wn${uform.wn_id}`
     const text = await fetch_text(href)
     uform.vname = titleize(text.trim())
   }

@@ -92,7 +92,7 @@ class MT::MtNode
   def inner_head
     case body = @body
     in MtDefn then self
-    in MtNode then body
+    in MtNode then body.inner_head
     in MtPair then body.head.inner_head
     in Array  then body.first.inner_head
     end
@@ -101,7 +101,7 @@ class MT::MtNode
   def inner_tail
     case body = @body
     in MtDefn then self
-    in MtNode then body
+    in MtNode then body.inner_tail
     in MtPair then body.tail.inner_tail
     in Array  then body.last.inner_tail
     end

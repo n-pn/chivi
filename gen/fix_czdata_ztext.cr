@@ -24,30 +24,9 @@ end
 
 def fix_ztext(input : String)
   return "" if input.empty?
-
-  String.build(input.bytesize) do |io|
-    input.split(/([a-zA-Z0-9\s\.·,!?;:\(\)\[\]]+)/) do |frag|
-      # keep it is literal
-      if keep_format?(frag)
-        io << frag
-        next
-      end
-
-      # replace "..." with '…'
-      if frag =~ /^\.{2,}/
-        (frag.size / 3).round.to_i.times { io << '…' }
-        next
-      end
-
-      frag.each_char do |char|
-        if idx = HALF.index(char)
-          io << FULL[idx]
-        else
-          io << char
-        end
-      end
-    end
-  end
+  input.gsub("。。。", '…')
+    .gsub(/(?<=\d)。(?=[\d|\s])/, '.')
+    .gsub(/(?<=\p{Han})\./, '。')
 end
 
 class Czdata
@@ -69,11 +48,20 @@ class Czdata
   end
 
   def fix_zdata!
-    @ztext = fix_ztext(@ztext)
+    new_ztext = fix_ztext(@ztext)
+    new_title = fix_ztext(@title)
+    new_chdiv = fix_ztext(@chdiv)
+
+    return false unless new_ztext != ztext || new_title != title || new_chdiv != chdiv
+
+    @ztext = new_ztext
+    @title = new_title
+    @chdiv = new_chdiv
+
     @zsize = @ztext.size
     @cksum = HashUtil.fnv_1a(@ztext).unsafe_as(Int32) unless @zsize == 0
-    @title = fix_ztext(@title)
-    @chdiv = fix_ztext(@chdiv)
+
+    true
   end
 
   SAVE_SQL = <<-SQL
@@ -100,19 +88,20 @@ def fix_zdata(db_path : String, label = "-/-")
   chap_avail = 0
   word_count = 0
 
-  inputs.each do |zdata|
-    zdata.fix_zdata!
-    next if zdata.zsize == 0
-
-    chap_avail &+= 1
+  inputs.select! do |zdata|
+    next false unless zdata.fix_zdata!
     word_count &+= zdata.zsize
+    chap_avail &+= 1 unless zdata.zsize == 0
+    next true
   end
 
-  DB.open("sqlite3:#{db_path}?synchronous=normal&journal_mode=WAL") do |db|
-    db.exec "alter table czdata add column cksum integer not null default 0" rescue nil
-    db.exec "begin"
-    inputs.each(&.persist!(db))
-    db.exec "commit"
+  unless inputs.empty?
+    DB.open("sqlite3:#{db_path}?synchronous=normal&journal_mode=WAL") do |db|
+      db.exec "alter table czdata add column cksum integer not null default 0" rescue nil
+      db.exec "begin"
+      inputs.each(&.persist!(db))
+      db.exec "commit"
+    end
   end
 
   puts "<#{label}> #{db_path}: #{inputs.size} chaps corrected, db compressed"
@@ -131,8 +120,8 @@ end
 snames.each do |sname|
   files = Dir.glob("#{INP_DIR}/#{sname}/*.v1.db3")
   files.each_with_index(1) do |db_path, idx|
-    zst_path = db_path + ".zst"
-    next if File.file?(zst_path)
+    # zst_path = db_path + ".zst"
+    # next if File.file?(zst_path)
 
     chap_total, chap_avail, word_count = fix_zdata(db_path, "#{idx}/#{files.size}")
 
@@ -148,6 +137,7 @@ snames.each do |sname|
     # cctx = Zstd::Compress::Context.new(level: 3)
     # ibuf = File.read(db_path).to_slice
     # File.write(zst_path, cctx.compress(ibuf))
+
 
   rescue ex
     Log.error(exception: ex) { db_path }

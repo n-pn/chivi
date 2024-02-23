@@ -16,7 +16,7 @@ class Uquota
   field quota_limit : Int64 = 0, auto: true
   field quota_using : Int64 = 0
 
-  field mtime : Int64 = Time.utc.to_unix
+  field mtime : Int64 = 0_i64
 
   def initialize(@vu_id, @idate = Uquota.gen_idate)
   end
@@ -39,11 +39,11 @@ class Uquota
     values ($1, $2, $3, $4)
     on conflict (vu_id, idate) do update set
       mtime = excluded.mtime,
-      privi_bonus = uquotas.privi_bonus
+      privi_bonus = excluded.privi_bonus
     returning quota_limit
   SQL
 
-  def set_privi_bonus!(privi : Int32)
+  def set_privi_bonus!(privi : Int32, @mtime = Time.utc.to_unix)
     @privi_bonus = privi >= 0 ? 100_000_i64 * 2 ** privi : 50_000_i64
     @quota_limit = @@db.query_one ADD_PRIVI_SQL, @vu_id, @idate, @mtime, @privi_bonus, as: Int64
   end
@@ -74,6 +74,7 @@ class Uquota
     @karma_bonus, @quota_limit = @@db.query_one ADD_KARMA_SQL, @vu_id, @idate, @mtime, bonus, as: {Int64, Int64}
   end
 
+  @[AlwaysInline]
   def self.gen_idate(time = Time.local)
     time.year * 10000 + time.month * 100 + time.day
   end
@@ -83,8 +84,9 @@ class Uquota
     @@db.query_one? query, vu_id, idate, as: self
   end
 
+  @[AlwaysInline]
   def self.load(vu_id : Int32, vu_ip : String, idate = gen_idate)
-    quota = self.load(vu_id == 0 ? guest_id(vu_ip) : vu_id, idate: idate)
+    self.load(vu_id == 0 ? guest_id(vu_ip) : vu_id, idate: idate)
   end
 
   def self.load(vu_id : Int32, idate = gen_idate)

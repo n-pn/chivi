@@ -3,7 +3,7 @@ UPDATE
 SET
   privi_bonus = 50000
 WHERE
-  idate = 20240221
+  idate = 20240223
   AND vu_id < - 1;
 
 UPDATE
@@ -11,7 +11,7 @@ UPDATE
 SET
   privi_bonus = 100000
 WHERE
-  idate = 20240221
+  idate = 20240223
   AND vu_id IN (
     SELECT
       id
@@ -25,7 +25,7 @@ UPDATE
 SET
   privi_bonus = 200000
 WHERE
-  idate = 20240221
+  idate = 20240223
   AND vu_id IN (
     SELECT
       id
@@ -39,7 +39,7 @@ UPDATE
 SET
   privi_bonus = 400000
 WHERE
-  idate = 20240221
+  idate = 20240223
   AND vu_id IN (
     SELECT
       id
@@ -53,7 +53,7 @@ UPDATE
 SET
   privi_bonus = 800000
 WHERE
-  idate = 20240221
+  idate = 20240223
   AND vu_id IN (
     SELECT
       id
@@ -67,7 +67,7 @@ UPDATE
 SET
   privi_bonus = 1600000
 WHERE
-  idate = 20240221
+  idate = 20240223
   AND vu_id IN (
     SELECT
       id
@@ -81,7 +81,7 @@ UPDATE
 SET
   privi_bonus = 3200000
 WHERE
-  idate = 20240221
+  idate = 20240223
   AND vu_id IN (
     SELECT
       id

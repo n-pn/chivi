@@ -90,6 +90,11 @@ enum MT::MtEpos : Int8
   end
 
   @[AlwaysInline]
+  def advb?
+    self.in?(AD, ADVP)
+  end
+
+  @[AlwaysInline]
   def is?(epos : self)
     self.value == epos.value
   end
