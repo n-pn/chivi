@@ -33,7 +33,7 @@ class MT::AiTranCtrl < AC::Base
     ai_mt = udict.empty? ? AiCore.load(pdict) : AiCore.load(pdict, udict)
 
     cv_mtime = TimeUtil.cv_mtime
-    min_time = {0, cv_mtime &- 20160, cv_mtime &- 2}.fetch(regen, 0)
+    min_time = {0, cv_mtime &- 20160, cv_mtime &+ 1}.fetch(regen, 0)
 
     mcons = MCache.find_con!(texts, ver: qtype[-1].to_i16, min_time: min_time)
     mcons.each_with_index do |cdata, c_id|

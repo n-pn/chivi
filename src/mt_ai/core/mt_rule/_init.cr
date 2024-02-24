@@ -25,7 +25,7 @@ class MT::AiCore
       node = fix_np_node!(node, body)
     when epos.vp?
       node = fix_vp_node!(node, body)
-    when epos.ip?
+    when epos.ip?, epos.cp?
       node = fix_ip_node!(node)
     when body.is_a?(MtPair)
       fix_mt_pair!(node, body)

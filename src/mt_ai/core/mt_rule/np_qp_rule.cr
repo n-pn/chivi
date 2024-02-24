@@ -3,13 +3,14 @@
 class MT::AiCore
   private def init_qp_np_pair(np_node : MtNode, qp_node : MtNode)
     init_pair_node(head: qp_node, tail: np_node, epos: :NP, attr: np_node.attr) do
-      case qp_body = qp_node.body
-      when MtPair
+      m_node = qp_node.find_by_epos(:M) || qp_node
+      PairDict.m_n_pair.fix_if_match!(m_node, np_node)
+
+      if qp_body = qp_node.body.as?(MtPair)
         np_node = init_qp_np_pair(np_node, qp_body.tail)
         qp_node = qp_body.head
       end
 
-      PairDict.m_n_pair.fix_if_match!(qp_node, np_node)
       MtPair.new(qp_node, np_node, flip: qp_node.epos.od? || qp_node.attr.at_t?)
     end
   end

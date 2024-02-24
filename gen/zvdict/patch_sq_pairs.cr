@@ -3,7 +3,7 @@ ENV["MT_DIR"] ||= "/2tb/app.chivi/var/mtdic"
 require "../../src/mt_ai/data/sq_pair"
 
 def import(tsv_path : String)
-  dname = File.basename(tsv_path, ".tsv")
+  dname = File.basename(tsv_path, "_pair.tsv")
   items = File.read_lines(tsv_path).reject!(&.blank?).map do |line|
     MT::SqPair.new(dname, line.split('\t'))
   end

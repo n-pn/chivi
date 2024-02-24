@@ -182,7 +182,9 @@ class MT::AiCore
 
   private def init_vp_ip_pair(vp_node, ip_node, vv_node)
     init_pair_node(vp_node, ip_node, epos: :VP, attr: :none) do
-      unless PairDict.v_v_pair.fix_if_match!(vv_node, ip_node)
+      ip_head = ip_node.inner_head
+
+      unless PairDict.v_v_pair.fix_if_match!(vv_node, ip_node) || PairDict.v_v_pair.fix_if_match!(vv_node, ip_head)
         case vv_node.zstr
         when "想"
           vv_node.body = "muốn"

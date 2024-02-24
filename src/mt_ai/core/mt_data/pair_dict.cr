@@ -53,13 +53,13 @@ class MT::PairDict
     b_list.each { |b_zstr| entry[b_zstr]?.try { |x| return x } }
   end
 
-  def fix_if_match!(a_node : MtNode, b_node : MtNode, b_stem = b_node.zstr) : Bool
+  def fix_if_match!(a_node : MtNode, b_node : MtNode, b_zstr = b_node.zstr) : Bool
     return false unless entry = @hash[a_node.zstr]?
 
-    if b_stem.size > 1
-      b_list = {b_stem, "*#{b_stem[-1]}", "#{b_stem[0]}*", "*"}
+    if b_zstr.size > 1
+      b_list = {b_zstr, "*#{b_zstr[-1]}", "#{b_zstr[0]}*", "*"}
     else
-      b_list = {b_stem, "*"}
+      b_list = {b_zstr, "*"}
     end
 
     b_list.each do |b_zstr|
@@ -71,7 +71,7 @@ class MT::PairDict
       end
 
       if b_vstr = found.b_vstr
-        a_node.body = b_vstr if b_zstr == b_node.zstr
+        b_node.body = b_vstr if b_zstr == b_node.zstr
       end
 
       if b_attr = found.b_attr

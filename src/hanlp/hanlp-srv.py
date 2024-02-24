@@ -144,6 +144,15 @@ def combine_term():
 
     return zstr
 
+@app.route("/remove_term", methods=['GET'])
+def remove_term():
+    zstr = request.args.get('zstr')
+
+    DICT_FORCE[zstr] = None
+    DICT_COMBINE[zstr] = None
+
+    return zstr
+
 def read_txt_file(inp_path, encoding='UTF-8'):
     with open(inp_path, 'r', encoding=encoding) as inp_file:
         return inp_file.read().split('\n')
