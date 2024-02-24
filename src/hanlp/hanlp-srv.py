@@ -9,10 +9,10 @@ import hanlp, torch
 from flask import Flask, request
 from hanlp_trie import DictInterface, TrieDict
 
-COMBINE_FILE = '/app/hanlp/dict-combine.tsv'
+COMBINE_FILE = '/2tb/var.hanlp/dict-combine.tsv'
 DICT_COMBINE = TrieDict()
 
-FORCE_FILE = '/app/hanlp/dict-force.tsv'
+FORCE_FILE = '/2tb/var.hanlp/dict-force.tsv'
 DICT_FORCE = TrieDict()
 
 TASKS_CACHE = {}
@@ -113,27 +113,66 @@ def mtl_from_toks(kind):
 
     return mtl_data.to_json()
 
-@app.route("/force_term", methods=['GET'])
-def force_term(key, val):
-    with open(FORCE_FILE, 'a', encoding='UTF-8') as out_file:
-        out_file.write(key + '\t' + val + '\n')
+def add_force_term(key, val):
+    val_arr = val.split('|')
 
-    SAVED_TERMS.add(word)
-    return key
+    if len(val_arr) > 1:
+        val = val_arr
+
+    DICT_FORCE[key] = val
+    return val
+
+@app.route("/force_term", methods=['GET'])
+def force_term():
+    zstr = request.args.get('zstr')
+    wseg = request.args.get('wseg')
+
+    with open(FORCE_FILE, 'a', encoding='UTF-8') as out_file:
+        out_file.write(zstr + '\t' + wseg + '\n')
+
+    return add_force_term(zstr, wseg)
 
 @app.route("/combine_term", methods=['GET'])
-def combine_term(word):
-    with open(CONBINE_FILE, 'a', encoding='UTF-8') as out_file:
-        out_file.write(word + '\n')
+def combine_term():
+    zstr = request.args.get('zstr')
 
-    SAVED_TERMS.add(word)
-    DICT_COMBINE[word] = word
+    with open(COMBINE_FILE, 'a', encoding='UTF-8') as out_file:
+        out_file.write(zstr + '\n')
 
-    return word
+    SAVED_TERMS.add(zstr)
+    DICT_COMBINE[zstr] = zstr
 
+    return zstr
+
+def read_txt_file(inp_path, encoding='UTF-8'):
+    with open(inp_path, 'r', encoding=encoding) as inp_file:
+        return inp_file.read().split('\n')
+
+def read_combine_dict():
+    lines = read_txt_file(COMBINE_FILE)
+
+    for line in lines:
+        if line.isspace() or line == '':
+            continue
+
+        SAVED_TERMS.add(line)
+        DICT_COMBINE[line] = line
+
+def read_force_dict():
+    lines = read_txt_file(FORCE_FILE)
+
+    for line in lines:
+        rows = line.split('\t')
+
+        if line.isspace() or len(rows) < 2:
+            continue
+
+        add_force_term(rows[0], rows[1])
 
 ## start app
 if __name__ == '__main__':
+    read_force_dict()
+    read_combine_dict()
     # app.run(debug=True, port=5556)
 
     from waitress import serve

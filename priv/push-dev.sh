@@ -11,6 +11,9 @@ do
   then
     cd web && pnpm run build && rsync -ai --no-p build/ $OUT/web/
     cd ..
+  elif [[ $target == "hanlp" ]]
+  then
+    cp -f src/hanlp/hanlp-srv.py $OUT/bin
   else
     crystal build -s --release --mcpu native src/$target/$target-srv.cr -o $OUT/bin/$target-srv
   fi

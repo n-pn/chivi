@@ -105,6 +105,11 @@ class MT::AiCore
   def fix_p_v_pair!(pp_node : MtNode, vv_node : MtNode) : Nil
     return unless p_node = pp_node.find_by_epos(:P)
 
+    nn_node = pp_node.inner_tail
+    unless PairDict.v_n_pair.fix_if_match!(p_node, nn_node)
+      # TODO
+    end
+
     PairDict.p_v_pair.fix_if_match!(p_node, vv_node)
     pp_node.attr |= :At_t if p_node.attr.at_t?
   end

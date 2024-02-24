@@ -115,6 +115,8 @@
       zfrom: rword.from,
     })
 
+    if (tform.cpos == 'NR') add_wseg(tform.zstr, tform.zstr)
+
     const res = await fetch(action, { body: body, method, headers })
 
     if (!res.ok) {
@@ -123,6 +125,12 @@
       on_close(tform.zstr)
       ctrl.hide()
     }
+  }
+
+  async function add_wseg(zstr: string, wseg: string) {
+    const body = JSON.stringify({ zstr, wseg, pdict: ropts.pdict, srank: 1 })
+    const resp = await fetch('/_sp/wseg', { body, headers, method })
+    if (!resp.ok) console.log(await resp.text())
   }
 </script>
 

@@ -17,7 +17,7 @@ class MT::AiCore
 
   def fix_lcp_pair_with_nt!(body, head, tail)
     case tail.zstr
-    when "后"
+    when "后", "之后"
       body.flip = false
       tail.body = "sau"
     else
