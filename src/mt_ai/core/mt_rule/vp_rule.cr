@@ -43,6 +43,7 @@ class MT::AiCore
 
     if vv_node.epos.vnv?
       vv_node = split_vnv!(vv_node, vv_node.body, vp_body)
+      max = vp_body.size
     end
 
     while last = preps.last?
@@ -109,20 +110,22 @@ class MT::AiCore
   end
 
   def fix_d_v_pair!(ad_node : MtNode, vv_node : MtNode) : Nil
-    case ad_node.zstr
-    when "好"
-      ad_node.body = vv_node.epos.is?(:VA) ? "thật" : "dễ"
-    when "多"
-      if vv_node.epos.is?(:VA)
-        ad_node.body = "bao"
-        ad_node.attr = :at_h
-      else
-        ad_node.body = "nhiều"
-        ad_node.attr = :at_t
+    unless PairDict.d_v_pair.fix_if_match!(ad_node, vv_node)
+      vv_head = vv_node.inner_head
+
+      case ad_node.zstr
+      when "好"
+        ad_node.body = vv_head.epos.adjt? ? "thật" : "dễ"
+      when "多"
+        if vv_node.epos.adjt?
+          ad_node.body = "bao"
+          ad_node.attr = :at_h
+        else
+          ad_node.body = "nhiều"
+          ad_node.attr = :at_t
+        end
       end
     end
-
-    PairDict.d_v_pair.fix_if_match!(ad_node, vv_node)
   end
 
   private def init_vp_as_pair(vp_node, as_node, hide_as_node : Bool = false)

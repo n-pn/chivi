@@ -89,20 +89,20 @@ class MT::MCache
 
   SCAN_BY_STR_SQL = <<-SQL
     select * from mcache
-    where rid = any ($1) and ver = $2
+    where rid = any ($1) and ver = $2 and mtime >= $3
     order by mtime desc
     SQL
 
-  def self.find_all(inp : Array(String), ver : Int16 = 1_i16)
+  def self.find_all(inp : Array(String), ver : Int16 = 1_i16, min_time : Int32 = 0)
     rids = inp.map { |str| gen_rid(str) }
-    hash = @@db.query_all(SCAN_BY_STR_SQL, rids, ver, as: self).group_by(&.rid)
+    hash = @@db.query_all(SCAN_BY_STR_SQL, rids, ver, min_time, as: self).group_by(&.rid)
 
     rids.map { |rid| hash[rid]?.try(&.first) }
   end
 
-  def self.find_all(inp : Array(Array(String)), ver : Int16 = 1_i16)
+  def self.find_all(inp : Array(Array(String)), ver : Int16 = 1_i16, min_time : Int32 = 0)
     rids = inp.map { |x| gen_rid(x) }
-    hash = @@db.query_all(SCAN_BY_STR_SQL, rids, ver, as: self).group_by(&.rid)
+    hash = @@db.query_all(SCAN_BY_STR_SQL, rids, ver, min_time, as: self).group_by(&.rid)
 
     rids.map_with_index do |rid, i|
       next unless list = hash[rid]?
@@ -112,17 +112,17 @@ class MT::MCache
 
   SCAN_CON_BY_STR_SQL = <<-SQL
     select rid, con from mcache
-    where rid = any ($1) and ver = $2
+    where rid = any ($1) and ver = $2 and mtime >= $3
     order by mtime desc
     SQL
 
-  def self.find_con!(inp : Array(String), ver : Int16 = 1_i16)
-    inp = inp.map! { |str| CharUtil.canonize(str).tr("　", "") }
+  def self.find_con!(inp : Array(String), ver : Int16 = 1_i16, min_time : Int32 = 0)
+    # inp = inp.map! { |str| CharUtil.canonize(str).tr("　", "") }
 
     rids = inp.map { |str| gen_rid(str) }
     hash = {} of Int64 => RawCon
 
-    @@db.query_each(SCAN_CON_BY_STR_SQL, rids, ver) do |rs|
+    @@db.query_each(SCAN_CON_BY_STR_SQL, rids, ver, min_time) do |rs|
       rid = rs.read(Int64)
       con = RawCon.from_rs(rs)
       hash[rid] ||= con
@@ -157,7 +157,7 @@ class MT::MCache
       entry.con = raw_data.con[idx]
       entry.ner = raw_data.ner[idx]
 
-      entry.pos = raw_data.pos[idx].map { |pos| MtEpos.parse(pos).to_i16 }
+      # entry.pos = raw_data.pos[idx].map { |pos| MtEpos.parse_ctb(pos).to_i16 }
       raw_data.dep[idx]?.try { |dep| entry.dep = dep }
 
       outputs[indexes[idx]] = entry.con

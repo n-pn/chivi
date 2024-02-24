@@ -110,6 +110,11 @@ enum MT::MtEpos : Int8
 
   ###
 
+  @[AlwaysInline]
+  def self.parse_ctb(cpos : String)
+    parse?(cpos) || X
+  end
+
   def self.parse_ctb(cpos : String, zstr : String)
     cpos, _, tags = cpos.partition('-')
     epos = MtEpos.parse?(cpos) || MtEpos::OTH

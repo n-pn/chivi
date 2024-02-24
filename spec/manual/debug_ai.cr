@@ -22,10 +22,16 @@ def debug(text : String, dict = "combine", malg = 2_i8)
 end
 
 text = ARGV[0]? || "“啊呀呀！”大大的伸了一个懒腰之后，尤里西斯的意识完全清醒了。"
-malg = ARGV[1]?.try(&.to_i8?) || 2_i8
+malg = ARGV[1]?.try(&.to_i8?) || 3_i8
 dict = ARGV[2]? || "up1234"
 
-debug(text, dict)
+bases, texts, l_ids = MT::TextCut.split_ztext(text)
+
+texts.each do |sent|
+  print sent
+  debug(sent, dict)
+end
+
 puts "--------------------------------".colorize.dark_gray
 puts "Total time used (including loading dicts): #{(Time.monotonic - time).total_milliseconds.round}ms".colorize.red
 

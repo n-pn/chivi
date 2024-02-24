@@ -55,6 +55,7 @@ export const call_qtran = async (
   if (type == 'gg_zv') return await gtran_text(body)
 
   const { pdict = 'combine', regen = 0, h_sep = 1, l_sep = 0, otype = 'mtl' } = opts
+
   const url = `/_sp/qtran/${type}?pd=${pdict}&rg=${regen}&hs=${h_sep}&ls=${l_sep}&op=${otype}`
 
   const start = performance.now()

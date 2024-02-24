@@ -49,7 +49,7 @@
 
   const load_more = async () => {
     state = 1
-    qtran_count = await rpage.load_more(qkind, ropts.pdict)
+    qtran_count = await rpage.load_more(qkind, ropts.pdict, $config._regen)
     state = 0
   }
 
@@ -77,7 +77,7 @@
 
   const on_term_change = async (ztext = '') => {
     if (!ztext) return
-    await rpage.reload(ztext, ropts.mt_rm, ropts.pdict)
+    await rpage.reload(ztext, ropts.mt_rm, ropts.pdict, $config._regen || 1)
     qtran_lines = qtran_lines
   }
 

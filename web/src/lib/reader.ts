@@ -180,7 +180,7 @@ export class Rdpage {
     this.state['hviet'] = true
   }
 
-  async reload(needle: string, qkind = 'qt_v1', pdict = 'combine') {
+  async reload(needle: string, qkind = 'qt_v1', pdict = 'combine', regen = 1) {
     if (!needle) return
 
     let input = ''
@@ -195,7 +195,7 @@ export class Rdpage {
       }
     }
 
-    const ropts = { pdict, h_sep: l_ids[0] == 0 ? 1 : 0 }
+    const ropts = { pdict, regen, h_sep: l_ids[0] == 0 ? 1 : 0 }
     const lines = await call_qtran(input, qkind, ropts)
 
     for (let i = 0; i < lines.length; i++) {
@@ -205,7 +205,7 @@ export class Rdpage {
     return l_ids
   }
 
-  async load_more(qkind = 'qt_v1', pdict = 'combine') {
+  async load_more(qkind = 'qt_v1', pdict = 'combine', regen = 0) {
     const start = this.track[qkind] || 0
     const total = this.lines.length
     if (start >= total) total
@@ -230,7 +230,7 @@ export class Rdpage {
     if (!count) return new_start
     console.log({ from: start, upto: new_start, size: count })
 
-    const ropts = { pdict, h_sep: start == 0 ? 1 : 0 }
+    const ropts = { pdict, h_sep: start == 0 ? 1 : 0, regen }
     const lines = await call_qtran(input.trim(), qkind, ropts)
 
     for (let i = 0; i < lines.length; i++) {

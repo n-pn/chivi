@@ -37,7 +37,7 @@
     // mode 4
     chdiv_labels: '章节回幕折集卷季',
     // mode 5
-    custom_regex: `^第[\\d零〇一二两三四五六七八九十百千]+[章节回]`,
+    custom_regex: `^第[\\d零〇一二两三四五六七八九十百千]+[章节回幕折集卷季]`,
     // mode 6
     chunk_length: 10000,
   }

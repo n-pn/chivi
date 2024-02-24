@@ -20,8 +20,11 @@ class MT::AiCore
     hd_zstr, md_zstr, tl_zstr = vv_node.zstr.partition(/没|不/)
     return vv_node if md_zstr.empty? || tl_zstr.empty?
 
-    hd_node = MtNode.new(zstr: hd_zstr, body: MtDefn.auto_fix("hay"), epos: :VV, from: vv_node.from)
-    tl_node = MtNode.new(zstr: md_zstr, body: MtDefn.auto_fix("không"), epos: :AD, from: hd_node.upto)
+    hd_body = MtDefn.auto_fix("hay", epos: :VV)
+    hd_node = MtNode.new(zstr: hd_zstr, body: hd_body, epos: :VV, from: vv_node.from)
+
+    hd_body = MtDefn.auto_fix("không", epos: :AD)
+    tl_node = MtNode.new(zstr: md_zstr, body: hd_body, epos: :AD, from: hd_node.upto)
 
     vp_body << hd_node << tl_node
 

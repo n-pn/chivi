@@ -1,16 +1,9 @@
 <script context="module" lang="ts">
   import type { Writable } from 'svelte/store'
-  import { get_dmy } from '$utils/time_utils'
 
   const ftsizes = ['Rất nhỏ', 'Nhỏ vừa', 'Cỡ chuẩn', 'To vừa', 'Rất to']
   const wthemes = ['light', 'warm', 'dark', 'oled']
-  const ftfaces = [
-    'Roboto',
-    'Merriweather',
-    'Nunito Sans',
-    'Lora',
-    'Roboto Slab',
-  ]
+  const ftfaces = ['Roboto', 'Merriweather', 'Nunito Sans', 'Lora', 'Roboto Slab']
 
   // const textlhs = [150, 150, 150, 150]
   const r_modes = [
@@ -27,13 +20,10 @@
 </script>
 
 <script lang="ts">
-  import RdchapList from '$gui/parts/rdmemo/RdchapList.svelte'
   import SIcon from '$gui/atoms/SIcon.svelte'
 
   import { config as data } from '$lib/stores'
   export let _user: Writable<App.CurrentUser>
-
-  $: privi = $_user.privi || -1
 </script>
 
 <hr />
@@ -66,17 +56,11 @@
 <div class="config">
   <span class="label">Cỡ chữ:</span>
   <field-input>
-    <button
-      class="m-btn _sm"
-      on:click={() => ($data.rfsize -= 1)}
-      disabled={$data.rfsize == 1}>
+    <button class="m-btn _sm" on:click={() => ($data.rfsize -= 1)} disabled={$data.rfsize == 1}>
       <SIcon name="minus" />
     </button>
     <field-value>{ftsizes[$data.rfsize - 1]}</field-value>
-    <button
-      class="m-btn _sm"
-      on:click={() => ($data.rfsize += 1)}
-      disabled={$data.rfsize == 5}>
+    <button class="m-btn _sm" on:click={() => ($data.rfsize += 1)} disabled={$data.rfsize == 5}>
       <SIcon name="plus" />
     </button>
   </field-input>
@@ -96,17 +80,11 @@
 <div class="config">
   <span class="label">Giãn dòng:</span>
   <field-input>
-    <button
-      class="m-btn _sm"
-      on:click={() => ($data.textlh -= 10)}
-      disabled={$data.textlh <= 130}>
+    <button class="m-btn _sm" on:click={() => ($data.textlh -= 10)} disabled={$data.textlh <= 130}>
       <SIcon name="minus" />
     </button>
     <field-value>{$data.textlh}%</field-value>
-    <button
-      class="m-btn _sm"
-      on:click={() => ($data.textlh += 10)}
-      disabled={$data.textlh >= 180}>
+    <button class="m-btn _sm" on:click={() => ($data.textlh += 10)} disabled={$data.textlh >= 180}>
       <SIcon name="plus" />
     </button>
   </field-input>
@@ -140,9 +118,7 @@
 </div>
 
 <div class="config">
-  <label
-    class="switch"
-    data-tip="Tự động thanh toán vcoin cho các chương cần thiết mở khóa">
+  <label class="switch" data-tip="Tự động thanh toán vcoin cho các chương cần thiết mở khóa">
     <input type="checkbox" bind:checked={$data.auto_u} />
     <span class="switch-label">Tự động mở khóa chương bằng vcoin:</span>
   </label>

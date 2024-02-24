@@ -19,17 +19,16 @@ interface ConfigData {
 
   rfface: number // reader font face
   rfsize: number // reader font size
-
   textlh: number // reader line height
-  r_mode: number
 
+  r_mode: number
   show_z: boolean
   auto_u: boolean
+
+  _regen: number
 }
 
-export const read_confg = (
-  cookies?: Cookies | Map<string, string>
-): ConfigData => {
+export const read_confg = (cookies?: Cookies | Map<string, string>): ConfigData => {
   cookies ||= new Map<string, string>()
 
   return {
@@ -42,8 +41,9 @@ export const read_confg = (
 
     r_mode: +cookies.get('r_mode') || 0,
     show_z: cookies.get('show_z') == 't',
-
     auto_u: cookies.get('auto_u') == 't',
+
+    _regen: +cookies.get('_regen') || 0,
   }
 }
 

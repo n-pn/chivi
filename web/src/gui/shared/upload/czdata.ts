@@ -233,9 +233,14 @@ export class Cztext {
 
   // split text by custom regular expression
   split_regex(re_str: string) {
-    const regex = new RegExp(re_str)
-    const is_title_fn = (line: string) => regex.test(line)
-    return this.do_split(is_title_fn)
+    try {
+      const regex = new RegExp(re_str)
+      const is_title_fn = (line: string) => regex.test(line)
+      return this.do_split(is_title_fn)
+    } catch (ex) {
+      this.error = ex
+      return []
+    }
   }
 
   do_split(is_title_fn: (line: string) => boolean) {

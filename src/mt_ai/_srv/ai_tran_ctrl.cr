@@ -26,13 +26,16 @@ class MT::AiTranCtrl < AC::Base
   @[AC::Route::POST("/qtran")]
   def qtext(qt qtype : String = "mtl_1", op otype : String = "json",
             pd pdict : String = "combine", ud udict : String = "",
-            hs h_sep : UInt32 = 1_u32, ls l_sep : UInt32 = 0_u32)
+            hs h_sep : UInt32 = 1_u32, rg regen : Int32 = 0)
     # raise "invalid!" unless self.client_ip == "127.0.0.1"
 
     bases, texts, l_ids = TextCut.split_ztext(self._read_body.strip)
     ai_mt = udict.empty? ? AiCore.load(pdict) : AiCore.load(pdict, udict)
 
-    mcons = MCache.find_con!(texts, ver: qtype[-1].to_i16)
+    cv_mtime = TimeUtil.cv_mtime
+    min_time = {0, cv_mtime &- 20160, cv_mtime &- 2}.fetch(regen, 0)
+
+    mcons = MCache.find_con!(texts, ver: qtype[-1].to_i16, min_time: min_time)
     mcons.each_with_index do |cdata, c_id|
       base_node, base_body = bases[l_ids[c_id]]
       curr_node = ai_mt.translate!(cdata, from: base_body.last?.try(&.upto) || 0)

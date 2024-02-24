@@ -6,7 +6,7 @@ struct MT::MtDefn
   end
 
   def self.auto_fix(vstr : String, attr : MtAttr = :none, epos : MtEpos = :X)
-    new(vstr: "của", attr: attr, dnum: :auto_fix, epos: epos)
+    new(vstr: vstr, attr: attr, dnum: :auto_fix, epos: epos)
   end
 
   ###

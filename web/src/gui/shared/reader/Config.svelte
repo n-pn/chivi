@@ -1,13 +1,7 @@
 <script context="module" lang="ts">
   const ftsizes = ['Rất nhỏ', 'Nhỏ vừa', 'Cỡ chuẩn', 'To vừa', 'Rất to']
   const wthemes = ['light', 'warm', 'dark', 'oled']
-  const ftfaces = [
-    'Roboto',
-    'Merriweather',
-    'Nunito Sans',
-    'Lora',
-    'Roboto Slab',
-  ]
+  const ftfaces = ['Roboto', 'Merriweather', 'Nunito Sans', 'Lora', 'Roboto Slab']
 
   const r_modes = [
     ['Thường', 0],
@@ -26,6 +20,9 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Slider from '$gui/molds/Slider.svelte'
   import { config as data } from '$lib/stores/config_stores'
+
+  import { get_user } from '$lib/stores'
+  const _user = get_user()
 
   export let actived = false
 </script>
@@ -65,17 +62,11 @@
   <div class="entry">
     <span class="label">Cỡ chữ:</span>
     <field-input>
-      <button
-        class="m-btn _sm"
-        on:click={() => ($data.rfsize -= 1)}
-        disabled={$data.rfsize == 1}>
+      <button class="m-btn _sm" on:click={() => ($data.rfsize -= 1)} disabled={$data.rfsize == 1}>
         <SIcon name="minus" />
       </button>
       <field-value>{ftsizes[$data.rfsize - 1]}</field-value>
-      <button
-        class="m-btn _sm"
-        on:click={() => ($data.rfsize += 1)}
-        disabled={$data.rfsize == 5}>
+      <button class="m-btn _sm" on:click={() => ($data.rfsize += 1)} disabled={$data.rfsize == 5}>
         <SIcon name="plus" />
       </button>
     </field-input>
@@ -139,13 +130,33 @@
   </div>
 
   <div class="entry">
-    <label
-      class="switch"
-      data-tip="Tự động thanh toán vcoin cho các chương cần thiết mở khóa">
+    <label class="switch" data-tip="Tự động thanh toán vcoin cho các chương cần thiết mở khóa">
       <input type="checkbox" bind:checked={$data.auto_u} />
       <span class="switch-label">Tự động mở khóa chương bằng vcoin:</span>
     </label>
   </div>
+
+  <hr />
+
+  <h4>Tinh chỉnh máy dịch</h4>
+
+  <label class="radio" data-tip="Luôn dùng lại kết quả phân tich ngữ pháp cho máy dịch AI">
+    <input type="radio" bind:group={$data._regen} value={0} />
+    <span>Luôn dùng lại kết quả phân tích có sẵn</span>
+    <SIcon class="u-right" name="privi-0" iset="icons" />
+  </label>
+
+  <label class="radio" data-tip="Bỏ qua kết quả phân tích cũ đã có khả năng quá thời hạn">
+    <input type="radio" bind:group={$data._regen} value={1} disabled={$_user.privi < 2} />
+    <span>Dùng lại nếu thời gian lưu dưới hai tuần</span>
+    <SIcon class="u-right" name="privi-2" iset="icons" />
+  </label>
+
+  <label class="radio" data-tip="Luôn chạy lại công cụ phân tích ngữ pháp cho trải nghiệm tốt nhất">
+    <input type="radio" bind:group={$data._regen} value={2} disabled={$_user.privi < 3} />
+    <span>Luôn chạy công cụ phân tích ngữ pháp</span>
+    <SIcon class="u-right" name="privi-3" iset="icons" />
+  </label>
 </Slider>
 
 <style lang="scss">
@@ -156,9 +167,23 @@
   h4 {
     margin: 0.75rem;
   }
+
   .entry {
     @include flex-cy($gap: 0.5rem);
     margin: 0.75rem;
+  }
+
+  .radio {
+    @include flex-cy($gap: 0.5rem);
+    margin: 0 0.75rem;
+
+    :checked + * {
+      @include fgcolor(primary);
+    }
+
+    :disabled + * {
+      @include fgcolor(neutral, 5);
+    }
   }
 
   .config-hint {
