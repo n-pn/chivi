@@ -2,10 +2,9 @@ import { nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 
-export const load = (async ({ fetch, url, params }) => {
-  const dname = params.name
-  const zform = init_form(url.searchParams)
-  const { a_key, b_key } = zform
+export const load = (async ({ parent, fetch, url, params }) => {
+  const zform = init_form(params.name, url.searchParams)
+  const { dname, a_key, b_key } = zform
 
   if (dname && a_key && b_key) {
     const url = `/_ai/terms/find?dname=${dname}&a_key=${a_key}&b_key=${b_key}`
@@ -19,18 +18,19 @@ export const load = (async ({ fetch, url, params }) => {
     }
   }
 
-  const _meta = {
-    left_nav: [
-      nav_link('/mt/pairs', 'Cặp từ', 'package', { show: 'tm' }),
-      nav_link('+pair', 'Thêm sửa', 'plus', { show: 'pl' }),
-    ],
-  }
+  const { _navs } = await parent()
 
-  return { dname, zform, _meta, _title: 'Thêm cặp từ' }
+  return {
+    dname,
+    zform,
+    _meta: { title: 'Thêm sửa cặp từ' },
+    _navs: [..._navs, { href: url.pathname, text: 'Thêm sửa', icon: 'plus', show: 'pl' }],
+  }
 }) satisfies PageLoad
 
-function init_form(params: URLSearchParams): Partial<CV.Zvpair> {
+function init_form(dname, params: URLSearchParams): Partial<CV.Zvpair> {
   return {
+    dname,
     a_key: params.get('a_key') || '',
     b_key: params.get('b_key') || '',
     a_vstr: '',

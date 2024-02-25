@@ -12,7 +12,6 @@
   import type { PageData } from './$types'
   export let data: PageData
 
-  let dname = data.dname
   let zform = data.zform
 
   let form_stt = ''

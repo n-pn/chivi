@@ -115,12 +115,12 @@ class MT::AiCore
   end
 
   def fix_d_v_pair!(ad_node : MtNode, vv_node : MtNode) : Nil
-    unless PairDict.d_v_pair.fix_if_match!(ad_node, vv_node)
-      vv_head = vv_node.inner_head
+    vv_head = vv_node.inner_head
 
+    unless PairDict.d_v_pair.fix_if_match!(ad_node, vv_node) || PairDict.d_v_pair.fix_if_match!(ad_node, vv_head)
       case ad_node.zstr
       when "好"
-        ad_node.body = vv_head.epos.adjt? ? "thật" : "dễ"
+        ad_node.body = vv_head.epos.adjt? || vv_head.attr.vmod? ? "thật" : "dễ"
       when "多"
         if vv_node.epos.adjt?
           ad_node.body = "bao"

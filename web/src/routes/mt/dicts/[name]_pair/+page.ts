@@ -7,24 +7,15 @@ interface Data extends CV.Paginate {
   start: number
 }
 
-export const load = (async ({ params, fetch, parent, url }) => {
-  const { dinfo } = await parent()
+export const load = (async ({ params, fetch, url }) => {
   const dname = params.name
-
   const search = merge_query(url.searchParams, { dname, lm: 50 })
   const data = await api_get<Data>(`/_ai/zvpairs?${search}`, fetch)
-
   return {
     ...data,
-    dname,
     query: gen_query(url.searchParams),
     _meta: { title: 'Nghĩa cặp từ' },
-    _navs: [
-      { href: '/mt/dicts', text: 'Từ điển', icon: 'package', show: 'ts' },
-
-      { href: url.pathname, text: dinfo.label, icon: 'list', kind: 'title' },
-    ],
-    _alts: [{ href: `+pair`, text: 'Thêm mới', icon: 'plus', show: 'pl' }],
+    _alts: [{ href: `${url.pathname}/+pair`, text: 'Thêm mới', icon: 'plus', show: 'pl' }],
   }
 }) satisfies PageLoad
 

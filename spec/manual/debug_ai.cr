@@ -23,13 +23,13 @@ end
 
 text = ARGV[0]? || "“啊呀呀！”大大的伸了一个懒腰之后，尤里西斯的意识完全清醒了。"
 malg = ARGV[1]?.try(&.to_i8?) || 3_i8
-dict = ARGV[2]? || "up1234"
+dict = ARGV[2]? || "wn33486"
 
 bases, texts, l_ids = MT::TextCut.split_ztext(text)
 
 texts.each do |sent|
-  print sent
-  debug(sent, dict)
+  puts [sent, malg, dict]
+  debug(sent, dict, malg)
 end
 
 puts "--------------------------------".colorize.dark_gray

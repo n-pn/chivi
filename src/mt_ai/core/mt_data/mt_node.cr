@@ -125,6 +125,8 @@ class MT::MtNode
 
   def each_child(& : self ->)
     case body = @body
+    when MtDefn
+      yield self
     when MtNode
       yield body
     when MtPair

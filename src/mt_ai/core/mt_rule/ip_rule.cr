@@ -25,7 +25,7 @@ class MT::AiCore
     vp_tail = vp_node.inner_tail
 
     if vp_tail.zstr == "了"
-      vp_tail.cpos = :SP
+      vp_tail.epos = :SP
       vp_tail.attr = :none
       vp_tail.body = "rồi"
     end
