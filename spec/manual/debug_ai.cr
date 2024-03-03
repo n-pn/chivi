@@ -3,10 +3,10 @@ require "../../src/mt_ai/data/*"
 
 time = Time.monotonic
 
-def debug(text : String, dict = "combine", malg = 2_i8)
-  rcon = MT::MCache.find_con!([text], ver: malg).first
+def debug(ztext : String, m_ver = 2_i8, dname = "combine")
+  rcon = MT::MCache.find_con!([ztext], ver: m_ver).first
 
-  data = MT::AiCore.load(dict).translate!(rcon)
+  data = MT::AiCore.load(dname).translate!(rcon)
 
   puts "--------------------------------".colorize.dark_gray
   puts data.zstr.colorize.cyan
@@ -21,15 +21,13 @@ def debug(text : String, dict = "combine", malg = 2_i8)
   # puts data.to_json.colorize.cyan
 end
 
-text = ARGV[0]? || "“啊呀呀！”大大的伸了一个懒腰之后，尤里西斯的意识完全清醒了。"
-malg = ARGV[1]?.try(&.to_i8?) || 3_i8
-dict = ARGV[2]? || "wn33486"
+ztext = ARGV[0]? || "“啊呀呀！”大大的伸了一个懒腰之后，尤里西斯的意识完全清醒了。"
+m_ver = ARGV[1]?.try(&.to_i8?) || 3_i8
+dname = ARGV[2]? || "wn33486"
 
-bases, texts, l_ids = MT::TextCut.split_ztext(text)
-
-texts.each do |sent|
-  puts [sent, malg, dict]
-  debug(sent, dict, malg)
+MT::TextCut.split_sents(ztext) do |sent|
+  puts [sent, m_ver, dname]
+  debug(sent, m_ver, dname)
 end
 
 puts "--------------------------------".colorize.dark_gray

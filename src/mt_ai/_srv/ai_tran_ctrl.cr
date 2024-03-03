@@ -37,7 +37,7 @@ class MT::AiTranCtrl < AC::Base
 
     mcons = MCache.find_con!(texts, ver: qtype[-1].to_i16, min_time: min_time)
     mcons.each_with_index do |cdata, c_id|
-      base_node, base_body = bases[l_ids[c_id]]
+      _base_node, base_body = bases[l_ids[c_id]]
       curr_node = ai_mt.translate!(cdata, from: base_body.last?.try(&.upto) || 0)
       curr_node.each_child { |node| base_body << node }
     end

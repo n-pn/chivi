@@ -4,13 +4,18 @@ class MT::AiCore
   def split_vnv!(vv_node : MtNode, vv_body : Array(MtNode), vp_body : Array(MtNode)) : MtNode
     return vv_node unless vv_body.size == 3 && vv_body[1].zstr.in?("没", "不")
 
-    vp_body[0].body = "hay"
-    vp_body << vp_body[0] << vp_body[1]
-    fix_vnv_head!(vp_body[2])
+    vv_body[0].body = "hay"
+    vp_body << vv_body[0]
+
+    vv_body[1].body = "không"
+    vp_body << vv_body[1]
+
+    fix_vnv_head!(vv_body[2])
   end
 
   def split_vnv!(vv_node : MtNode, vv_body : MtPair, vp_body : Array(MtNode)) : MtNode
     return vv_node unless vv_body.tail.zstr[0].in?("没", "不")
+
     vv_body.tail.body = "hay không"
     vp_body << vv_body.tail
     fix_vnv_head!(vv_body.head)

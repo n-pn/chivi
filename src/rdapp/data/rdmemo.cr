@@ -105,13 +105,13 @@ class RD::Rdmemo
                    limit : Int32 = 20, offset : Int32 = 0)
     self.get_all(vu_id, limit, offset) do |sql|
       sql << " where vu_id = $1 and rd_id > 0"
+      sql << " and rd_state = #{state}" if state > -1
+
       case stype
       when "wn" then sql << " and sname like '~%'"
       when "up" then sql << " and sname like '@%'"
       when "rm" then sql << " and sname like '!%'"
       end
-
-      sql << " and rd_state = #{state}" if state > -1
 
       case rtype
       when "liked" then sql << " and rd_track > 0"

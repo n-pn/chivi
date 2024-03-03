@@ -124,8 +124,10 @@ class MT::AiCore
       epos = MtEpos::IP if inner_list.last.epos.pu?
       body = @mt_dict.get_defn?(zstr, epos) || inner_list
       inner = MtNode.new(body: body, zstr: zstr, epos: epos, from: inner_list.first.from)
-    else
+    elsif inner_list.size > 0
       inner = inner_list.first
+    else
+      return {tail ? [head, tail] : [head], _idx}
     end
 
     {tail ? [head, inner, tail] : [head, inner], _idx}

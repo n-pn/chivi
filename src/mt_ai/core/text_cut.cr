@@ -13,15 +13,13 @@ module MT::TextCut
       bases << {node, body}
 
       if l_id < h_sep
-        title, split = TlChap.split(line)
+        line, split = TlChap.split(line)
         body << split if split
-        texts << title
+      end
+
+      split_sents(line) do |frag|
+        texts << frag
         l_ids << l_id
-      else
-        split_sents(line) do |frag|
-          texts << frag
-          l_ids << l_id
-        end
       end
     end
 

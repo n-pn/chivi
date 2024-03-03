@@ -127,7 +127,7 @@ class MT::AiCore
           ad_node.attr = :at_h
         else
           ad_node.body = "nhiều"
-          ad_node.attr = :at_t
+          ad_node.attr = :at_h
         end
       end
     end
@@ -162,13 +162,14 @@ class MT::AiCore
   private def init_vp_np_pair(vp_node, np_node, vv_node)
     init_pair_node(vp_node, np_node, epos: :VP, attr: :none) do
       # TODO: extract nn_node from np_node
+      nn_node = np_node.inner_tail
 
-      unless PairDict.v_n_pair.fix_if_match!(vv_node, np_node)
+      unless PairDict.v_n_pair.fix_if_match!(vv_node, np_node) || PairDict.v_n_pair.fix_if_match!(vv_node, nn_node)
         case vv_node.zstr
         when "想"
-          vv_node.body = "nhớ"
+          vv_node.body = nn_node.attr.nper? || nn_node.attr.nloc? ? "nhớ" : "nghĩ"
         when "不想"
-          vv_node.body = "không nhớ"
+          vv_node.body = nn_node.attr.nper? || nn_node.attr.nloc? ? "không nhớ" : "không nghĩ"
         when "会"
           vv_node.body = "biết"
         when "不会"

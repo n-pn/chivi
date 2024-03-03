@@ -10,13 +10,17 @@ interface JsonData extends CV.Paginate {
 status_types
 export const load = (async ({ url, params: { user }, fetch }) => {
   const pg_no = +url.searchParams.get('pg') || 1
-  const state = status_types.indexOf(url.searchParams.get('st'))
+  const state = status_types.indexOf(url.searchParams.get('st')) || -1
 
   const rdurl = `/_rd/rdmemos/reading?lm=25&pg=${pg_no}&vu=${user}&st=${state}`
   const { memos, pgidx, pgmax } = await api_get<JsonData>(rdurl, fetch)
 
-  const b_ids = memos.map((x) => x.sn_id).join(',') || '-1'
-  const books = await api_get<CV.Wninfo[]>(`/_db/books/all/${b_ids}`, fetch)
+  let books: CV.Wninfo[] = []
+
+  if (memos.length > 0) {
+    const b_ids = memos.map((x) => x.sn_id).join(',')
+    books = await api_get<CV.Wninfo[]>(`/_db/books/all/${b_ids}`, fetch)
+  }
 
   return {
     memos,
@@ -28,7 +32,7 @@ export const load = (async ({ url, params: { user }, fetch }) => {
     _meta: { title: `Tủ truyện của @${user}` },
     _navs: [
       { link: `/@${user}`, text: user, icon: 'at', show: 'ts' },
-      { link: `/@${user}/books`, text: 'Tủ truyện', icon: 'books', show: 'tm' },
+      { link: `/@${user}/books`, text: 'Tủ truyện', icon: 'books' },
     ],
   }
 }) satisfies PageLoad
