@@ -1,8 +1,5 @@
 require "./mt_base"
-
-require "../pos_tag"
 require "../mt_core/mt_util"
-require "../../../_util/text_util"
 
 class M1::MtDefn < M1::MtNode
   def self.cost(size : Int32, prio : Int32 = 0)

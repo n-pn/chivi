@@ -81,12 +81,12 @@ class M1::MtDict
   getter trie = ZvTrie.new
   delegate scan, to: @trie
 
+  DB_PATH = "var/mt_db/v1_defns.db3"
+
   LOAD_SQL = <<-SQL
     select zstr, vstr, ptag, rank from defns
     where d_id = $1
     SQL
-
-  DB_PATH = "var/mt_db/v1_defns.db3"
 
   def initialize(@dnum : Int32, d_id : Int32)
     DB.open("sqlite3:#{DB_PATH}") do |db|

@@ -29,25 +29,25 @@ class M1::TranCtrl < AC::Base
     render text: vtran
   end
 
-  record WninfoForm, btitle : String, author : String, bintro : String do
-    include JSON::Serializable
-  end
+  # record WninfoForm, btitle : String, author : String, bintro : String do
+  #   include JSON::Serializable
+  # end
 
-  @[AC::Route::POST("/wndata", body: :form)]
-  def wndata(form : WninfoForm, wn_id : Int32 = 0)
-    cv_mt = MtCore.new(wn_id)
+  # @[AC::Route::POST("/wndata", body: :form)]
+  # def wndata(form : WninfoForm, wn_id : Int32 = 0)
+  #   cv_mt = MtCore.new(wn_id)
 
-    intro = String.build do |io|
-      form.bintro.each_line do |line|
-        cv_mt.cv_plain(line, true).to_txt(io)
-        io << '\n'
-      end
-    end
+  #   intro = String.build do |io|
+  #     form.bintro.each_line do |line|
+  #       cv_mt.cv_plain(line, true).to_txt(io)
+  #       io << '\n'
+  #     end
+  #   end
 
-    render json: {
-      btitle: TlUtil.tl_btitle(form.btitle, wn_id),
-      author: TlUtil.tl_author(form.author),
-      bintro: intro,
-    }
-  end
+  #   render json: {
+  #     btitle: TlUtil.tl_btitle(form.btitle, wn_id),
+  #     author: TlUtil.tl_author(form.author),
+  #     bintro: intro,
+  #   }
+  # end
 end

@@ -1,4 +1,5 @@
 require "../pos_tag"
+require "../../../_util/text_util"
 
 abstract class M1::MtNode
   forward_missing_to @tag

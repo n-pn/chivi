@@ -4,50 +4,29 @@ require "./mt_node/mt_term"
 require "./pos_tag"
 
 class M1::SpDict
-  DB_PATH = "var/mtapp/v1dic/v1_defns.dic"
+  DB_PATH = "var/mt_db/v1_defns.db3"
 
-  def initialize(@df_ptag : PosTag, @fixed_tag = false)
-    @hash = Hash(String, {String, PosTag}).new
-  end
+  LOAD_SQL = <<-SQL
+    select zstr, vstr, ptag from defns
+    where d_id = $1 and vstr <> ''
+  SQL
 
-  def upsert(key : String, val : String, tag : String)
-    vals = val.split(/[ǀ|\t]/).map!(&.strip).reject!(&.empty?)
+  @hash = Hash(String, {String, PosTag}).new
 
-    if val = vals.first?
-      tag = @fixed_tag || tag.blank? ? @df_ptag : PosTag.parse(tag: tag, key: key)
-      @hash[key] = {val, tag}
-    else
-      @hash.delete(key)
-    end
-  end
+  def initialize(d_id : Int32, @df_ptag : PosTag, @fixed_tag = false)
+    DB.open("sqlite3:#{DB_PATH}") do |db|
+      db.query_each(LOAD_SQL, d_id) do |rs|
+        zstr, vstr, ptag = rs.read(String, String, String)
 
-  def size
-    @hash.size
-  end
-
-  def has?(key : String)
-    @hash.has_key?(key)
-  end
-
-  private def open_db(&)
-    DB.open("sqlite3:#{DB_PATH}") { |db| yield db }
-  end
-
-  def load!(dict_id : Int32) : self
-    sql = <<-SQL
-      select key, val, ptag from defns
-      where dic = ?
-      order by id asc
-    SQL
-
-    open_db do |db|
-      db.query_each(sql, dict_id) do |rs|
-        key, val, tag = rs.read(String, String, String)
-        upsert(key, val, tag)
+        ptag = @fixed_tag || ptag.blank? ? @df_ptag : PosTag.parse(tag: ptag, key: zstr)
+        @hash[zstr] = {vstr, ptag}
       end
     end
+  end
 
-    self
+  @[AlwaysInline]
+  def has?(key : String)
+    @hash.has_key?(key)
   end
 
   def fix!(node : MtDefn) : MtDefn
@@ -81,20 +60,20 @@ class M1::SpDict
 
   ##########
 
-  class_getter fix_nouns : self { new(PosTag::Noun).load!(-20) }
-  class_getter fix_verbs : self { new(PosTag::Verb).load!(-21) }
-  class_getter fix_adjts : self { new(PosTag::Adjt).load!(-22) }
+  class_getter fix_nouns : self { new(-20, PosTag::Noun) }
+  class_getter fix_verbs : self { new(-21, PosTag::Verb) }
+  class_getter fix_adjts : self { new(-22, PosTag::Adjt) }
 
-  class_getter fix_advbs : self { new(PosTag::Adverb).load!(-23) }
-  class_getter fix_u_zhi : self { new(PosTag::Nform).load!(-24) }
+  class_getter fix_advbs : self { new(-23, PosTag::Adverb) }
+  class_getter fix_u_zhi : self { new(-24, PosTag::Nform) }
 
-  class_getter qt_nouns : self { new(PosTag::Qtnoun, true).load!(-25) }
-  class_getter qt_verbs : self { new(PosTag::Qtverb, true).load!(-26) }
-  class_getter qt_times : self { new(PosTag::Qttime, true).load!(-27) }
+  class_getter qt_nouns : self { new(-25, PosTag::Qtnoun, fixed_tag: true) }
+  class_getter qt_verbs : self { new(-26, PosTag::Qtverb, fixed_tag: true) }
+  class_getter qt_times : self { new(-27, PosTag::Qttime, fixed_tag: true) }
 
-  class_getter v_dircom : self { new(PosTag::Verb, true).load!(-28) }
-  class_getter v_rescom : self { new(PosTag::Verb, true).load!(-29) }
+  class_getter v_dircom : self { new(-28, PosTag::Verb, fixed_tag: true) }
+  class_getter v_rescom : self { new(-29, PosTag::Verb, fixed_tag: true) }
 
-  class_getter v_ditran : self { new(PosTag::Verb, true).load!(-30) }
-  class_getter verb_obj : self { new(PosTag::VerbObject, true).load!(-31) }
+  class_getter v_ditran : self { new(-30, PosTag::Verb, fixed_tag: true) }
+  class_getter verb_obj : self { new(-31, PosTag::VerbObject, fixed_tag: true) }
 end
