@@ -33,7 +33,7 @@ module MT::TlChap
   def self.split(title : String)
     if match = CHDIV_RE_1.match(title) || TITLE_RE_1.match(title) || TITLE_RE_2.match(title)
       _, zh_ch, digit, c_lbl, trash, title = match
-      vi_ch = "#{LBLS[c_lbl]} #{QtNumber.translate(digit, :pure_digit)}"
+      vi_ch = "#{LBLS[c_lbl]} #{TlNumber.translate(digit, scale: 1)}"
     elsif match = TITLE_RE_3.match(title)
       _, zh_ch, trash, title = match
       vi_ch = CharUtil.normalize(zh_ch)

@@ -1,4 +1,3 @@
-# require "../../../wndata/models/zh_book"
 require "../../../_util/book_util"
 require "../../../_util/tran_util"
 

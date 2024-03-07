@@ -62,12 +62,6 @@ class HttpProxy
 end
 
 module HttpUtil
-  ENCODING = Hash(String, String).from_yaml({{ read_file(__DIR__ + "/fixed/encoding.yml") }})
-
-  def self.encoding_for(hostname : String) : String
-    ENCODING[hostname]? || "GB18030"
-  end
-
   def self.content_type(type : String)
     case type
     when "text" then "text/plain"
@@ -77,15 +71,31 @@ module HttpUtil
     end
   end
 
-  def self.gen_headers(referer = "", cookie = "", content_type = "text/html")
-    HTTP::Headers{
-      "Origin"          => referer,
-      "Referer"         => referer,
-      "Cookie"          => cookie,
-      "User-Agent"      => "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0",
-      "Content-Type"    => content_type,
-      "Accept-Encoding" => "gzip, deflate, br",
-    }
+  USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0"
+
+  def self.gen_headers(url = "", auth : String? = :nil, type : Symbol = :html)
+    headers = HTTP::Headers{"Origin" => url, "Referer" => url, "User-Agent" => USER_AGENT, "Accept-Encoding" => "gzip, deflate, br"}
+
+    if auth
+      header = auth.starts_with?("Bearer") ? "Authorization" : "Cookie"
+      headers[header] = auth
+    end
+
+    case type
+    when :xhr
+      headers["X-Requested-With"] = "XMLHttpRequest"
+      headers["Content-Type"] = "application/x-www-form-urlencoded"
+    when :form
+      headers["Content-Type"] = "application/x-www-form-urlencoded"
+    when :json
+      headers["Content-Type"] = "application/json"
+    when :html
+      headers["Content-Type"] = "text/html"
+    else
+      headers["Content-Type"] = "text/plain"
+    end
+
+    headers
   end
 
   def self.http_client(uri : URI, proxy : HttpProxy? = nil)
@@ -96,22 +106,30 @@ module HttpUtil
     client
   end
 
+  @[AlwaysInline]
   def self.fetch(url : String, headers : HTTP::Headers? = nil,
-                 encoding : String? = "UTF-8", use_proxy : Bool = false)
+                 encoding : String? = nil, use_proxy : Bool = false)
     proxy = HttpProxy.pick_one if use_proxy
-    fetch(URI.parse(url), headers, encoding, proxy: proxy)
+    do_fetch(URI.parse(url), headers, encoding, proxy: proxy)
   end
 
-  def self.fetch(uri : URI, headers : HTTP::Headers? = nil,
-                 encoding : String? = "UTF-8", proxy : HttpProxy? = nil)
+  @[AlwaysInline]
+  def self.fetch(url : URI, headers : HTTP::Headers? = nil,
+                 encoding : String? = nil, use_proxy : Bool = false)
+    proxy = HttpProxy.pick_one if use_proxy
+    do_fetch(uri, headers, encoding, proxy: proxy)
+  end
+
+  def self.do_fetch(uri : URI, headers : HTTP::Headers? = nil,
+                    encoding : String? = nil, proxy : HttpProxy? = nil)
     http_client(uri, proxy).get(uri.request_target, headers: headers) do |res|
       case res.status
       when .success?
-        proxy.success_count += 1 if proxy
-        gets_to_end(res.body_io, uri.hostname.as(String), encoding)
+        proxy.success_count &+= 1 if proxy
+        gets_to_end(res.body_io, uri.hostname.as(String), encoding: encoding)
       when .redirection?
         location = URI.parse(res.headers["location"])
-        fetch(location, headers: headers, encoding: encoding, proxy: proxy)
+        do_fetch(uri: location, headers: headers, encoding: encoding, proxy: proxy)
       else
         proxy.failure_count += 1 if proxy
         Log.error { res.body_io.gets_to_end }
@@ -133,5 +151,27 @@ module HttpUtil
     end
 
     encoding == "UTF-8" ? html : html.sub(/#{encoding}|gbk|gb2312/i, "utf-8")
+  end
+
+  ENCODING = {
+    "hetushu.com"       => "UTF-8",
+    "jx.la"             => "UTF-8",
+    "zxcs.me"           => "UTF-8",
+    "xswang.com"        => "UTF-8",
+    "novel.zhwenpg.com" => "UTF-8",
+    "133txt.com"        => "UTF-8",
+    "kanshu8.net"       => "UTF-8",
+    "yannuozw.com"      => "UTF-8",
+    "uuks.org"          => "UTF-8",
+    "bqxs520.net"       => "UTF-8",
+    "biqugse.com"       => "UTF-8",
+    "sdyfcm.com"        => "UTF-8",
+    "nofff.com"         => "UTF-8",
+    "bxwxorg.com"       => "UTF-8",
+    "paoshu8.com"       => "UTF-8",
+  }
+
+  def self.encoding_for(hostname : String) : String
+    ENCODING[hostname]? || "GB18030"
   end
 end

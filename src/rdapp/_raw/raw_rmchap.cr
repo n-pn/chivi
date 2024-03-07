@@ -67,11 +67,7 @@ class RawRmchap
   def extract_title(selector : String)
     elem = @page.find!(selector)
     elem.children.each { |node| node.remove! if node.tag_sym == :a }
-
-    title = @page.inner_text(elem, ' ')
-      .sub(/^\d+\.第/, "第")
-      .sub(/(^章节目录|(《.+》)?正文)/, "")
-
+    title = @page.inner_text(elem, ' ').sub(/^\d+\.(?=第)|^章节目录|^正文\s|^《.+》正文/, "")
     CharUtil.trim_sanitize(title)
   end
 

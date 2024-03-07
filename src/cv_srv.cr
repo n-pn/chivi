@@ -229,7 +229,7 @@ class ErrorHandler
   end
 end
 
-def start_server!(port : Int32, server_name = "Chivi")
+def start_server!(port : Int32, server_name = "Chivi", host = "127.0.0.1")
   # Add handlers that should run before your application
   AC::Server.before(
     AC::LogHandler.new(["upass", "new_upass"]),
@@ -244,7 +244,7 @@ def start_server!(port : Int32, server_name = "Chivi")
     settings.secure = CV_ENV.production? # HTTPS only
   end
 
-  server = AC::Server.new(port, "127.0.0.1")
+  server = AC::Server.new(port: port, host: host)
 
   terminate = Proc(Signal, Nil).new do |signal|
     signal.ignore

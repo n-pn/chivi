@@ -2,16 +2,35 @@ require "icu"
 require "compress/gzip"
 
 module FileUtil
-  extend self
+  @[AlwaysInline]
+  def self.read(fpath : String | Path, ttl : Time = Time.utc - 10.years, encoding : String? = nil)
+    self.read_utf8(fpath, encoding: encoding) if self.fresh?(fpath, ttl: ttl)
+  end
+
+  @[AlwaysInline]
+  def self.status(fpath : String, ttl : Time = Time.utc - 10.years)
+    mtime = self.mtime(fpath)
+    !mtime ? -1 : mtime > ttl ? 1 : 0
+  end
+
+  @[AlwaysInline]
+  def self.mtime(fpath : String | Path) : Time?
+    File.info?(fpath).try(&.modification_time)
+  end
+
+  @[AlwaysInline]
+  def self.mtime_int(fpath : String | Path) : Int64
+    self.mtime(fpath).try(&.to_unix) || 0_i64
+  end
 
   CSDET = ICU::CharsetDetector.new
 
-  def read_utf8(path : String | Path, encoding : String? = nil)
+  def self.read_utf8(path : String | Path, encoding : String? = nil)
     File.open(path, "r") do |file|
-      unless encoding
-        sample = file.read_string(1024)
+      encoding ||= begin
+        head = file.read_string({file.size, 512}.min)
         file.rewind
-        encoding = CSDET.detect(sample).name
+        CSDET.detect(head).name
       end
 
       file.set_encoding(encoding, invalid: :skip)
@@ -19,29 +38,15 @@ module FileUtil
     end
   end
 
-  def save_gz!(file : String, data : String)
+  def self.save_gz!(file : String, data : String)
     File.open(file, "w") do |io|
       Compress::Gzip::Writer.open(io, &.print(data))
     end
   end
 
-  def read_gz!(file : String) : String
+  def self.read_gz!(file : String) : String
     File.open(file, "r") do |io|
       Compress::Gzip::Reader.open(io, &.gets_to_end)
     end
-  end
-
-  @[AlwaysInline]
-  def mtime(file : String) : Time?
-    File.info?(file).try(&.modification_time)
-  end
-
-  @[AlwaysInline]
-  def mtime_int(file : String) : Int64
-    mtime(file).try(&.to_unix) || 0_i64
-  end
-
-  def fresh?(file : String, expiry : Time)
-    self.mtime(file).try(&.>= expiry) || false
   end
 end
