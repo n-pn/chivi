@@ -13,7 +13,7 @@ class MT::AiCore
       when .sp?
         sp_node ||= node
         fix_sp_in_ip!(sp_node: node, ip_node: ip_node, pu_node: pu_node)
-      when .vp?
+      when .verb?
         fix_vp_in_ip!(vp_node: node, sp_node: sp_node)
       end
     end

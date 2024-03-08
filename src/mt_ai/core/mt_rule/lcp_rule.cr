@@ -11,7 +11,7 @@ class MT::AiCore
     when .vp?
       fix_lcp_pair_with_vp!(body, head, tail)
     else
-      body.flip = !tail.attr.at_t?
+      body.flip = tail.epos.lc? && !tail.attr.at_t?
     end
   end
 
@@ -27,7 +27,7 @@ class MT::AiCore
 
   def fix_lcp_pair_with_vp!(body, head, tail)
     case tail.zstr
-    when "后"
+    when "后", "之后"
       body.flip = true
       tail.body = "sau khi"
     when "中"

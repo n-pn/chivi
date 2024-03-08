@@ -68,15 +68,17 @@ enum MT::MtEpos : Int8
   OTH  # other types
 
   # # additional
-  NF  # name prefixes
-  NH  # name suffixes
-  NC  # center nouns
-  VR  # verb complement
+  NF # name prefixes
+  NH # name suffixes
+
+  NC # center nouns
+  VR # verb complement
+
   VAS # verb + aspect phrase
 
   @[AlwaysInline]
   def verb?
-    self.in?(VA, VC, VE, VV, VCD, VCP, VNV, VP, VPT, VRD, VSB)
+    self.in?(VA, VC, VE, VV, VCD, VCP, VNV, VP, VPT, VRD, VSB, VAS)
   end
 
   @[AlwaysInline]

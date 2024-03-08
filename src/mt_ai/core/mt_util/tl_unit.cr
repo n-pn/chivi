@@ -1,4 +1,4 @@
-require "../../util/qt_number"
+require "../../../_util/tran_util/tl_number"
 require "../mt_data/trie_dict"
 
 module MT::TlUnit
@@ -53,7 +53,7 @@ module MT::TlUnit
 
     head = parts[0]
     vstr = translate(tail)
-    sufx = PERC_HEAD.put_if_absent(head) { QtNumber.translate(head) }
+    sufx = PERC_HEAD.put_if_absent(head) { TlNumber.translate(head) }
     "#{vstr} phần #{sufx}"
   end
 
@@ -76,7 +76,7 @@ module MT::TlUnit
     # attempt to split string by delimiters
     int_part, mid_part, frac_part = input.partition(/[点．／]/)
 
-    real_vstr = QtNumber.translate(int_part)
+    real_vstr = TlNumber.translate(int_part)
     return real_vstr if mid_part.empty?
 
     if frac_part.empty?
@@ -85,7 +85,7 @@ module MT::TlUnit
     end
 
     sep_vstr = DECI_SEP[mid_part[0]]
-    frac_vstr = QtNumber.translate(frac_part)
+    frac_vstr = TlNumber.translate(frac_part)
 
     "#{real_vstr}#{sep_vstr}#{frac_vstr}"
   rescue ex

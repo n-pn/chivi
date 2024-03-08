@@ -4,7 +4,7 @@ require "compress/gzip"
 module FileUtil
   @[AlwaysInline]
   def self.read(fpath : String | Path, ttl : Time = Time.utc - 10.years, encoding : String? = nil)
-    self.read_utf8(fpath, encoding: encoding) if self.fresh?(fpath, ttl: ttl)
+    self.read_utf8(fpath, encoding: encoding) if self.status(fpath, ttl: ttl) > 0
   end
 
   @[AlwaysInline]

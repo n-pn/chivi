@@ -1,151 +1,46 @@
-# require "crorm"
+require "crorm"
+
 # require "../base/*"
 
-# class MT::SpWseg
-#   class_getter db : ::DB::Database = ZR_DB
+class MT::SpWseg
+  class_getter init_sql = <<-SQL
+    create table zh_wseg(
+      d_id int not null,
+      zstr text not null,
 
-#   ###
+      rank int not null default 0,
+      seps text,
 
-#   include Crorm::Model
-#   schema "mt_wseg", :postgres
+      primary key (d_id, zstr)
+    ) strict, without rowid;
+    SQL
 
-#   field d_id : Int32, pkey: true
-#   field ipos : MtEpos, pkey: true, converter: MT::MtEpos
-#   field zstr : String, pkey: true
+  DB_DIR = ENV["MT_DIR"]? || "var/mt_db"
 
-#   field cpos : String = "X"
-#   field fixp : String = "X"
+  class_getter db_path = "#{DB_DIR}/zh_wseg.db3"
 
-#   field vstr : String = ""
-#   field attr : String = ""
+  ###
 
-#   field toks : Array(Int32) = [] of Int32
-#   field ners : Array(String) = [] of String
+  include Crorm::Model
+  schema "zh_wseg", :sqlite
 
-#   field segr : Int16 = 2_i16
-#   field posr : Int16 = 2_i16
+  field d_id : Int32, pkey: true
+  field zstr : String, pkey: true
 
-#   field plock : Int16 = 0_i16
-#   field uname : String = ""
-#   field mtime : Int32 = -1
+  field rank : Int32 = 0
+  field seps : String? = nil
 
-#   def self.new(d_id : Int32, cols : Array(String), fixed : Bool = false)
-#     zstr, cpos, vstr = cols
+  def initialize(@d_id, @zstr, @rank = 0, @seps = nil)
+  end
 
-#     unless fixed
-#       zstr = CharUtil.to_canon(zstr, true)
-#       vstr = vstr.empty? ? "" : VietUtil.fix_tones(vstr)
-#     end
+  ###
 
-#     new(
-#       d_id: d_id,
-#       cpos: cpos,
-#       zstr: zstr,
-#       vstr: vstr,
-#       attr: cols[3]? || "",
-#       fixed: true
-#     )
-#   end
+  DELETE_SQL = <<-SQL
+    delete from #{@@schema.table}
+    where d_id = $1 and zstr = $2
+    SQL
 
-#   def self.new(d_id : Int32, cpos : String, zstr : String,
-#                vstr : String, attr : MtAttr, fixed : Bool = false)
-#     unless fixed
-#       zstr = CharUtil.to_canon(zstr, true)
-#       vstr = vstr.empty? ? "" : VietUtil.fix_tones(vstr)
-#     end
-
-#     new(
-#       d_id: d_id,
-#       cpos: cpos,
-#       zstr: zstr,
-#       vstr: vstr,
-#       attr: attr
-#     )
-#   end
-
-#   def initialize(@d_id, @cpos, @zstr, @vstr = zstr,
-#                  @ipos = MtEpos.parse(cpos),
-#                  @attr = "", @toks = [zstr.size],
-#                  @plock = 0_i16)
-#   end
-
-#   def add_track(@uname, @mtime = TimeUtil.cv_mtime)
-#   end
-
-#   def to_mt(dtype : DictType = :generic)
-#     MtDefn.new(
-#       vstr: vstr,
-#       attr: MtAttr.parse_list(@attr),
-#       dnum: DictEnum.from(dtype, @plock),
-#       prio: MtDefn.calc_prio(@zstr.size)
-#     )
-#   end
-
-#   def cpos=(@ipos : MtEpos)
-#     @cpos = ipos.to_s
-#   end
-
-#   def cpos=(@cpos : String)
-#     @ipos = MtEpos.parse(cpos)
-#   end
-
-#   def attr=(attr : MtAttr)
-#     @attr = attr.to_str
-#   end
-
-#   def to_json(jb : JSON::Builder)
-#     jb.object do
-#       jb.field "d_id", @d_id
-#       jb.field "zstr", @zstr
-#       jb.field "cpos", @cpos
-
-#       jb.field "vstr", @vstr
-#       jb.field "attr", @attr
-
-#       jb.field "toks", @toks
-#       jb.field "ners", @ners
-
-#       jb.field "segr", @segr
-#       jb.field "posr", @posr
-
-#       jb.field "uname", @uname
-#       jb.field "mtime", TimeUtil.cv_utime(@mtime)
-#       jb.field "plock", @plock
-#     end
-#   end
-
-#   def as_temp
-#     self.dup.tap { |x| x.dnum += 2_i8 }
-#   end
-
-#   ###
-
-#   def self.init(d_id : Int32, cpos : String, zstr : String)
-#     self.find(d_id: d_id, ipos: MtEpos.parse(cpos), zstr: zstr) || self.new(d_id: d_id, cpos: cpos, zstr: zstr)
-#   end
-
-#   def self.find(d_id : Int32, cpos : String, zstr : String)
-#     self.find(d_id, ipos: MtEpos.parse(cpos), zstr: zstr)
-#   end
-
-#   @@find_one_sql : String = @@schema.select_by_pkey + " limit 1"
-
-#   @[AlwaysInline]
-#   def self.find(d_id : Int32, ipos : MtEpos, zstr : String)
-#     @@db.query_one?(@@find_one_sql, d_id, ipos.value.to_i16, zstr, as: self)
-#   end
-
-#   def self.delete(d_id : Int32, cpos : String, zstr : String)
-#     self.delete(d_id, zstr, ipos: MtEpos.parse(cpos))
-#   end
-
-#   DELETE_SQL = <<-SQL
-#     delete from #{@@schema.table}
-#     where d_id = $1 and ipos = $2 and zstr = $3
-#     SQL
-
-#   @[AlwaysInline]
-#   def self.delete(d_id : Int32, ipos : MtEpos, zstr : String)
-#     @@db.exec DELETE_SQL, d_id, ipos.value.to_i16, zstr
-#   end
-# end
+  def delete!
+    @@db.exec DELETE_SQL, @d_id, @zstr
+  end
+end

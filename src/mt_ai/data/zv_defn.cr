@@ -84,9 +84,9 @@ class MT::ZvDefn
     end
   end
 
-  def as_temp
-    self.dup.tap { |x| x.dnum += 2_i8 }
-  end
+  # def as_temp
+  #   self.dup.tap { |x| x.dnum += 2_i8 }
+  # end
 
   ###
 
