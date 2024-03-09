@@ -71,10 +71,11 @@ module HttpUtil
     end
   end
 
-  USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0"
+  USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:123.0) Gecko/20100101 Firefox/123.0"
 
   def self.gen_headers(url = "", auth : String? = :nil, type : Symbol = :html)
-    headers = HTTP::Headers{"Origin" => url, "Referer" => url, "User-Agent" => USER_AGENT, "Accept-Encoding" => "gzip, deflate, br"}
+    # headers = HTTP::Headers{"Origin" => url, "Referer" => url, "User-Agent" => USER_AGENT, "Accept-Encoding" => "gzip, deflate, br"}
+    headers = HTTP::Headers{"Origin" => url, "Referer" => url, "User-Agent" => USER_AGENT}
 
     if auth
       header = auth.starts_with?("Bearer") ? "Authorization" : "Cookie"

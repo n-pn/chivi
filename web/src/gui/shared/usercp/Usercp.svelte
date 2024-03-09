@@ -52,7 +52,7 @@
     if (cv_res.ok) $_user = await cv_res.json()
   }
 
-  $: privi = $_user.privi || -1
+  $: privi = $_user.privi || 0
 
   async function logout() {
     const res = await fetch('/_db/_user/logout', { method: 'DELETE' })

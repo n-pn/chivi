@@ -265,7 +265,7 @@ class RD::Rmstem
     entry.update_int = input.update_int
     entry.latest_cid = input.latest_cid
 
-    # entry.chap_count = raw_data.chap_count
+    # entry.chap_count = input.chap_count
     entry.rtime = rtime
 
     entry

@@ -1,43 +1,68 @@
-# require "./chinfo"
-# require "compress/zip"
-# require "../../_util/text_util"
+require "crorm"
 
-# class RD::Cztext
-#   ZIP_DIR = "/2tb/zroot/ztext"
-#   TXT_DIR = "var/texts"
+require "../../_util/chap_util"
+require "../../_util/zstd_util"
 
-#   getter? has_zip : Bool { File.exists?(@zip_path) }
+class RD::Cztext
+  class_getter init_sql = <<-SQL
+    CREATE TABLE IF NOT EXISTS cztext(
+      ch_no integer NOT NULL primary key,
+      ztext text NOT NULL default '',
+      chdiv text NOT NULL DEFAULT '',
+      mtime integer NOT NULL DEFAULT 0,
+      atime integer NOT NULL DEFAULT 0,
+      zorig text not null default ''
+    ) strict;
+    SQL
 
-#   def initialize(@sroot : String)
-#     @tmp_path = "#{ZIP_DIR}/#{sroot.sub(/^wn|up|rm/, "")}"
-#     @zip_path = "#{@tmp_path}.zip"
-#     Dir.mkdir_p(@tmp_path)
-#   end
+  CZ_DIR = "/2tb/zroot/wn_db"
 
-#   def get_ztext(ch_no : Int32, smode : Int32 = 1)
-#     return unless self.has_zip?
+  @[AlwaysInline]
+  def self.db_path(sname : String, sn_id : String | Int32)
+    "#{CZ_DIR}/#{sname}/#{sn_id}-ztext.db3"
+  end
 
-#     Compress::Zip::File.open(@zip_path) do |zip|
-#       return unless entry = zip["#{ch_no}#{smode}.zh"]? || zip["#{ch_no}0.zh"]?
+  @[AlwaysInline]
+  def self.db(sname : String, sn_id : String | Int32)
+    self.db(db_path(sname, sn_id))
+  end
 
-#       ztext = entry.open(&.gets_to_end.gsub("\n\n", '\n'))
-#       ztext = ztext.sub(/^\/{3,}.*\n/, "") if ztext.starts_with?('/')
-#       ztext
-#     end
-#   end
+  def self.db(db_path : String)
+    Crorm::SQ3.new(db_path) do |db|
+      zst_path = "#{db_path}.zst"
 
-#   def save_text!(ch_no : Int32, ztext : String,
-#                  chdiv : String = "", smode : Int32 = 0,
-#                  zipping : Bool = true)
-#     fpath = "#{@tmp_path}/#{ch_no}#{smode}.zh"
-#     File.open(fpath, "w") { |f| f << "///" << chdiv << '\n' << ztext }
-#     zipping_text!(fpath) if zipping
-#   end
+      if File.file?(zst_path)
+        ZstdUtil.unzip_file(zst_path, db_path)
+      else
+        db.init_db(self.init_sql)
+      end
+    end
+  end
 
-#   def zipping_text!(data_path : String = @tmp_path)
-#     `zip -rjyoqm '#{@zip_path}' '#{data_path}'`
-#     @has_zip = true if $?.success?
-#   end
+  ###
 
-#   ###
-# end
+  include Crorm::Model
+  schema "cztext", :sqlite, multi: true
+
+  field ch_no : Int32 = 0, pkey: true
+
+  field ztext : String = ""
+  field chdiv : String = ""
+
+  field mtime : Int64 = 0_i64
+  field atime : Int64 = 0_i64
+
+  field zorig : String = ""
+
+  def initialize(@ch_no, @ztext = "", @chdiv = "", @zorig = "")
+  end
+
+  def zchap
+    "///#{chdiv}\n#{ztext}"
+  end
+
+  @[AlwaysInline]
+  def self.load(db, ch_no : Int32)
+    self.find_by_id(ch_no, pkey: "ch_no", db: db) || self.new(ch_no)
+  end
+end
