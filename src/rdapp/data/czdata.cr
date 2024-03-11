@@ -1,22 +1,23 @@
 require "crorm"
 
 require "../../_util/chap_util"
+require "../../_util/char_util"
 require "../../_util/zstd_util"
-
-require "../_raw/raw_rmchap"
+require "../../_util/hash_util"
 
 class RD::Czdata
   class_getter init_sql = <<-SQL
     CREATE TABLE IF NOT EXISTS czdata(
       ch_no integer NOT NULL primary key,
-      s_cid integer NOT NULL default 0,
-      --
       title text NOT NULL DEFAULT '',
       chdiv text NOT NULL DEFAULT '',
       --
-      ztext text NOT NULL default '',
-      mtime integer NOT NULL DEFAULT 0,
-      zsize integer not null default 0,
+      ztext blob,
+      zsize int not null default 0,
+      cksum int not null default 0,
+      --
+      mtime int NOT NULL DEFAULT 0,
+      atime int NOT NULL DEFAULT 0,
       --
       zorig text not null default '',
       zlink text not null default ''
@@ -27,7 +28,7 @@ class RD::Czdata
 
   @[AlwaysInline]
   def self.db_path(sname : String, sn_id : String | Int32)
-    "#{CZ_DIR}/#{sname}/#{sn_id}-zdata.v1.db3"
+    "#{CZ_DIR}/#{sname}/#{sn_id}-zdata.db3"
   end
 
   @[AlwaysInline]
@@ -35,16 +36,40 @@ class RD::Czdata
     self.db(db_path(sname, sn_id))
   end
 
+  @[AlwaysInline]
   def self.db(db_path : String)
-    Crorm::SQ3.new(db_path) do |db|
-      zst_path = "#{db_path}.zst"
+    Crorm::SQ3.new(db_path) { |db| db.init_db(self.init_sql) }
+  end
 
-      if File.file?(zst_path)
-        ZstdUtil.unzip_file(zst_path, db_path)
-      else
-        db.init_db(self.init_sql)
+  def self.init_db(sname : String, sn_id : String | Int32)
+    new_db_path = self.db_path(sname, sn_id)
+    czdata_db = self.db(new_db_path)
+
+    old_db_path = new_db_path.sub(".db3", ".v1.db3")
+
+    if File.file?(old_db_path)
+      czdata_db.open_tx { |db| load_old_db(old_db_path).each(&.upsert!(db: db)) }
+    end
+
+    czdata_db
+  end
+
+  def self.load_old_db(old_db_path : String)
+    items = [] of self
+
+    DB.open("sqlite3:#{old_db_path}?immutable=1") do |db|
+      query = "select ch_no, title, chdiv, mtime, zorig, s_cid, zlink, ztext from czdata"
+
+      db.query_each query do |rs|
+        items << self.new(
+          ch_no: rs.read(Int32), title: rs.read(String), chdiv: rs.read(String),
+          mtime: rs.read(Int64), zorig: "#{rs.read(String)}/#{rs.read(Int32)}",
+          zlink: rs.read(String), ztext: rs.read(String)
+        )
       end
     end
+
+    items
   end
 
   ###
@@ -53,48 +78,78 @@ class RD::Czdata
   schema "czdata", :sqlite, multi: true
 
   field ch_no : Int32 = 0, pkey: true
-  field s_cid : Int32 = 0
-
   field title : String = ""
   field chdiv : String = ""
 
-  field ztext : String = ""
+  field ztext : Bytes? = nil, json_ignore: true
+
   field zsize : Int32 = 0
+  field cksum : Int32 = 0
+
   field mtime : Int64 = 0_i64
+  field atime : Int64 = 0_i64
 
   field zorig : String = ""
   field zlink : String = ""
 
-  def initialize(@ch_no, @s_cid = 0, @title = "", @chdiv = "", @zlink = "", @zorig = "")
+  def initialize(@ch_no, @title = "", @chdiv = "", @zorig = "", @zlink = "", @mtime = 0, ztext : String = "")
+    self.ztext = ztext unless ztext.empty?
+  end
+
+  def cbody
+    case input = @ztext
+    in Nil then nil
+    in Bytes
+      dctx = Zstd::Decompress::Context.new
+      String.new dctx.decompress(input)
+    end
+  end
+
+  def ztext=(input : String)
+    @zsize = input.size
+    @cksum = HashUtil.fnv_1a(input).unsafe_as(Int32)
+
+    cctx = Zstd::Compress::Context.new(level: 3)
+    @ztext = cctx.compress(input.to_slice)
+  end
+
+  def init_by_hand(input : String)
+    strio = String::Builder.new
+    state = 0
+
+    input.each_line do |line|
+      line = CharUtil.trim_sanitize(line)
+      next if line.empty?
+
+      if state > 0
+        strio << '\n' << line
+      else
+        state = 1
+        @title = line
+        strio << line
+      end
+    end
+
+    @atime = Time.utc.to_unix
+    self.ztext = strio.to_s
+
+    self
   end
 
   def init_by_zlink(force : Bool = false) : Bool
     return false unless (force || @zsize == 0) && !@zlink.empty?
 
-    Log.info { @zlink.colorize.magenta }
-
     stale = Time.utc - (force ? 2.minutes : 20.years)
     rchap = RawRmchap.from_link(@zlink, stale: stale)
-
-    Log.info { "loading done!" }
-
-    @zorig = rchap.zorig
-    @mtime = Time.utc.to_unix
 
     @title, lines = rchap.parse_page!
 
     strio = String::Builder.new(@title)
-    zsize = @title.size
+    lines.each { |line| strio << '\n' << line }
 
-    lines.each do |line|
-      strio << '\n' << line
-      zsize &+= line.size &+ 1
-    end
-
-    @zsize = zsize
-    @ztext = strio.to_s
-
-    Log.info { @zsize.colorize.magenta }
+    @zorig = rchap.zorig
+    @atime = @mtime = Time.utc.to_unix
+    self.ztext = strio.to_s
 
     true
   rescue ex
@@ -102,77 +157,45 @@ class RD::Czdata
     false
   end
 
-  def set_ztext(input : String, @mtime = Time.utc.to_unix, @zorig = self.zorig)
-    strio = String::Builder.new
-    zsize = state = 0
-
-    input.each_line do |line|
-      line = CharUtil.trim_sanitize(line)
-      next if line.empty?
-
-      if state > 1
-        strio << '\n' << line
-        zsize &+= line.size &+ 1
-      elsif state == 1 || !line.starts_with?('/')
-        state = 2
-        @title = line
-        strio << line
-        zsize &+= line.size
-      else
-        state = 1
-        line = line.lstrip('/').lstrip(' ') if line.size > 3
-        @chdiv = line unless line.empty?
-      end
-    end
-
-    @zsize = zsize
-    @ztext = strio.to_s
-
-    self
-  end
-
   UPSERT_ZTEXT_SQL = <<-SQL
-    insert into czdata(ch_no, s_cid, title, chdiv, ztext, zsize, mtime, zorig)
-    values ($1, $2, $3, $4, $5, $6, $7, $8)
-    on conflict(ch_no) do update set
-      title = IIF(excluded.title = '', czdata.title, excluded.title),
-      chdiv = IIF(excluded.chdiv = '', czdata.chdiv, excluded.chdiv),
-      ztext = excluded.ztext,
-      zsize = excluded.zsize,
-      mtime = excluded.mtime,
-      zorig = excluded.zorig
-    SQL
+      insert into czdata(ch_no, title, chdiv, ztext, zsize, cksum, mtime, atime, zorig)
+      values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      on conflict(ch_no) do update set
+        title = IIF(excluded.title = '', czdata.title, excluded.title),
+        chdiv = IIF(excluded.chdiv = '', czdata.chdiv, excluded.chdiv),
+        ztext = excluded.ztext,
+        zsize = excluded.zsize,
+        cksum = excluded.cksum,
+        mtime = excluded.mtime,
+        atime = excluded.atime,
+        zorig = excluded.zorig
+      SQL
 
   @[AlwaysInline]
   def save_ztext!(db)
-    db.exec UPSERT_ZTEXT_SQL, @ch_no, @s_cid, @title, @chdiv, @ztext, @zsize, @mtime, @zorig
+    db.exec UPSERT_ZTEXT_SQL, @ch_no, @title, @chdiv, @ztext, @zsize, @cksum, @mtime, @atime, @zorig
   end
 
   UPSERT_ZINFO_SQL = <<-SQL
-    insert into czdata(ch_no, s_cid, title, chdiv, zlink, zorig)
-    values ($1, $2, $3, $4, $5, $6)
+    insert into czdata(ch_no, title, chdiv, zorig, zlink)
+    values ($1, $2, $3, $4, $5)
     on conflict(ch_no) do update set
-      s_cid = excluded.s_cid,
-      zlink = excluded.zlink,
       title = excluded.title,
       chdiv = IIF(excluded.chdiv = '', czdata.chdiv, excluded.chdiv),
-      zorig = IIF(czdata.zorig = '', excluded.zorig, czdata.zorig)
+      zorig = IIF(czdata.zorig = '', excluded.zorig, czdata.zorig),
+      zlink = excluded.zlink
     SQL
 
   @[AlwaysInline]
   def save_zinfo!(db)
-    db.exec UPSERT_ZINFO_SQL, @ch_no, @s_cid, @title, @chdiv, @zlink, @zorig
+    db.exec UPSERT_ZINFO_SQL, @ch_no, @title, @chdiv, @zorig, @zlink
   end
 
-  FETCH_ZTEXT_SQL = "select ztext from czdata where ch_no = $1 limit 1"
+  #
+  ####
 
   @[AlwaysInline]
-  def self.get_ztext(db, ch_no : Int32)
-    db.query_one?(FETCH_ZTEXT_SQL, ch_no, as: String)
-  end
-
-  @[AlwaysInline]
-  def self.find_or_init(db, ch_no : Int32)
+  def self.load(db, ch_no : Int32)
     self.find_by_id(ch_no, pkey: "ch_no", db: db) || self.new(ch_no)
   end
 end

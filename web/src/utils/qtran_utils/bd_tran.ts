@@ -37,7 +37,7 @@ function extract_tran(data: string[]) {
 
 const cached = new Map<string, string[]>()
 
-export async function baidu_word(text: string, tl = 'vi', keep_caps = false) {
+export async function baidu_word(text: string, tl = 'vi') {
   const key = `${text}-${tl}`
   let res = cached.get(key)
 
@@ -45,10 +45,6 @@ export async function baidu_word(text: string, tl = 'vi', keep_caps = false) {
     res = await call_baidu(text, tl)
     if (res.length > 0) cached.set(key, res)
   }
-
-  const res2 = res.map((x: string) => detitlize(x))
-  if (!keep_caps) res = res2
-  else res = res.concat(res2)
 
   return [...new Set(res)]
 }

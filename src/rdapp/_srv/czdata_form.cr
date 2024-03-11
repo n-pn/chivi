@@ -18,12 +18,14 @@ struct RD::CzdataForm
   end
 
   def to_czdata(db, zorig : String, mtime : Int64 = Time.utc.to_unix) : Czdata
-    zdata = Czdata.find_or_init(db, @ch_no)
+    zdata = Czdata.load(db, @ch_no)
     # TODO: skip if immutable
 
     zdata.title = @title
     zdata.chdiv = @chdiv
-    zdata.set_ztext(input: @ztext, mtime: mtime, zorig: zorig)
+    zdata.mtime = mtime
+    zdata.zorig = zorig
+    zdata.init_by_hand(input: @ztext)
 
     zdata
   end

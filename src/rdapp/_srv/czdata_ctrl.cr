@@ -15,7 +15,7 @@ class RD::CzdataCtrl < AC::Base
     zdata = crepo.get_zdata(ch_no, rmode: 1)
 
     chdiv = zdata.chdiv.empty? ? crepo.suggest_chdiv(ch_no) : zdata.chdiv
-    ztext = chdiv.empty? ? zdata.ztext : "///#{chdiv}\n#{zdata.ztext}"
+    ztext = "///#{chdiv}\n#{zdata.cbody}"
 
     render json: {ch_no: ch_no, ztext: ztext}
   end

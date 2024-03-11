@@ -48,7 +48,7 @@ class RD::Tsrepo
 
   @[DB::Field(ignore: true, auto: true)]
   @[JSON::Field(ignore: true)]
-  getter zdata_db : Crorm::SQ3 { Czdata.db(Czdata.db_path(@sname, @sn_id)) }
+  getter zdata_db : Crorm::SQ3 { Czdata.init_db(@sname, @sn_id) }
 
   def initialize(@sroot)
   end
@@ -93,11 +93,8 @@ class RD::Tsrepo
   @[AlwaysInline]
   def get_zdata(ch_no : Int32, rmode : Int32 = 0)
     self.zdata_db.open_rw do |db|
-      zdata = Czdata.find_or_init(db, ch_no: ch_no)
-      if rmode > 0 && zdata.init_by_zlink(force: rmode > 1)
-        zdata.save_ztext!(db: db)
-      end
-
+      zdata = Czdata.load(db, ch_no: ch_no)
+      zdata.save_ztext!(db: db) if rmode > 0 && zdata.init_by_zlink(force: rmode > 1)
       zdata
     end
   end

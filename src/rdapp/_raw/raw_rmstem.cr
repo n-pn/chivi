@@ -98,11 +98,10 @@ class RawRmstem
 
     @clist << RD::Czdata.new(
       ch_no: ch_no,
-      s_cid: s_cid.to_i? || 0,
       title: ctitle,
       chdiv: subdiv,
+      zorig: "#{@zorig}/#{s_cid.to_i? || 0}",
       zlink: zlink,
-      zorig: @zorig,
     )
   rescue ex
     Log.error(exception: ex) { ex.message.colorize.red }

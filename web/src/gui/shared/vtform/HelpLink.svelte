@@ -15,21 +15,22 @@
     ['G.Tran', `//translate.google.com/?sl=zh-CN&tl=en&op=translate&text=${key}`],
     ['Bing', `//www.bing.com/translator?from=zh-Hans&to=vi&text=${key}`],
     ['DeepL', ` //www.deepl.com/translator#zh/en/${key}`],
-    ['Fanyi', `//fanyi.baidu.com/#zh/en/${key}`],
+    ['Baidu', `//fanyi.baidu.com/#zh/en/${key}`],
+    ['Glosbe', `//glosbe.com/zh/vi/${key}`],
+    ['Vdict', `//vi.vdict.pro/cn-vi/${key}`],
     ['iCIBA', `//www.iciba.com/word?w=${key}`],
   ]
 
   $: links = [
-    ['Google', `//www.google.com/search?q=${key}`],
+    ['Thivien', `//hvdic.thivien.net/whv/${key}`],
     ['Baidu', `//www.baidu.com/s?wd=${key}`],
     ['Baike', `//baike.baidu.com/item/${key}`],
     ['Moegirl', `//mzh.moegirl.org.cn/zh-hans/${key}`],
     ['Wiki', `//zh.m.wikipedia.org/zh-hans/${key}`],
-    ['Thivien', `//hvdic.thivien.net/whv/${key}`],
+    ['Google', `//www.google.com/search?q=${key}`],
   ]
 
   $: submenus = [helps, trans, links]
-  $: gsearch = links[0][1]
 
   function trigger(node: HTMLElement, value: number) {
     const click = () => (submenu = submenu == value ? -1 : value)
@@ -40,25 +41,12 @@
 
 <footer>
   <div class="main">
-    <button class="link" use:trigger={0}>
-      <span>Hướng dẫn</span>
-      <SIcon name="caret-down" />
-    </button>
-
-    <button class="link" use:trigger={1}>
-      <span>Dịch ngoài</span>
-      <SIcon name="caret-down" />
-    </button>
-
-    <button class="link" use:trigger={2}>
-      <span>Tra cứu</span>
-      <SIcon name="caret-down" />
-    </button>
-
-    <a class="link" href={gsearch} target="_blank" rel="noreferrer">
-      <span>Google</span>
-      <SIcon name="external-link" />
-    </a>
+    {#each ['Hướng dẫn', 'Dịch tham khảo', 'Tìm kiếm'] as type, index}
+      <button class="link" class:_active={submenu == index} use:trigger={index}>
+        <span>{type}</span>
+        <SIcon name="caret-down" />
+      </button>
+    {/each}
   </div>
 
   {#if submenu >= 0}
@@ -95,7 +83,8 @@
     @include ftsize(sm);
     @include fgcolor(secd);
 
-    &:hover {
+    &:hover,
+    &._active {
       @include fgcolor(primary, 5);
     }
   }

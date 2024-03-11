@@ -196,7 +196,7 @@ class Rmhost
   end
 
   def chap_file(sn_id : Int32 | String, sc_id : Int32 | String)
-    "#{KEEP_DIR}/rmchap/#{@hostname}/#{sn_id}/#{sc_id}.htm"
+    "#{KEEP_DIR}/rmchap/#{self.savepath}/#{sn_id}/#{sc_id}.htm"
   end
 
   ###

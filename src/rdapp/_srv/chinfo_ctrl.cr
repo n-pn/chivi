@@ -30,7 +30,7 @@ class RD::ChinfoCtrl < AC::Base
       ch_no: cinfo.ch_no,
       title: cinfo.vchdiv.empty? ? cinfo.vtitle : "#{cinfo.vtitle} - #{cinfo.vchdiv}",
 
-      ztext: error > 0 || zdata.zsize == 0 ? zdata.title : zdata.ztext,
+      ztext: error > 0 || zdata.zsize == 0 ? zdata.title : zdata.cbody,
       zsize: zdata.zsize,
       cksum: "#{zdata.ch_no}-#{zdata.mtime}",
 

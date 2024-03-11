@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import { titleize, detitleize, uncapitalize } from '$utils/text_utils'
+  import { titleize, detitleize, capitalize, uncapitalize } from '$utils/text_utils'
 
   import { gtran_word } from '$utils/qtran_utils'
 
@@ -9,14 +9,11 @@
 
   const cached_map = new Map<string, string[]>()
 
-  const fetch_trans = async (ztext: string, qkind: string, w_cap = false) => {
+  const fetch_trans = async (ztext: string, qkind: string, keep_caps = false) => {
     const c_ukey = `${qkind}-${ztext}`
 
     const cached = cached_map.get(c_ukey)
-    if (cached) {
-      if (w_cap || qkind == 'prevs') return cached
-      return cached.map((x) => uncapitalize(x))
-    }
+    if (cached) return cached
 
     let trans: string[] = []
 
@@ -26,6 +23,10 @@
         break
       case 'btran':
         trans = await btran_word(ztext, 'zh')
+
+        if (trans[0] == titleize(trans[0], 1)) {
+          trans = trans.map((x) => uncapitalize(x))
+        }
         break
       case 'baidu':
         trans = await baidu_word(ztext, 'vie')
@@ -43,12 +44,15 @@
     }
 
     if (trans.length == 0) return trans
-
     if (!ztext.endsWith('。')) trans = trans.map((x) => x.replace(/\.$/, ''))
+
     cached_map.set(c_ukey, trans)
 
-    if (w_cap || qkind == 'prevs') return trans
-    return trans.map((x) => uncapitalize(x))
+    if (!keep_caps && qkind != 'preps' && trans[0] == titleize(trans[0], 1)) {
+      trans = trans.map((x) => uncapitalize(x))
+    }
+
+    return trans
   }
 </script>
 
@@ -75,27 +79,9 @@
     }
   }
 
-  const gen_format_hints = (input: string, is_hv = false) => {
-    const output = []
-
-    if (is_hv) {
-      output.push(input.toLowerCase())
-      output.push(titleize(input, 999))
-    } else if (input.match(/^[a-z0-9]+$/i)) {
-      output.push(input.toUpperCase())
-    }
-
-    let length = input.split(' ').length
-    if (length > 3) length = 3
-
-    for (let i = 1; i <= length; i++) {
-      output.push(titleize(input, i))
-    }
-
-    for (let i = 1; i <= length; i++) {
-      output.push(detitleize(input, i))
-    }
-
+  const gen_hviet_hints = (input: string) => {
+    const output = [input.toLowerCase()]
+    if (input.match(/^[a-z0-9]+$/i)) output.push(input.toUpperCase())
     return [...new Set(output)]
   }
 
@@ -110,6 +96,22 @@
 
   $: all_lower = tform.vstr.toLowerCase()
   $: all_title = titleize(tform.vstr, 99)
+  $: word_count = tform.vstr.split(' ').length
+
+  let title_count = 1
+  let detitle_count = 1
+
+  $: keep_caps = tform.cpos == 'NR'
+
+  const call_titleize = () => {
+    tform.vstr = titleize(tform.vstr, title_count)
+    title_count = title_count >= word_count ? 1 : title_count + 1
+  }
+
+  const call_detitleize = () => {
+    tform.vstr = detitleize(tform.vstr, detitle_count)
+    detitle_count = detitle_count >= word_count ? 1 : detitle_count + 1
+  }
 
   const tran_types = [
     ['prevs', 'img', 'chivi'],
@@ -125,37 +127,12 @@
     <button
       type="button"
       class="btn"
-      class:_same={more_type == 'hviet'}
-      data-kbd="h"
-      on:click={() => trigger_more('hviet')}
-      use:tooltip={'Khởi tạo nghĩa bằng Hán Việt'}
-      data-anchor=".vtform">
-      <span>Hán Việt</span>
-      <SIcon name="caret-down" />
-    </button>
-
-    <button
-      type="button"
-      class="btn"
-      data-kbd="y"
-      class:_same={more_type == 'names'}
-      disabled={tform.cpos[0] != 'N'}
-      on:click={() => trigger_more('names')}
-      use:tooltip={'Dịch tên riêng, viết hoa chữ đầu'}
-      data-anchor=".vtform">
-      <span>Tên riêng</span>
-      <SIcon name="caret-down" />
-    </button>
-
-    <button
-      type="button"
-      class="btn"
       data-kbd="t"
       class:_same={more_type == 'trans'}
       on:click={() => trigger_more('trans')}
       use:tooltip={'Dịch cụm từ bằng các công cụ dịch'}
       data-anchor=".vtform">
-      <span>Gợi ý sẵn</span>
+      <span>Gợi ý nghĩa</span>
       <SIcon name="caret-down" />
     </button>
 
@@ -170,18 +147,7 @@
 
     <button
       type="button"
-      class="btn _right"
-      data-kbd="0"
-      class:_same={tform.vstr == all_lower}
-      on:click={() => (tform.vstr = all_lower)}
-      use:tooltip={'Viết thường tất cả'}
-      data-anchor=".vtform">
-      <SIcon name="letter-case-lower" />
-    </button>
-
-    <button
-      type="button"
-      class="btn"
+      class="btn u-right"
       data-kbd="9"
       class:_same={tform.vstr == all_title}
       on:click={() => (tform.vstr = all_title)}
@@ -194,12 +160,33 @@
       type="button"
       class="btn"
       data-kbd="f"
-      class:_same={more_type == 'cases'}
-      on:click={() => trigger_more('cases')}
-      use:tooltip={'Chuyển nhanh viết hoa viết thường'}
+      on:click={call_titleize}
+      use:tooltip={`Viết hoa ${title_count} chữ đầu`}
+      data-anchor=".vtform">
+      <SIcon name="letter-case" />
+      <sup>{title_count}</sup>
+    </button>
+
+    <button
+      type="button"
+      class="btn"
+      data-kbd="g"
+      on:click={call_detitleize}
+      use:tooltip={`Viết thường ${detitle_count} chữ đầu`}
       data-anchor=".vtform">
       <SIcon name="letter-case-toggle" />
-      <SIcon name="caret-down" />
+      <sup>{detitle_count}</sup>
+    </button>
+
+    <button
+      type="button"
+      class="btn"
+      data-kbd="0"
+      class:_same={tform.vstr == all_lower}
+      on:click={() => (tform.vstr = all_lower)}
+      use:tooltip={'Viết thường tất cả'}
+      data-anchor=".vtform">
+      <SIcon name="letter-case-lower" />
     </button>
   </div>
 
@@ -207,34 +194,27 @@
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="util-more" on:click={handle_click}>
-      {#if more_type == 'hviet'}
-        {#each gen_format_hints(tform.hviet, true) as vstr}
-          <span class="txt" class:_same={tform.vstr == vstr} data-vstr={vstr}>
-            {vstr}
-          </span>
-        {/each}
-      {:else if more_type == 'cases'}
-        {#each gen_format_hints(tform.vstr, false) as vstr}
-          <span class="txt" class:_same={tform.vstr == vstr} data-vstr={vstr}>
-            {vstr}
-          </span>
-        {/each}
-      {:else}
-        {#each tran_types as [qkind, itype, iname]}
-          {#if itype == 'img'}
-            <img src="/icons/{iname}.svg" alt={iname} />
-          {:else}
-            <SIcon name={itype} iset={iname || 'tabler'} />
-          {/if}
-          {#await fetch_trans(tform.ztext, qkind, more_type == 'names')}
-            <SIcon name="loader-2" spin={true} />
-          {:then list}
-            {#each list as tran}
-              <span class="txt" class:_same={tform.vstr == tran} data-vstr={tran}>{tran}</span>
-            {/each}
-          {/await}
-        {/each}
-      {/if}
+      <SIcon name="letter-h" />
+      {#each gen_hviet_hints(tform.hviet) as vstr}
+        <span class="txt" class:_same={tform.vstr == vstr} data-vstr={vstr}>
+          {vstr}
+        </span>
+      {/each}
+
+      {#each tran_types as [qkind, itype, iname]}
+        {#if itype == 'img'}
+          <img src="/icons/{iname}.svg" alt={iname} />
+        {:else}
+          <SIcon name={itype} iset={iname || 'tabler'} />
+        {/if}
+        {#await fetch_trans(tform.ztext, qkind, keep_caps)}
+          <SIcon name="loader-2" spin={true} />
+        {:then list}
+          {#each list as tran}
+            <span class="txt" class:_same={tform.vstr == tran} data-vstr={tran}>{tran}</span>
+          {/each}
+        {/await}
+      {/each}
     </div>
   {/if}
 </div>
@@ -253,19 +233,8 @@
     padding-right: 0.25rem;
     height: $height;
 
-    @include bps(font-size, rem(12px), $pm: rem(13px), $ts: rem(14px));
-  }
-
-  // .left {
-  //   display: inline-flex;
-  //   align-items: center;
-  //   flex-shrink: 1;
-  //
-  //   min-width: 280px;
-  // }
-
-  ._right {
-    margin-left: auto;
+    @include ftsize(sm);
+    // @include bps(font-size, rem(12px), $pm: rem(13px), $ts: rem(14px));
   }
 
   .btn {
@@ -289,10 +258,6 @@
     &._same,
     &:hover {
       @include fgcolor(primary, 5);
-    }
-
-    &[disabled] {
-      @include fgcolor(mute);
     }
   }
 
@@ -322,10 +287,10 @@
 
     img {
       display: inline-block;
-      // width: rem(12px);
-      opacity: 0.6;
+      opacity: 0.8;
       width: 0.9em;
       height: auto;
+      margin-top: -0.1rem;
     }
   }
 

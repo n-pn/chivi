@@ -73,7 +73,7 @@ module HttpUtil
 
   USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:123.0) Gecko/20100101 Firefox/123.0"
 
-  def self.gen_headers(url = "", auth : String? = :nil, type : Symbol = :html)
+  def self.gen_headers(url = "", type : Symbol = :html, auth : String? = nil)
     # headers = HTTP::Headers{"Origin" => url, "Referer" => url, "User-Agent" => USER_AGENT, "Accept-Encoding" => "gzip, deflate, br"}
     headers = HTTP::Headers{"Origin" => url, "Referer" => url, "User-Agent" => USER_AGENT}
 
