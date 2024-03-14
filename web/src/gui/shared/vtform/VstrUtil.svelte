@@ -188,6 +188,28 @@
       data-anchor=".vtform">
       <SIcon name="letter-case-lower" />
     </button>
+
+    <span class="sep u-fg-mute"></span>
+
+    <button
+      type="button"
+      class="btn _lg"
+      data-kbd="e"
+      on:click={() => (tform = tform.clear())}
+      use:tooltip={'Xoá nghĩa từ / Xoá phân loại'}
+      data-anchor=".vtform">
+      <SIcon name="eraser" />
+    </button>
+
+    <button
+      type="button"
+      class="btn _lg"
+      data-kbd="r"
+      on:click={() => (tform = tform.reset())}
+      use:tooltip={'Phục hồi lại nghĩa + phân loại ban đầu'}
+      data-anchor=".vtform">
+      <SIcon name="corner-up-left" />
+    </button>
   </div>
 
   {#if show_more}
@@ -259,6 +281,10 @@
     &:hover {
       @include fgcolor(primary, 5);
     }
+  }
+
+  .sep {
+    padding-right: 0.375rem;
   }
 
   .util-more {

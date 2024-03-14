@@ -81,8 +81,7 @@ struct MT::RawMtlBatch
   end
 
   def self.call_hanlp(text : String, ver : Int16 = 1_i16) : self
-    # link = "#{CV_ENV.lp_host}/mtl_text/mtl_#{ver}"
-    link = "http://192.168.1.22:5555/mtl_text/mtl_#{ver}"
+    link = "#{CV_ENV.lp_host}/mtl_text/mtl_#{ver}"
     HTTP::Client.post(link, body: text) do |res|
       raise "error: #{res.body_io.gets_to_end}" unless res.status.success?
       from_json(res.body_io)

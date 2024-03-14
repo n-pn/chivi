@@ -1,53 +1,39 @@
 require "cmark"
-require "../../_util/hash_util"
-
 require "../_base"
-require "../wnovel/wninfo"
-require "../member/viuser"
 
 class CV::Dtopic
-  include Clear::Model
+  include Crorm::Model
+  schema "dtopics", :postgres, strict: false
 
-  self.table = "dtopics"
-  primary_key type: :serial
+  field id : Int32, pkey: true, auto: true
 
-  column viuser_id : Int32 = 0
+  field viuser_id : Int32 = 0
 
   # column nvinfo_id : Int32 = 0
-  belongs_to nvinfo : Wninfo, foreign_key_type: Int32
 
   #####
 
-  column title : String = ""
-  column tslug : String = ""
-  column brief : String = ""
+  field title : String = ""
+  field tslug : String = ""
 
-  column labels : Array(String) = [] of String
-  column lslugs : Array(String) = [] of String
+  field ibody : String = ""
+  field itype : String = "md"
 
-  column btext : String = ""
-  column bhtml : String = ""
+  field bfull : String = ""
+  field bdesc : String = ""
 
-  ##########
+  field htags : Array(String) = [] of String
+  field state : Int32 = 0 # 0: normal, 1: sticky, -1: locked, -2: deleted, -3: removed
 
-  column ptype : Int32 = 0
-  column stars : Int32 = 0
+  field repl_count : Int32 = 0 # comment count
+  field like_count : Int32 = 0 # counting user bookmarks
+  field view_count : Int32 = 0 # number of times this topic is viewed
 
-  column _bump : Int32 = 0
-  column _sort : Int32 = 0
+  field ctime : Int64 = Time.utc.to_unix # created at
+  field mtime : Int64 = Time.utc.to_unix # updated at
 
-  column state : Int32 = 0 # 0: normal, 1: sticky, -1: locked, -2: deleted, -3: removed
-  column utime : Int64 = 0 # update when new comment created
-
-  column repl_count : Int32 = 0 # comment count
-  column like_count : Int32 = 0 # counting user bookmarks
-  column view_count : Int32 = 0 # number of times this topic is viewed
-
-  timestamps
-
-  # scope :filter_owner do |owner|
-  #   owner ? where({viuser_id: owner.id}) : with_viuser
-  # end
+  field rtime : Int64 = 0 # when new comment/reply created
+  field atime : Int64 = 0 # when new data changed
 
   def set_title(title : String)
     self.title = title
@@ -57,16 +43,6 @@ class CV::Dtopic
   def set_utime(utime : Int64)
     self.utime = utime
     update_sort!
-  end
-
-  def update_sort!
-    _sort = (self.utime // 60).to_i
-    _sort &+= repl_count // 3
-    _sort &+= like_count // 20
-    _sort &+= view_count // 60
-    _sort &+= sort_bonus
-
-    self._sort = _sort
   end
 
   MINUTES_OF_30_DAYS = 43200
@@ -97,22 +73,22 @@ class CV::Dtopic
     self.save!
   end
 
-  def set_labels(labels : Array(String))
-    self.labels = labels.uniq!(&.downcase)
-    self.lslugs = self.labels.map { |x| TextUtil.slugify(x) }
+  def htags=(htags : Array(String))
+    @htags = htags.uniq!(&.downcase)
   end
 
-  def update_content!(form, set_utime = true)
+  def update!(form, set_utime = true)
     self.set_utime(Time.utc.to_unix) if set_utime
 
     self.set_title(form.title)
-    self.set_labels(form.labels.split(",").map(&.strip))
+    self.set_htags(form.htags.split(",").map(&.strip))
 
-    self.btext = form.btext
-    self.bhtml = PostUtil.md_to_html(self.btext)
-    self.brief = self.btext.split("\n", 2).first? || ""
+    @itext = form.btext
+    @bhtml = PostUtil.md_to_html(form.btext)
 
-    self.save!
+    @brief = self.btext.split('\n', 2).first? || ""
+
+    self.upsert!
   end
 
   def soft_delete(admin = false)
@@ -120,23 +96,6 @@ class CV::Dtopic
   end
 
   def canonical_path
-    # TODO: add dboard slug
-    "/gd/t#{self.id}-#{self.tslug}"
-  end
-
-  #################
-
-  CACHE = RamCache(Int32, self).new(1024, ttl: 10.minutes)
-
-  def self.load!(id : Int32) : self
-    CACHE.get(id) { find!({id: id}) }
-  end
-
-  def self.inc_repl_count!(id : Int32, value = 1)
-    PGDB.exec <<-SQL, value, id
-      update cvposts
-      set repl_count = repl_count + $1
-      where id = $2
-      SQL
+    "/gd/t#{@id}-#{tslug}"
   end
 end

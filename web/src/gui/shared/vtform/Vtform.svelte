@@ -31,7 +31,6 @@
 
   import Glossary from './Glossary.svelte'
   import FormHead from './FormHead.svelte'
-  import VstrBtns from './VstrBtns.svelte'
   import VstrUtil from './VstrUtil.svelte'
   import FormBtns from './FormBtns.svelte'
   import HelpLink from './HelpLink.svelte'
@@ -225,8 +224,6 @@
           bind:value={tform.vstr}
           autocomplete="off"
           autocapitalize="off" />
-
-        <VstrBtns bind:tform />
       </div>
 
       <VstrUtil bind:tform {field} />
