@@ -147,7 +147,7 @@ class SP::QtData
     HTTP::Client.post(url, body: @lines.join('\n'), &.body_io.gets_to_end)
   end
 
-  C_GPT_API    = "http://184.174.38.115:9090"
+  C_GPT_API    = "http://184.174.38.115:9091"
   JSON_HEADERS = HTTP::Headers{"Content-Type" => "application/json"}
 
   private def call_c_gpt(lines : Array(String))

@@ -92,10 +92,12 @@
     await rpage.reload(ztext, qkind, pdict)
     vtext = vtext
   }
+
+  $: limit_by_privi = data._user.privi < 1 ? 1000 : data._user.privi * 2000
 </script>
 
 <div class="content">
-  <Cztext bind:ztext bind:error limit={2000} />
+  <Cztext bind:ztext bind:error limit={limit_by_privi} />
 
   <section class="output">
     <header>

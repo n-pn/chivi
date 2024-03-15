@@ -15,8 +15,8 @@ export const load = (async ({ url, parent }) => {
     pdict: gen_pdict(crepo),
     wn_id: crepo.wn_id,
     rmode: url.searchParams.get('rm') || 'qt',
-    qt_rm: url.searchParams.get('qt') || 'qt_v1',
-    mt_rm: url.searchParams.get('mt') || 'mtl_1',
+    qt_rm: url.searchParams.get('qt') || 'bd_zv',
+    mt_rm: url.searchParams.get('mt') || 'mtl_2',
   }
 
   return { ropts }

@@ -17,7 +17,7 @@
 
   export let ztext = ''
   export let state = 0
-  export let limit = 1e7
+  export let limit = 3e7
   export let error = ''
 
   let reader: FileReader

@@ -72,6 +72,14 @@
     @include fgcolor(primary, 6);
     @include linesd(primary, 5, $ndef: false);
   }
+
+  &._pro {
+    &._active,
+    &:hover {
+      @include fgcolor(warning, 6);
+      @include linesd(warning, 5, $ndef: false);
+    }
+  }
 }
 
 .chip-text {

@@ -1,13 +1,9 @@
 <script context="module" lang="ts">
-  const ftsizes = ['Rất nhỏ', 'Nhỏ vừa', 'Cỡ chuẩn', 'To vừa', 'Rất to']
   const wthemes = ['light', 'warm', 'dark', 'oled']
   const ftfaces = ['Roboto', 'Merriweather', 'Nunito Sans', 'Lora', 'Roboto Slab']
+  const ftsizes = ['Rất nhỏ', 'Khá nhỏ', 'Nhỏ vừa', 'Cỡ chuẩn', 'To vừa', 'Khá to', 'Rất to']
 
-  const r_modes = [
-    ['Thường', 0],
-    ['Zen', 1],
-    ['Dev', 2],
-  ]
+  const r_modes = ['Thường', 'Zen', 'Dev']
 
   const rmode_descs = [
     'Bấm vào dòng sẽ hiện lên chi tiết dòng',
@@ -66,7 +62,7 @@
         <SIcon name="minus" />
       </button>
       <field-value>{ftsizes[$data.rfsize - 1]}</field-value>
-      <button class="m-btn _sm" on:click={() => ($data.rfsize += 1)} disabled={$data.rfsize == 5}>
+      <button class="m-btn _sm" on:click={() => ($data.rfsize += 1)} disabled={$data.rfsize == 7}>
         <SIcon name="plus" />
       </button>
     </field-input>
@@ -109,7 +105,7 @@
   <div class="entry">
     <span class="label _sm">Chế độ đọc:</span>
     <field-input>
-      {#each r_modes as [label, value]}
+      {#each r_modes as label, value}
         <label
           class:_active={value == $data.r_mode}
           data-tip={rmode_descs[value]}

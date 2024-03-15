@@ -1,9 +1,9 @@
-<script context="module" lang="ts">
+<!-- <script context="module" lang="ts">
   import type { Writable } from 'svelte/store'
 
-  const ftsizes = ['Rất nhỏ', 'Nhỏ vừa', 'Cỡ chuẩn', 'To vừa', 'Rất to']
   const wthemes = ['light', 'warm', 'dark', 'oled']
   const ftfaces = ['Roboto', 'Merriweather', 'Nunito Sans', 'Lora', 'Roboto Slab']
+  const ftsizes = ['Rất nhỏ', 'Khá nhỏ', 'Nhỏ vừa', 'Cỡ chuẩn', 'To vừa', 'Khá to', 'Rất to']
 
   // const textlhs = [150, 150, 150, 150]
   const r_modes = [
@@ -310,4 +310,4 @@
     margin-bottom: 0.5rem;
     @include fgcolor(tert);
   }
-</style>
+</style> -->

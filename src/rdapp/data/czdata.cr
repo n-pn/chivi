@@ -38,7 +38,7 @@ class RD::Czdata
 
   @[AlwaysInline]
   def self.db(db_path : String)
-    Crorm::SQ3.new(db_path) { |db| db.init_db(self.init_sql) }
+    Crorm::SQ3.new(db_path, &.init_db(self.init_sql))
   end
 
   def self.init_db(sname : String, sn_id : String | Int32)
@@ -137,7 +137,7 @@ class RD::Czdata
   end
 
   def init_by_zlink(force : Bool = false) : Bool
-    return false unless (force || @zsize == 0) && !@zlink.empty?
+    return false if !force && @zsize > 0 || @zlink.empty?
 
     stale = Time.utc - (force ? 2.minutes : 20.years)
     rchap = RawRmchap.from_link(@zlink, stale: stale)

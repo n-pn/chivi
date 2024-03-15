@@ -71,7 +71,7 @@ enum MT::MtEpos : Int8
   NF # name prefixes
   NH # name suffixes
 
-  NC # center nouns
+  IC # independent clause
   VR # verb complement
 
   VAS # verb + aspect phrase

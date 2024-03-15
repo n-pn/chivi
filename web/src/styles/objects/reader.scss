@@ -57,6 +57,22 @@
   @include bps( --para-fs, rem(21px), rem(22px), rem(23px), rem(24px), rem(25px) );
 }
 
+.rd-fs-6 {
+  // prettier-ignore
+  @include bps( --head-fs, rem(25px), rem(27px), rem(29px), rem(31px), rem(33px) );
+
+  // prettier-ignore
+  @include bps( --para-fs, rem(22px), rem(23px), rem(24px), rem(25px), rem(26px) );
+}
+
+.rd-fs-7 {
+  // prettier-ignore
+  @include bps( --head-fs, rem(27px), rem(29px), rem(31px), rem(33px), rem(35px) );
+
+  // prettier-ignore
+  @include bps( --para-fs, rem(24px), rem(25px), rem(26px), rem(27px), rem(28px) );
+}
+
 .cdata {
   display: block;
 
