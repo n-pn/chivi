@@ -35,7 +35,7 @@ export const read_confg = (cookies?: Cookies | Map<string, string>): ConfigData 
     wtheme: cookies.get('wtheme') || 'light',
     wfface: +cookies.get('wfface') || 1,
 
-    rfsize: +cookies.get('rfsize') || 3,
+    rfsize: +cookies.get('rfsize') || 4,
     rfface: +cookies.get('rfface') || 1,
     textlh: +cookies.get('textlh') || 150,
 

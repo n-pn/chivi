@@ -44,7 +44,6 @@
 .rd-fs-4 {
   // prettier-ignore
   @include bps( --head-fs, rem(23px), rem(24px), rem(26px), rem(28px), rem(30px) );
-
   // prettier-ignore
   @include bps( --para-fs, rem(19px), rem(20px), rem(21px), rem(22px), rem(23px) );
 }
@@ -52,25 +51,22 @@
 .rd-fs-5 {
   // prettier-ignore
   @include bps( --head-fs, rem(24px), rem(26px), rem(28px), rem(30px), rem(32px) );
-
   // prettier-ignore
   @include bps( --para-fs, rem(21px), rem(22px), rem(23px), rem(24px), rem(25px) );
 }
 
 .rd-fs-6 {
   // prettier-ignore
-  @include bps( --head-fs, rem(25px), rem(27px), rem(29px), rem(31px), rem(33px) );
-
+  @include bps( --head-fs, rem(26px), rem(28px), rem(30px), rem(32px), rem(34px) );
   // prettier-ignore
-  @include bps( --para-fs, rem(22px), rem(23px), rem(24px), rem(25px), rem(26px) );
+  @include bps( --para-fs, rem(23px), rem(24px), rem(25px), rem(26px), rem(27px) );
 }
 
 .rd-fs-7 {
   // prettier-ignore
-  @include bps( --head-fs, rem(27px), rem(29px), rem(31px), rem(33px), rem(35px) );
-
+  @include bps( --head-fs, rem(28px), rem(30px), rem(33px), rem(35px), rem(37px) );
   // prettier-ignore
-  @include bps( --para-fs, rem(24px), rem(25px), rem(26px), rem(27px), rem(28px) );
+  @include bps( --para-fs, rem(26px), rem(27px), rem(28px), rem(29px), rem(30px) );
 }
 
 .cdata {
