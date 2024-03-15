@@ -21,6 +21,10 @@ class Uquota
   def initialize(@vu_id, @idate = Uquota.gen_idate)
   end
 
+  def limit_exceeded?(qcost : Int32 = 0)
+    @quota_using + qcost > @quota_limit
+  end
+
   ADD_USING_SQL = <<-SQL
     insert into uquotas(vu_id, idate, mtime, quota_using)
     values ($1, $2, $3, $4)
@@ -60,6 +64,24 @@ class Uquota
   def add_vcoin_bonus!(bonus : Int32, @mtime = Time.utc.to_unix)
     @vcoin_bonus, @quota_limit = @@db.query_one ADD_VCOIN_SQL, @vu_id, @idate, @mtime, bonus, as: {Int64, Int64}
   end
+
+  SUBTRACT_VCOIN_SQL = <<-SQL
+    update viusers set vcoin = vcoin - $1
+    where id = $2 and vcoin >= $1
+    returning vcoin
+    SQL
+
+  def spend_vcoin!(pad_value = 10_000)
+    qdiff = @quota_using - @quota_limit + pad_value
+    vcoin = qdiff / 100_000
+
+    return unless @@db.query_one?(SUBTRACT_VCOIN_SQL, vcoin, @vu_id, as: Float64)
+    self.add_vcoin_bonus!(bonus: qdiff.to_i)
+
+    vcoin
+  end
+
+  #####
 
   ADD_KARMA_SQL = <<-SQL
     insert into uquotas(vu_id, idate, mtime, karma_bonus)

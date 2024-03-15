@@ -51,28 +51,7 @@ class SP::QtData
   def set_opts(@pdict, @udict, @regen, @h_sep, @l_sep, @otype = "json")
   end
 
-  MULTP_MAP = {
-    "hviet" => 1,
-    "hname" => 1,
-    "qt_v1" => 2,
-    "mtl_0" => 3,
-    "mtl_1" => 4,
-    "mtl_2" => 5,
-    "mtl_3" => 5,
-    "ms_zv" => 8,
-    "ms_ze" => 8,
-    "bd_zv" => 10,
-    "bd_ze" => 10,
-    "c_gpt" => 10,
-    "dl_ze" => 20,
-    "dl_je" => 20,
-  }
-
-  def quota_using(qtype : String)
-    wcount = @lines.sum { |x| x.size &+ 1 }
-    charge = MULTP_MAP.fetch(qtype, 10) * wcount
-    {wcount, charge}
-  end
+  getter zsize : Int32 { @lines.sum { |x| x.size &+ 1 } }
 
   def get_vtran(qtype : String) : String
     return "" if @lines.empty?

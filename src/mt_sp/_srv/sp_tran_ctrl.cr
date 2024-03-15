@@ -36,42 +36,65 @@ class SP::TranCtrl < AC::Base
     do_translate(qdata, qkind)
   end
 
-  LOG_DIR = "var/ulogs/xquota"
-  Dir.mkdir_p(LOG_DIR)
+  PRIVI = {"c_gpt" => 0, "bd_ze" => 0}
 
   private def do_translate(qdata : QtData, qkind : String)
     sleep 10.milliseconds * (1 << (5 - self._privi))
+    guard_privi PRIVI.fetch(qkind, -1), "dịch nội dung thông qua chế độ dịch #{qkind}"
 
-    case qkind
-    when "baidu", "c_gpt"
-      guard_privi 0, "dịch nội dung thông qua chế độ dịch này"
-    end
-
-    wcount, charge = qdata.quota_using(qkind)
-    quota = Uquota.load(self._vu_id, self.client_ip)
-
-    if quota.quota_using > quota.quota_limit
-      raise Unauthorized.new("Bạn đã dùng quá giới hạn số chữ ngày hôm nay, mời quay lại vào ngày mai hoặc nâng cấp quyền hạn!")
-    end
-
-    quota.add_quota_spent!(wcount)
-
-    vdata = qdata.get_vtran(qkind)
-    spawn log_activity(charge, wcount, qkind)
+    quota = check_quota!(qdata, qkind)
 
     response.headers["X-Quota"] = quota.quota_limit.to_s
     response.headers["X-Using"] = quota.quota_using.to_s
-
     response.content_type = "text/plain; charset=utf-8"
+
+    vdata = qdata.get_vtran(qkind)
     render text: vdata
+  rescue ex : BadRequest
+    render :bad_request, text: ex.message
   rescue ex
     Log.error(exception: ex) { ex.message }
     render 500, text: ex.message
   end
 
-  private def log_activity(charge, wcount, qkind)
+  MULTP = {
+    "hviet" => 1, "hname" => 1, "qt_v1" => 2,
+    "mtl_1" => 4, "mtl_2" => 5, "mtl_3" => 5,
+    "ms_zv" => 8, "ms_ze" => 8,
+    "bd_zv" => 10, "bd_ze" => 10,
+    "mtl_0" => 3, "c_gpt" => 10,
+    "dl_ze" => 20, "dl_je" => 20,
+  }
+
+  private def check_quota!(qdata, qkind)
+    quota = Uquota.load(self._vu_id, self.client_ip)
+    zsize = qdata.zsize
+    qcost = MULTP.fetch(qkind, 10) * zsize
+
+    if quota.limit_exceeded?(qcost: qcost)
+      if self._vu_id < 1 || !self._cfg_enabled?("_auto_")
+        raise BadRequest.new("Bạn đã dùng hết lượng giới hạn ký tự dịch thuật hôm nay! Hãy quay lại vào ngày mai hoặc nâng cấp tài khoản!")
+      end
+
+      unless vcoin = quota.spend_vcoin!({qcost + 10_000, 20_000}.max)
+        raise BadRequest.new("Tăng giới hạn ký tự dịch thuật thất bại: Số vcoin khả dụng của bạn không đủ!")
+      end
+
+      response.headers["X-VCOIN"] = vcoin.round(3).to_s
+    end
+
+    quota.add_quota_spent!(qcost)
+    spawn log_quota_spent(qcost: qcost, zsize: zsize, qkind: qkind)
+
+    quota
+  end
+
+  LOG_DIR = "var/ulogs/xquota"
+  Dir.mkdir_p(LOG_DIR)
+
+  private def log_quota_spent(qcost : Int32, zsize : Int32, qkind : String)
     time_now = Time.local
-    log_file = "#{LOG_DIR}/#{time_now.to_s("%F")}.log"
+    log_file = "#{LOG_DIR}/spend-#{time_now.to_s("%F")}.log"
 
     File.open(log_file, "a") do |file|
       JSON.build(file) do |jb|
@@ -79,14 +102,23 @@ class SP::TranCtrl < AC::Base
           jb.field "uname", self._uname
           jb.field "vu_ip", self.client_ip
           jb.field "mtime", time_now.to_unix
-          jb.field "charge", charge
-          jb.field "wcount", wcount
-          jb.field "type", qkind
-          jb.field "orig", request.headers["Referer"]? || ""
+          jb.field "qcost", qcost
+          jb.field "zsize", zsize
+          jb.field "qkind", qkind
+          jb.field "horig", request.headers["Referer"]? || ""
         end
       end
 
       file.puts
+    end
+  end
+
+  private def convert_vcoin_to_quota!(quota : Uquota)
+    quota_diff = quota.quota_using - quota.quota_limit + 50_000
+    vcoin_cost = quota_diff / 100_000
+
+    quota.spend_vcoin!
+    unless CV::Xvcoin.subtract(vu_id: quota.vu_id, value: vcoin_cost)
     end
   end
 end

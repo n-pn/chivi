@@ -8,7 +8,7 @@ export const load = (async ({ params, parent, fetch, url }) => {
   const { sn_id, sname } = params
   const ch_no = parseInt(params.chap)
 
-  const rdurl = `/_rd/chaps/${sname}/${sn_id}/${ch_no}?force=${_conf.auto_u}`
+  const rdurl = `/_rd/chaps/${sname}/${sn_id}/${ch_no}?force=${_conf._auto_}`
   const rdata = await api_get<CV.Chinfo>(rdurl, fetch)
 
   return {

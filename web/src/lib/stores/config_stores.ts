@@ -23,9 +23,9 @@ interface ConfigData {
 
   r_mode: number
   show_z: boolean
-  auto_u: boolean
 
   _regen: number
+  _auto_: boolean
 }
 
 export const read_confg = (cookies?: Cookies | Map<string, string>): ConfigData => {
@@ -41,9 +41,9 @@ export const read_confg = (cookies?: Cookies | Map<string, string>): ConfigData 
 
     r_mode: +cookies.get('r_mode') || 0,
     show_z: cookies.get('show_z') == 't',
-    auto_u: cookies.get('auto_u') == 't',
-
     _regen: +cookies.get('_regen') || 0,
+
+    _auto_: cookies.get('_auto_') != 'f',
   }
 }
 
@@ -61,7 +61,9 @@ function save_config(data: ConfigData) {
 
   write_cookie('r_mode', `${data.r_mode}`)
   write_cookie('show_z', data.show_z ? 't' : 'f')
-  write_cookie('auto_u', data.auto_u ? 't' : 'f')
+
+  write_cookie('_auto_', data._auto_ ? 't' : 'f')
+  write_cookie('_regen', data._regen.toString())
 }
 
 export const config = {

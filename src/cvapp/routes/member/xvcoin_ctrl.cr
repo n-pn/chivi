@@ -88,7 +88,7 @@ class CV::XvcoinCtrl < CV::BaseCtrl
     vuser = self._viuser
 
     unless remain = vuser.spend_vcoin!(form.amount)
-      raise BadRequest.new("Số vcoin khả dụng của bạn ít hơn số vcoin bạn muốn tặng")
+      raise BadRequest.new("Số vcoin khả dụng của bạn ít hơn số vcoin bạn muốn dùng")
     end
 
     vcoin_bonus = (form.amount * 100_000).round.to_i

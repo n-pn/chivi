@@ -37,7 +37,7 @@
   <meta property="og:image" content={_meta?.image} />
 </svelte:head>
 
-<header class="app-header" class:clear={$scroll > 0}>
+<header class="app-header">
   <nav class="app-vessel">
     <div class="-left">
       <button class="appbar-item" on:click={() => popups.show('navbar')}>
@@ -102,8 +102,8 @@
   $header-gutter: math.div($header-height - $header-inner-height, 2);
 
   .app-header {
-    transition: transform 100ms ease-in-out;
-    will-change: transform;
+    // transition: transform 100ms ease-in-out;
+    // will-change: transform;
 
     position: sticky;
     display: block;
@@ -120,10 +120,10 @@
     @include bgcolor(primary, 8);
     @include shadow(2);
 
-    &.clear {
-      // top: -$header-height;
-      transform: translateY(-$header-height);
-    }
+    // &.clear {
+    //   // top: -$header-height;
+    //   transform: translateY(-$header-height);
+    // }
   }
 
   .app-vessel {

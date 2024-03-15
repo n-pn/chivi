@@ -60,7 +60,16 @@ export const call_qtran = async (
 
   const start = performance.now()
   const res = await fetch(url, { method: 'POST', body })
-  if (!res.ok) return [await res.text()]
+
+  const quota = +res.headers.get('X-QUOTA')
+  const using = +res.headers.get('X-USING')
+  const vcoin = +res.headers.get('X-VCOIN')
+  console.log({ quota, using, vcoin })
+
+  if (!res.ok) {
+    const line = await res.text()
+    return body.split('\n').map((x) => `Lỗi dịch: ${line}`)
+  }
 
   const data = await res.text()
 

@@ -125,10 +125,10 @@
     </label>
   </div>
 
-  <div class="entry">
-    <label class="switch" data-tip="Tự động thanh toán vcoin cho các chương cần thiết mở khóa">
-      <input type="checkbox" bind:checked={$data.auto_u} />
-      <span class="switch-label">Tự động mở khóa chương bằng vcoin:</span>
+  <div class="entry" data-tip="Tự động mở khóa chương hoặc tăng giới hạn ký tự">
+    <label class="switch">
+      <input type="checkbox" bind:checked={$data._auto_} />
+      <span class="switch-label">Tự động thanh toán bằng vcoin:</span>
     </label>
   </div>
 
