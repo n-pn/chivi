@@ -2,14 +2,14 @@
   type Mode = Record<string, string>
 
   const all_descs: Mode = {
-    c_gpt: 'Dịch bằng công cụ dịch GPT Tiên hiệp',
-    bd_zv: 'Dịch thô bằng công cụ Baidu Fanyi',
-    ms_zv: 'Dịch thô bằng công cụ Bing Translator',
+    c_gpt: 'Dịch bằng công cụ dịch GPT Tiên hiệp (Hệ số nhân: 6)',
+    bd_zv: 'Dịch thô bằng công cụ Baidu Fanyi (Hệ số nhân: 8)',
+    ms_zv: 'Dịch thô bằng công cụ Bing Translator (Hệ số nhân: 6)',
 
-    mtl_1: 'Dịch với trợ giúp từ công cụ AI với model ELECTRA SMALL',
-    mtl_2: 'Dịch với trợ giúp từ công cụ AI với model ELECTRA BASE',
-    mtl_3: 'Dịch với trợ giúp từ công cụ AI với model ERNIE GRAM',
-    qt_v1: 'Dịch thô bằng máy dịch phiên bản cũ',
+    mtl_1: 'Dịch với trợ giúp từ công cụ AI với model ELECTRA SMALL (Hệ số nhân: 3)',
+    mtl_2: 'Dịch với trợ giúp từ công cụ AI với model ELECTRA BASE (Hệ số nhân: 4)',
+    mtl_3: 'Dịch với trợ giúp từ công cụ AI với model ERNIE GRAM (Hệ số nhân: 4)',
+    qt_v1: 'Dịch thô bằng máy dịch phiên bản cũ đã ngừng bảo trì (Hệ số nhân: 2)',
   }
 
   const raw_modes: Mode = {
@@ -23,6 +23,17 @@
     mtl_2: 'Dịch Chivi 2',
     mtl_3: 'Dịch Chivi 3',
     qt_v1: 'Dịch máy cũ',
+  }
+
+  const all_costs = {
+    c_gpt: 6,
+    bd_zv: 8,
+    ms_zv: 6,
+
+    mtl_1: 3,
+    mtl_2: 4,
+    mtl_3: 4,
+    qt_v1: 2,
   }
 </script>
 
@@ -42,7 +53,8 @@
   <span class="chip-text u-show-pl">Dịch ngoài:</span>
   {#each Object.entries(raw_modes) as [_mode, label]}
     <a
-      class="chip-link _active"
+      class="chip-link"
+      class:_active={rmode == _mode}
       href={pager.gen_url({ rm: ropts.rmode, [ropts.rmode]: _mode })}
       data-tip={all_descs[_mode]}
       data-tip-loc="bottom">
@@ -56,7 +68,8 @@
   <span class="chip-text u-show-pl">Dịch Chivi:</span>
   {#each Object.entries(pro_modes) as [_mode, label]}
     <a
-      class="chip-link _pro _active"
+      class="chip-link _pro"
+      class:_active={rmode == _mode}
       href={pager.gen_url({ rm: ropts.rmode, [ropts.rmode]: _mode })}
       data-tip={all_descs[_mode]}
       data-tip-loc="bottom">

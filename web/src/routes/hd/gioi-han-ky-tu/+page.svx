@@ -27,15 +27,13 @@ Các con số 50000, 100000 ở trên không có nghĩa là mỗi ngày bạn đ
 | --------------- | ---------- |
 | Hán Việt        | 1          |
 | Máy dịch cũ     | 2          |
-| Máy dịch AI 1   | 4          |
-| Máy dịch AI 2   | 5          |
-| Máy dịch AI 3   | 5          |
-| Dịch bằng Bing  | 8          |
-| Dịch bằng Baidu | 10         |
-| GPT Tiên Hiệp   | 10         |
+| Dich Chivi 1    | 3          |
+| Dich Chivi 2    | 4          |
+| Dich Chivi 3    | 4          |
+| GPT Tiên Hiệp   | 6          |
+| Dịch bằng Bing  | 6          |
+| Dịch bằng Baidu | 8          |
 
 Hay nói cách khác, nếu bạn đọc chương truyện 1000 chữ bằng chế độ dịch Baidu, giới hạn ký tự sẽ là `10_000` chứ không chỉ là `1000`.
 
 ## Các cách gia tăng giới hạn ký tự khác
-
-_Đang hoàn thành_

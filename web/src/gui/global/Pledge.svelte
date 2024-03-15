@@ -23,7 +23,7 @@
         Bạn chưa đăng nhập, bấm vào đây để đăng nhập hoặc đăng ký tài khoản mới.
       </strong>
     </a>
-  {:else if privi == 1}
+  {:else if privi < 1}
     <a class="pledge" href="/me/privi"> Nâng cấp quyền hạn để mở khóa các tính năng! </a>
   {/if}
 </div>

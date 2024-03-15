@@ -58,18 +58,17 @@ class SP::TranCtrl < AC::Base
   end
 
   MULTP = {
-    "hviet" => 1, "hname" => 1, "qt_v1" => 2,
-    "mtl_1" => 4, "mtl_2" => 5, "mtl_3" => 5,
-    "ms_zv" => 8, "ms_ze" => 8,
-    "bd_zv" => 10, "bd_ze" => 10,
-    "mtl_0" => 3, "c_gpt" => 10,
-    "dl_ze" => 20, "dl_je" => 20,
+    "hviet" => 1, "hname" => 1,
+    "qt_v1" => 2, "mtl_0" => 2,
+    "mtl_1" => 3, "mtl_2" => 4, "mtl_3" => 4,
+    "ms_zv" => 6, "bd_zv" => 8, "c_gpt" => 6,
+    "ms_ze" => 6, "bd_ze" => 8, "dl_ze" => 10,
   }
 
-  private def check_quota!(qdata, qkind)
+  private def check_quota!(qdata : QtData, qkind : String)
     quota = Uquota.load(self._vu_id, self.client_ip)
     zsize = qdata.zsize
-    qcost = MULTP.fetch(qkind, 10) * zsize
+    qcost = MULTP.fetch(qkind, 4) * zsize
 
     if quota.limit_exceeded?(qcost: qcost)
       if self._vu_id < 1 || !self._cfg_enabled?("_auto_")
