@@ -375,14 +375,20 @@
 
   .main {
     display: block;
-    @include bdradi;
 
     @include linesd(--bd-main, $inset: true);
     @include bgcolor(main);
 
+    margin: 0 -0.75rem;
+
     &:focus-within {
       // @include linesd(primary, 4, $ndef: false);
       @include bgcolor(secd);
+    }
+
+    @include bp-min(pl) {
+      @include bdradi;
+      margin: 0;
     }
   }
 

@@ -2,7 +2,6 @@
   import { titleize, detitleize, capitalize, uncapitalize } from '$utils/text_utils'
 
   import { gtran_word } from '$utils/qtran_utils'
-
   import { deepl_word } from '$utils/qtran_utils/dl_tran'
   import { btran_word } from '$utils/qtran_utils/ms_tran'
   import { baidu_word } from '$utils/qtran_utils/bd_tran'
@@ -114,12 +113,18 @@
   }
 
   const tran_types = [
-    ['prevs', 'img', 'chivi'],
+    ['prevs', 'img', 'stack'],
     ['baidu', 'brand-baidu', 'extra'],
     ['gtran', 'brand-google'],
     ['btran', 'brand-bing'],
     ['deepl', 'img', 'deepl'],
   ]
+
+  const fill_qtran = async (qkind: string, keep_caps = false) => {
+    tform.vstr = '...'
+    const trans = await fetch_trans(tform.zstr, qkind, keep_caps)
+    tform.vstr = trans[0]
+  }
 </script>
 
 <div class="util">
@@ -127,23 +132,64 @@
     <button
       type="button"
       class="btn"
+      data-kbd="h"
+      on:click={() => (tform.vstr = tform.hviet)}
+      use:tooltip={'Điền vào Hán Việt'}
+      data-anchor=".vtform">
+      <SIcon name="letter-h" />
+    </button>
+
+    <button
+      type="button"
+      class="btn"
+      data-kbd="d"
+      on:click={() => fill_qtran('prevs', keep_caps)}
+      use:tooltip={'Các gợi ý dịch từ Chivi'}
+      data-anchor=".vtform">
+      <img src="/icons/stack.svg" alt="stack" />
+    </button>
+
+    <button
+      type="button"
+      class="btn"
+      data-kbd="b"
+      on:click={() => fill_qtran('baidu', keep_caps)}
+      use:tooltip={'Dịch nhanh bằng Baidu Fanyi'}
+      data-anchor=".vtform">
+      <SIcon name="brand-baidu" iset="extra" />
+    </button>
+
+    <button
+      type="button"
+      class="btn"
+      data-kbd="g"
+      on:click={() => fill_qtran('gtran', keep_caps)}
+      use:tooltip={'Dịch nhanh bằng Google Translate'}
+      data-anchor=".vtform">
+      <SIcon name="brand-google" />
+    </button>
+
+    <button
+      type="button"
+      class="btn"
+      data-kbd="d"
+      on:click={() => fill_qtran('deepl', keep_caps)}
+      use:tooltip={'Dịch nhanh bằng DeepL Translator'}
+      data-anchor=".vtform">
+      <img src="/icons/deepl.svg" alt="deepl" />
+    </button>
+
+    <button
+      type="button"
+      class="btn"
       data-kbd="t"
       class:_same={more_type == 'trans'}
       on:click={() => trigger_more('trans')}
-      use:tooltip={'Dịch cụm từ bằng các công cụ dịch'}
+      use:tooltip={'Tất cả các kết quả gợi ý dịch'}
       data-anchor=".vtform">
-      <span>Gợi ý nghĩa</span>
+      <SIcon name="language" />
       <SIcon name="caret-down" />
     </button>
-
-    {#each [1, 2, 3, 4] as value}
-      <button
-        type="button"
-        data-kbd={value}
-        on:click={() => (tform.vstr = titleize(tform.vstr, value))}
-        hidden>
-      </button>
-    {/each}
 
     <button
       type="button"
@@ -189,8 +235,6 @@
       <SIcon name="letter-case-lower" />
     </button>
 
-    <span class="sep u-fg-mute"></span>
-
     <button
       type="button"
       class="btn _lg"
@@ -210,6 +254,15 @@
       data-anchor=".vtform">
       <SIcon name="corner-up-left" />
     </button>
+
+    {#each [1, 2, 3, 4] as value}
+      <button
+        type="button"
+        data-kbd={value}
+        on:click={() => (tform.vstr = titleize(tform.vstr, value))}
+        hidden>
+      </button>
+    {/each}
   </div>
 
   {#if show_more}
@@ -263,7 +316,7 @@
     display: inline-flex;
     flex-wrap: nowrap;
     align-items: center;
-    padding: 0 0.25rem;
+    padding: 0 0.325rem;
     // font-weight: 500;
     @include fgcolor(tert);
     height: 100%;
@@ -274,7 +327,12 @@
     // padding: 0;
     // padding-bottom: 0.125rem;
     :global(svg) {
-      font-size: 1rem;
+      @include ftsize(lg);
+    }
+
+    img {
+      width: 0.875rem;
+      opacity: 0.7;
     }
 
     &._same,

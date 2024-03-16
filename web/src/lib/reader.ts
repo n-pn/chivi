@@ -136,6 +136,9 @@ export class Rdpage {
   p_min: number
   p_max: number
 
+  // p_min_map: Record<string, number>
+  // p_idx_map: Record<string, number>
+
   constructor(ztext: string, p_idx: number = 0) {
     this.hviet_loaded = false
     this.lines = []
@@ -152,6 +155,9 @@ export class Rdpage {
 
     this.p_min = p_idx
     this.p_idx = p_idx
+
+    // this.p_min_map = {}
+    // this.p_idx_map = {}
   }
 
   gen_rinit(cache: number, method = 'GET'): RequestInit {
@@ -217,7 +223,7 @@ export class Rdpage {
   }
 
   async load_prev(qkind = 'qt_v1', pdict = 'combine', regen = 0) {
-    if (this.p_min <= 0) return 0
+    // if (this.p_min <= 0) return 0
     const limit = qkind == 'c_gpt' ? 400 : qkind.startsWith('mtl') ? 600 : 800
 
     let p_min = this.p_min
@@ -249,12 +255,11 @@ export class Rdpage {
     }
 
     this.p_min = p_min
+    // this.p_min_map[qkind] = p_min
     return this.p_min
   }
 
   async load_more(qkind = 'qt_v1', pdict = 'combine', regen = 0) {
-    if (this.p_idx >= this.p_max) return this.p_max - 5
-
     let p_idx = this.p_min
 
     let texts = []
@@ -266,12 +271,13 @@ export class Rdpage {
     for (; p_idx < this.p_max; p_idx++) {
       const rline = this.lines[p_idx]
 
-      if (p_idx >= this.p_idx) {
+      if (p_idx >= this.p_idx || !rline.trans[qkind]) {
         count += rline.ztext.length
         if (count > limit && p_idx + 3 < this.p_max) break
       }
 
       if (rline.trans[qkind]) continue
+
       texts.push(rline.ztext)
       l_idx.push(p_idx)
     }
@@ -287,10 +293,26 @@ export class Rdpage {
       }
     }
 
-    let p_min = this.p_idx == 0 ? 0 : p_idx - 10
-    // if (this.p_min < p_min) this.p_min = p_min
-
+    let p_min = this.p_idx < 10 ? 0 : p_idx + 10 > this.p_max ? this.p_max - 10 : this.p_idx - 5
     this.p_idx = p_idx
+
+    // this.p_idx_map[qkind] = p_idx
+
+    // if (p_min > 30 && this.p_min < p_min - 30) {
+    //   this.p_min = p_min - 30
+    //   this.p_min_map[qkind] = this.p_min
+    // }
+
     return p_min
   }
+
+  load_slice(qkind: string) {
+    const p_min = this.p_min
+    const p_idx = this.p_idx
+    return p_min < p_idx ? this.lines.slice(p_min, p_idx) : []
+  }
+
+  // p_idx_of(qkind: string) {
+  //   return this.p_idx_map[qkind] || 0
+  // }
 }

@@ -7,7 +7,10 @@ export function init_page(fpath: string, ztext: string, p_idx = 0) {
 
   let rpage = rpages.get(fpath)
 
-  if (!rpage) {
+  if (rpage) {
+    rpage.p_min = p_idx
+    rpage.p_idx = p_idx
+  } else {
     rpage = new Rdpage(ztext, p_idx)
     rpages.set(fpath, rpage)
   }

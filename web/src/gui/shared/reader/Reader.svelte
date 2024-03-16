@@ -9,7 +9,7 @@
 </script>
 
 <script lang="ts">
-  import { type Rdline, Rdword } from '$lib/reader'
+  import { type Rdline, Rdword, Rdpage } from '$lib/reader'
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Switch from './Switch.svelte'
 
@@ -33,16 +33,18 @@
   // - 3: reload hviet + vtran
   let state = 3
 
+  let rpage = init_page(rdata.cksum, rdata.ztext || '', p_idx)
+
   afterNavigate(() => {
     l_idx = -1
     state = 2
     focus_line = undefined
     focus_node = undefined
     $ctmenu_ctrl.actived = false
+    rpage = init_page(rdata.cksum, rdata.ztext || '', p_idx)
   })
 
   $: l_max = rdata.ztext ? rdata.ztext.length : 0
-  $: rpage = init_page(rdata.cksum, rdata.ztext || '', p_idx)
 
   $: r_mode = $config.r_mode == 1 ? 1 : 2
   $: show_z = $config.show_z
@@ -57,25 +59,30 @@
   let rword = Rdword.from(focus_node)
 
   $: qkind = ropts.rmode == 'mt' ? ropts.mt_rm : ropts.qt_rm
-  $: vdata = rpage.lines.slice(rpage.p_min, rpage.p_idx)
+  $: p_min = rpage.p_min
+  $: p_max = rpage.p_idx
+
+  $: vdata = rpage.lines.slice(p_min, p_max)
 
   let prev_state = 0
   let more_state = 0
 
-  $: if (more_state == 0 && prev_state == 1) load_prev()
+  // $: if (more_state == 0 && prev_state == 2) load_prev()
   $: if (more_state == 2) load_more()
 
   const load_prev = async () => {
+    prev_state = 1
     p_idx = await rpage.load_prev(qkind, ropts.pdict, $config._regen)
-    vdata = rpage.lines.slice(rpage.p_min, rpage.p_idx)
-
     prev_state = 0
+
+    p_min = rpage.p_min
+    vdata = rpage.load_slice(qkind)
   }
 
   const load_more = async () => {
     more_state = 1
     p_idx = await rpage.load_more(qkind, ropts.pdict, $config._regen)
-    vdata = rpage.lines.slice(rpage.p_min, rpage.p_idx)
+    p_max = rpage.p_idx
     more_state = 0
   }
 
@@ -104,6 +111,7 @@
   const on_term_change = async (ztext = '') => {
     if (!ztext) return
     await rpage.reload(ztext, ropts.mt_rm, ropts.pdict, $config._regen || 1)
+    vdata = rpage.load_slice(qkind)
   }
 
   const gen_vdata = (rline: Rdline, mode: number = 1) => {
@@ -197,17 +205,17 @@
     on:click={handle_click}>
     {#if vdata.length > 0}<Ctmenu bind:this={ctmenu} {rpage} />{/if}
 
-    {#if rpage.p_min > 0}
-      <div class="d-empty-sm">
+    {#if p_min > 0}
+      <div class="d-empty-xs">
         <button class="m-btn _sm" on:click={load_prev}>
           <SIcon name="loader-2" spin={prev_state == 1} />
-          <span>Xem {rpage.p_min} dòng trước đã đọc</span>
+          <span>Xem {p_min} dòng trước đã đọc</span>
         </button>
       </div>
     {/if}
 
     {#each vdata as vline, index}
-      {@const l_id = rpage.p_min + index}
+      {@const l_id = p_min + index}
       {@const elem = l_id == 0 ? 'h1' : 'p'}
       <cv-data id="L{l_id}" data-line={l_id}>
         {#if show_z}
@@ -224,11 +232,11 @@
           <span>Đang dịch nội dung...</span>
         </button>
       </div>
-    {:else if rpage.p_idx < rpage.lines.length}
+    {:else if p_max < rpage.p_max}
       <div class="d-empty-xs">
         <button class="m-btn _success _sm" use:trigger_on_view on:click={() => (more_state = 2)}>
           <SIcon name="loader-2" spin={more_state == 1} />
-          <span>Xem tiếp {rpage.p_max - rpage.p_idx} dòng tiếp sau</span>
+          <span>Xem tiếp {rpage.p_max - p_max} dòng tiếp sau</span>
         </button>
       </div>
     {/if}
@@ -265,5 +273,9 @@
 
   .reader > :first-child {
     margin-top: 1em;
+  }
+
+  .d-empty-xs {
+    margin: 1rem 0;
   }
 </style>
