@@ -44,7 +44,7 @@
         <SIcon name="menu-2" />
       </button>
       <a href="/" class="appbar-item _brand">
-        <img src="/icons/chivi.svg" alt="logo" />
+        <img src="/icons/chivi.svg" alt="logo" class="logo" />
         <span class="appbar-text" class:u-show-tm={!!_prev}>Chivi</span>
       </a>
 
@@ -97,54 +97,11 @@
 {#if $popups.config}<Config bind:actived={$popups.config} />{/if}
 
 <style lang="scss">
-  $header-height: 3rem;
-  $header-inner-height: 2.25rem;
-  $header-gutter: math.div($header-height - $header-inner-height, 2);
-
-  .app-header {
-    // transition: transform 100ms ease-in-out;
-    // will-change: transform;
-
-    position: sticky;
-    display: block;
-    z-index: 50;
-
-    top: 0;
-    left: 0;
-
-    width: 100%;
-    height: $header-height;
-    padding: $header-gutter 0;
-
-    color: #fff;
-    @include bgcolor(primary, 8);
-    @include shadow(2);
-
-    // &.clear {
-    //   // top: -$header-height;
-    //   transform: translateY(-$header-height);
-    // }
-  }
-
   .app-vessel {
     display: flex;
     position: relative;
 
     padding-top: 0;
     padding-bottom: 0;
-  }
-
-  .-left,
-  .-right {
-    @include flex($gap: var(--gutter-pm));
-    margin: 0;
-  }
-
-  .-left {
-    flex-grow: 1;
-  }
-
-  .-right {
-    padding-left: $header-gutter;
   }
 </style>

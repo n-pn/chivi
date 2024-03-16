@@ -36,11 +36,8 @@ class SP::TranCtrl < AC::Base
     do_translate(qdata, qkind)
   end
 
-  PRIVI = {"c_gpt" => 0, "bd_ze" => 0}
-
   private def do_translate(qdata : QtData, qkind : String)
     sleep 10.milliseconds * (1 << (5 - self._privi))
-    guard_privi PRIVI.fetch(qkind, -1), "dịch nội dung thông qua chế độ dịch #{qkind}"
 
     quota = check_quota!(qdata, qkind)
 

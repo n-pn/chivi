@@ -41,14 +41,6 @@
   $: vcoin_needed = (ztext.length * (qcost_map[data.qkind] || 1)) / 100_000
 
   const translate = async () => {
-    const quota_increased = await increase_quota(vcoin_needed)
-
-    if (!quota_increased) {
-      err_text = 'Lượng vcoin hiện có của bạn không đủ!'
-      state = 2
-      return
-    }
-
     err_text = ''
     state = 1
 
@@ -72,22 +64,6 @@
       state = 0
       alert(ex)
     }
-  }
-
-  const increase_quota = async (amount = 10) => {
-    const headers = { 'Content-type': 'application/json' }
-    const body = JSON.stringify({ amount, reason: 'batch translation' })
-    const res = await fetch('/_db/xvcoins/to_quota', { method: 'POST', headers, body })
-
-    if (!res.ok) {
-      alert(await res.text())
-      return false
-    }
-
-    const rdata = await res.json()
-    $_user.vcoin = rdata.remain || 0
-
-    return true
   }
 
   const do_translate = async (chaps: Czdata[], start = 0) => {
@@ -150,23 +126,13 @@
     </div>
   </header>
   <div class="zform">
-    <div class="input">
-      <Cztext bind:ztext bind:state />
-    </div>
-
-    <div class="split">
-      <Csplit {ztext} bind:state bind:chaps />
-    </div>
+    <div class="input"><Cztext bind:ztext bind:state /></div>
+    <div class="split"><Csplit {ztext} bind:state bind:chaps /></div>
   </div>
 
   <footer class="m-flex _cy">
     {#if err_text}
       <div class="form-msg _err">{err_text}</div>
-    {:else if ztext}
-      <div class="form-msg">
-        Bạn cần thiết {vcoin_needed}
-        <SIcon name="vcoin" iset="icons" /> để dịch văn bản này
-      </div>
     {:else}
       <div class="form-msg">Nhập văn bản phía trên để dịch</div>
     {/if}

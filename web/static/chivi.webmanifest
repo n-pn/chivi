@@ -1,21 +1,21 @@
 {
-	"name": "Chivi",
-	"short_name": "Chivi",
-	"start_url": "/",
-	"display": "standalone",
-	"description": "Dịch máy tiếng Trung",
-	"theme_color": "#0b476b",
-	"background_color": "#f7fafc",
-	"icons": [
-		{
-			"src": "/favi/android-chrome-192x192.png",
-			"sizes": "192x192",
-			"type": "image/png"
-		},
-		{
-			"src": "/favi/android-chrome-512x512.png",
-			"sizes": "512x512",
-			"type": "image/png"
-		}
-	]
+  "name": "Chivi",
+  "short_name": "Chivi",
+  "start_url": "/",
+  "display": "standalone",
+  "description": "Công cụ dịch thuật Trung Việt và đọc tiểu thuyết tiếng Trung",
+  "theme_color": "#0b476b",
+  "background_color": "#f7fafc",
+  "icons": [
+    {
+      "src": "/favi/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favi/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }

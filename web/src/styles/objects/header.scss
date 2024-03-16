@@ -19,15 +19,9 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   height: $header-height;
   padding: $header-gutter 0;
 
-  color: #fff;
-  @include bgcolor(primary, 8);
-
-  @include shadow(2);
-
-  &._clear {
-    // top: -$header-height;
-    transform: translateY(-$header-height);
-  }
+  @include fgcolor(main);
+  @include bgcolor(tert);
+  @include shadow(3);
 
   .-wrap {
     display: flex;
@@ -66,20 +60,20 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   padding: 0 0.5rem;
   height: $height;
 
-  @include fgcolor(neutral, 0);
+  @include fgcolor(secd);
   @include bdradi();
-  @include bgcolor(primary, 7);
+  @include bgcolor(main);
 
   .-left > &:last-child,
   &:hover {
-    @include bgcolor(primary, 6);
+    @include bgcolor(primary, 5, 2);
   }
 
   &:disabled,
   &[disable] {
     cursor: text;
     @include fgcolor(mute);
-    @include bgcolor(primary, 7);
+    @include bgcolor(mute);
   }
 
   &._primary {
@@ -113,8 +107,8 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
 
   img,
   svg {
-    width: 1.25rem !important;
-    height: 1.25rem !important;
+    width: 1.25rem;
+    height: 1.25rem;
   }
 }
 
@@ -150,5 +144,19 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
   svg + &,
   img + & {
     margin-left: 0.25rem;
+  }
+}
+
+.appbar-item {
+  &._brand {
+    padding-left: 0.325rem;
+    // background: #c2dccd !important;
+  }
+
+  .logo {
+    // display: inline-block;
+    border-radius: 3px;
+    width: 1.75rem;
+    height: 1.75rem;
   }
 }
