@@ -128,19 +128,30 @@ export class Rdline {
 }
 
 export class Rdpage {
-  lines: Rdline[]
-  state: Record<string, boolean>
-  track: Record<string, number>
+  hviet_loaded: boolean
 
-  constructor(ztext: string) {
+  lines: Rdline[]
+
+  p_idx: number
+  p_min: number
+  p_max: number
+
+  constructor(ztext: string, p_idx: number = 0) {
+    this.hviet_loaded = false
     this.lines = []
-    this.state = {}
-    this.track = {}
 
     for (let line of ztext.split('\n')) {
       line = line.replaceAll(/\s/g, '')
       if (line) this.lines.push(new Rdline(line))
     }
+
+    this.p_max = this.lines.length
+
+    if (p_idx > this.p_max) p_idx = this.p_max - 5
+    if (p_idx < 0) p_idx = 0
+
+    this.p_min = p_idx
+    this.p_idx = p_idx
   }
 
   gen_rinit(cache: number, method = 'GET'): RequestInit {
@@ -168,7 +179,7 @@ export class Rdpage {
   }
 
   async load_hviet(cache = 0) {
-    if (cache == 0 || (cache == 1 && this.state['hviet'])) return
+    if (cache == 0 || (cache == 1 && this.hviet_loaded)) return
 
     const res = await fetch(`/_ai/hviet`, this.gen_rinit(cache, 'POST'))
     if (!res.ok) return
@@ -177,7 +188,7 @@ export class Rdpage {
     const hviet = lines.map((x) => x.match(/[\s\u200b].[^\s\u200b]*/g))
 
     for (let i = 0; i < this.lines.length; i++) this.lines[i].hviet = hviet[i]
-    this.state['hviet'] = true
+    this.hviet_loaded = true
   }
 
   async reload(needle: string, qkind = 'qt_v1', pdict = 'combine', regen = 1) {
@@ -205,39 +216,81 @@ export class Rdpage {
     return l_ids
   }
 
+  async load_prev(qkind = 'qt_v1', pdict = 'combine', regen = 0) {
+    if (this.p_min <= 0) return 0
+    const limit = qkind == 'c_gpt' ? 400 : qkind.startsWith('mtl') ? 600 : 800
+
+    let p_min = this.p_min
+    let texts = []
+    let l_idx = []
+    let count = 0
+
+    while (p_min > 0) {
+      const rline = this.lines[p_min - 1]
+
+      count += rline.ztext.length
+      if (count > limit && p_min > 2) break
+      p_min -= 1
+
+      if (rline.trans[qkind]) continue
+      texts.unshift(rline.ztext)
+      l_idx.unshift(p_min)
+    }
+
+    if (texts.length > 0) {
+      console.log({ type: 'load_prev', from: p_min, upto: this.p_min, size: count })
+
+      const ropts = { pdict, h_sep: p_min == 0 ? 1 : 0, regen }
+      const lines = await call_qtran(texts.join('\n'), qkind, ropts)
+
+      for (let i = 0; i < lines.length; i++) {
+        this.lines[l_idx[i]].trans[qkind] = lines[i]
+      }
+    }
+
+    this.p_min = p_min
+    return this.p_min
+  }
+
   async load_more(qkind = 'qt_v1', pdict = 'combine', regen = 0) {
-    const start = this.track[qkind] || 0
-    const total = this.lines.length
-    if (start >= total) total
+    if (this.p_idx >= this.p_max) return this.p_max - 5
 
-    let new_start = start
+    let p_idx = this.p_min
 
-    let input = ''
+    let texts = []
+    let l_idx = []
     let count = 0
 
     const limit = qkind == 'c_gpt' ? 500 : qkind.startsWith('mtl') ? 800 : 1200
 
-    for (; new_start < total; new_start++) {
-      const ztext = this.lines[new_start].ztext
+    for (; p_idx < this.p_max; p_idx++) {
+      const rline = this.lines[p_idx]
 
-      if (input) input += '\n'
-      input += ztext
-      count += ztext.length
+      if (p_idx >= this.p_idx) {
+        count += rline.ztext.length
+        if (count > limit && p_idx + 3 < this.p_max) break
+      }
 
-      if (new_start + 5 < total && count > limit) break
+      if (rline.trans[qkind]) continue
+      texts.push(rline.ztext)
+      l_idx.push(p_idx)
     }
 
-    if (!count) return new_start
-    console.log({ from: start, upto: new_start, size: count })
+    if (texts.length > 0) {
+      console.log({ type: 'load_more', from: this.p_idx, upto: p_idx, size: count })
 
-    const ropts = { pdict, h_sep: start == 0 ? 1 : 0, regen }
-    const lines = await call_qtran(input.trim(), qkind, ropts)
+      const ropts = { pdict, h_sep: this.p_idx == 0 ? 1 : 0, regen }
+      const qdata = await call_qtran(texts.join('\n'), qkind, ropts)
 
-    for (let i = 0; i < lines.length; i++) {
-      this.lines[i + start].trans[qkind] = lines[i]
+      for (let i = 0; i < qdata.length; i++) {
+        this.lines[l_idx[i]].trans[qkind] = qdata[i]
+      }
     }
 
-    this.track[qkind] = new_start
-    return new_start
+    let p_min = this.p_idx == 0 ? 0 : p_idx - 10
+    // if (this.p_min < p_min) this.p_min = p_min
+
+    this.p_idx = p_idx
+    return p_min
   }
 }

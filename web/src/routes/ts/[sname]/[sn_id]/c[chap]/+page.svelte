@@ -10,9 +10,12 @@
   import SIcon from '$gui/atoms/SIcon.svelte'
   import Gmenu from '$gui/molds/Gmenu.svelte'
   import Footer from '$gui/sects/Footer.svelte'
+
+  import Rerror from '$gui/shared/reader/Rerror.svelte'
   import Reader from '$gui/shared/reader/Reader.svelte'
 
   import type { PageData } from './$types'
+  import { browser } from '$app/environment'
   export let data: PageData
 
   $: ({ crepo, rdata, ropts, rmemo } = data)
@@ -26,18 +29,19 @@
   $: prev_path = ch_no > 1 ? chap_path(base_path, ch_no - 1, ropts) : base_path
   $: next_path = ch_no < crepo.chmax ? chap_path(base_path, ch_no + 1, ropts) : memo_path
 
-  afterNavigate(async () => await mark_chap())
-
   const main_menu_icon = ({ ch_no }, { lc_mtype, lc_ch_no }) => {
     if (ch_no == lc_ch_no) return ['list', 'bookmark', 'pin'][lc_mtype]
     return ['list', 'bookmark-off', 'pinned-off'][lc_mtype]
   }
 
-  const mark_chap = async (mtype = -1) => {
+  const mark_chap = async (mtype = -1, p_idx = 0) => {
     if (data._user.privi < 0) return
     $rmemo.rd_id = crepo.id
+    $rmemo.lc_p_idx = p_idx
     $rmemo = await mark_rdchap($rmemo, rdata, ropts, mtype)
   }
+
+  $: if (browser && data.p_idx >= 0) mark_chap(-1, data.p_idx)
 
   let _onload = false
 
@@ -64,7 +68,13 @@
   ]
 </script>
 
-<Reader {crepo} {ropts} {rdata} />
+<article class="article island">
+  {#if rdata.error}
+    <Rerror {crepo} bind:rdata />
+  {:else}
+    <Reader {rdata} {ropts} bind:p_idx={data.p_idx} />
+  {/if}
+</article>
 
 <Footer>
   <div class="navi">

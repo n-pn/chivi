@@ -83,7 +83,7 @@ enum MT::MtEpos : Int8
 
   @[AlwaysInline]
   def noun?
-    self.in?(NN, NR, NT, NP, NF, NH, NC)
+    self.in?(NN, NR, NT, NP, NF, NH)
   end
 
   @[AlwaysInline]

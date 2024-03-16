@@ -9,10 +9,6 @@ article {
   @include shadow(2);
   @include bgcolor(tert);
   @include padding-x(var(--gutter));
-
-  @include tm-dark($svelte: false) {
-    @include linesd(--bd-soft, $inset: true);
-  }
 }
 
 .md-post {
