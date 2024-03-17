@@ -273,7 +273,7 @@ export class Rdpage {
 
       if (p_idx >= this.p_idx || !rline.trans[qkind]) {
         count += rline.ztext.length
-        if (count > limit && p_idx + 3 < this.p_max) break
+        if (count >= limit && p_idx + 4 < this.p_max) break
       }
 
       if (rline.trans[qkind]) continue
@@ -285,7 +285,7 @@ export class Rdpage {
     if (texts.length > 0) {
       console.log({ type: 'load_more', from: this.p_idx, upto: p_idx, size: count })
 
-      const ropts = { pdict, h_sep: this.p_idx == 0 ? 1 : 0, regen }
+      const ropts = { pdict, h_sep: this.p_min == 0 ? 1 : 0, regen }
       const qdata = await call_qtran(texts.join('\n'), qkind, ropts)
 
       for (let i = 0; i < qdata.length; i++) {
@@ -293,7 +293,7 @@ export class Rdpage {
       }
     }
 
-    let p_min = this.p_idx < 10 ? 0 : p_idx + 10 > this.p_max ? this.p_max - 10 : this.p_idx - 5
+    let p_min = this.p_idx < 6 ? 0 : this.p_idx
     this.p_idx = p_idx
 
     // this.p_idx_map[qkind] = p_idx

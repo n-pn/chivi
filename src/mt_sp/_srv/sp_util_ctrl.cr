@@ -5,10 +5,19 @@ class SP::UtilCtrl < AC::Base
 
   @[AC::Route::GET("/defns")]
   def defns(zh ztext : String = "...")
-    trans = SqTran.get_trans(ztext)
-    Log.info { trans.colorize.yellow }
+    trans = ZvWord.get_trans(ztext)
     trans.push(call_qt_v1(ztext)).uniq!
     render text: trans.join('\n')
+  rescue ex
+    Log.error(exception: ex) { ztext }
+    render status: 500, text: ex.message
+  end
+
+  @[AC::Route::GET("/names")]
+  def names(zh ztext : String = "...")
+    names = ZvName.get_names(ztext)
+    names.push(MT::QtCore.tl_hvname(ztext)).uniq!
+    render text: names.join('\n')
   rescue ex
     Log.error(exception: ex) { ztext }
     render status: 500, text: ex.message

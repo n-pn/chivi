@@ -24,7 +24,7 @@
   export let p_idx = 0
   let l_idx = -1
 
-  $: pager = new Pager($page.url, { rm: 'qt', qt: 'bd_zv', mt: 'mtl_2' })
+  $: pager = new Pager($page.url)
 
   // states:
   // - 0: no need to reload,

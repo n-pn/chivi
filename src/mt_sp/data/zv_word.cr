@@ -1,10 +1,10 @@
 require "crorm"
 
-class SP::SqTran
-  class_getter db_path = "var/mtdic/suggest.db3"
+class SP::ZvWord
+  class_getter db_path = "var/mtdic/zv_words.db3"
 
   class_getter init_sql = <<-SQL
-    CREATE TABLE IF NOT EXISTS trans (
+    CREATE TABLE IF NOT EXISTS zv_words (
       zstr text not null,
       vstr text not null,
       _src text not null default '',
@@ -13,7 +13,7 @@ class SP::SqTran
     SQL
 
   include Crorm::Model
-  schema "trans", :sqlite, strict: false
+  schema "zv_words", :sqlite, strict: false
 
   field zstr : String, pkey: true
   field vstr : String, pkey: true
@@ -24,13 +24,13 @@ class SP::SqTran
 
   def save!(db = self.class.db)
     db.exec <<-SQL, zstr, vstr, _src
-    insert into trans(zstr, vstr, _src) values ($1, $2, $3)
+    insert into zv_words(zstr, vstr, _src) values ($1, $2, $3)
     on conflict(zstr, vstr) do update set
-      _src = IIF(trans._src = '', excluded._src, trans._src || ',' || excluded._src)
+      _src = IIF(zv_words._src = '', excluded._src, zv_words._src || ',' || excluded._src)
     SQL
   end
 
   def self.get_trans(zstr : String)
-    self.db.open_ro(&.query_all("select vstr from trans where zstr = $1", zstr, as: String))
+    self.db.open_ro(&.query_all("select vstr from zv_words where zstr = $1", zstr, as: String))
   end
 end

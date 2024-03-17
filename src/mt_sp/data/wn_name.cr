@@ -1,6 +1,6 @@
 require "crorm"
 
-class SP::SqName
+class SP::WnName
   class_getter db_path = "var/mtdic/bnames.db3"
 
   class_getter init_sql = <<-SQL

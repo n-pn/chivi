@@ -42,9 +42,8 @@
 
   let tform: Viform = new Viform([], rword, '')
 
-  $: mlist = rline.trans[ropts.mt_rm] as CV.Mtnode[]
+  $: mlist = (rline.trans[ropts.mt_rm] || []) as CV.Mtnode[]
   $: mtree = filter_mtree(mlist, rword.from, rword.upto)
-
   $: tform = make_form(mlist, rword)
 
   $: if (tform) refocus()

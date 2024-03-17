@@ -9,7 +9,7 @@
     mtl_1: 'Dịch với trợ giúp từ công cụ AI với model ELECTRA SMALL (Hệ số nhân: 3)',
     mtl_2: 'Dịch với trợ giúp từ công cụ AI với model ELECTRA BASE (Hệ số nhân: 4)',
     mtl_3: 'Dịch với trợ giúp từ công cụ AI với model ERNIE GRAM (Hệ số nhân: 4)',
-    qt_v1: 'Dịch thô bằng máy dịch phiên bản cũ đã ngừng bảo trì (Hệ số nhân: 2)',
+    qt_v1: 'Dịch thô bằng máy dịch phiên bản cũ đã ngừng bảo trì (Hệ số nhân: 1)',
   }
 
   const raw_modes: Mode = {

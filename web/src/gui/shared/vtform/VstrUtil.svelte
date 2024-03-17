@@ -23,16 +23,20 @@
       case 'btran':
         trans = await btran_word(ztext, 'zh')
 
-        if (trans[0] == titleize(trans[0], 1)) {
-          trans = trans.map((x) => uncapitalize(x))
-        }
         break
       case 'baidu':
         trans = await baidu_word(ztext, 'vie')
-
+        if (!ztext.endsWith('。')) trans = trans.map((x) => x.replace(/\.$/, ''))
         break
+
       case 'deepl':
         trans = [await deepl_word(ztext, 0)]
+        break
+
+      case 'names':
+        const n_res = await fetch(`/_sp/utils/names?zh=${ztext}`)
+        const names = await n_res.text()
+        trans = n_res.ok ? names.split('\n') : [n_res.status.toString()]
         break
 
       case 'prevs':
@@ -43,15 +47,18 @@
     }
 
     if (trans.length == 0) return trans
-    if (!ztext.endsWith('。')) trans = trans.map((x) => x.replace(/\.$/, ''))
-
     cached_map.set(c_ukey, trans)
 
-    if (!keep_caps && qkind != 'preps' && trans[0] == titleize(trans[0], 1)) {
+    if (!keep_caps && should_be_lowercase(qkind, trans[0])) {
       trans = trans.map((x) => uncapitalize(x))
     }
 
     return trans
+  }
+
+  const should_be_lowercase = (qkind: string, vtran: string) => {
+    if (qkind == 'prevs' || qkind == 'names') return false
+    return vtran == titleize(vtran, 1)
   }
 </script>
 
@@ -113,11 +120,12 @@
   }
 
   const tran_types = [
-    ['prevs', 'img', 'stack'],
+    ['prevs', 'img', 'stack.svg'],
+    ['names', 'img', 'hirashiba.png'],
     ['baidu', 'brand-baidu', 'extra'],
     ['gtran', 'brand-google'],
     ['btran', 'brand-bing'],
-    ['deepl', 'img', 'deepl'],
+    ['deepl', 'img', 'deepl.svg'],
   ]
 
   const fill_qtran = async (qkind: string, keep_caps = false) => {
@@ -142,16 +150,6 @@
     <button
       type="button"
       class="btn"
-      data-kbd="d"
-      on:click={() => fill_qtran('prevs', keep_caps)}
-      use:tooltip={'Các gợi ý dịch từ Chivi'}
-      data-anchor=".vtform">
-      <img src="/icons/stack.svg" alt="stack" />
-    </button>
-
-    <button
-      type="button"
-      class="btn"
       data-kbd="b"
       on:click={() => fill_qtran('baidu', keep_caps)}
       use:tooltip={'Dịch nhanh bằng Baidu Fanyi'}
@@ -167,6 +165,16 @@
       use:tooltip={'Dịch nhanh bằng Google Translate'}
       data-anchor=".vtform">
       <SIcon name="brand-google" />
+    </button>
+
+    <button
+      type="button"
+      class="btn"
+      data-kbd="d"
+      on:click={() => fill_qtran('names', keep_caps)}
+      use:tooltip={'Điền tên riêng từ từ điển tên riêng tổng hợp'}
+      data-anchor=".vtform">
+      <img src="/icons/hirashiba.png" alt="hirashiba" />
     </button>
 
     <button
@@ -278,7 +286,7 @@
 
       {#each tran_types as [qkind, itype, iname]}
         {#if itype == 'img'}
-          <img src="/icons/{iname}.svg" alt={iname} />
+          <img src="/icons/{iname}" alt={qkind} />
         {:else}
           <SIcon name={itype} iset={iname || 'tabler'} />
         {/if}

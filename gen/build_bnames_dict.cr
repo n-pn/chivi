@@ -30,7 +30,7 @@ btitles = CV::Btitle.get_all(db: PGDB)
 authors = CV::Author.get_all(db: PGDB)
 
 outputs = btitles.to_h do |btitle|
-  output = SP::SqName.new(btitle.bt_zh)
+  output = SP::WnName.new(btitle.bt_zh)
 
   output.bt_vi = btitle.bt_vi unless btitle.bt_vi.empty?
   # output.bt_vu = btitle.vi_uc unless btitle.vi_uc.empty?
@@ -53,7 +53,7 @@ outputs = btitles.to_h do |btitle|
 end
 
 authors.each do |author|
-  output = outputs[author.au_zh] ||= SP::SqName.new(author.au_zh)
+  output = outputs[author.au_zh] ||= SP::WnName.new(author.au_zh)
 
   output.au_vi = author.au_vi unless author.au_vi.empty?
   # output.au_vu = author.vi_uc unless author.vi_uc.empty?
@@ -74,6 +74,6 @@ end
 
 puts [btitles.size, authors.size, outputs.size]
 
-SP::SqName.db.open_tx do |db|
+SP::WnName.db.open_tx do |db|
   outputs.each_value(&.upsert!(db: db))
 end
