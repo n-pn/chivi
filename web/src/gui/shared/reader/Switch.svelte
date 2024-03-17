@@ -24,17 +24,6 @@
     mtl_3: 'Dịch Chivi 3',
     qt_v1: 'Dịch máy cũ',
   }
-
-  const all_costs = {
-    c_gpt: 6,
-    bd_zv: 8,
-    ms_zv: 6,
-
-    mtl_1: 3,
-    mtl_2: 4,
-    mtl_3: 4,
-    qt_v1: 2,
-  }
 </script>
 
 <script lang="ts">
@@ -43,6 +32,7 @@
 
   export let pager: Pager
   export let ropts: CV.Rdopts
+  export let p_idx = 0
 
   $: rmode = ropts.rmode == 'qt' ? ropts.qt_rm : ropts.mt_rm
 </script>
@@ -55,7 +45,7 @@
     <a
       class="chip-link"
       class:_active={rmode == _mode}
-      href={pager.gen_url({ rm: ropts.rmode, [ropts.rmode]: _mode })}
+      href={pager.gen_url({ rm: 'qt', qt: _mode, _p: p_idx })}
       data-tip={all_descs[_mode]}
       data-tip-loc="bottom">
       <span>{label}</span>
@@ -70,7 +60,7 @@
     <a
       class="chip-link _pro"
       class:_active={rmode == _mode}
-      href={pager.gen_url({ rm: ropts.rmode, [ropts.rmode]: _mode })}
+      href={pager.gen_url({ rm: 'mt', mt: _mode, _p: p_idx })}
       data-tip={all_descs[_mode]}
       data-tip-loc="bottom">
       <span>{label}</span>

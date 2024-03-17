@@ -35,15 +35,6 @@
 
   let rpage = init_page(rdata.cksum, rdata.ztext || '', p_idx)
 
-  afterNavigate(() => {
-    l_idx = -1
-    state = 2
-    focus_line = undefined
-    focus_node = undefined
-    $ctmenu_ctrl.actived = false
-    rpage = init_page(rdata.cksum, rdata.ztext || '', p_idx)
-  })
-
   $: l_max = rdata.ztext ? rdata.ztext.length : 0
 
   $: r_mode = $config.r_mode == 1 ? 1 : 2
@@ -62,13 +53,23 @@
   $: p_min = rpage.p_min
   $: p_max = rpage.p_idx
 
-  $: vdata = rpage.lines.slice(p_min, p_max)
+  let vdata = []
 
   let prev_state = 0
   let more_state = 0
 
   // $: if (more_state == 0 && prev_state == 2) load_prev()
   $: if (more_state == 2) load_more()
+
+  afterNavigate(() => {
+    l_idx = -1
+    state = 2
+    focus_line = undefined
+    focus_node = undefined
+    $ctmenu_ctrl.actived = false
+    rpage = init_page(rdata.cksum, rdata.ztext || '', p_idx)
+    vdata = rpage.load_slice(qkind)
+  })
 
   const load_prev = async () => {
     prev_state = 1
@@ -83,6 +84,10 @@
     more_state = 1
     p_idx = await rpage.load_more(qkind, ropts.pdict, $config._regen)
     p_max = rpage.p_idx
+
+    title = gen_vdata(rpage.lines[0], r_mode)
+    vdata = rpage.load_slice(qkind)
+
     more_state = 0
   }
 
@@ -90,6 +95,7 @@
     if ($config.r_mode == 1) return
 
     let target = event.target as HTMLElement
+    if (!target) return
 
     while (target != reader) {
       const name = target.nodeName
@@ -111,16 +117,8 @@
   const on_term_change = async (ztext = '') => {
     if (!ztext) return
     await rpage.reload(ztext, ropts.mt_rm, ropts.pdict, $config._regen || 1)
+    title = gen_vdata(rpage.lines[0], r_mode)
     vdata = rpage.load_slice(qkind)
-  }
-
-  const gen_vdata = (rline: Rdline, mode: number = 1) => {
-    if (!rline) return
-    const qdata = rline.trans[qkind]
-    if (!qdata) return 'Có lỗi dịch, mời liên hệ ban quản trị!'
-
-    if (typeof qdata == 'string') return qdata
-    return gen_mt_ai_html(qdata, mode)
   }
 
   const move_node_left = (evt: Event) => {
@@ -190,9 +188,18 @@
     observer.observe(node)
     return { destroy: () => observer.disconnect() }
   }
+
+  $: title = gen_vdata(rpage.lines[0], r_mode) || rdata.title
+
+  const gen_vdata = (rline: Rdline, mode: number = 1) => {
+    const qdata = rline?.trans[qkind]
+    if (!qdata) return
+    if (typeof qdata == 'string') return qdata
+    return gen_mt_ai_html(qdata, mode)
+  }
 </script>
 
-<Switch {pager} {ropts} />
+<Switch {pager} {ropts} {p_idx} />
 
 {#key rpage}
   <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -205,7 +212,12 @@
     on:click={handle_click}>
     {#if vdata.length > 0}<Ctmenu bind:this={ctmenu} {rpage} />{/if}
 
-    {#if p_min > 0}
+    <cv-data id="L0" data-line="0">
+      {#if show_z}<h1 class="zdata">{rpage.lines[0].ztext}</h1>{/if}
+      <h1 class="cdata">{@html title}</h1>
+    </cv-data>
+
+    {#if p_min > 1}
       <div class="d-empty-xs">
         <button class="m-btn _sm" on:click={load_prev}>
           <SIcon name="loader-2" spin={prev_state == 1} />
@@ -214,14 +226,10 @@
       </div>
     {/if}
 
-    {#each vdata as vline, index}
-      {@const l_id = p_min + index}
-      {@const elem = l_id == 0 ? 'h1' : 'p'}
-      <cv-data id="L{l_id}" data-line={l_id}>
-        {#if show_z}
-          <svelte:element this={elem} class="zdata">{rpage.lines[l_id].ztext}</svelte:element>
-        {/if}
-        <svelte:element this={elem} class="cdata">{@html gen_vdata(vline, r_mode)}</svelte:element>
+    {#each vdata as vline}
+      <cv-data id="L{vline.index}" data-line={vline.index}>
+        {#if show_z}<p class="zdata">{vline.ztext}</p>{/if}
+        <p class="cdata">{@html gen_vdata(vline, r_mode)}</p>
       </cv-data>
     {/each}
 

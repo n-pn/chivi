@@ -8,6 +8,28 @@
 
   import type { PageData } from './$types'
   export let data: PageData
+
+  const rmhosts = [
+    '69xinshu.com',
+    'biqu5200.net',
+    'biqugee.com',
+    'biquluo.cc',
+    'bxwx.net',
+    'bxwxorg.com',
+    'duokanba.com',
+    'hetushu.com',
+    'jx.la',
+    'nofff.com',
+    'paoshu8.com',
+    'piaotia.com',
+    'rengshu.com',
+    'shubaow.net',
+    'tasim.net',
+    'uukanshu.com',
+    'xbiquge.bz',
+    'zsdade.com',
+    'zxcs.me',
+  ]
 </script>
 
 <section class="article island">
@@ -36,11 +58,11 @@
     <h2 class="h3">Liên kết nhúng ngoài</h2>
     <a class="m-viewall u-right" href="/rm">Xem tất cả</a>
   </header>
-  {#each data.rstems as rstem}
-    <RmstemCard {rstem} />
-  {:else}
-    <div class="d-empty-sm">Có lỗi, mời liên hệ ban quản trị.</div>
-  {/each}
+  <div class="m-chips">
+    {#each rmhosts as rmhost}
+      <a class="m-chip _success" href="/rm/!{rmhost}">{rmhost}</a>
+    {/each}
+  </div>
 </section>
 
 <section class="article island">

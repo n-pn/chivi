@@ -52,7 +52,8 @@ async function call_btran_word(text: string, sl = 'auto') {
     if (!res.ok) return []
 
     const [{ translations: data }] = await res.json()
-    const tran = data.map(({ text }) => text) as string[]
+    let tran = data.map(({ text }) => text) as string[]
+    tran = [...new Set(tran)]
 
     send_vcache('btran-line', { lang: 've', text, tran })
     return tran

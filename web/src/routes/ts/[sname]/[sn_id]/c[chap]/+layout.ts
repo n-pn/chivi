@@ -13,7 +13,7 @@ export const load = (async ({ params, parent, fetch, url }) => {
   const rdurl = `/_rd/chaps/${sname}/${sn_id}/${ch_no}?force=${_conf._auto_}`
   const rdata = await api_get<CV.Chinfo>(rdurl, fetch)
 
-  let p_str = url.searchParams.get('p_idx')
+  let p_str = url.searchParams.get('_p')
   const p_idx = p_str ? +p_str : _memo.lc_ch_no == ch_no ? _memo.lc_p_idx : 0
 
   return {

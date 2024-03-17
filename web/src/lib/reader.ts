@@ -35,13 +35,15 @@ export class Rdword {
 }
 
 export class Rdline {
+  index: number
   ztext: string
   hviet: string[]
 
   trans: Record<string, string | CV.Mtnode[]>
   edits: string[]
 
-  constructor(ztext: string) {
+  constructor(ztext: string, index: number = 0) {
+    this.index = index
     this.ztext = ztext.replaceAll(/[\t\n]/g, '').trim()
     this.hviet = []
 
@@ -145,7 +147,7 @@ export class Rdpage {
 
     for (let line of ztext.split('\n')) {
       line = line.replaceAll(/\s/g, '')
-      if (line) this.lines.push(new Rdline(line))
+      if (line) this.lines.push(new Rdline(line, this.lines.length))
     }
 
     this.p_max = this.lines.length
@@ -170,6 +172,11 @@ export class Rdpage {
 
   get_ztext(l_idx: number) {
     return this.lines[l_idx].ztext
+  }
+
+  get_vtran(l_idx: number, qkind: string) {
+    const rline = this.lines[l_idx]
+    return rline && rline.trans ? rline.trans[qkind] : ''
   }
 
   get_trans(qtype: string) {
@@ -200,58 +207,45 @@ export class Rdpage {
   async reload(needle: string, qkind = 'qt_v1', pdict = 'combine', regen = 1) {
     if (!needle) return
 
-    let input = ''
+    let texts = []
     let l_ids = []
 
     for (let i = 0; i < this.lines.length; i++) {
-      const { ztext, trans } = this.lines[i]
+      const { index, ztext, trans } = this.lines[i]
       if (trans[qkind] && ztext.includes(needle)) {
-        l_ids.push(i)
-        if (input) input += '\n'
-        input += ztext
+        texts.push(ztext)
+        l_ids.push(index)
       }
     }
 
-    const ropts = { pdict, regen, h_sep: l_ids[0] == 0 ? 1 : 0 }
-    const lines = await call_qtran(input, qkind, ropts)
-
-    for (let i = 0; i < lines.length; i++) {
-      this.lines[l_ids[i]].trans[qkind] = lines[i]
-    }
-
+    if (texts.length == 0) return []
+    await this.qtran_slice(texts, l_ids, qkind, pdict, regen)
     return l_ids
   }
 
   async load_prev(qkind = 'qt_v1', pdict = 'combine', regen = 0) {
     // if (this.p_min <= 0) return 0
-    const limit = qkind == 'c_gpt' ? 400 : qkind.startsWith('mtl') ? 600 : 800
 
     let p_min = this.p_min
     let texts = []
-    let l_idx = []
+    let l_ids = []
     let count = 0
 
-    while (p_min > 0) {
+    while (p_min > 1) {
       const rline = this.lines[p_min - 1]
 
       count += rline.ztext.length
-      if (count > limit && p_min > 2) break
+      if (count > 600 && p_min > 2) break
       p_min -= 1
 
       if (rline.trans[qkind]) continue
       texts.unshift(rline.ztext)
-      l_idx.unshift(p_min)
+      l_ids.unshift(rline.index)
     }
 
     if (texts.length > 0) {
       console.log({ type: 'load_prev', from: p_min, upto: this.p_min, size: count })
-
-      const ropts = { pdict, h_sep: p_min == 0 ? 1 : 0, regen }
-      const lines = await call_qtran(texts.join('\n'), qkind, ropts)
-
-      for (let i = 0; i < lines.length; i++) {
-        this.lines[l_idx[i]].trans[qkind] = lines[i]
-      }
+      await this.qtran_slice(texts, l_ids, qkind, pdict, regen)
     }
 
     this.p_min = p_min
@@ -260,37 +254,35 @@ export class Rdpage {
   }
 
   async load_more(qkind = 'qt_v1', pdict = 'combine', regen = 0) {
-    let p_idx = this.p_min
-
     let texts = []
-    let l_idx = []
-    let count = 0
+    let l_ids = []
 
-    const limit = qkind == 'c_gpt' ? 500 : qkind.startsWith('mtl') ? 800 : 1200
+    const title = this.lines[0]
+
+    if (!title.trans[qkind]) {
+      texts.push(title.ztext)
+      l_ids.push(title.index)
+    }
+
+    let p_idx = this.p_min > 0 ? this.p_min : 1
+    let count = 0
 
     for (; p_idx < this.p_max; p_idx++) {
       const rline = this.lines[p_idx]
 
       if (p_idx >= this.p_idx || !rline.trans[qkind]) {
         count += rline.ztext.length
-        if (count >= limit && p_idx + 4 < this.p_max) break
+        if (count >= 600 && p_idx + 3 < this.p_max) break
       }
 
       if (rline.trans[qkind]) continue
 
       texts.push(rline.ztext)
-      l_idx.push(p_idx)
+      l_ids.push(rline.index)
     }
 
     if (texts.length > 0) {
-      console.log({ type: 'load_more', from: this.p_idx, upto: p_idx, size: count })
-
-      const ropts = { pdict, h_sep: this.p_min == 0 ? 1 : 0, regen }
-      const qdata = await call_qtran(texts.join('\n'), qkind, ropts)
-
-      for (let i = 0; i < qdata.length; i++) {
-        this.lines[l_idx[i]].trans[qkind] = qdata[i]
-      }
+      await this.qtran_slice(texts, l_ids, qkind, pdict, regen)
     }
 
     let p_min = this.p_idx < 6 ? 0 : this.p_idx
@@ -306,8 +298,20 @@ export class Rdpage {
     return p_min
   }
 
+  async qtran_slice(texts: string[], l_ids: number[], qkind: string, pdict: string, regen: number) {
+    const ropts = { pdict, h_sep: l_ids[0] == 0 ? 1 : 0, regen }
+
+    const ztext = texts.join('\n')
+    // console.log(`calling ${qkind} for lines: ${l_ids.length}, chars: ${ztext.length}`)
+
+    const qdata = await call_qtran(ztext, qkind, ropts)
+    for (let i = 0; i < qdata.length; i++) {
+      this.lines[l_ids[i]].trans[qkind] = qdata[i]
+    }
+  }
+
   load_slice(qkind: string) {
-    const p_min = this.p_min
+    const p_min = this.p_min > 0 ? this.p_min : 1
     const p_idx = this.p_idx
     return p_min < p_idx ? this.lines.slice(p_min, p_idx) : []
   }

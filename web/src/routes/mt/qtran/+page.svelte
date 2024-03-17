@@ -27,17 +27,20 @@
   let state = 0
   let tspan = 0
   let l_idx = 0
+  let p_idx = 0
 
   const do_translate = async () => {
     state = 1
     l_idx = 0
+    p_idx = 0
     vtext = []
 
     const tspan_start = performance.now()
     let start = 0
 
     while (start < rpage.lines.length) {
-      start = await rpage.load_more(qkind, pdict)
+      p_idx = await rpage.load_more(qkind, pdict)
+      start = rpage.p_idx
       vtext = rpage.get_texts(qkind)
     }
 
@@ -121,7 +124,7 @@
         {:else}
           <div class="d-empty">
             <SIcon name="loader-2" spin={true} />
-            <span>Đang dịch...</span>
+            <span>Đang dịch {p_idx}/{rpage.p_max}...</span>
           </div>
         {/each}
       </div>
@@ -131,9 +134,7 @@
 
     <footer class="u-fg-tert u-fz-sm">
       {#if state == 1}
-        <span class="state u-right">
-          <em>Đang dịch...</em>
-        </span>
+        <span class="state u-right"><em>Đang dịch...</em></span>
       {:else if state == 2}
         <span class="state u-right">
           <SIcon name="clock" />

@@ -21,7 +21,7 @@ $header-gutter: math.div($header-height - $header-inner-height, 2);
 
   @include fgcolor(main);
   @include bgcolor(tert);
-  @include shadow(3);
+  @include shadow(2);
 
   .-wrap {
     display: flex;
