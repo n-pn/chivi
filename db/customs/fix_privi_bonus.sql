@@ -79,7 +79,7 @@ WHERE
 UPDATE
   uquotas
 SET
-  privi_bonus = 3200000
+  privi_bonus = 4000000
 WHERE
   idate = 20240223
   AND vu_id IN (

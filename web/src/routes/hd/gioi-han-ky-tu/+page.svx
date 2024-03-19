@@ -10,12 +10,12 @@ Dịch bằng Baidu/Bing thì phải dùng dịch vụ ngoài, phải trả phí
 
 | Quyền hạn   | Số lượng chữ |
 | ----------- | ------------ |
-| Khách       | 50000        |
-| Đã đăng ký  | 100000       |
-| Quyền hạn 1 | 200000       |
-| Quyền hạn 2 | 400000       |
-| Quyền hạn 3 | 800000       |
-| Quyền hạn 4 | 1600000      |
+| Khách       | 50_000       |
+| Đã đăng ký  | 100_000      |
+| Quyền hạn 1 | 250_000      |
+| Quyền hạn 2 | 500_000      |
+| Quyền hạn 3 | 1_000_000    |
+| Quyền hạn 4 | 2_500_000    |
 
 Ngoài ra, bạn sẽ được tăng thêm một số lượng số lượng chữ nhất định khi mở khóa chương bằng vcoin.
 

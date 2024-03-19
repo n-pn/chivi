@@ -47,8 +47,18 @@ class Uquota
     returning quota_limit
   SQL
 
+  PRIVI_BONUS = {
+    100_000_i64,    # privi 0
+    250_000_i64,    # privi 1
+    500_000_i64,    # privi 2
+    1_000_000_i64,  # privi 3
+    2_500_000_i64,  # privi 4
+    5_000_000_i64,  # privi 5
+    10_000_000_i64, # privi 6
+  }
+
   def set_privi_bonus!(privi : Int32, @mtime = Time.utc.to_unix)
-    @privi_bonus = privi >= 0 ? 100_000_i64 * 2 ** privi : 50_000_i64
+    @privi_bonus = PRIVI_BONUS.fetch(privi, 50_000_i64)
     @quota_limit = @@db.query_one ADD_PRIVI_SQL, @vu_id, @idate, @mtime, @privi_bonus, as: Int64
   end
 

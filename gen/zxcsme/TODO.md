@@ -1,0 +1,3 @@
+- check for `===` inside texts files
+- check for invalid chapter formats
+- check for irregular file sizes
