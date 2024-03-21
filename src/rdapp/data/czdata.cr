@@ -236,36 +236,36 @@ class RD::Czdata
 
   GET_TOP_SQL = <<-SQL
     select ch_no, title, chdiv, zsize, mtime, zorig from czdata
-    where ch_no <= $1 order by ch_no asc limit $2
+    where ch_no <= $1 order by ch_no desc limit $2
   SQL
 
   def self.get_top(db : DBX, start : Int32 = 99999, limit : Int32 = 4)
     db.query_all(GET_TOP_SQL, start, limit, as: self)
   end
 
-  GET_PREV_SQL = <<-SQL
-    select ch_no, title, chdiv, zsize, mtime, zorig from czdata
-    where ch_no < $1 order by ch_no desc limit 1
-  SQL
+  # GET_PREV_SQL = <<-SQL
+  #   select ch_no, title, chdiv, zsize, mtime, zorig from czdata
+  #   where ch_no < $1 order by ch_no desc limit 1
+  # SQL
 
-  def self.find_prev(db, ch_no : Int32)
-    db.query_one?(GET_PREV_SQL, ch_no, as: self)
-  end
+  # def self.find_prev(db, ch_no : Int32)
+  #   db.query_one?(GET_PREV_SQL, ch_no, as: self)
+  # end
 
-  GET_NEXT_SQL = <<-SQL
-    select ch_no, title, chdiv, zsize, mtime, zorig from czdata
-    where ch_no > $1 order by ch_no asc limit 1
-  SQL
+  # GET_NEXT_SQL = <<-SQL
+  #   select ch_no, title, chdiv, zsize, mtime, zorig from czdata
+  #   where ch_no > $1 order by ch_no asc limit 1
+  # SQL
 
-  def self.find_next(db : DBX, ch_no : Int32)
-    db.query_one?(GET_NEXT_SQL, ch_no, as: self)
-  end
+  # def self.find_next(db : DBX, ch_no : Int32)
+  #   db.query_one?(GET_NEXT_SQL, ch_no, as: self)
+  # end
 
-  @@get_last_sql = "select * from chinfos order by ch_no desc limit 1"
+  # @@get_last_sql = "select * from chinfos order by ch_no desc limit 1"
 
-  def self.find_last(db : DBX)
-    db.query_one?(@@get_last_sql, as: self)
-  end
+  # def self.find_last(db : DBX)
+  #   db.query_one?(@@get_last_sql, as: self)
+  # end
 
   WORD_COUNT_SQL = "select sum(zsize) from czdata where ch_no >= $1 and ch_no <= $2"
 

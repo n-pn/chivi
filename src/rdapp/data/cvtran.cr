@@ -5,12 +5,11 @@ require "../../_util/http_util"
 class RD::Cvtran
   class_getter init_sql = <<-SQL
     CREATE TABLE IF NOT EXISTS cvtran(
-      zstr text NOT NULL DEFAULT '',
-      kind int not null default 0,
-
+      zstr text NOT NULL DEFAULT '' primary key,
       vstr text not null default '',
-      time int not null default 0,
-      primary key(zstr, kind)
+
+      kind int not null default 0,
+      time int not null default 0
     ) strict, without rowid;
     SQL
 
@@ -35,17 +34,30 @@ class RD::Cvtran
   schema "cvtran", :sqlite, multi: true
 
   field zstr : String, pkey: true
-  field kind : Int32, pkey: true
-
   field vstr : String = ""
+
+  field kind : Int32 = 0
   field time : Int32 = 0
 
-  def initialize(@zstr, @kind = 0, @vstr = "", @time = TimeUtil.cv_mtime)
+  def initialize(@zstr, @vstr = "", @kind = 0, @time = TimeUtil.cv_mtime)
+  end
+
+  UPSERT_SQL = <<-SQL
+    insert into cvtran(zstr, vstr, kind, "time")
+    values ($1, $2, $3, $4)
+    on conflict(zstr) do update
+    set vstr = excluded.vstr, kind = excluded.kind, "time" = excluded.time
+    where excluded.kind >= cvtran.kind
+  SQL
+
+  def upsert!(db)
+    db.exec UPSERT_SQL, @zstr, @vstr, @kind, @time
+    self
   end
 
   ###
 
-  GET_TRAN_SQL = query = "select vstr from cvtran where zstr = $1 order by kind desc, time desc limit 1"
+  GET_TRAN_SQL = query = "select vstr from cvtran where zstr = $1 limit 1"
 
   def self.get_trans(repo : Crorm::DBX, zdata : Array(String), wn_id : Int32 = 0)
     results = {} of String => String
@@ -53,7 +65,7 @@ class RD::Cvtran
 
     repo.open_ro do |db|
       zdata.each do |zstr|
-        if vstr = db.query_one?(GET_TRAN_SQL, as: String)
+        if vstr = db.query_one?(GET_TRAN_SQL, zstr, as: String)
           results[zstr] = vstr
         else
           missing << zstr
@@ -69,7 +81,7 @@ class RD::Cvtran
     to_save = missing.map_with_index do |zstr, l_id|
       vstr = vtran[l_id]
       results[zstr] = vstr
-      self.new(zstr: zstr, kind: 0, vstr: vstr)
+      self.new(zstr: zstr, vstr: vstr)
     end
 
     spawn do

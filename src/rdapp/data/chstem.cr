@@ -241,7 +241,7 @@ class RD::Tsrepo
 
   @[AlwaysInline]
   def get_cinfo(ch_no : Int32, &)
-    get_all(ch_no - 5, ch_no + 5).find(&.ch_no.== ch_no) || yield
+    get_all(ch_no &- 2, ch_no &+ 2).find(&.ch_no.== ch_no) || yield
   end
 
 
