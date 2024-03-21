@@ -47,24 +47,18 @@ class RD::CzdataCtrl < AC::Base
       File.write(fpath, clist.to_json)
     end
 
-    chaps = [] of Chinfo
-
     crepo.zdata_db.open_tx do |db|
       zorig = ukind.edit? ? "*#{_uname}" : "+#{_uname}"
       clist.each do |cform|
         zdata = cform.to_czdata(db: db, zorig: zorig, mtime: mtime)
         zdata.save_ztext!(db)
-        chaps << crepo.get_cinfo(zdata.ch_no).inherit!(zdata)
       end
     end
-
-    crepo.info_db.open_tx { |db| chaps.each(&.upsert!(db: db)) }
 
     chmin, chmax = clist.minmax_of(&.ch_no)
     spawn update_stats!(crepo, sname, chmax: chmax)
 
     crepo.set_chmax(chmax: chmax, force: false, persist: true)
-    crepo.update_vinfos!(start: chmin, limit: chmax &- chmin &+ 1)
 
     render json: {ch_no: chmin, pg_no: _pgidx(chmin, 32)}
   end

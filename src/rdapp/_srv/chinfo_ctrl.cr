@@ -28,7 +28,8 @@ class RD::ChinfoCtrl < AC::Base
 
     json = {
       ch_no: cinfo.ch_no,
-      title: cinfo.vchdiv.empty? ? cinfo.vtitle : "#{cinfo.vtitle} - #{cinfo.vchdiv}",
+      title: cinfo.title,
+      chdiv: cinfo.chdiv,
 
       ztext: error > 0 || zdata.zsize == 0 ? zdata.title : zdata.cbody,
       zsize: zdata.zsize,
@@ -38,9 +39,9 @@ class RD::ChinfoCtrl < AC::Base
       plock: crepo.read_privi(cinfo.ch_no),
       multp: multp,
 
-      rlink: cinfo.rlink,
       mtime: cinfo.mtime,
       uname: cinfo.uname,
+      rlink: cinfo.zlink,
     }
 
     render 200, json: json

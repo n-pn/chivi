@@ -41,36 +41,36 @@ class RD::Czdata
     Crorm::SQ3.new(db_path, &.init_db(self.init_sql))
   end
 
-  def self.init_db(sname : String, sn_id : String | Int32)
-    new_db_path = self.db_path(sname, sn_id)
-    czdata_db = self.db(new_db_path)
+  # def self.init_db(sname : String, sn_id : String | Int32)
+  #   new_db_path = self.db_path(sname, sn_id)
+  #   czdata_db = self.db(new_db_path)
 
-    old_db_path = new_db_path.sub(".db3", ".v1.db3")
+  #   old_db_path = new_db_path.sub(".db3", ".v1.db3")
 
-    if File.file?(old_db_path)
-      czdata_db.open_tx { |db| load_old_db(old_db_path).each(&.upsert!(db: db)) }
-    end
+  #   if File.file?(old_db_path)
+  #     czdata_db.open_tx { |db| load_old_db(old_db_path).each(&.upsert!(db: db)) }
+  #   end
 
-    czdata_db
-  end
+  #   czdata_db
+  # end
 
-  def self.load_old_db(old_db_path : String)
-    items = [] of self
+  # def self.load_old_db(old_db_path : String)
+  #   items = [] of self
 
-    DB.open("sqlite3:#{old_db_path}?immutable=1") do |db|
-      query = "select ch_no, title, chdiv, mtime, zorig, s_cid, zlink, ztext from czdata"
+  #   DB.open("sqlite3:#{old_db_path}?immutable=1") do |db|
+  #     query = "select ch_no, title, chdiv, mtime, zorig, s_cid, zlink, ztext from czdata"
 
-      db.query_each query do |rs|
-        items << self.new(
-          ch_no: rs.read(Int32), title: rs.read(String), chdiv: rs.read(String),
-          mtime: rs.read(Int64), zorig: "#{rs.read(String)}/#{rs.read(Int32)}",
-          zlink: rs.read(String), ztext: rs.read(String)
-        )
-      end
-    end
+  #     db.query_each query do |rs|
+  #       items << self.new(
+  #         ch_no: rs.read(Int32), title: rs.read(String), chdiv: rs.read(String),
+  #         mtime: rs.read(Int64), zorig: "#{rs.read(String)}/#{rs.read(Int32)}",
+  #         zlink: rs.read(String), ztext: rs.read(String)
+  #       )
+  #     end
+  #   end
 
-    items
-  end
+  #   items
+  # end
 
   ###
 
@@ -94,6 +94,25 @@ class RD::Czdata
 
   def initialize(@ch_no, @title = "", @chdiv = "", @zorig = "", @zlink = "", @mtime = 0, ztext : String = "")
     self.ztext = ztext unless ztext.empty?
+  end
+
+  def to_json(jb : JSON::Builder)
+    jb.object {
+      jb.field "ch_no", @ch_no
+      jb.field "title", @title
+      jb.field "chdiv", @chdiv
+
+      jb.field "zsize", @zsize
+      jb.field "mtime", @mtime
+      jb.field "uname", self.uname
+      jb.field "rlink", @zlink
+
+      # jb.field "flags", Chflag.new(@_flag).to_s
+    }
+  end
+
+  def uname
+    @zorig.tr("?+*", "").split('/').first
   end
 
   def cbody
@@ -191,11 +210,66 @@ class RD::Czdata
     db.exec UPSERT_ZINFO_SQL, @ch_no, @title, @chdiv, @zorig, @zlink
   end
 
-  #
   ####
 
   @[AlwaysInline]
   def self.load(db, ch_no : Int32)
-    self.find_by_id(ch_no, pkey: "ch_no", db: db) || self.new(ch_no)
+    self.load(db, ch_no) { self.new(ch_no) }
+  end
+
+  @[AlwaysInline]
+  def self.load(db, ch_no : Int32, &)
+    self.find_by_id(ch_no, pkey: "ch_no", db: db) || yield
+  end
+
+  alias DBX = Crorm::SQ3 | DB::Database | DB::Connection
+
+  GET_ALL_SQL = <<-SQL
+    select ch_no, title, chdiv, zsize, mtime, zorig from czdata
+    where ch_no >= $1 and ch_no <= $2
+    order by ch_no asc limit $3
+  SQL
+
+  def self.get_all(db : DBX, start : Int32 = 1, limit : Int32 = 32, chmax : Int32 = 99999)
+    db.query_all(GET_ALL_SQL, start, chmax, limit, as: self)
+  end
+
+  GET_TOP_SQL = <<-SQL
+    select ch_no, title, chdiv, zsize, mtime, zorig from czdata
+    where ch_no <= $1 order by ch_no asc limit $2
+  SQL
+
+  def self.get_top(db : DBX, start : Int32 = 99999, limit : Int32 = 4)
+    db.query_all(GET_TOP_SQL, start, limit, as: self)
+  end
+
+  GET_PREV_SQL = <<-SQL
+    select ch_no, title, chdiv, zsize, mtime, zorig from czdata
+    where ch_no < $1 order by ch_no desc limit 1
+  SQL
+
+  def self.find_prev(db, ch_no : Int32)
+    db.query_one?(GET_PREV_SQL, ch_no, as: self)
+  end
+
+  GET_NEXT_SQL = <<-SQL
+    select ch_no, title, chdiv, zsize, mtime, zorig from czdata
+    where ch_no > $1 order by ch_no asc limit 1
+  SQL
+
+  def self.find_next(db : DBX, ch_no : Int32)
+    db.query_one?(GET_NEXT_SQL, ch_no, as: self)
+  end
+
+  @@get_last_sql = "select * from chinfos order by ch_no desc limit 1"
+
+  def self.find_last(db : DBX)
+    db.query_one?(@@get_last_sql, as: self)
+  end
+
+  WORD_COUNT_SQL = "select sum(zsize) from czdata where ch_no >= $1 and ch_no <= $2"
+
+  def self.word_count(db : DBX, chmin : Int32, chmax : Int32)
+    db.query_one(WORD_COUNT_SQL, chmin, chmax, as: Int32)
   end
 end

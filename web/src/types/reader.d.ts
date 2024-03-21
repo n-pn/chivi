@@ -20,6 +20,7 @@ declare namespace CV {
   interface Chinfo {
     ch_no: number
     title: string
+    chdiv: string
 
     ztext: string
     cksum: string

@@ -4,7 +4,7 @@ require "../_raw/raw_rmbook"
 require "../_raw/raw_rmstem"
 
 require "./util/rmrank"
-require "./tsrepo"
+require "./chstem"
 
 class RD::Rmstem
   class_getter db : DB::Database = PGDB
@@ -162,9 +162,7 @@ class RD::Rmstem
   end
 
   def update!(crawl : Int32 = 1, regen : Bool = false, umode : Int32 = 1) : self | Nil
-    unless raw_stem = load_raw_stem!(crawl: crawl)
-      return self.tap { |x| x.crepo.update_vinfos! if umode > 0 }
-    end
+    return unless raw_stem = load_raw_stem!(crawl: crawl)
 
     # verify content changed by checking the latest chapter
     # not super reliable since some site reuse the latest chapter id for new chapter.
@@ -181,14 +179,6 @@ class RD::Rmstem
     self.crepo.tap do |crepo|
       crepo.chmax = @chap_count
       crepo.upsert_zinfos!(clist)
-
-      if umode > 0
-        spawn crepo.update_vinfos!
-        @_flag = 1
-      else
-        @_flag = 0
-      end
-
       crepo.upsert!
     end
 

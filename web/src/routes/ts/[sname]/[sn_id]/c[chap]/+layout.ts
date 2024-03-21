@@ -16,13 +16,16 @@ export const load = (async ({ params, parent, fetch, url }) => {
   let p_str = url.searchParams.get('_p')
   const p_idx = p_str ? +p_str : _memo.lc_ch_no == ch_no ? _memo.lc_p_idx : 0
 
+  const title = rdata.chdiv ? `[${rdata.chdiv}] ${rdata.title}` : rdata.title
+
   return {
     rdata,
+
     p_idx,
     _show_conf: true,
-    _meta: { title: `${rdata.title} - ${crepo.vname}` },
+    _meta: { title: `${title} - ${crepo.vname}` },
     _prev: { text: 'Mục lục', show: 'pl' },
     _curr: { text: `Ch#${ch_no}`, show: 'pm', kind: 'uname' },
-    _navs: [..._navs, { href: url.pathname, text: rdata.title }],
+    _navs: [..._navs, { href: url.pathname, text: title }],
   }
 }) satisfies PageLoad

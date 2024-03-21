@@ -63,7 +63,6 @@ class RD::TsrepoCtrl < AC::Base
     crepo.fix_pdict! if crepo.pdict.empty?
 
     regen = cmode > 0 ? crepo.update_from_link!(cmode: cmode) : false
-    crepo.update_vinfos!
 
     render json: {
       chmax: crepo.chmax,

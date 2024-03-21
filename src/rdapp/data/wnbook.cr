@@ -2,7 +2,7 @@ require "crorm"
 
 require "../../_data/_data"
 
-require "./tsrepo"
+require "./chstem"
 require "./rmstem"
 
 class RD::Wnbook

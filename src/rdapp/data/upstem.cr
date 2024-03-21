@@ -1,7 +1,7 @@
 require "../../mt_ai/core/qt_core"
 require "../../_data/_data"
 
-require "./tsrepo"
+require "./chstem"
 
 class RD::Upstem
   class_getter db : DB::Database = PGDB

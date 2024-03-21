@@ -1,5 +1,5 @@
-require "./chinfo"
 require "./czdata"
+require "./cvtran"
 
 require "./unlock"
 require "../_raw/raw_rmchap"
@@ -44,11 +44,11 @@ class RD::Tsrepo
 
   @[DB::Field(ignore: true, auto: true)]
   @[JSON::Field(ignore: true)]
-  getter info_db : Crorm::SQ3 { Chinfo.db(sroot) }
+  getter zdata_db : Crorm::SQ3 { Czdata.db(@sname, @sn_id) }
 
   @[DB::Field(ignore: true, auto: true)]
   @[JSON::Field(ignore: true)]
-  getter zdata_db : Crorm::SQ3 { Czdata.init_db(@sname, @sn_id) }
+  getter vtran_db : Crorm::SQ3 { Cvtran.db(@sname, @sn_id) }
 
   def initialize(@sroot)
   end
@@ -191,13 +191,42 @@ class RD::Tsrepo
 
   @[AlwaysInline]
   def get_all(start : Int32 = 1, limit : Int32 = 32)
-    Chinfo.get_all(self.info_db, start: start, limit: limit, chmax: @chmax)
+    chaps = Czdata.get_all(self.zdata_db, start: start, limit: limit, chmax: @chmax)
+    load_vtran(chaps)
+    # TODO: load
   end
 
   @[AlwaysInline]
   def get_top(start : Int32 = @chmax, limit : Int32 = 4)
-    Chinfo.get_top(self.info_db, start: start, limit: limit)
+    chaps = Czdata.get_top(self.zdata_db, start: start, limit: limit)
+    load_vtran(chaps)
   end
+
+
+
+  def load_vtran(chaps : Array(Czdata))
+    zstrs = [] of String
+
+    chaps.each do |chap|
+      zstrs << chap.title unless chap.title.empty?
+      zstrs << chap.chdiv unless chap.chdiv.empty?
+    end
+
+    trans = Cvtran.get_trans(self.vtran_db, zstrs, @wn_id)
+
+    chaps.each do |chap|
+      chap.title = trans.put_if_absent(chap.title, chap.title)
+      chap.chdiv = trans.put_if_absent(chap.chdiv, chap.chdiv) unless chap.chdiv.empty?
+    end
+
+    chaps
+  rescue ex
+    Log.error(exception: ex) { @sroot }
+
+    chaps
+  end
+
+
 
   @[AlwaysInline]
   def suggest_chdiv(ch_no : Int32)
@@ -207,72 +236,32 @@ class RD::Tsrepo
 
   @[AlwaysInline]
   def get_cinfo(ch_no : Int32)
-    get_cinfo(ch_no) { Chinfo.new(ch_no) }
+    get_cinfo(ch_no) { Czdata.new(ch_no) }
   end
-
-  def get_cinfo(ch_no : Int32, &)
-    Chinfo.find(self.info_db, ch_no) || yield
-  end
-
-  ###
 
   @[AlwaysInline]
-  def part_name(cinfo : Chinfo, p_idx : Int32)
-    "#{@sroot}/#{cinfo.ch_no}-#{cinfo.cksum}-#{p_idx}"
+  def get_cinfo(ch_no : Int32, &)
+    get_all(ch_no - 5, ch_no + 5).find(&.ch_no.== ch_no) || yield
   end
+
 
   ###
 
   @[AlwaysInline]
   def last_ch_no
-    Chinfo.find_last(self.info_db).try(&.ch_no) || 0
+    Czdata.find_last(self.info_db).try(&.ch_no) || 0
   end
 
   @[AlwaysInline]
   def word_count(chmin : Int32, chmax : Int32) : Int32
-    Chinfo.word_count(self.info_db, chmin, chmax)
+    Czdata.word_count(self.info_db, chmin, chmax)
   end
 
   @[AlwaysInline]
   def upsert_zinfos!(clist : Array(Czdata))
     # latest = clist.last.ch_no
     # @chmax = latest if @chmax < latest
-    chaps = [] of Chinfo
-    self.zdata_db.open_tx do |db|
-      clist.each do |zdata|
-        zdata.save_zinfo!(db: db)
-        chaps << Chinfo.new(zdata)
-      end
-    end
-
-    Chinfo.upsert_zinfos!(self.info_db, chaps)
-  end
-
-  def update_vinfos!(start : Int32 = 1, limit : Int32 = 99999)
-    upper = {self.chmax, start &+ limit}.min
-    limit = {limit, 64}.min
-
-    while start < upper
-      clist = Chinfo.get_all(self.info_db, start: start, limit: limit)
-      self.update_vinfos!(clist)
-      start &+= limit
-    end
-  end
-
-  def update_vinfos!(clist : Array(Chinfo))
-    q_url = "#{CV_ENV.m1_host}/_m1/qtran?wn=#{@wn_id}&hs=#{clist.size * 2}&op=txt"
-    ztext = clist.join('\n') { |x| "#{x.ztitle}\n#{x.zchdiv}" }
-
-    lines = HTTP::Client.post(q_url, body: ztext, &.body_io.gets_to_end.lines)
-
-    clist.each_with_index do |cinfo, index|
-      cinfo.vtitle = lines[index * 2]
-      cinfo.vchdiv = lines[index * 2 + 1]? || ""
-    end
-
-    Chinfo.update_vinfos!(db: self.info_db, infos: clist)
-  rescue ex
-    Log.error(exception: ex) { ex }
+    self.zdata_db.open_tx { |db| clist.each(&.save_zinfo!(db: db)) }
   end
 
   ####
@@ -319,11 +308,8 @@ class RD::Tsrepo
     @chmax = {from - 1, 0}.max
     # @@db.exec "update tsrepos set chmax = $1 where sname = $2 and sn_id = $3", @chmax, @sname, @sn_id
 
-    query_1 = "delete from chinfos where ch_no >= $1 and ch_no <= $2"
-    self.info_db.open_rw(&.exec query_1, from, upto)
-
-    query_2 = "delete from czdata where ch_no >= $1 and ch_no <= $2"
-    self.zdata_db.open_rw(&.exec query_2, from, upto)
+    query = "delete from czdata where ch_no >= $1 and ch_no <= $2"
+    self.zdata_db.open_rw(&.exec query, from, upto)
   end
 
   #
