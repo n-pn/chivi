@@ -20,7 +20,7 @@ export const load = (async ({ fetch, parent, params: { crit } }) => {
     rplist,
     ontab: 'users',
     _meta: {
-      title: `Đánh giá của @${vcdata.crit.u_uname.replace(/ /g, '+')} `,
+      title: `Đánh giá của @${vcdata.crit.u_uname.replaceAll(/ /g, '+')} `,
       mdesc: vcdata.crit.ohtml.substring(0, 150),
     },
     _curr: { text: vcdata.crit.b_title },

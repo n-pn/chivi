@@ -91,7 +91,7 @@ export function split_mode_4(input: string, re_str: string) {
   return split_text(input, is_title_fn)
 }
 
-const clean_text = (text: string) => text.replace(/[\t\s\u3000]/, ' ').trim()
+const clean_text = (text: string) => text.replaceAll(/[\t\s\u3000]/g, ' ').trim()
 
 function split_text(input: string, is_title_fn: (line: string) => boolean) {
   const lines = input.split('\n')

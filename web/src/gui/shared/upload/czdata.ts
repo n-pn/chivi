@@ -65,7 +65,7 @@ export class Czdata {
 
 function scrub_text(text: string): string {
   const to_full = (c: string) => String.fromCharCode(c.charCodeAt(0) + 0xfee0)
-  return text.replace(/\t/g, '  ').replace(/[!-~]/g, to_full).trim()
+  return text.replaceAll(/\t/g, '  ').replaceAll(/[!-~]/g, to_full).trim()
 }
 
 export interface Czopts {

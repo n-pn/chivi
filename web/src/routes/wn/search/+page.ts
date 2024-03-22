@@ -9,7 +9,7 @@ interface JsonData extends CV.Paginate {
 
 export const load = (async ({ fetch, url: { searchParams } }) => {
   const type = searchParams.get('t') || 'btitle'
-  const input = searchParams.get('q').replace('+', ' ')
+  const input = searchParams.get('q').replaceAll('+', ' ')
 
   const extras = { order: 'weight', lm: 8, [type]: input }
   const query = merge_query(searchParams, extras)

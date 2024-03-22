@@ -1,7 +1,7 @@
 const escape_tags = { '&': '&amp;', '"': '&quot;', "'": '&apos;' }
 
 function escape_html(str: string | null) {
-  return str && str.replace(/[&<>]/g, (x) => escape_tags[x] || x)
+  return str && str.replaceAll(/[&<>]/g, (x) => escape_tags[x] || x)
 }
 
 export default class MtData {

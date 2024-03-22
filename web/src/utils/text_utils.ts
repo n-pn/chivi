@@ -73,8 +73,8 @@ export function unaccent(input: string) {
   return input
     .normalize('NFD')
     .toLowerCase()
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace('đ', 'd')
+    .replaceAll(/[\u0300-\u036f]/g, '')
+    .replaceAll('đ', 'd')
 }
 
 export function slugify(input: string) {

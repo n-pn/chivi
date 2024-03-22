@@ -3,7 +3,7 @@ import cpos_info from './consts/cpos_info'
 const escape_tags = { '&': '&amp;', '"': '&quot;', "'": '&apos;' }
 
 function escape_htm(str: string) {
-  return str.replace(/[&<>]/g, (x) => escape_tags[x] || x)
+  return str.replaceAll(/[&<>]/g, (x) => escape_tags[x] || x)
 }
 
 function capitalize(str: String) {
@@ -47,7 +47,7 @@ export function gen_ztext_html(ztext: string) {
 }
 
 export function gen_hviet_text(input: string[], cap = false) {
-  const text = input.join('').replace('\u200b', '').trim()
+  const text = input.join('').replaceAll('\u200b', '').trim()
   return cap ? text : text.toLowerCase()
 }
 
