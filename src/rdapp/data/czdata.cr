@@ -24,7 +24,7 @@ class RD::Czdata
     ) strict;
     SQL
 
-  CZ_DIR = "/2tb/zroot/wn_db"
+  CZ_DIR = "/srv/chivi/wn_db"
 
   @[AlwaysInline]
   def self.db_path(sname : String, sn_id : String | Int32)

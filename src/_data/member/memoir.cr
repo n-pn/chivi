@@ -63,7 +63,7 @@ class CV::Memoir
   def self.target(type : Type, o_id : Int32)
     case type
     when .gdrepl? then Gdrepl.load!(id: o_id)
-    when .dtopic? then Dtopic.load!(id: o_id)
+    when .dtopic? then Dtopic.find_by_id!(id: o_id)
     when .vicrit? then Vicrit.load!(id: o_id)
     when .vilist? then Vilist.load!(id: o_id)
     else               raise "unsupported type #{type}"
@@ -73,7 +73,7 @@ class CV::Memoir
   ####
 
   def self.load(viuser_id : Int32, target)
-    load(viuser_id, Type.by_target(target), target.id)
+    load(viuser_id, Type.by_target(target), target.id.as(Int32))
   end
 
   def self.load(viuser_id : Int32, target_type : Type, target_id : Int32) : self

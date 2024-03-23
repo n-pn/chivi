@@ -31,17 +31,17 @@ class MT::PairDict
     self
   end
 
-  def load_tsv!(dname : String = @dname)
-    db_path = "var/mtdic/mt_ai/#{dname}.tsv"
-    return self unless File.file?(db_path)
+  # def load_tsv!(dname : String = @dname)
+  #   db_path = "var/mtdic/mt_ai/#{dname}.tsv"
+  #   return self unless File.file?(db_path)
 
-    File.each_line(db_path) do |line|
-      cols = line.split('\t')
-      add!(SqPair.new(cols)) if cols.size > 2
-    end
+  #   File.each_line(db_path) do |line|
+  #     cols = line.split('\t')
+  #     add!(SqPair.new(cols)) if cols.size > 2
+  #   end
 
-    self
-  end
+  #   self
+  # end
 
   @[AlwaysInline]
   def get?(a_zstr : String, b_zstr : String)

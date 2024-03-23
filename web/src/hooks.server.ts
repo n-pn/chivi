@@ -1,31 +1,23 @@
-import type {
-  Handle,
-  HandleFetch,
-  HandleServerError,
-  RequestEvent,
-} from '@sveltejs/kit'
+import type { Handle, HandleFetch, HandleServerError, RequestEvent } from '@sveltejs/kit'
 
 export const handle = (async ({ event, resolve }) => {
   event.locals._user = await getSession(event)
 
   return resolve(event, {
-    filterSerializedResponseHeaders: (name: string) =>
-      name != 'location' && name != 'link',
+    filterSerializedResponseHeaders: (name: string) => name != 'location' && name != 'link',
   })
 }) satisfies Handle
 
 const api_hosts = {
-  _db: `127.0.0.1:${import.meta.env.VITE_BE_PORT || 5010}`,
-  _wn: `127.0.0.1:${import.meta.env.VITE_WN_PORT || 5020}`,
-  _up: `127.0.0.1:${import.meta.env.VITE_UP_PORT || 5030}`,
+  _db: import.meta.env.VITE_BE_HOST,
+  _wn: import.meta.env.VITE_WN_HOST,
+  _up: import.meta.env.VITE_UP_HOST,
 
-  _rd: `127.0.0.1:${import.meta.env.VITE_RD_PORT || 5200}`,
+  _ai: import.meta.env.VITE_AI_HOST,
+  _rd: import.meta.env.VITE_RD_HOST,
 
-  _m1: `127.0.0.1:${import.meta.env.VITE_M1_PORT || 5110}`,
-  _ai: `127.0.0.1:${import.meta.env.VITE_AI_PORT || 5120}`,
-
-  _sp: `127.0.0.1:${import.meta.env.VITE_SP_PORT || 5300}`,
-  _ys: `127.0.0.1:${import.meta.env.VITE_YS_PORT || 5400}`,
+  _sp: import.meta.env.VITE_SP_HOST,
+  _ys: import.meta.env.VITE_YS_HOST,
 }
 
 export const handleFetch = (({ event, request, fetch }) => {

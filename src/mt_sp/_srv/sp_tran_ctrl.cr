@@ -14,7 +14,7 @@ class SP::TranCtrl < AC::Base
   def tl_line(qkind : String, zh ztext : String,
               pd pdict = "combine", op otype = "txt",
               rg regen : Int32 = 0, ls l_sep : Int32 = 0)
-    qdata = QtData.from_ztext(ztext, cache: false)
+    qdata = QtData.new(ztext)
     qdata.set_opts(pdict, udict: "qt#{self._vu_id}", regen: regen, h_sep: 0, l_sep: l_sep, otype: otype)
     do_translate(qdata, qkind)
   end
@@ -23,18 +23,18 @@ class SP::TranCtrl < AC::Base
   def tl_post(qkind : String, pd pdict = "combine", op otype = "json",
               rg regen : Int32 = 0, hs h_sep : Int32 = 1, ls l_sep : Int32 = 0)
     ztext = self._read_body
-    qdata = QtData.from_ztext(ztext)
+    qdata = QtData.new(ztext)
     qdata.set_opts(pdict, "qt#{self._vu_id}", regen, h_sep, l_sep, otype)
     do_translate(qdata, qkind)
   end
 
-  @[AC::Route::GET("/:qkind/:qhash")]
-  def tl_file(qkind : String, qhash : String, pd pdict = "combine", op otype = "json",
-              rg regen : Int32 = 0, hs h_sep : Int32 = 1, ls l_sep : Int32 = 0)
-    qdata = QtData.from_fname(qhash)
-    qdata.set_opts(pdict, "qt#{self._vu_id}", regen, h_sep, l_sep, otype)
-    do_translate(qdata, qkind)
-  end
+  # @[AC::Route::GET("/:qkind/:qhash")]
+  # def tl_file(qkind : String, qhash : String, pd pdict = "combine", op otype = "json",
+  #             rg regen : Int32 = 0, hs h_sep : Int32 = 1, ls l_sep : Int32 = 0)
+  #   qdata = QtData.from_fname(qhash)
+  #   qdata.set_opts(pdict, "qt#{self._vu_id}", regen, h_sep, l_sep, otype)
+  #   do_translate(qdata, qkind)
+  # end
 
   private def do_translate(qdata : QtData, qkind : String)
     sleep 10.milliseconds * (1 << (5 - self._privi))

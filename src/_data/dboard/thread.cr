@@ -328,7 +328,7 @@ class CV::Gdroot
     gdroot = self.new(kind, ukey)
 
     case kind
-    when .dtopic? then gdroot.init_from(Dtopic.find!(ukey.to_i))
+    when .dtopic? then gdroot.init_from(Dtopic.find_by_id!(ukey.to_i))
     when .wninfo? then gdroot.init_from(Wninfo.load!(ukey.to_i))
     when .vicrit? then gdroot.init_from(Vicrit.load!(ukey.to_i))
     when .vilist? then gdroot.init_from(Vilist.load!(ukey.to_i))

@@ -4,8 +4,6 @@ require "./_mt_ctrl_base"
 class MT::QtTranCtrl < AC::Base
   base "/_ai"
 
-  TEXT_DIR = "var/wnapp/chtext"
-
   @[AC::Route::GET("/hviet")]
   def hviet_file(fpath : String)
     mcore = QtCore.hv_word

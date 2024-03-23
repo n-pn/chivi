@@ -29,13 +29,13 @@ class CV::DtopicCtrl < CV::BaseCtrl
     guard_privi 0, "tạo chủ đề"
     dboard = Wninfo.load!(b_id)
 
-    dtopic = Dtopic.new({viuser_id: _viuser.id, nvinfo_id: dboard.id})
-    dtopic.update_content!(form)
+    dtopic = Dtopic.new(viuser_id: _viuser.id, nvinfo_id: dboard.id)
+    dtopic.update!(form)
 
     spawn do
       # TODO: directly call sql
       count = dboard.post_count &+ 1
-      dboard.update!({post_count: count, board_bump: dtopic.utime})
+      dboard.update!({post_count: count, board_bump: dtopic.mtime})
 
       Gdroot.new(:dtopic, dtopic.id.to_s).init_from(dtopic).upsert!
     end
@@ -55,7 +55,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
   @[AC::Route::GET("/form")]
   def edit(id dt_id : Int32 = 0, tb tb_id : Int32 = 0)
     if dt_id != 0
-      dtopic = Dtopic.load!(dt_id)
+      dtopic = Dtopic.find_by_id!(dt_id)
       dboard = Wninfo.load!(dtopic.nvinfo_id)
     else
       dboard = Wninfo.load!(tb_id)
@@ -74,7 +74,7 @@ class CV::DtopicCtrl < CV::BaseCtrl
   end
 
   private def init_form(dtopic : Dtopic)
-    {id: dtopic.id, title: dtopic.title, btext: dtopic.btext, labels: dtopic.labels.join(",")}
+    {id: dtopic.id, title: dtopic.title, btext: dtopic.ibody, labels: dtopic.htags.join(",")}
   end
 
   private def init_form(dtopic : Nil)
@@ -83,16 +83,16 @@ class CV::DtopicCtrl < CV::BaseCtrl
 
   @[AC::Route::PATCH("/:post_id", body: :form)]
   def update(post_id : Int32, form : DtopicForm)
-    dtopic = Dtopic.load!(post_id)
+    dtopic = Dtopic.find_by_id!(post_id)
     guard_owner dtopic.viuser_id, 0, "sửa chủ đề"
 
-    dtopic.update_content!(form)
+    dtopic.update!(form)
     render text: "#{dtopic.id}-#{dtopic.tslug}"
   end
 
   @[AC::Route::DELETE("/:post_id")]
   def delete(post_id : Int32)
-    dtopic = Dtopic.load!(post_id)
+    dtopic = Dtopic.find_by_id!(post_id)
     guard_owner dtopic.viuser_id, 0, "xoá chủ đề"
 
     is_admin = _privi > 3 && _vu_id != dtopic.viuser_id

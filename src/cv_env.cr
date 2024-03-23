@@ -27,8 +27,6 @@ module CV_ENV
   class_getter wn_port = ENV["CV_WN_PORT"]?.try(&.to_i?) || 5020 #
   class_getter up_port = ENV["CV_UP_PORT"]?.try(&.to_i?) || 5030 #
 
-  class_getter ai_port = ENV["CV_AI_PORT"]?.try(&.to_i?) || 5120 # mt_v2 engine
-
   class_getter rd_port = ENV["CV_RD_PORT"]?.try(&.to_i?) || 5200
 
   class_getter sp_port = ENV["CV_SP_PORT"]?.try(&.to_i?) || 5300 # mt_sp helper
@@ -40,13 +38,16 @@ module CV_ENV
 
   class_getter rd_host = "http://localhost:#{rd_port}"
 
-  class_getter ai_host = "http://localhost:#{ai_port}"
-
   class_getter sp_host = "http://localhost:#{sp_port}"
   class_getter ys_host = "http://localhost:#{ys_port}"
 
-  class_getter lp_host = ENV["HANLP_HOST"]? || "http://localhost:5555"
+  class_getter lp_host = ENV["HANLP_HOST"]
 
-  class_getter m1_port = ENV["MT_V1_PORT"]?.try(&.to_i?) || 5110 # mt_v1 engine
-  class_getter m1_host = ENV["MT_V1_HOST"]? || "http://localhost:#{m1_port}"
+  class_getter m1_port = ENV["MT_V1_PORT"]
+  class_getter m1_host = ENV["MT_V1_HOST"]
+
+  class_getter ai_port = ENV["CV_AI_PORT"]
+  class_getter ai_host = ENV["CV_AI_HOST"]
+
+  class_getter c_gpt_host = ENV["C_GPT_HOST"]
 end

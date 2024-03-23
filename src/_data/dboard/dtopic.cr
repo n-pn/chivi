@@ -2,14 +2,15 @@ require "cmark"
 require "../_base"
 
 class CV::Dtopic
+  class_getter db : DB::Database = PGDB
+
   include Crorm::Model
   schema "dtopics", :postgres, strict: false
 
   field id : Int32, pkey: true, auto: true
 
   field viuser_id : Int32 = 0
-
-  # column nvinfo_id : Int32 = 0
+  field nvinfo_id : Int32 = 0
 
   #####
 
@@ -35,14 +36,12 @@ class CV::Dtopic
   field rtime : Int64 = 0 # when new comment/reply created
   field atime : Int64 = 0 # when new data changed
 
+  def initialize(@viuser_id, @nvinfo_id)
+  end
+
   def set_title(title : String)
     self.title = title
     self.tslug = TextUtil.slugify(title).split('-').first(8).join('-')
-  end
-
-  def set_utime(utime : Int64)
-    self.utime = utime
-    update_sort!
   end
 
   MINUTES_OF_30_DAYS = 43200
@@ -53,49 +52,58 @@ class CV::Dtopic
     self.state &* MINUTES_OF_30_DAYS &* bonus
   end
 
-  def bump!
-    self.repl_count = self.repl_count + 1
-    self.set_utime(Time.utc.to_unix)
-    self.save!
+  def inc_repl_count!(count : Int32 = 1)
+    @repl_count = @repl_count + count
+    @mtime = Time.utc.to_unix
+    self.upsert!
 
-    self.nvinfo.update!({board_bump: self.utime})
+    # self.nvinfo.update!({board_bump: self.utime})
   end
 
-  def bump_view_count!
-    self.view_count = self.view_count + 1
-    update_sort!
-    self.save!
+  def inc_view_count!(count : Int32 = 1)
+    @view_count = @view_count + count
+    self.upsert!
   end
 
   def inc_like_count!(value = 1)
-    self.like_count = self.like_count + value
-    self.update_sort!
-    self.save!
+    @like_count = @like_count + value
+    self.upsert!
   end
 
   def htags=(htags : Array(String))
     @htags = htags.uniq!(&.downcase)
   end
 
-  def update!(form, set_utime = true)
-    self.set_utime(Time.utc.to_unix) if set_utime
+  def update!(form, set_mtime = true)
+    @mtime = Time.utc.to_unix if set_mtime
 
     self.set_title(form.title)
-    self.set_htags(form.htags.split(",").map(&.strip))
+    self.htags = form.htags.split(",").map(&.strip)
 
-    @itext = form.btext
+    @ibody = form.btext
     @bhtml = PostUtil.md_to_html(form.btext)
 
-    @brief = self.btext.split('\n', 2).first? || ""
+    @brief = self.ibody.split('\n', 2).first? || ""
 
     self.upsert!
   end
 
+  def save!
+    upsert!
+  end
+
   def soft_delete(admin = false)
-    update!(state: admin ? -3 : -2)
+    @state = admin ? -3 : -2
+    @@db.exec "update #{@@schema.table} set state = $1 where id = $2", @state, @id
   end
 
   def canonical_path
     "/gd/t#{@id}-#{tslug}"
+  end
+
+  INC_REPL_SQL = "update #{@@schema.table} set repl_count = repl_count + $1, mtime = $2 where id = $3"
+
+  def self.inc_repl_count!(id : Int32, value : Int32 = 1, mtime = Time.utc.to_unix)
+    @@db.exec INC_REPL_SQL, value, mtime, id
   end
 end

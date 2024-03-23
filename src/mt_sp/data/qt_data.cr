@@ -5,37 +5,7 @@ require "../util/*"
 require "./v_cache"
 
 class SP::QtData
-  DIR = "/2tb/var.chivi/cache/qtran"
-
-  def self.from_ztext(ztext : String, cache : Bool = true, cache_dir : String = DIR)
-    lines = [] of String
-
-    ztext.each_line do |line|
-      # TODO: remove canonize?
-      lines << CharUtil.canonize(line)
-    end
-
-    from_ztext(lines, cache: cache, cache_dir: cache_dir)
-  end
-
-  def self.from_ztext(lines : Array(String), cache : Bool = true, cache_dir : String = DIR)
-    fbase = "#{cache_dir}/#{lines.size}-#{HashUtil.hash_32(lines)}"
-    fpath = "#{fbase}.ztext.txt"
-
-    if cache && !File.file?(fpath)
-      File.open(fpath, "w") { |file| lines.join(file, '\n') }
-    end
-
-    new(lines, fbase)
-  end
-
-  def self.from_fname(fname : String, cache_dir : String = DIR)
-    fbase = "#{cache_dir}/#{fname}"
-    new(File.read_lines("#{fbase}.ztext.txt"), fbase)
-  end
-
   getter lines : Array(String)
-  getter fbase : String
 
   property pdict = "combine"
   property udict = "qt0"
@@ -45,7 +15,11 @@ class SP::QtData
   property l_sep = 0
   property otype = "json"
 
-  def initialize(@lines, @fbase, @cache = true)
+  def initialize(ztext : String)
+    @lines = ztext.lines
+  end
+
+  def initialize(@lines)
   end
 
   def set_opts(@pdict, @udict, @regen, @h_sep, @l_sep, @otype = "json")
@@ -66,19 +40,7 @@ class SP::QtData
       return @lines.join('\n') { |line| MT::QtCore.tl_hvword(line) }
     end
 
-    fpath = "#{@fbase}.#{qtype}.txt"
-
-    read_file(fpath, regen > 1 ? 5.minutes : 2.weeks) || begin
-      mdata = load_vtext(qtype)
-      raise "Lỗi dịch nhanh với chế độ #{qtype}" unless mdata
-      File.write(fpath, mdata) if @cache
-      mdata
-    end
-  end
-
-  def read_file(fpath : String, tspan = 2.weeks) : String?
-    return unless @cache && (info = File.info?(fpath))
-    File.read(fpath) if info.modification_time >= Time.utc - tspan
+    load_vtext(qtype) || raise "Lỗi dịch nhanh với chế độ #{qtype}"
   end
 
   def load_vtext(qtype : String) : String?
@@ -126,13 +88,12 @@ class SP::QtData
     HTTP::Client.post(url, body: @lines.join('\n'), &.body_io.gets_to_end)
   end
 
-  C_GPT_API    = "http://184.174.38.115:9091"
   JSON_HEADERS = HTTP::Headers{"Content-Type" => "application/json"}
 
   private def call_c_gpt(lines : Array(String))
     body = {test_key: lines.join('\n')}.to_json
 
-    HTTP::Client.post(C_GPT_API, headers: JSON_HEADERS, body: body) do |res|
+    HTTP::Client.post(CV_ENV.c_gpt_host, headers: JSON_HEADERS, body: body) do |res|
       result = res.body_io.gets_to_end
       break unless res.status.success?
 

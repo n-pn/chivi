@@ -5,7 +5,7 @@ module CV::Notifier
     return if target.viuser_id == memoir.viuser_id
 
     action = Unotif::Action.map_liking(target)
-    return if Unotif.find(action, target.id, memoir.viuser_id)
+    return if Unotif.find(action, target.id.as(Int32), memoir.viuser_id)
 
     content = render_content(byuser) do |html|
       html << "thích " << liking_content(target)
@@ -13,7 +13,7 @@ module CV::Notifier
 
     output = Unotif.new(
       viuser_id: target.viuser_id, content: content,
-      action: action, object_id: target.id, byuser_id: memoir.viuser_id,
+      action: action, object_id: target.id.as(Int32), byuser_id: memoir.viuser_id,
       created_at: Time.unix(memoir.liked_at)
     )
 
@@ -48,6 +48,6 @@ module CV::Notifier
 
   def on_unlike_event(target, memoir : Memoir)
     action = Unotif::Action.map_liking(target)
-    Unotif.remove_notif(action, target.id, memoir.viuser_id)
+    Unotif.remove_notif(action, target.id.as(Int32), memoir.viuser_id)
   end
 end

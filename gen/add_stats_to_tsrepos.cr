@@ -7,7 +7,7 @@ update tsrepos set chap_total = $1, chap_avail = $2, word_count = $3, scan_mtime
 where sname = $5 and sn_id = $6
 SQL
 
-files = Dir.glob("/2tb/zroot/*.tsv")
+files = Dir.glob("/2tb/zroot/stats/*.tsv")
 
 files.each do |fpath|
   sname = File.basename(fpath, ".tsv")

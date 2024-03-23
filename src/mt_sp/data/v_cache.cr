@@ -124,7 +124,7 @@ class SP::VCache
 
     vals.zip(raws).each do |val, raw|
       rid = gen_rid(raw)
-      items << new(rid, obj: :ztext, val: raw, mcv: 0)
+      items << new(rid, obj: :ztext, val: raw, mcv: mcv)
       items << new(rid, obj: obj, val: val, mcv: mcv)
     end
 

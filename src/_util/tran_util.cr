@@ -23,21 +23,21 @@ module TranUtil
     end
   end
 
-  # CVMTL_URL = "#{CV_ENV.m1_host}/_m1/qtran"
+  CVMTL_URL = "#{CV_ENV.m1_host}/_m1/qtran"
 
-  # record Wndata, btitle : String, author : String, bintro : String do
-  #   include JSON::Serializable
-  # end
+  record Wndata, btitle : String, author : String, bintro : String do
+    include JSON::Serializable
+  end
 
-  # def tl_wndata(btitle : String, author : String, bintro : String, wn_id = 0)
-  #   url = "#{CVMTL_URL}/wnovel?wn_id=#{wn_id}"
-  #   body = {btitle: btitle, author: author, bintro: bintro}
+  def tl_wndata(btitle : String, author : String, bintro : String, wn_id = 0)
+    url = "#{CVMTL_URL}/wnovel?wn_id=#{wn_id}"
+    body = {btitle: btitle, author: author, bintro: bintro}
 
-  #   HTTP::Client.post(url, headers: JSON_HEADERS, body: body.to_json) do |res|
-  #     return unless res.success?
-  #     Wndata.from_json(res.body_io)
-  #   end
-  # end
+    HTTP::Client.post(url, headers: JSON_HEADERS, body: body.to_json) do |res|
+      return unless res.success?
+      Wndata.from_json(res.body_io)
+    end
+  end
 
   def opencc(input : String, config = "hk2s") : String
     Process.run("/usr/bin/opencc", {"-c", config}) do |proc|
