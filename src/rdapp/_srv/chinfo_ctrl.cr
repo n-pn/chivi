@@ -41,7 +41,7 @@ class RD::ChinfoCtrl < AC::Base
 
       mtime: cinfo.mtime,
       uname: cinfo.uname,
-      rlink: cinfo.zlink,
+      rlink: cinfo._note,
     }
 
     render 200, json: json

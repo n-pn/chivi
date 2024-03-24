@@ -17,14 +17,14 @@ struct RD::CzdataForm
     @title, @chdiv = ChapUtil.split_ztitle(@title, @chdiv, cleaned: false)
   end
 
-  def to_czdata(db, zorig : String, mtime : Int64 = Time.utc.to_unix) : Czdata
+  def to_czdata(db, _user : String, mtime : Int64 = Time.utc.to_unix) : Czdata
     zdata = Czdata.load(db, @ch_no)
     # TODO: skip if immutable
 
     zdata.title = @title
     zdata.chdiv = @chdiv
     zdata.mtime = mtime
-    zdata.zorig = zorig
+    zdata._user = _user
     zdata.init_by_hand(input: @ztext)
 
     zdata

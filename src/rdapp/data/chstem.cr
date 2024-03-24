@@ -44,7 +44,18 @@ class RD::Tsrepo
 
   @[DB::Field(ignore: true, auto: true)]
   @[JSON::Field(ignore: true)]
-  getter zdata_db : Crorm::SQ3 { Czdata.db(@sname, @sn_id) }
+  getter zdata_db : Crorm::SQ3 do
+    repo = Czdata.db(@sname, @sn_id)
+
+    repo.open_rw do |db|
+      db.exec "alter table czdata drop column plock" rescue nil
+      db.exec "alter table czdata add column _lock int not null default 1" rescue nil
+      db.exec "alter table czdata rename column zorig to _user" rescue nil
+      db.exec "alter table czdata rename column zlink to _note" rescue nil
+    end
+
+    repo
+  end
 
   @[DB::Field(ignore: true, auto: true)]
   @[JSON::Field(ignore: true)]
@@ -94,7 +105,7 @@ class RD::Tsrepo
   def get_zdata(ch_no : Int32, rmode : Int32 = 0)
     self.zdata_db.open_rw do |db|
       zdata = Czdata.load(db, ch_no: ch_no)
-      zdata.save_ztext!(db: db) if rmode > 0 && zdata.init_by_zlink(force: rmode > 1)
+      zdata.save_ztext!(db: db) if rmode > 0 && zdata.init_by_link(force: rmode > 1)
       zdata
     end
   end
@@ -202,8 +213,6 @@ class RD::Tsrepo
     load_vtran(chaps)
   end
 
-
-
   def load_vtran(chaps : Array(Czdata))
     zstrs = [] of String
 
@@ -226,8 +235,6 @@ class RD::Tsrepo
     chaps
   end
 
-
-
   @[AlwaysInline]
   def suggest_chdiv(ch_no : Int32)
     query = "select chdiv from czdata where ch_no <= $1 and chdiv <> '' order by ch_no desc limit 1"
@@ -243,7 +250,6 @@ class RD::Tsrepo
   def get_cinfo(ch_no : Int32, &)
     get_all(ch_no &- 2, ch_no &+ 2).find(&.ch_no.== ch_no) || yield
   end
-
 
   ###
 

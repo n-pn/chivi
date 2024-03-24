@@ -19,8 +19,9 @@ class RD::Czdata
       mtime int NOT NULL DEFAULT 0,
       atime int NOT NULL DEFAULT 0,
       --
-      zorig text not null default '',
-      zlink text not null default ''
+      _user text not null default '',
+      _note text not null default '',
+      _lock int not null default 1
     ) strict;
     SQL
 
@@ -58,13 +59,13 @@ class RD::Czdata
   #   items = [] of self
 
   #   DB.open("sqlite3:#{old_db_path}?immutable=1") do |db|
-  #     query = "select ch_no, title, chdiv, mtime, zorig, s_cid, zlink, ztext from czdata"
+  #     query = "select ch_no, title, chdiv, mtime, _user, s_cid, _note, ztext from czdata"
 
   #     db.query_each query do |rs|
   #       items << self.new(
   #         ch_no: rs.read(Int32), title: rs.read(String), chdiv: rs.read(String),
-  #         mtime: rs.read(Int64), zorig: "#{rs.read(String)}/#{rs.read(Int32)}",
-  #         zlink: rs.read(String), ztext: rs.read(String)
+  #         mtime: rs.read(Int64), _user: "#{rs.read(String)}/#{rs.read(Int32)}",
+  #         _note: rs.read(String), ztext: rs.read(String)
   #       )
   #     end
   #   end
@@ -89,10 +90,11 @@ class RD::Czdata
   field mtime : Int64 = 0_i64
   field atime : Int64 = 0_i64
 
-  field zorig : String = ""
-  field zlink : String = ""
+  field _user : String = ""
+  field _note : String = ""
+  field _lock : Int32 = 0
 
-  def initialize(@ch_no, @title = "", @chdiv = "", @zorig = "", @zlink = "", @mtime = 0, ztext : String = "")
+  def initialize(@ch_no, @title = "", @chdiv = "", @_user = "", @_note = "", @mtime = 0, ztext : String = "")
     self.ztext = ztext unless ztext.empty?
   end
 
@@ -105,14 +107,12 @@ class RD::Czdata
       jb.field "zsize", @zsize
       jb.field "mtime", @mtime
       jb.field "uname", self.uname
-      jb.field "rlink", @zlink
-
-      # jb.field "flags", Chflag.new(@_flag).to_s
+      jb.field "rlink", @_note
     }
   end
 
   def uname
-    @zorig.tr("?+*", "").split('/').first
+    @_user.tr("?+*", "").split('/').first
   end
 
   def cbody
@@ -155,29 +155,29 @@ class RD::Czdata
     self
   end
 
-  def init_by_zlink(force : Bool = false) : Bool
-    return false if !force && @zsize > 0 || @zlink.empty?
+  def init_by_link(force : Bool = false) : Bool
+    return false if !force && @zsize > 0 || !@_note.starts_with?("http")
 
     stale = Time.utc - (force ? 2.minutes : 20.years)
-    rchap = RawRmchap.from_link(@zlink, stale: stale)
+    rchap = RawRmchap.from_link(@_note, stale: stale)
 
     @title, lines = rchap.parse_page!
 
     strio = String::Builder.new(@title)
     lines.each { |line| strio << '\n' << line }
 
-    @zorig = rchap.zorig
+    @_user = rchap.zorig
     @atime = @mtime = Time.utc.to_unix
     self.ztext = strio.to_s
 
     true
   rescue ex
-    Log.error(exception: ex) { "Error loading #{@zlink}: #{ex}" }
+    Log.error(exception: ex) { "Error loading #{@_note}: #{ex}" }
     false
   end
 
   UPSERT_ZTEXT_SQL = <<-SQL
-      insert into czdata(ch_no, title, chdiv, ztext, zsize, cksum, mtime, atime, zorig)
+      insert into czdata(ch_no, title, chdiv, ztext, zsize, cksum, mtime, atime, _user)
       values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       on conflict(ch_no) do update set
         title = IIF(excluded.title = '', czdata.title, excluded.title),
@@ -187,27 +187,27 @@ class RD::Czdata
         cksum = excluded.cksum,
         mtime = excluded.mtime,
         atime = excluded.atime,
-        zorig = excluded.zorig
+        _user = excluded._user
       SQL
 
   @[AlwaysInline]
   def save_ztext!(db)
-    db.exec UPSERT_ZTEXT_SQL, @ch_no, @title, @chdiv, @ztext, @zsize, @cksum, @mtime, @atime, @zorig
+    db.exec UPSERT_ZTEXT_SQL, @ch_no, @title, @chdiv, @ztext, @zsize, @cksum, @mtime, @atime, @_user
   end
 
   UPSERT_ZINFO_SQL = <<-SQL
-    insert into czdata(ch_no, title, chdiv, zorig, zlink)
+    insert into czdata(ch_no, title, chdiv, _user, _note)
     values ($1, $2, $3, $4, $5)
     on conflict(ch_no) do update set
       title = excluded.title,
       chdiv = IIF(excluded.chdiv = '', czdata.chdiv, excluded.chdiv),
-      zorig = IIF(czdata.zorig = '', excluded.zorig, czdata.zorig),
-      zlink = excluded.zlink
+      _user = IIF(czdata._user = '', excluded._user, czdata._user),
+      _note = excluded._note
     SQL
 
   @[AlwaysInline]
   def save_zinfo!(db)
-    db.exec UPSERT_ZINFO_SQL, @ch_no, @title, @chdiv, @zorig, @zlink
+    db.exec UPSERT_ZINFO_SQL, @ch_no, @title, @chdiv, @_user, @_note
   end
 
   ####
@@ -225,7 +225,7 @@ class RD::Czdata
   alias DBX = Crorm::SQ3 | DB::Database | DB::Connection
 
   GET_ALL_SQL = <<-SQL
-    select ch_no, title, chdiv, zsize, mtime, zorig from czdata
+    select ch_no, title, chdiv, zsize, mtime, _user from czdata
     where ch_no >= $1 and ch_no <= $2
     order by ch_no asc limit $3
   SQL
@@ -235,7 +235,7 @@ class RD::Czdata
   end
 
   GET_TOP_SQL = <<-SQL
-    select ch_no, title, chdiv, zsize, mtime, zorig from czdata
+    select ch_no, title, chdiv, zsize, mtime, _user from czdata
     where ch_no <= $1 order by ch_no desc limit $2
   SQL
 
@@ -244,7 +244,7 @@ class RD::Czdata
   end
 
   # GET_PREV_SQL = <<-SQL
-  #   select ch_no, title, chdiv, zsize, mtime, zorig from czdata
+  #   select ch_no, title, chdiv, zsize, mtime, _user from czdata
   #   where ch_no < $1 order by ch_no desc limit 1
   # SQL
 
@@ -253,7 +253,7 @@ class RD::Czdata
   # end
 
   # GET_NEXT_SQL = <<-SQL
-  #   select ch_no, title, chdiv, zsize, mtime, zorig from czdata
+  #   select ch_no, title, chdiv, zsize, mtime, _user from czdata
   #   where ch_no > $1 order by ch_no asc limit 1
   # SQL
 

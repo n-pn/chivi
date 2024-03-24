@@ -48,9 +48,8 @@ class RD::CzdataCtrl < AC::Base
     end
 
     crepo.zdata_db.open_tx do |db|
-      zorig = ukind.edit? ? "*#{_uname}" : "+#{_uname}"
       clist.each do |cform|
-        zdata = cform.to_czdata(db: db, zorig: zorig, mtime: mtime)
+        zdata = cform.to_czdata(db: db, _user: self._uname, mtime: mtime)
         zdata.save_ztext!(db)
       end
     end

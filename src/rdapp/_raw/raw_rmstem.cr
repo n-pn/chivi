@@ -100,8 +100,8 @@ class RawRmstem
       ch_no: ch_no,
       title: ctitle,
       chdiv: subdiv,
-      zorig: "#{@zorig}/#{s_cid.to_i? || 0}",
-      zlink: zlink,
+      _user: @zorig,
+      _note: zlink,
     )
   rescue ex
     Log.error(exception: ex) { ex.message.colorize.red }
