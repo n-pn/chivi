@@ -14,7 +14,7 @@
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^5.0.0",
     "@sveltejs/adapter-node": "^2.1.1",
-    "@sveltejs/kit": "^2.4.1",
+    "@sveltejs/kit": "^2.4.3",
     "@sveltejs/vite-plugin-svelte": "^3.0.1",
     "@types/node": "^20.11.5",
     "autoprefixer": "^10.4.17",
