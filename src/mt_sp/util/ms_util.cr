@@ -36,8 +36,8 @@ module SP::MsUtil
     end
 
     client = HTTP::Client.new(URI.parse("https://edge.microsoft.com"))
-    client.connect_timeout = 2
-    client.read_timeout = 5
+    client.connect_timeout = 2.seconds
+    client.read_timeout = 5.seconds
 
     @@free_until = Time.utc + 8.minutes
     @@free_token = client.get("/translate/auth", &.body_io.gets_to_end)

@@ -6,7 +6,7 @@ import { load_crits } from '$lib/fetch_data'
 const _meta = {
   title: 'Trang chủ',
   mdesc: 'Truyện Tàu dịch máy, đánh giá truyện, dịch nhanh tiếng Trung...',
-  image: 'https://cdn.chivi.app/imgs/avatar.png',
+  image: 'https://img.chivi.app/imgs/avatar.png',
 }
 
 const _navs: App.PageNavi[] = []

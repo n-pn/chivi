@@ -127,7 +127,7 @@ class Rmhost
 
   ####
 
-  KEEP_DIR = "var/.keep"
+  KEEP_DIR = "/srv/chivi/.keep"
 
   def mbid_file
     "#{KEEP_DIR}/_index/#{@seedname}.htm"

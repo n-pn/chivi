@@ -26,7 +26,7 @@ class CrawlYsbook < CrawlTask
     "https://api.yousuu.com/api/book/#{yb_id}"
   end
 
-  DIR = "var/.keep/yousuu/book-infos"
+  DIR = "/srv/chivi/.keep/yousuu/book-infos"
   Dir.mkdir_p(DIR)
 
   def self.gen_path(yb_id : Int32)
@@ -88,7 +88,7 @@ class CrawlYsbook < CrawlTask
   end
 
   def self.load_index_page(ttl = 4.hours)
-    out_path = "var/.keep/_index/yousuu.htm"
+    out_path = "/srv/chivi/.keep/_index/yousuu.htm"
 
     unless CrUtil.file_exists?(out_path, ttl)
       href = "https://www.yousuu.com/newbooks"

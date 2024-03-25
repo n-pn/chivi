@@ -11,7 +11,7 @@ class HTTP::Client
   @write_timeout = 40.0
 end
 
-DIR = "var/files/covers"
+DIR = "/srv/chivi/files/covers"
 Dir.mkdir_p(DIR)
 
 MAX_WIDTH = 300
@@ -148,5 +148,8 @@ if redo || !File.file?(webp_path)
   exit 1 unless valid_extension?(orig_path)
   exit 1 unless img_to_webp(orig_path, webp_path)
 end
+
+puts `rsync -ai '#{orig_path}' 'new.chivi.app:#{orig_path}'`
+puts `rsync -ai '#{webp_path}' 'new.chivi.app:#{webp_path}'`
 
 puts "LINK: #{link}, WEBP: #{name}.webp".colorize.yellow

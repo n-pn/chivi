@@ -16,8 +16,7 @@
 <article class="blcard">
   <div class="blcard-infos">
     <def class="fz-fluid">
-      <a class="cv-user" href="/uc/lists?from=ys&user={user.id}"
-        >{user.uname}</a>
+      <a class="cv-user" href="/uc/lists?from=ys&user={user.id}">{user.uname}</a>
 
       <span class="u-fg-tert">&middot;</span>
       <span class="u-fg-tert">{rel_time(list.utime)} </span>
@@ -51,15 +50,13 @@
     {#each list.covers as cover, idx}
       <div class="blcard-bcover _{idx}">
         <picture>
-          <source
-            type="image/webp"
-            srcset="https://cdn.chivi.app/covers/{cover}" />
-          <img src="https://cdn.chivi.app/empty.png" alt="" />
+          <source type="image/webp" srcset="https://img.chivi.app/covers/{cover}" />
+          <img src="https://img.chivi.app/empty.png" alt="" />
         </picture>
       </div>
     {:else}
       <div class="blcard-covers _0">
-        <img src="https://cdn.chivi.app/empty.png" alt="" />
+        <img src="https://img.chivi.app/empty.png" alt="" />
       </div>
     {/each}
   </a>

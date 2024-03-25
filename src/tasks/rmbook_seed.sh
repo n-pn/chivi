@@ -8,7 +8,6 @@ CV_ENV=production ./bin/rmbook_seed !69shu
 CV_ENV=production ./bin/rmbook_seed !ptwxz
 
 CV_ENV=production ./bin/rmbook_seed !uukanshu
-CV_ENV=production ./bin/rmbook_seed !uukanshu_tw
 
 CV_ENV=production ./bin/rmbook_seed !ymxwx
 CV_ENV=production ./bin/rmbook_seed !tasim

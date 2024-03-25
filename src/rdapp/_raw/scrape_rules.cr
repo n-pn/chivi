@@ -65,7 +65,7 @@ class SC::WnchapRule
 
   ###
   #
-  SAVE_DIR = "var/.keep/rmchap"
+  SAVE_DIR = "/srv/chivi/.keep/rmchap"
   RULE_DIR = "var/_conf/scrape_rules"
 
   def self.rule_path(sitename : String)

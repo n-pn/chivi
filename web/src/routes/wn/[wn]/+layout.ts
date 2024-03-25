@@ -29,7 +29,7 @@ export const load = (async ({ parent, params, fetch }) => {
     _navs: [..._navs, { href: `/wn/${wn_id}`, text: nvinfo.vtitle, icon: 'book', kind: 'title' }],
     _meta: {
       title: nvinfo.vtitle,
-      image: nvinfo.bcover || '//cdn.chivi.app/covers/_blank.webp',
+      image: nvinfo.bcover || '//img.chivi.app/covers/_blank.webp',
       mdesc: nvinfo.bintro.substring(0, 300),
     },
   }

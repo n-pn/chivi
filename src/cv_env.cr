@@ -50,4 +50,5 @@ module CV_ENV
   class_getter ai_host = ENV["CV_AI_HOST"]
 
   class_getter c_gpt_host = ENV["C_GPT_HOST"]
+  class_getter m_gpt_host = ENV["M_GPT_HOST"]
 end

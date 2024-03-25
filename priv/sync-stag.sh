@@ -2,7 +2,7 @@
 set -euo pipefail
 
 function rsync-fast {
-  rsync -aHAXxviz --compress-choice=zstd --numeric-ids -e 'ssh -T -c aes128-gcm@openssh.com -o Compression=no -x -p 22222' $@
+  rsync -aHAXxviz --compress-choice=zstd --numeric-ids -e 'ssh -T -c aes128-gcm@openssh.com -o Compression=no -x' $@
 }
 
 SSH=nipin@new.chivi.app:/app/chivi

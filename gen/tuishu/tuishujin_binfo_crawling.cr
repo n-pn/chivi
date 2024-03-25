@@ -1,7 +1,7 @@
 require "../../src/_util/http_util"
 
 URL = "https://pre-api.tuishujun.com/api/listBookRepository"
-DIR = "var/.keep/tuishu/listBookRepository-#{Time.local.to_s("%F")}"
+DIR = "/srv/chivi/.keep/tuishu/listBookRepository-#{Time.local.to_s("%F")}"
 Dir.mkdir_p(DIR)
 
 page_total = 388745

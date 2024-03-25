@@ -3,7 +3,7 @@
 # require "../../src/zroot/rmstem"
 
 # DB3_DIR = "var/zroot/wnchap/!hetushu"
-# HTM_DIR = "var/.keep/rmchap/!hetushu"
+# HTM_DIR = "/srv/chivi/.keep/rmchap/!hetushu"
 
 # def fetch_html(host : Rmhost, queue : Array({String, String, Int32}))
 #   q_size = queue.size

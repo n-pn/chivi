@@ -16,7 +16,7 @@ class CrawlYscritByUser < CrawlTask
     "https://api.yousuu.com/api/booklist/#{yl_id}?page=#{page}"
   end
 
-  DIR = "var/.keep/yousuu/crits-bylist"
+  DIR = "/srv/chivi/.keep/yousuu/crits-bylist"
 
   def self.gen_path(yl_id : String, page : Int32 = 1)
     "#{DIR}/#{yl_id}/#{page}-latest.json"

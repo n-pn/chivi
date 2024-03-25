@@ -1,6 +1,6 @@
 require "../zroot/ysbook"
 
-DIR = "var/.keep/yousuu/book-infos"
+DIR = "/srv/chivi/.keep/yousuu/book-infos"
 
 yn_ids = Dir.children(DIR).sort_by!(&.to_i)
 

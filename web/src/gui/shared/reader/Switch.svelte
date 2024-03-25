@@ -3,6 +3,7 @@
 
   const all_descs: Mode = {
     c_gpt: 'Dịch bằng công cụ dịch GPT Tiên hiệp (Hệ số nhân: 6)',
+    n_gpt: 'Dịch bằng công cụ dịch GPT Hiện đại (Hệ số nhân: 6)',
     bd_zv: 'Dịch thô bằng công cụ Baidu Fanyi (Hệ số nhân: 8)',
     ms_zv: 'Dịch thô bằng công cụ Bing Translator (Hệ số nhân: 6)',
 
@@ -14,6 +15,7 @@
 
   const raw_modes: Mode = {
     c_gpt: 'GPT Tiên hiệp',
+    m_gpt: 'GPT Hiện đại',
     bd_zv: 'Dịch qua Baidu',
     ms_zv: 'Dịch qua Bing',
   }

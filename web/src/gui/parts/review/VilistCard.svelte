@@ -67,13 +67,13 @@
     {#each list.covers || [] as cover, idx}
       <div class="blcard-bcover _{idx}">
         <picture>
-          <source type="image/webp" srcset="https://cdn.chivi.app/covers/{cover}" />
-          <img src="https://cdn.chivi.app/imgs/empty.png" alt="" />
+          <source type="image/webp" srcset="https://img.chivi.app/covers/{cover}" />
+          <img src="https://img.chivi.app/imgs/empty.png" alt="" />
         </picture>
       </div>
     {:else}
       <div class="blcard-cover _0">
-        <img src="https://cdn.chivi.app/imgs/empty.png" alt="" />
+        <img src="https://img.chivi.app/imgs/empty.png" alt="" />
       </div>
     {/each}
   </a>

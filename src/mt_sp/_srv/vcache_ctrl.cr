@@ -5,7 +5,7 @@ require "./_sp_ctrl_base"
 class SP::VcacheCtrl < AC::Base
   base "/_sp/vcache"
 
-  TMP_DIR = "var/.keep/vcache"
+  TMP_DIR = "/srv/chivi/.keep/vcache"
   Dir.mkdir_p(TMP_DIR)
 
   @[AC::Route::POST("/:type")]

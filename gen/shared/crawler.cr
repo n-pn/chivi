@@ -49,7 +49,7 @@ enum CrawlMode
 end
 
 abstract class CrawlTask
-  CACHE_DIR = "var/.keep"
+  CACHE_DIR = "/srv/chivi/.keep"
 
   property headers : HTTP::Headers? = nil
 

@@ -1,5 +1,5 @@
-INP = "var/.keep/rmbook/www.hotupub.net"
-OUT = "var/.keep/rmbook/www.hotupub.fix"
+INP = "/srv/chivi/.keep/rmbook/www.hotupub.net"
+OUT = "/srv/chivi/.keep/rmbook/www.hotupub.fix"
 
 files = Dir.glob("#{INP}/*.htm")
 

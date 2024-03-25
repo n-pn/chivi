@@ -58,8 +58,10 @@ class SP::TranCtrl < AC::Base
     "hviet" => 1, "hname" => 1,
     "qt_v1" => 2, "mtl_0" => 4,
     "mtl_1" => 6, "mtl_2" => 8, "mtl_3" => 8,
-    "ms_zv" => 12, "bd_zv" => 16, "c_gpt" => 12,
-    "ms_ze" => 12, "bd_ze" => 16, "dl_ze" => 20,
+    "ms_zv" => 12, "bd_zv" => 16,
+    "ms_ze" => 12, "bd_ze" => 16,
+    "dl_je" => 20, "dl_ze" => 20,
+    "c_gpt" => 12, "m_gpt" => 12,
   }
 
   private def check_quota!(qdata : QtData, qkind : String)

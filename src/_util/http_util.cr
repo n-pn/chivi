@@ -101,8 +101,8 @@ module HttpUtil
 
   def self.http_client(uri : URI, proxy : HttpProxy? = nil)
     client = HTTP::Client.new(uri)
-    client.connect_timeout = 10
-    client.read_timeout = 20
+    client.connect_timeout = 10.seconds
+    client.read_timeout = 20.seconds
     client.proxy = proxy.proxy_client if proxy
     client
   end

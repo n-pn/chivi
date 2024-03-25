@@ -11,7 +11,7 @@ class RmstemResync
 
   def initialize(@sname : String, @conns = 6, @stale = Time.utc - 10.days)
     @host = Rmhost.from_name!(sname)
-    Dir.mkdir_p "var/.keep/rmbook/#{@host.savepath}"
+    Dir.mkdir_p "/srv/chivi/.keep/rmbook/#{@host.savepath}"
   end
 
   def get_max_bid

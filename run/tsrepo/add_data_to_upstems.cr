@@ -22,6 +22,6 @@ PGDB.exec <<-SQL
 SQL
 
 PGDB.exec <<-SQL
-  update upstems set img_cv = '//cdn.chivi.app/covers/' || (select bcover from wninfos where wninfos.id = upstems.wn_id limit 1)
+  update upstems set img_cv = '//img.chivi.app/covers/' || (select bcover from wninfos where wninfos.id = upstems.wn_id limit 1)
   where wn_id is not null and wn_id > 0
 SQL

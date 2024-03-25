@@ -27,8 +27,8 @@ class RD::Wnbook
   field utime : Int64 = 0
 
   def cover_url
-    return "//cdn.chivi.app/covers/#{@bcover}" unless @bcover.empty?
-    @scover.blank? ? "//cdn.chivi.app/covers/_blank.webp" : @scover
+    return "//img.chivi.app/covers/#{@bcover}" unless @bcover.empty?
+    @scover.blank? ? "//img.chivi.app/covers/_blank.webp" : @scover
   end
 
   def crepo : Tsrepo

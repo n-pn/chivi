@@ -12,7 +12,7 @@ class YslistCrawl < CrawlTask
     "https://api.yousuu.com/api/booklist/#{uuid}/info"
   end
 
-  DIR = "var/.keep/yousuu/list-infos"
+  DIR = "/srv/chivi/.keep/yousuu/list-infos"
 
   def self.gen_path(uuid : String)
     "#{DIR}/#{uuid}/latest.json"

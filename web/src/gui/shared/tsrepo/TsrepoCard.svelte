@@ -8,7 +8,7 @@
 
   $: pg_no = rmemo.lc_ch_no > 32 ? _pgidx(rmemo.lc_ch_no) : 1
   $: query = pg_no > 1 ? `?pg=${pg_no}` : ''
-  $: cover = crepo.cover || '//cdn.chivi.app/covers/blank.png'
+  $: cover = crepo.cover || '//img.chivi.app/covers/blank.png'
 
   const ratings = ['', '🤮', '🙁', '😐', '🙂', '🤩']
   const stype_icons = ['books', 'album', 'world']

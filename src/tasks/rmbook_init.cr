@@ -1,6 +1,6 @@
 require "../zroot/rmbook"
 
-DIR = "var/.keep/rmbook"
+DIR = "/srv/chivi/.keep/rmbook"
 
 def init(hostname : String)
   rmhost = Rmhost.from_host!(hostname)

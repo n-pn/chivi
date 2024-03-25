@@ -37,7 +37,7 @@ class YslistCrawlByBook < CrawlTask
     "https://api.yousuu.com/api/book/#{ybid}/booklist?page=#{page}"
   end
 
-  DIR = "var/.keep/yousuu/lists-bybook"
+  DIR = "/srv/chivi/.keep/yousuu/lists-bybook"
 
   def self.gen_path(ybid : Int32, page = 1)
     "#{DIR}/#{ybid}/#{page}-latest.json"

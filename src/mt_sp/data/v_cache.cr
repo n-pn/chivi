@@ -24,7 +24,8 @@ class SP::VCache
     Ms_zv = 30 # translated by bing from zh to vi
     Gg_zv = 31 # translated by google from zh to vi
     Bd_zv = 32 # translated by baidu from zh to vi
-    C_gpt = 33 # translated by custom gpt model
+    C_gpt = 33 # translated by custom gpt model for classical novel
+    M_gpt = 34 # translated by custom gpt model for modern novel
 
     Ms_ze = 50 # translated by bing from zh to en
     Gg_ze = 51 # translated by google from zh to en

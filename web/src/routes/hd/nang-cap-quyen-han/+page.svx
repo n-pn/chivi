@@ -17,7 +17,7 @@ Truy cập vào [đường dẫn này](/me/privi) để vào trang nâng cấp q
 
 Chọn quyền hạn muốn nâng cấp + khoảng thời gian, rồi bấm nút Nâng cấp/Gia hạn
 
-![step 3](https://cdn.chivi.app/imgs/privi-upgrade.png)
+![step 3](https://img.chivi.app/imgs/privi-upgrade.png)
 
 ## Lưu ý:
 

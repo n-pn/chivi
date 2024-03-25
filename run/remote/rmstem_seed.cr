@@ -2,7 +2,7 @@ require "colorize"
 require "http/client"
 
 SRC = "https://fetch.nipin.workers.dev?q=https://www.69xinshu.com/book/%s/"
-DIR = "var/.keep/rmbook/69xinshu.com"
+DIR = "/srv/chivi/.keep/rmbook/69xinshu.com"
 
 Dir.mkdir_p(DIR)
 FROM =     1

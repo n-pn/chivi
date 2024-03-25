@@ -34,8 +34,8 @@ then
   rsync-fast "$SSH/var/chaps/" "var/chaps/"
   rsync-fast "$SSH/var/texts/" "var/texts/"
 
-  rsync-fast "$SSH/var/.keep/rmbook" "var/.keep/rmbook"
-  rsync-fast "$SSH/var/.keep/rmchap" "var/.keep/rmchap"
+  rsync-fast "$SSH//srv/chivi/.keep/rmbook" "/srv/chivi/.keep/rmbook"
+  rsync-fast "$SSH//srv/chivi/.keep/rmchap" "/srv/chivi/.keep/rmchap"
 fi
 
 ## backup book data

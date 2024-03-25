@@ -64,6 +64,8 @@ class SP::QtData
       vlines = DlTran.translate(missing, sl: "JE", tl: "EN")
     when .c_gpt? # GPT Tien Hiep
       vlines = call_c_gpt(missing)
+    when .m_gpt? # GPT Hien Dai
+      vlines = call_m_gpt(missing)
     else
       raise "Không hỗ trợ cách dịch nhanh [#{qtype}]"
     end
@@ -94,6 +96,18 @@ class SP::QtData
     body = {test_key: lines.join('\n')}.to_json
 
     HTTP::Client.post(CV_ENV.c_gpt_host, headers: JSON_HEADERS, body: body) do |res|
+      result = res.body_io.gets_to_end
+      break unless res.status.success?
+
+      result = NamedTuple(result: String).from_json(result)[:result]
+      result.gsub(/\n+/, '\n').lines
+    end
+  end
+
+  private def call_m_gpt(lines : Array(String))
+    body = {test_key: lines.join('\n')}.to_json
+
+    HTTP::Client.post(CV_ENV.m_gpt_host, headers: JSON_HEADERS, body: body) do |res|
       result = res.body_io.gets_to_end
       break unless res.status.success?
 

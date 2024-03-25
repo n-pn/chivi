@@ -33,7 +33,7 @@ end
 def cache_cover(scover : String) : String
   bcover = HashUtil.digest32(scover, 8)
   `./bin/bcover_cli -i "#{scover}" -n "#{bcover}"`
-  $?.success? ? "//cdn.chivi.app/covers/#{bcover}.webp" : ""
+  $?.success? ? "//img.chivi.app/covers/#{bcover}.webp" : ""
 end
 
 input = PGDB.query_all <<-SQL, as: {Int32, String}

@@ -3,22 +3,17 @@
   export let _class = 'round'
 
   $: src = srcset.startsWith('/covers')
-    ? `//cdn.chivi.app${srcset}`
-    : srcset || '//cdn.chivi.app/covers/blank.webp'
+    ? `//img.chivi.app${srcset}`
+    : srcset || '//img.chivi.app/covers/blank.webp'
 
   const on_error = (e: Event) => {
     const target = e.target as HTMLImageElement
-    target.src = '//cdn.chivi.app/covers/_blank.png'
+    target.src = '//img.chivi.app/covers/_blank.png'
   }
 </script>
 
 <figure class={_class}>
-  <img
-    {src}
-    alt=""
-    loading="lazy"
-    referrerpolicy="no-referrer"
-    on:error={on_error} />
+  <img {src} alt="" loading="lazy" referrerpolicy="no-referrer" on:error={on_error} />
 </figure>
 
 <style lang="scss">

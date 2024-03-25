@@ -73,7 +73,7 @@ abstract class CrawlTask
     end
   end
 
-  CACHE_DIR = "var/.keep"
+  CACHE_DIR = "/srv/chivi/.keep"
 
   def initialize(@task_name : String, reseed_proxies = false)
     @http = ProxyClient.new(reseed_proxies)

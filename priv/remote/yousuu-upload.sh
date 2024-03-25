@@ -6,7 +6,7 @@ function rsync-fast {
 
 OUT=/2tb/app.chivi
 
-YSRAW_DIR="var/.keep/yousuu"
+YSRAW_DIR="/srv/chivi/.keep/yousuu"
 YSRAW_OUT="$OUT/$YSRAW_DIR"
 
 

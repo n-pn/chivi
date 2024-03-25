@@ -28,7 +28,7 @@ class WN::Bcover
     self.get_by_pkey(link) || new(link, name)
   end
 
-  DIR = "var/files/covers"
+  DIR = "/srv/chivi/files/covers"
   Dir.mkdir_p(DIR)
 
   MAX_WIDTH = 300

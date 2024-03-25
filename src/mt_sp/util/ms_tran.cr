@@ -34,8 +34,8 @@ module SP::MsTran
     body = input.map { |text| {text: text} }.to_json
 
     client = HTTP::Client.new(uri)
-    client.connect_timeout = 2
-    client.read_timeout = 5
+    client.connect_timeout = 2.seconds
+    client.read_timeout = 5.seconds
 
     client.post(uri.request_target, headers: headers, body: body) do |res|
       raise res.body unless res.status.success?

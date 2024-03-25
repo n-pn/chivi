@@ -2,7 +2,7 @@
   export let title = 'Hướng dẫn'
   export let mtime = ''
   export let mdesc = 'Hướng dẫn sử dụng'
-  export let image = '//cdn.chivi.app/imgs/avatar.png'
+  export let image = '//img.chivi.app/imgs/avatar.png'
 </script>
 
 <svelte:head>

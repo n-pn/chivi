@@ -11,7 +11,7 @@ class CrawlYsuser < CrawlTask
     "https://api.yousuu.com/api/user/#{yu_id}/info"
   end
 
-  DIR = "var/.keep/yousuu/user-infos"
+  DIR = "/srv/chivi/.keep/yousuu/user-infos"
   Dir.mkdir_p(DIR)
 
   def self.gen_path(yu_id : Int32)
