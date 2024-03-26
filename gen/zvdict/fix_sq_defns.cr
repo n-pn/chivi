@@ -27,7 +27,7 @@ record QtDefn, zstr : String, cpos : String, vstr : String, attr : String do
   end
 end
 
-INIT_DIR = "var/mtdic/seeds"
+INIT_DIR = "/srv/chivi/mtdic/seeds"
 
 Dir.each_child(INIT_DIR) do |dname|
   d_id = MT::MtDtyp.map_id(dname)

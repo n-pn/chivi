@@ -5,7 +5,7 @@ require "crorm"
 require "../../_util/hash_util"
 
 class WN::Bcover
-  class_getter db_path = "var/zroot/global/bcovers.db3"
+  class_getter db_path = "/srv/chivi/zroot/global/bcovers.db3"
 
   class_getter init_sql = <<-SQL
     create table bcovers(

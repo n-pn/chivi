@@ -17,7 +17,7 @@ class ZR::Rminit
     SQL
 
   def self.db_path(sname : String, sn_id : String)
-    "var/zroot/wnovel/#{sname}/#{sn_id}-rinit.db3"
+    "/srv/chivi/zroot/wnovel/#{sname}/#{sn_id}-rinit.db3"
   end
 
   ###

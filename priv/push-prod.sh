@@ -23,4 +23,6 @@ do
     crystal build -s --release --mcpu native src/$target/$target-srv.cr -o bin/$target-srv
     rsync-fast bin/$target-srv $SSH/bin
   fi
+
+  ssh 192.168.1.22 -p 2222 "sudo service $target restart"
 done

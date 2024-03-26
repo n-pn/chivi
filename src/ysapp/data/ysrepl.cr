@@ -46,38 +46,37 @@ class YS::Ysrepl
 
   def set_ztext(ztext : String)
     return if ztext.empty?
-    spawn save_ztext_copy(ztext)
-
     self.ztext = ztext
     self.fix_vhtml(ztext)
+    # spawn save_ztext_copy(ztext)
   end
 
-  TXT_DIR = "var/zroot/yousuu/repls-txt"
+  # TXT_DIR = "/srv/chivi/zroot/yousuu/repls-txt"
 
-  def save_ztext_copy(ztext : String) : Nil
-    yr_id = self.yr_id
+  # def save_ztext_copy(ztext : String) : Nil
+  #   yr_id = self.yr_id
 
-    dir_path = "#{TXT_DIR}/#{yr_id[0..3]}-zh"
-    Dir.mkdir_p(dir_path)
+  #   dir_path = "#{TXT_DIR}/#{yr_id[0..3]}-zh"
+  #   Dir.mkdir_p(dir_path)
 
-    file_path = File.join(dir_path, "#{yr_id}.txt")
-    File.write(file_path, ztext)
+  #   file_path = File.join(dir_path, "#{yr_id}.txt")
+  #   File.write(file_path, ztext)
 
-    Log.debug { "saved repl ztext to #{file_path}" }
-  end
+  #   Log.debug { "saved repl ztext to #{file_path}" }
+  # end
 
-  EMPTY_BODY = "<p><em>Không có nội dung</em></p>"
-  ERROR_BODY = "<p><em>Máy dịch gặp sự cố</em></p>"
+  # EMPTY_BODY = "<p><em>Không có nội dung</em></p>"
+  # ERROR_BODY = "<p><em>Máy dịch gặp sự cố</em></p>"
 
-  def fix_vhtml(ztext = self.ztext)
-    if ztext.empty?
-      self.vhtml = EMPTY_BODY
-    elsif vtext = TranUtil.qtran(ztext, wn_id: 0, format: "txt")
-      self.vhtml = TranUtil.txt_to_htm(vtext)
-    else
-      self.vhtml = ERROR_BODY
-    end
-  end
+  # def fix_vhtml(ztext = self.ztext)
+  #   if ztext.empty?
+  #     self.vhtml = EMPTY_BODY
+  #   elsif vtext = TranUtil.qtran(ztext, wn_id: 0, format: "txt")
+  #     self.vhtml = TranUtil.txt_to_htm(vtext)
+  #   else
+  #     self.vhtml = ERROR_BODY
+  #   end
+  # end
 
   ##############
 

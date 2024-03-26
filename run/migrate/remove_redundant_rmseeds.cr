@@ -48,13 +48,13 @@ end
 puts "can_delete: #{can_delete.size}"
 puts "must_keep: #{must_keep.size}"
 
-File.open("var/zroot/can_delete.tsv", "w") do |file|
+File.open("/srv/chivi/zroot/can_delete.tsv", "w") do |file|
   can_delete.each do |stem|
     file << stem.sname << '\t' << stem.sn_id << '\t' << stem.chap_count << '\n'
   end
 end
 
-File.open("var/zroot/must_keep.tsv", "w") do |file|
+File.open("/srv/chivi/zroot/must_keep.tsv", "w") do |file|
   must_keep.each do |stem|
     file << stem.sname << '\t' << stem.sn_id << '\t' << stem.chap_count << '\n'
   end

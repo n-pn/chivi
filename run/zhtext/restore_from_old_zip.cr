@@ -26,7 +26,7 @@ def extract_zip(zip_path : String)
   out_dir = "#{INP_DIR}/#{sname}/#{sn_id}"
   Dir.mkdir_p(out_dir)
 
-  cinfos = load_cinfos("var/stems/up#{sname}/#{sn_id}-cinfo.db3")
+  cinfos = load_cinfos("/2tb/srv.chivi/stems/up#{sname}/#{sn_id}-cinfo.db3")
 
   Compress::Zip::File.open(zip_path) do |zip|
     puts "#{zip_path}: #{zip.entries.size} files"

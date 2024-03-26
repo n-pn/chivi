@@ -30,7 +30,7 @@ then
   yarn build ysbook_info-sync
   rsync-fast "bin/ysbook_info-sync" "$OUT/bin"
 
-  rsync-fast "var/zroot/ysbooks.db3" $OUT/var/zroot
+  rsync-fast "/srv/chivi/zroot/ysbooks.db3" $OUT/var/zroot
   rsync-fast "$YSRAW_DIR/books" $YSRAW_OUT
 fi
 

@@ -1,7 +1,7 @@
 require "crorm"
 
 struct WN::ChtextFullEdit
-  class_getter db_path = "var/wnapp/chtext-full-edit.db"
+  class_getter db_path = "/srv/chivi/wn_db/chtext-full-edit.db"
 
   class_getter init_sql = <<-SQL
     create table if not exists full_edits (

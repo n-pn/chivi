@@ -37,7 +37,7 @@
 #     SQL
 
 #   def self.db_path(sname : String)
-#     "var/zroot/rmseed/#{sname}.db3"
+#     "/srv/chivi/zroot/rmseed/#{sname}.db3"
 #   end
 
 #   def self.load(sname : String, id : String)

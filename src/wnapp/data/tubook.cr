@@ -4,7 +4,7 @@ require "../../_util/book_util"
 require "../_raw/raw_tubook"
 
 class WN::Tubook
-  class_getter db_path = "var/zroot/tubooks.db3"
+  class_getter db_path = "/srv/chivi/zroot/tubooks.db3"
 
   class_getter init_sql = <<-SQL
     CREATE TABLE tubooks(

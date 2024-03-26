@@ -51,7 +51,7 @@ class HttpProxy
   end
 
   class_getter all_entries : Array(self) do
-    Array(self).from_yaml(File.read("var/_conf/http-proxies.yml"))
+    Array(self).from_yaml(File.read("/srv/chivi/_conf/http-proxies.yml"))
   rescue
     [] of self
   end

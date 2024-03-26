@@ -47,24 +47,24 @@ class YS::Yscrit
     end
   end
 
-  ZIP_DIR = "var/zroot/yousuu/crits-zip"
-  TXT_DIR = "var/zroot/yousuu/crits-txt"
+  # ZIP_DIR = "/srv/chivi/zroot/yousuu/crits-zip"
+  # TXT_DIR = "/srv/chivi/zroot/yousuu/crits-txt"
 
-  private def group_by
-    self.yc_id.first(2).join(&.to_s(16))
-  end
+  # private def group_by
+  #   self.yc_id.first(2).join(&.to_s(16))
+  # end
 
-  def zip_path(type = "zh")
-    "#{ZIP_DIR}/#{group_by}-#{type}.zip"
-  end
+  # def zip_path(type = "zh")
+  #   "#{ZIP_DIR}/#{group_by}-#{type}.zip"
+  # end
 
-  def tmp_path(type = "zh")
-    "#{TXT_DIR}/#{group_by}-#{type}"
-  end
+  # def tmp_path(type = "zh")
+  #   "#{TXT_DIR}/#{group_by}-#{type}"
+  # end
 
-  def filename(ext = "txt")
-    "#{self.yc_id}.#{ext}"
-  end
+  # def filename(ext = "txt")
+  #   "#{self.yc_id}.#{ext}"
+  # end
 
   # def load_btran_from_disk : String
   #   load_htm_from_disk("bv", persist: true) { |ztext| TranUtil.btran(ztext) }

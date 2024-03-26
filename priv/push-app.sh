@@ -19,5 +19,5 @@ do
   fi
 
   echo restarting $target service
-  sudo service $target-srv restart
+  sudo service $target restart
 done

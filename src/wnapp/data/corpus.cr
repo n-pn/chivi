@@ -33,7 +33,7 @@ class WN::Corpus
 
   ###
 
-  DIR = "var/zroot/corpus"
+  DIR = "/srv/chivi/zroot/corpus"
   Dir.mkdir_p(DIR)
 
   ###

@@ -37,7 +37,7 @@ inputs.each_slice(100) do |slice|
 
     if raws.size != vals.size
       Log.warn { "#{input.id} has mismatch size! (#{raws.size}, #{vals.size})" }
-      File.open("var/zroot/ysrepl-vi_bd-mismatch.log", "a", &.puts(input.id))
+      File.open("/srv/chivi/zroot/ysrepl-vi_bd-mismatch.log", "a", &.puts(input.id))
       next
     end
 

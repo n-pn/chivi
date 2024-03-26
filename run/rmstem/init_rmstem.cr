@@ -68,4 +68,4 @@ def import_db(db_file : String, sname : String)
   puts "#{rstems.size} synced!"
 end
 
-import_db("var/zroot/rmseed/_zxcs.me.db3", "!zxcs.me")
+import_db("/srv/chivi/zroot/rmseed/_zxcs.me.db3", "!zxcs.me")

@@ -87,13 +87,4 @@ struct MT::RawMtlBatch
       from_json(res.body_io)
     end
   end
-
-  # data = from_file("var/zroot/test.mtl")
-
-  # test = data.con.first
-  # redo = RawCon.from_json(test.to_json)
-  # pp test
-  # puts test == redo
-
-  # puts data.ner_msra.to_json
 end

@@ -14,7 +14,7 @@ class Mapping
     ) strict, without rowid;
   SQL
 
-  class_getter db_path = "var/zroot/mapping.db3"
+  class_getter db_path = "/srv/chivi/zroot/mapping.db3"
 
   include Crorm::Model
   schema "mapping", :sqlite

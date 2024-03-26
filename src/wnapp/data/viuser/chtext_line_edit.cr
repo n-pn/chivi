@@ -1,7 +1,7 @@
 require "crorm"
 
 struct WN::ChtextLineEdit
-  class_getter db_path = "var/wnapp/chtext-line-edit.db"
+  class_getter db_path = "/srv/chivi/wn_db/chtext-line-edit.db"
 
   class_getter init_sql = <<-SQL
     create table if not exists line_edits (

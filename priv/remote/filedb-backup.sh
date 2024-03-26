@@ -6,15 +6,14 @@ function rsync-fast {
   rsync -aHAXxviz --compress-choice=zstd --compress-level=3 --numeric-ids -e 'ssh -T -c aes128-gcm@openssh.com -o Compression=no -x ' $@
 }
 
-REMOTE=nipin@ssh.chivi.app
+REMOTE=nipin@chivi.app
 SSH=$REMOTE:/app/chivi
 
 ## backup user data
 if [[ $1 == "all" || $* == *user* ]]
 then
   echo backup users data!
-  rsync-fast "$SSH/var/_conf" "var"
-  rsync-fast --delete "$SSH/var/ulogs/daily/" "var/ulogs/daily/"
+  rsync-fast --delete "$REMOTE:/srv/chivi/ulogs/daily" srv/chivi/ulogs
 fi
 
 ## backup dict data
@@ -45,7 +44,7 @@ then
   # rsync-fast "$SSH/var/texts/edits" "var/texts"
   # rsync-fast "$SSH/var/texts/trans" "var/texts"
 
-  rsync-fast "$SSH/var/zroot/bcovers.db" "var/zroot"
+  rsync-fast "$SSH/var/zroot/bcovers.db" "/srv/chivi/zroot"
 
 fi
 

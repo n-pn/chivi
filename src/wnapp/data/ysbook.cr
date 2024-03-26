@@ -7,7 +7,7 @@ require "../_raw/raw_ysbook"
 # require "./btitle"
 
 class WN::Ysbook
-  class_getter db_path = "var/zroot/ysbooks.db3"
+  class_getter db_path = "/srv/chivi/zroot/ysbooks.db3"
 
   class_getter init_sql = <<-SQL
     CREATE TABLE ysbooks(

@@ -17,7 +17,7 @@ class ZR::Chinfo
     SQL
 
   def self.db_path(sname : String, sn_id : String | Int32)
-    "var/zroot/chinfo/#{sname}/#{sn_id}.db3"
+    "/srv/chivi/zroot/chinfo/#{sname}/#{sn_id}.db3"
   end
 
   ###
@@ -48,7 +48,7 @@ class ZR::Chinfo
   end
 
   def txt_path
-    "var/zroot/rawtxt/#{@spath}-#{@cksum}-#{@ch_no}.txt"
+    "/srv/chivi/zroot/rawtxt/#{@spath}-#{@cksum}-#{@ch_no}.txt"
   end
 
   def saved?

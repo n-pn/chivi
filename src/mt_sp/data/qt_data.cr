@@ -16,7 +16,7 @@ class SP::QtData
   property otype = "json"
 
   def initialize(ztext : String)
-    @lines = ztext.lines
+    @lines = CharUtil.canonize(ztext).lines
   end
 
   def initialize(@lines)

@@ -26,8 +26,8 @@ def resync(sname : String, sn_id : String, vi_db_path = WN::Chinfo.db_path(sname
 end
 
 def resync(sname : String)
-  # files = Dir.glob("var/zroot/wnchap/#{sname}/*.db3.old")
-  files = Dir.glob("var/zroot/chinfo/#{sname}/*.db3.db3")
+  # files = Dir.glob("/srv/chivi/zroot/wnchap/#{sname}/*.db3.old")
+  files = Dir.glob("/srv/chivi/zroot/chinfo/#{sname}/*.db3.db3")
 
   puts "- #{sname}: #{files.size}"
   files.each_with_index do |file, idx|
@@ -39,8 +39,8 @@ def resync(sname : String)
 end
 
 snames = ARGV.reject!(&.starts_with?('-'))
-# snames = Dir.children("var/zroot/wnchap") if snames.empty?
-snames = Dir.children("var/zroot/chinfo") if snames.empty?
+# snames = Dir.children("/srv/chivi/zroot/wnchap") if snames.empty?
+snames = Dir.children("/srv/chivi/zroot/chinfo") if snames.empty?
 
 snames.select!(&.starts_with?('!')) if ARGV.includes?("--globs")
 snames.select!(&.starts_with?('@')) if ARGV.includes?("--users")

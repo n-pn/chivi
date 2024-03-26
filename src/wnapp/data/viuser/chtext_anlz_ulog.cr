@@ -4,8 +4,7 @@ struct WN::ChtextAnlzUlog
   class_getter db_path = ""
 
   def self.db_path(wn_id : Int32 | String)
-    # "var/wnapp/anlzlog/#{wn_id}.db"
-    "var/wnapp/logging/#{wn_id}-anlz.db"
+    "/srv/chivi/wn_db/logging/#{wn_id}-anlz.db"
   end
 
   class_getter init_sql = <<-SQL

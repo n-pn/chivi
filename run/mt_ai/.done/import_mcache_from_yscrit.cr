@@ -23,6 +23,6 @@ def import_dir(path : String)
   end
 end
 
-INP = "var/zroot/corpus/yscrit"
+INP = "/srv/chivi/zroot/corpus/yscrit"
 chilren = Dir.children(INP).sort_by!(&.to_i)
 chilren.each { |child| import_dir "#{INP}/#{child}" }

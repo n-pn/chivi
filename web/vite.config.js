@@ -11,16 +11,16 @@ const dev = process.env['ENV'] == 'dev'
 const env = loadEnv('dev', _cwd)
 
 const proxy = {
-  '/_db': `http://127.0.0.1:${env.VITE_BE_PORT}`,
-  '/_wn': `http://127.0.0.1:${env.VITE_WN_PORT}`,
+  '/_db': `http://${env.VITE_BE_HOST}`,
+  '/_wn': `http://${env.VITE_WN_HOST}`,
 
-  '/_rd': `http://127.0.0.1:${env.VITE_RD_PORT}`,
+  '/_rd': `http://${env.VITE_RD_HOST}`,
 
-  '/_m1': `http://127.0.0.1:${env.VITE_M1_PORT}`,
-  '/_ai': `http://127.0.0.1:${env.VITE_AI_PORT || 5121}`,
+  '/_m1': `http://${env.VITE_M1_HOST}`,
+  '/_ai': `http://${env.VITE_AI_HOST}`,
 
-  '/_sp': `http://127.0.0.1:${env.VITE_SP_PORT}`,
-  '/_ys': `http://127.0.0.1:${env.VITE_YS_PORT}`,
+  '/_sp': `http://${env.VITE_SP_HOST}`,
+  '/_ys': `http://${env.VITE_YS_HOST}`,
 }
 
 export default defineConfig({

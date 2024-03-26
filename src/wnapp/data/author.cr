@@ -2,7 +2,7 @@ require "sqlite3"
 require "crorm/model"
 
 class WN::Author
-  class_getter db_path = "var/zroot/global/authors.db3"
+  class_getter db_path = "/srv/chivi/zroot/global/authors.db3"
 
   class_getter init_sql = <<-SQL
     CREATE TABLE authors(

@@ -1,6 +1,6 @@
 require "../zroot/tubook"
 
-DIR = "var/zroot/.keep/tuishu/listBookRepository"
+DIR = "/srv/chivi/zroot/.keep/tuishu/listBookRepository"
 
 OUT_DB = ZR::Tubook.db
 

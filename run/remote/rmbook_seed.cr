@@ -35,10 +35,9 @@ wsize.times do
   spawn do
     loop do
       sn_id, index = workers.receive
-      fetch_url("#{URL}/book/#{sn_id}.htm", "#{DIR}/#{sn_id}.htm", "#{index * 2 - 1}/#{qsize * 2}")
-      sleep 100.milliseconds
+      # fetch_url("#{URL}/book/#{sn_id}.htm", "#{DIR}/#{sn_id}.htm", "#{index * 2 - 1}/#{qsize * 2}")
+      # sleep 100.milliseconds
       fetch_url("#{URL}/book/#{sn_id}/", "#{DIR}/#{sn_id}-cata.htm", "#{index * 2}/#{qsize * 2}")
-      sleep 100.milliseconds
     rescue err
       Log.error(exception: err) { err.message.colorize.red }
     ensure

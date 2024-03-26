@@ -32,7 +32,7 @@ def copy_to_new_dir(inp_path)
 
   sname = File.basename(File.dirname(out_path))
   sn_id = File.basename(out_path)
-  cinfos = load_cinfos("var/stems/up#{sname}/#{sn_id}")
+  cinfos = load_cinfos("/2tb/srv.chivi/stems/up#{sname}/#{sn_id}")
 
   zip_path = "#{out_path}.zip"
   existed = load_existed(zip_path)

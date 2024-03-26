@@ -194,7 +194,6 @@ class CV::Wninfo
       entry.set_bslug(TextUtil.slugify(entry.btitle_hv))
 
       entry.save!
-      self.mkdirs!(entry.id)
 
       entry
     end
@@ -203,14 +202,5 @@ class CV::Wninfo
   def self.get_btitle_vi(id : Int32) : String
     stmt = "select btitle_vi from wninfos where id = $1 limit 1"
     PGDB.query_one(stmt, id, as: String)
-  end
-
-  def self.mkdirs!(wn_id : Int32)
-    Dir.mkdir_p("var/wnapp/chinfo/#{wn_id}")
-    Dir.mkdir_p("var/wnapp/chtext/#{wn_id}")
-    Dir.mkdir_p("var/wnapp/chtran/#{wn_id}")
-    Dir.mkdir_p("var/texts/wn~draft/#{wn_id}")
-    Dir.mkdir_p("var/texts/wn~avail/#{wn_id}")
-    Dir.mkdir_p("var/texts/wn~chivi/#{wn_id}")
   end
 end

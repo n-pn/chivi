@@ -17,7 +17,7 @@ w_size.times do
   spawn do
     loop do
       wn_id, bcover, idx = workers.receive
-      path = "var/files/covers/#{bcover}"
+      path = "/srv/chivi/files/covers/#{bcover}"
 
       if File.file?(path)
         ext = `gm identify "#{path}"`.split(/\s+/, 3)[1].downcase

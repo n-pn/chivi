@@ -263,7 +263,7 @@ class Rmhost
 
   #######
 
-  CONF_DIR = "var/_conf/hosts"
+  CONF_DIR = "/srv/chivi/_conf/hosts"
   # Dir.mkdir_p(CONF_DIR)
 
   class_getter mapping : Hash(String, String) do

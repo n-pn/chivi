@@ -1,7 +1,7 @@
 require "./char_util"
 
 module BookUtil
-  DIR = "var/_conf/fixes"
+  DIR = "/srv/chivi/_conf/fixes"
 
   class_getter zh_authors : Hash(String, String) { load_tsv("authors_zh") }
   class_getter zh_btitles : Hash(String, String) { load_tsv("btitles_zh") }
