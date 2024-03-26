@@ -15,9 +15,7 @@ class MT::SpWseg
     ) strict, without rowid;
     SQL
 
-  DB_DIR = ENV["MT_DIR"]? || "var/mt_db"
-
-  class_getter db_path = "#{DB_DIR}/zh_wseg.db3"
+  class_getter db_path = "/srv/chivi/mt_db/zh_wseg.db3"
 
   ###
 

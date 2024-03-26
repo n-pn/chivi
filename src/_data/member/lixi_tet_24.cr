@@ -1,7 +1,7 @@
 require "crorm"
 
 class CV::LixiTet24
-  class_getter db_path = "var/users/lixi-tet-24.db3"
+  class_getter db_path = "/src/chivi/users/lixi-tet-24.db3"
 
   class_getter init_sql = <<-SQL
     create table rolls(

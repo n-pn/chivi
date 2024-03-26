@@ -1,7 +1,7 @@
 require "crorm"
 
 class SP::MtSpec
-  class_getter db_path = "var/mtdic/specs.db3"
+  class_getter db_path = "/srv/chivi/mt_db/mt_specs.db3"
 
   class_getter init_sql = <<-SQL
     CREATE TABLE IF NOT EXISTS specs (

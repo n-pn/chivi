@@ -81,7 +81,7 @@ class M1::MtDict
   getter trie = ZvTrie.new
   delegate scan, to: @trie
 
-  DB_PATH = "var/mt_db/v1_defns.db3"
+  DB_PATH = "/srv/chivi/mt_db/v1_defns.db3"
 
   LOAD_SQL = <<-SQL
     select zstr, vstr, ptag, rank from defns

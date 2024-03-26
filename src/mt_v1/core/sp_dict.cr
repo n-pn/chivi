@@ -4,7 +4,7 @@ require "./mt_node/mt_term"
 require "./pos_tag"
 
 class M1::SpDict
-  DB_PATH = "var/mt_db/v1_defns.db3"
+  DB_PATH = "/srv/chivi/mt_db/v1_defns.db3"
 
   LOAD_SQL = <<-SQL
     select zstr, vstr, ptag from defns

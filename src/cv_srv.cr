@@ -175,7 +175,7 @@ abstract class AC::Base
     params[name]?.try(&.to_i?)
   end
 
-  LOG_DIR = "var/ulogs/daily"
+  LOG_DIR = "/srv/chivi/ulogs/daily"
   Dir.mkdir_p(LOG_DIR)
 
   def _log_action(type : String, data : Object, ldir = LOG_DIR)

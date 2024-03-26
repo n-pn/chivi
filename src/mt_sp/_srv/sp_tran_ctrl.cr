@@ -46,6 +46,7 @@ class SP::TranCtrl < AC::Base
     response.content_type = "text/plain; charset=utf-8"
 
     vdata = qdata.get_vtran(qkind)
+
     render text: vdata
   rescue ex : BadRequest
     render :bad_request, text: ex.message

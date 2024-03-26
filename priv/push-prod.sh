@@ -11,11 +11,15 @@ for target in "$@"
 do
   echo push $target!
 
-  if [[ $target == "cvweb" ]]
+  if [[ $target == "webcv" ]]
   then
     cd web && pnpm run build
     rsync-fast build/ $SSH/web/
     cd ..
+  elif [[ $target == "appcv" ]]
+  then
+    crystal build -s --release --mcpu native src/cvapp/cvapp-srv.cr -o bin/cvapp-srv
+    rsync-fast bin/cvapp-srv $SSH/bin
   elif [[ $target == "hanlp" ]]
   then
     rsync-fast src/hanlp/hanlp-srv.py $SSH/bin

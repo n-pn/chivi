@@ -20,9 +20,7 @@ class MT::ZvDefn
     ) strict, without rowid;
     SQL
 
-  DIR = ENV["MT_DIR"]? || "var/mt_db"
-
-  class_getter db_path = "#{DIR}/zv_defn.db3"
+  class_getter db_path = "/srv/chivi/mt_db/zv_defn.db3"
 
   ###
 

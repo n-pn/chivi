@@ -29,9 +29,10 @@ class SP::QtData
 
   def get_vtran(qtype : String) : String
     return "" if @lines.empty?
-    return call_mtran(qtype) if qtype.starts_with?("mtl")
 
     case qtype
+    when .starts_with?("mtl")
+      return call_mtran(qtype)
     when "qt_v1"
       return call_qt_v1(chunk: 3000)
     when "hname"

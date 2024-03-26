@@ -2,9 +2,7 @@ require "crorm"
 require "./db_util"
 
 struct MT::SqPair
-  DIR = "var/mtdic"
-
-  class_getter db_path = "#{DIR}/zvpairs.db3"
+  class_getter db_path = "/srv/chivi/mt_db/zvpairs.db3"
 
   class_getter init_sql : String = <<-SQL
     CREATE TABLE IF NOT EXISTS zvpairs (

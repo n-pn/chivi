@@ -235,7 +235,8 @@ export class Rdpage {
       const rline = this.lines[p_min - 1]
 
       count += rline.ztext.length
-      if (count > 600 && p_min > 2) break
+      if (texts.length > 1 && count > 600 && p_min > 2) break
+
       p_min -= 1
 
       if (rline.trans[qkind]) continue
@@ -272,7 +273,7 @@ export class Rdpage {
 
       if (p_idx >= this.p_idx || !rline.trans[qkind]) {
         count += rline.ztext.length
-        if (count >= 600 && p_idx + 3 < this.p_max) break
+        if (texts.length > 1 && count >= 600 && p_idx + 3 < this.p_max) break
       }
 
       if (rline.trans[qkind]) continue

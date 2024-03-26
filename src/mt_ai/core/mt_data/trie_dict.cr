@@ -89,17 +89,6 @@ class MT::TrieDict
     node
   end
 
-  # def load_from_tsv!(name = @name)
-  #   tsv_file = "var/mtdic/wseg/#{name}.tsv"
-  #   return unless File.file?(tsv_file)
-
-  #   File.each_line(tsv_file, chomp: true) do |line|
-  #     next if line.blank?
-  #     wseg = MtWseg.new(line.split('\t'))
-  #     @root[wseg.zstr].wseg = wseg
-  #   end
-  # end
-
   @[AlwaysInline]
   def get_defn?(zstr : String, cpos : String)
     get_defn?(zstr: zstr, epos: MtEpos.parse(cpos))

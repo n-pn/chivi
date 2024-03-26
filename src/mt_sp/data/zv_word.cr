@@ -1,7 +1,7 @@
 require "crorm"
 
 class SP::ZvWord
-  class_getter db_path = "var/mtdic/zv_words.db3"
+  class_getter db_path = "/srv/chivi/mt_db/zv_words.db3"
 
   class_getter init_sql = <<-SQL
     CREATE TABLE IF NOT EXISTS zv_words (

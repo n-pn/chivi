@@ -20,10 +20,8 @@ struct MT::SqDefn
     ) strict, without rowid;
     SQL
 
-  DB_DIR = ENV["MT_DIR"]? || "var/mt_db"
-
   def self.db_path(d_id : Int32)
-    "#{DB_DIR}/mdata/#{d_id % 10}.db3"
+    "/srv/chivi/mt_db/mdata/#{d_id % 10}.db3"
   end
 
   DB_CACHE = {} of Int32 => Crorm::SQ3

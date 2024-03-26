@@ -1,10 +1,10 @@
 require "crorm"
 
 class SP::WnName
-  class_getter db_path = "var/mtdic/bnames.db3"
+  class_getter db_path = "/srv/chivi/mt_db/wn_names.db3"
 
   class_getter init_sql = <<-SQL
-    CREATE TABLE IF NOT EXISTS bnames (
+    CREATE TABLE IF NOT EXISTS wn_names (
       ztext text not null primary key,
 
       bt_vi text,
@@ -35,7 +35,7 @@ class SP::WnName
     SQL
 
   include Crorm::Model
-  schema "bnames", :sqlite, strict: false
+  schema "wn_names", :sqlite, strict: false
 
   field ztext : String, pkey: true # chinese
 
