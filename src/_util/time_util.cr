@@ -1,6 +1,4 @@
 module TimeUtil
-  extend self
-
   LOCATION = Time::Location.fixed(3600 * 8) # chinese timezone
 
   TIME_FMT = {
@@ -13,7 +11,7 @@ module TimeUtil
   }
 
   # parse remote source info update times
-  def parse_time(input : String) : Time
+  def self.parse_time(input : String) : Time
     raise "<parse_time> error: empty string" if input.empty?
 
     begin
@@ -29,11 +27,11 @@ module TimeUtil
     end
   end
 
-  def parse_time(input : String, format : String)
+  def self.parse_time(input : String, format : String)
     Time.parse(input, format, LOCATION)
   end
 
-  def get_date(time : Time)
+  def self.get_date(time : Time)
     sprintf("%04d-%02d-%02d", *time.date)
   end
 

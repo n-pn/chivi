@@ -113,7 +113,7 @@
       zfrom: rword.from,
     })
 
-    if (tform.cpos == 'NR') add_wseg(tform.zstr, tform.zstr)
+    await fetch('/_sp/zvdefns/once', { body: body, method, headers })
 
     const res = await fetch(action, { body: body, method, headers })
 
