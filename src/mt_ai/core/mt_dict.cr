@@ -23,12 +23,12 @@ class MT::MtDict
   end
 
   def add_temp(zstr, vstr, attr, epos)
-    MtDefn.new(vstr, attr, dnum: :auto_tmp, epos: epos).tap do |defn|
+    DefnData.new(vstr, attr, dnum: :auto_tmp, epos: epos).tap do |defn|
       @data.last.add(zstr, defn)
     end
   end
 
-  def get_defn?(zstr : String, epos : MtEpos, use_alt = epos.can_use_alt?) : MtDefn?
+  def get_defn?(zstr : String, epos : MtEpos, use_alt = epos.can_use_alt?) : DefnData?
     fuzzy = nil
 
     @data.each do |trie|
@@ -61,7 +61,7 @@ class MT::MtDict
   end
 
   # # ameba:disable Metrics/CyclomaticComplexity
-  # def init(zstr : String, epos : MtEpos) : MtDefn
+  # def init(zstr : String, epos : MtEpos) : DefnData
   #   case epos
   #   when .pu?
   #     vstr = CharUtil.normalize(zstr)
@@ -89,7 +89,7 @@ class MT::MtDict
   # @[AlwaysInline]
   # def add_temp(zstr : String, epos : MtEpos, vstr : String, attr : MtAttr = :none)
   #   # TODO: Add to pdict directly?
-  #   term = MtDefn.new(vstr: vstr, attr: attr, dnum: :autogen_0, fpos: epos)
+  #   term = DefnData.new(vstr: vstr, attr: attr, dnum: :autogen_0, fpos: epos)
   #   @dicts.last.add(zstr, epos, term)
   # end
 

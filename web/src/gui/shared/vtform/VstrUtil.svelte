@@ -8,46 +8,31 @@
 
   const cached_map = new Map<string, string[]>()
 
+  const do_fetch = async (ztext: string, qkind: string) => {
+    if (qkind == 'gtran') return await gtran_word(ztext, 'vi')
+    if (qkind == 'btran') return await btran_word(ztext, 'zh')
+    if (qkind == 'deepl') return [await deepl_word(ztext, 0)]
+
+    if (qkind == 'baidu') {
+      const trans = await baidu_word(ztext, 'vie')
+      if (ztext.endsWith('。')) return trans
+      return trans.map((x) => x.replace(/\.$/, ''))
+    }
+
+    const n_res = await fetch(`/_sp/utils/${qkind}?zh=${ztext}`)
+    const trans = await n_res.text()
+    return n_res.ok ? trans.split('\n') : [n_res.status.toString()]
+  }
+
   const fetch_trans = async (ztext: string, qkind: string, keep_caps = false) => {
     const c_ukey = `${qkind}-${ztext}`
 
-    const cached = cached_map.get(c_ukey)
-    if (cached) return cached
+    let trans = cached_map.get(c_ukey)
 
-    let trans: string[] = []
-
-    switch (qkind) {
-      case 'gtran':
-        trans = await gtran_word(ztext, 'vi')
-        break
-      case 'btran':
-        trans = await btran_word(ztext, 'zh')
-
-        break
-      case 'baidu':
-        trans = await baidu_word(ztext, 'vie')
-        if (!ztext.endsWith('。')) trans = trans.map((x) => x.replace(/\.$/, ''))
-        break
-
-      case 'deepl':
-        trans = [await deepl_word(ztext, 0)]
-        break
-
-      case 'names':
-        const n_res = await fetch(`/_sp/utils/names?zh=${ztext}`)
-        const names = await n_res.text()
-        trans = n_res.ok ? names.split('\n') : [n_res.status.toString()]
-        break
-
-      case 'prevs':
-        const resp = await fetch(`/_sp/utils/defns?zh=${ztext}`)
-        const text = await resp.text()
-        trans = resp.ok ? text.split('\n') : [resp.status.toString()]
-        break
+    if (!trans) {
+      trans = await do_fetch(ztext, qkind)
+      if (trans.length > 0) cached_map.set(c_ukey, trans)
     }
-
-    if (trans.length == 0) return trans
-    cached_map.set(c_ukey, trans)
 
     if (!keep_caps && should_be_lowercase(qkind, trans[0])) {
       trans = trans.map((x) => uncapitalize(x))
@@ -57,7 +42,7 @@
   }
 
   const should_be_lowercase = (qkind: string, vtran: string) => {
-    if (qkind == 'prevs' || qkind == 'names') return false
+    if (qkind == 'defns' || qkind == 'names') return false
     return vtran == titleize(vtran, 1)
   }
 </script>
@@ -120,7 +105,7 @@
   }
 
   const tran_types = [
-    ['prevs', 'img', 'stack.svg'],
+    ['defns', 'img', 'stack.svg'],
     ['names', 'img', 'hirashiba.png'],
     ['baidu', 'brand-baidu', 'extra'],
     ['gtran', 'brand-google'],

@@ -18,13 +18,13 @@ do
     cd ..
   elif [[ $target == "appcv" ]]
   then
-    crystal build -s --release --mcpu native src/cvapp/cvapp-srv.cr -o bin/cvapp-srv
+    crystal build -s --release src/cvapp/cvapp-srv.cr -o bin/cvapp-srv
     rsync-fast bin/cvapp-srv $SSH/bin
   elif [[ $target == "hanlp" ]]
   then
     rsync-fast src/hanlp/hanlp-srv.py $SSH/bin
   else
-    crystal build -s --release --mcpu native src/$target/$target-srv.cr -o bin/$target-srv
+    crystal build -s --release src/$target/$target-srv.cr -o bin/$target-srv
     rsync-fast bin/$target-srv $SSH/bin
   fi
 

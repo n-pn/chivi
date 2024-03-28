@@ -3,7 +3,7 @@ require "http/client"
 
 def fetch_url(url : String, fpath : String, label : String = "1/1") : Nil
   return puts "<#{label}>: #{fpath} saved, skipping!" if File.file?(fpath)
-  html = `curl -x 'http://me_xMHKk:upC6M7zP@171.229.215.240:28396' '#{url}' -fsL --compressed -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: #{url}'`
+  html = `curl '#{url}' -fsL --compressed -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: #{url}'`
 
   if html.blank?
     puts "<#{label}>: #{url} returning blank!".colorize.red
@@ -35,21 +35,14 @@ wsize.times do
   spawn do
     loop do
       sn_id, index = workers.receive
-      # fetch_url("#{URL}/book/#{sn_id}.htm", "#{DIR}/#{sn_id}.htm", "#{index * 2 - 1}/#{qsize * 2}")
-      # sleep 100.milliseconds
+      fetch_url("#{URL}/book/#{sn_id}.htm", "#{DIR}/#{sn_id}.htm", "#{index * 2 - 1}/#{qsize * 2}")
+      sleep 100.milliseconds
       fetch_url("#{URL}/book/#{sn_id}/", "#{DIR}/#{sn_id}-cata.htm", "#{index * 2}/#{qsize * 2}")
     rescue err
       Log.error(exception: err) { err.message.colorize.red }
     ensure
       results.send(nil)
     end
-  end
-end
-
-spawn do
-  loop do
-    sleep 3.minutes
-    puts `curl -fsL https://api.zingproxy.com/getip/5658f1d8b4de7fbb2eb91a73e074cf610a9c0944`
   end
 end
 

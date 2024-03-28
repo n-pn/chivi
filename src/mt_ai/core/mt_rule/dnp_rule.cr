@@ -12,11 +12,11 @@ class MT::AiCore
     when head.epos.noun? || head.epos.pn?
       head = head.inner_tail
       is_modi = head.attr.any?(MtAttr[Ndes, Ntmp]) || !(head.epos.noun? || head.epos.pn?)
-      tail.body = is_modi ? MtDefn::DEG0 : MtDefn::DEG1
+      tail.body = is_modi ? DefnData::DEG0 : DefnData::DEG1
     when head.epos.ip? && dnp_head_is_sv_ip?(head.body)
-      tail.body = MtDefn::DEG2
+      tail.body = DefnData::DEG2
     when head.attr.at_h?
-      tail.body = MtDefn::DEG0
+      tail.body = DefnData::DEG0
       term.attr = :at_h
     end
   end

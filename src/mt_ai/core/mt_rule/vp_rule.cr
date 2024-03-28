@@ -1,5 +1,5 @@
 class MT::AiCore
-  def fix_vp_node!(vp_node : MtNode, vp_body : MtDefn | MtNode) : MtNode
+  def fix_vp_node!(vp_node : MtNode, vp_body : DefnData | MtNode) : MtNode
     vp_node
   end
 

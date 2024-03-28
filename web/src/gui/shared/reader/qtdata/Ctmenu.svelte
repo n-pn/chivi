@@ -64,6 +64,7 @@
 <div
   class="menu"
   class:_show={$ctrl.actived}
+  on:blur={() => ctrl.hide()}
   style="--top: {p_top}px; --left: {p_left}px; --mid: {p_mid}px">
   <button
     class="btn"

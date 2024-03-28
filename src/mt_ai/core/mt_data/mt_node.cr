@@ -21,7 +21,7 @@ class MT::MtNode
     end
   end
 
-  property body : MtDefn | self | MtPair | Array(self)
+  property body : DefnData | self | MtPair | Array(self)
   property zstr : String = ""
 
   property epos = MtEpos::X
@@ -32,7 +32,7 @@ class MT::MtNode
 
   def initialize(@body, @zstr, @epos, @attr : MtAttr = :none, @from = 0)
     case body
-    when MtDefn
+    when DefnData
       @attr |= body.attr
 
       if body.rank > 2 # force single ptag
@@ -46,13 +46,13 @@ class MT::MtNode
   end
 
   @[AlwaysInline]
-  def body=(@body : MtDefn)
+  def body=(@body : DefnData)
     @attr = body.attr
   end
 
   @[AlwaysInline]
   def set_body(vstr : String, dnum : MtDnum = :auto_fix)
-    @body = MtDefn.new(vstr, dnum: dnum)
+    @body = DefnData.new(vstr, dnum: dnum)
   end
 
   @[AlwaysInline]
@@ -77,7 +77,7 @@ class MT::MtNode
 
   def find_by_epos(epos : MtEpos)
     case body = @body
-    in MtDefn
+    in DefnData
       return self if epos == @epos
     in MtNode
       body.epos == epos ? body : body.find_by_epos(epos)
@@ -91,19 +91,19 @@ class MT::MtNode
 
   def inner_head
     case body = @body
-    in MtDefn then self
-    in MtNode then body.inner_head
-    in MtPair then body.head.inner_head
-    in Array  then body.first.inner_head
+    in DefnData then self
+    in MtNode   then body.inner_head
+    in MtPair   then body.head.inner_head
+    in Array    then body.first.inner_head
     end
   end
 
   def inner_tail
     case body = @body
-    in MtDefn then self
-    in MtNode then body.inner_tail
-    in MtPair then body.tail.inner_tail
-    in Array  then body.last.inner_tail
+    in DefnData then self
+    in MtNode   then body.inner_tail
+    in MtPair   then body.tail.inner_tail
+    in Array    then body.last.inner_tail
     end
   end
 
@@ -111,7 +111,7 @@ class MT::MtNode
 
   def reverse_each(& : self ->)
     case body = @body
-    when MtDefn
+    when DefnData
       yield self
     when MtNode
       yield body
@@ -125,7 +125,7 @@ class MT::MtNode
 
   def each_child(& : self ->)
     case body = @body
-    when MtDefn
+    when DefnData
       yield self
     when MtNode
       yield body
@@ -150,7 +150,7 @@ class MT::MtNode
   @[AlwaysInline]
   def to_txt(io : IO, cap : Bool, und : Bool)
     case body = @body
-    when MtDefn
+    when DefnData
       io << ' ' unless @attr.undent?(und: und)
       @attr.render_vstr(io, body.vstr, cap: cap, und: und)
     when MtNode
@@ -173,7 +173,7 @@ class MT::MtNode
       JSON.build(io) do |jb|
         jb.array do
           case body = node.body
-          in MtDefn
+          in DefnData
             jb.string body.vstr
             dnum = 100 &* body.rank &+ body.dnum.value
           in MtNode
@@ -223,7 +223,7 @@ class MT::MtNode
       jb.number self.upto
 
       case body = @body
-      when MtDefn
+      when DefnData
         jb.string body.vstr
         jb.number 100 &* body.rank &+ body.dnum.value
       else
@@ -242,7 +242,7 @@ class MT::MtNode
     deep += @epos.to_s.size + 2
 
     case body = @body
-    when MtDefn
+    when DefnData
       io << ' ' << @attr.colorize.light_gray unless @attr.none?
       io << ' ' << @zstr.colorize.dark_gray
       io << ' ' << body.vstr.colorize(COLORS[body.dnum.value % 10]? || :dark_gray)

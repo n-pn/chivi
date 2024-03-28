@@ -41,4 +41,21 @@ class MT::SpWseg
   def delete!
     @@db.exec DELETE_SQL, @d_id, @zstr
   end
+
+  QUERY_EACH_SQL = <<-SQL
+    select zstr, rank from zh_wseg
+    where d_id = $1 and rank >= 0
+  SQL
+
+  def self.query_each(d_id : Int32, & : (String, Int32) ->)
+    self.db.open_ro do |db|
+      db.query_each(QUERY_EACH_SQL, d_id) do |rs|
+        yield rs.read(String), rs.read(Int32)
+      end
+    end
+  end
+
+  def self.calc_prio(size : Int32, rank : Int32 = 5)
+    rank == 0 ? 0 : size &* (rank &+ size)
+  end
 end

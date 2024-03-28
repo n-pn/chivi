@@ -80,10 +80,10 @@ struct MT::SqDefn
     end
   end
 
-  def self.query_each(d_id : Int32, & : (String, MtDefn) ->)
+  def self.query_each(d_id : Int32, & : (String, DefnData) ->)
     load_db(d_id).open_ro do |db|
       query = "select zstr, vstr, epos, attr, dnum, rank from zvdefn where d_id = $1 and dnum >= 0"
-      db.query_each(query, d_id) { |rs| yield rs.read(String), MtDefn.new(rs) }
+      db.query_each(query, d_id) { |rs| yield rs.read(String), DefnData.new(rs) }
     end
   end
 end

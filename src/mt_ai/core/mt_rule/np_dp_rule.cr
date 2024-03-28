@@ -19,11 +19,11 @@ class MT::AiCore
     {dt_node, qp_node}
   end
 
-  private def split_dp_node(node : MtNode, body : MtDefn | MtNode)
+  private def split_dp_node(node : MtNode, body : DefnData | MtNode)
     fchar = node.zstr[0]
     return {node, nil} if node.zstr.size == 1 || !fchar.in?('这', '那')
 
-    dt_body = MtDefn.new(vstr: fchar == '这' ? "này" : "kia", dnum: :auto_fix)
+    dt_body = DefnData.new(vstr: fchar == '这' ? "này" : "kia", dnum: :auto_fix)
     dt_node = MtNode.new(epos: :DT, attr: :none, zstr: fchar.to_s, body: dt_body, from: node.from)
 
     qp_zstr = node.zstr[1..]

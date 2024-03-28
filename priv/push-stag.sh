@@ -20,7 +20,7 @@ do
   then
     rsync-fast src/hanlp/hanlp-srv.py $SSH/../hanlp
   else
-    crystal build -s --release --mcpu native src/$target/$target-srv.cr -o bin/$target-srv
+    crystal build -s --release src/$target/$target-srv.cr -o bin/$target-srv
     rsync-fast bin/$target-srv $SSH/bin
   fi
 

@@ -1,6 +1,6 @@
 require "../../base/*"
 
-struct MT::MtDefn
+struct MT::DefnData
   def self.calc_prio(size : Int32, prio : Int16 = 5_i16)
     prio == 0 ? 0_i16 : size.to_i16 &* (prio &+ size.to_i16)
   end
@@ -51,7 +51,7 @@ struct MT::MtDefn
   end
 
   def as_any(epos : MtEpos = @epos)
-    MtDefn.new(vstr: @vstr, attr: :none, dnum: @dnum.as_any, epos: epos)
+    DefnData.new(vstr: @vstr, attr: :none, dnum: @dnum.as_any, epos: epos)
   end
 
   # def to_txt(io : IO, cap : Bool, und : Bool)

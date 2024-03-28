@@ -62,11 +62,12 @@
   $: if (more_state == 2) load_more()
 
   afterNavigate(() => {
+    ctmenu_ctrl.hide()
+
     l_idx = -1
     state = 2
     focus_line = undefined
     focus_node = undefined
-    $ctmenu_ctrl.actived = false
     rpage = init_page(rdata.cksum, rdata.ztext || '', p_idx)
     vdata = rpage.load_slice(qkind)
   })

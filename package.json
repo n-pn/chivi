@@ -7,7 +7,6 @@
     "qt": "crystal run -O2 --error-trace spec/manual/qtran_ai.cr -- ",
     "test": "crystal spec -O2 --error-trace spec/engine/cvmtl_spec.cr",
     "push-dev": "bash priv/push-dev.sh",
-    "push-app": "bash priv/push-app.sh",
     "push-cmd": "bash priv/push-cmd.sh",
     "push-prod": "bash priv/push-prod.sh",
     "push-stag": "bash priv/push-stag.sh",
@@ -15,12 +14,10 @@
     "sync-stag": "bash priv/sync-stag.sh",
     "db-up": "bash priv/remote/filedb-upload.sh",
     "db-bk": "bash priv/remote/filedb-backup.sh",
-    "ys-up": "bash priv/remote/yousuu-upload.sh",
-    "ys-bk": "bash priv/remote/yousuu-backup.sh",
     "backup": "yarn db-bk all && yarn ys-bk",
     "upload": "yarn db-up all && yarn ys-up",
-    "build": "shards build -s --release --production --mcpu native --link-flags='-fuse-ld=mold'",
-    "build-mt": "shards build -s --release --production -Dpreview_mt --mcpu native --link-flags='-fuse-ld=mold'",
+    "build": "shards build -s --release --production --link-flags='-fuse-ld=mold'",
+    "build-mt": "shards build -s --release --production -Dpreview_mt --link-flags='-fuse-ld=mold'",
     "dev": "bash priv/invoke-dev.sh",
     "rs": "bash priv/restart-srv.sh"
   }

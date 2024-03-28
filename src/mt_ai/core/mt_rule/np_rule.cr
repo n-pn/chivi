@@ -2,7 +2,7 @@
 
 class MT::AiCore
   def fix_np_node!(np_node : MtNode, np_body = np_node.body) : MtNode
-    return np_node if np_body.is_a?(MtDefn) || np_body.is_a?(MtNode)
+    return np_node if np_body.is_a?(DefnData) || np_body.is_a?(MtNode)
     np_body = [np_body.head, np_body.tail] if np_body.is_a?(MtPair)
 
     new_body = [] of MtNode

@@ -1,6 +1,8 @@
-require "./wseg_trie"
+require "../../data/sq_defn"
+require "./mt_wseg"
+require "./mt_defn"
 
-class MT::WsegDict
+class MT::TrieDict
   class_getter essence : self { load!("essence") }
   class_getter regular : self { load!("regular") }
   class_getter suggest : self { load!("suggest") }
