@@ -11,15 +11,15 @@ export interface DictData {
 
 // FIXME: add type for term
 export interface TermsData extends CV.Paginate {
-  items: CV.Viterm[]
+  items: CV.Zvdefn[]
   start: number
 }
 
 export const load = (async ({ fetch, url, parent }) => {
-  const { dinfo } = await parent()
+  const { dict, dinfo } = await parent()
 
-  const query = merge_query(url.searchParams, { d_id: dinfo.d_id, lm: 50 })
-  const table = await api_get<TermsData>(`/_ai/zvdefns?${query}`, fetch)
+  const query = merge_query(url.searchParams, { dict, lm: 50 })
+  const table = await api_get<TermsData>(`/_sp/zvdefns?${query}`, fetch)
 
   const _meta = {
     left_nav: [
@@ -40,7 +40,8 @@ function gen_query(params: URLSearchParams) {
     vstr: params.get('vstr') || '',
     cpos: params.get('cpos') || '',
     attr: params.get('attr') || '',
-    uname: params.get('uname') || '',
-    plock: params.get('plock') || '',
+    user: params.get('user') || '',
+    rank: +params.get('rank') || 0,
+    lock: +params.get('lock') || 0,
   }
 }

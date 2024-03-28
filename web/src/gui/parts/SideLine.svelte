@@ -31,7 +31,6 @@
   export let rword: Rdword
   export let ropts: Partial<CV.Rdopts>
 
-  export let state = 0
   export let l_idx = 0
   export let l_max = 0
 

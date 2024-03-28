@@ -52,9 +52,9 @@ class SP::Zvdefn
       jb.field "attr", @attr
       jb.field "rank", @rank
 
-      jb.field "_user", @_user
-      jb.field "_time", TimeUtil.cv_utime(@_time)
-      jb.field "_lock", @_lock
+      jb.field "user", @_user
+      jb.field "time", TimeUtil.cv_utime(@_time)
+      jb.field "lock", @_lock
     end
   end
 

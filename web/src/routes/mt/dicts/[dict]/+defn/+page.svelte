@@ -35,16 +35,16 @@
       form.vstr = prev.vstr
       form.cpos = prev.cpos
       form.attr = prev.attr
-      form.plock = prev.plock
+      form.lock = prev.lock
     } else {
       form.vstr = ''
       form.cpos = ''
       form.attr = ''
-      form.plock = 1
+      form.lock = 1
     }
   }
   const submit_term = async () => {
-    const body = { ...form, old_cpos: prev?.cpos, dname: data.dname }
+    const body = { ...form, old_cpos: prev?.cpos, dname: data.dict }
     const init = { body: JSON.stringify(body), method, headers }
     const res = await fetch(action, init)
 
@@ -62,12 +62,12 @@
     }
   }
 
-  $: min_privi = map_privi(data.dname)
+  $: min_privi = map_privi(data.dict)
 
   const map_privi = (dname: String) => {
-    if (dname == 'regular') return 1
-    if (dname.match(/^book|priv/)) return 0
-    return 2
+    if (dname == 'regular') return 2
+    if (dname.startsWith('qt')) return 0
+    return 1
   }
 </script>
 
@@ -76,8 +76,8 @@
     <h1 class="h2">Thêm sửa từ</h1>
     {#if prev}
       <p>
-        Từ đã được thêm/sửa bởi <cv-user>@{prev.uname}</cv-user>, thời gian:
-        <time>{rel_time_vp(prev.mtime)}</time>
+        Từ đã được thêm/sửa bởi <cv-user>@{prev.user}</cv-user>, thời gian:
+        <time>{rel_time_vp(prev.time)}</time>
       </p>
     {/if}
   </header>
@@ -96,20 +96,12 @@
 
     <div class="form-field">
       <label for="vstr" class="form-label">Nghĩa:</label>
-      <input
-        type="text"
-        name="vstr"
-        lang="vi"
-        class="m-input"
-        bind:value={form.vstr} />
+      <input type="text" name="vstr" lang="vi" class="m-input" bind:value={form.vstr} />
     </div>
 
     <div class="form-field">
       <label for="cpos" class="form-label">Từ loại:</label>
-      <button
-        type="button"
-        class="m-input"
-        on:click={() => (show_cpos_picker = !show_cpos_picker)}>
+      <button type="button" class="m-input" on:click={() => (show_cpos_picker = !show_cpos_picker)}>
         <code>{form.cpos || 'X'}</code>
         <span>{cpos_info[form.cpos || 'X']?.name}</span>
       </button>
@@ -117,10 +109,7 @@
 
     <div class="form-field">
       <label for="attr" class="form-label">Từ tính:</label>
-      <button
-        type="button"
-        class="m-input"
-        on:click={() => (show_attr_picker = !show_attr_picker)}>
+      <button type="button" class="m-input" on:click={() => (show_attr_picker = !show_attr_picker)}>
         {#each form.attr.split(' ') as attr}
           {@const { desc } = attr_info[attr] || {}}
           <code data-tip={desc}>{attr}</code>
@@ -132,14 +121,14 @@
 
     <div class="form-field">
       <label for="attr" class="form-label">Khóa sửa:</label>
-      {#each [0, 1, 2] as plock}
+      {#each [0, 1, 2] as lock}
         <label
           class="form-radio"
-          class:_active={plock == form.plock}
-          data-tip="Cần quyền hạn tối thiểu là {min_privi + plock} để sửa từ">
-          <input type="radio" bind:group={form.plock} value={plock} />
-          <SIcon name="plock-{plock}" iset="icons" />
-          <span>Quyền hạn {min_privi + plock}</span>
+          class:_active={lock == form.lock}
+          data-tip="Cần quyền hạn tối thiểu là {min_privi + lock} để sửa từ">
+          <input type="radio" bind:group={form.lock} value={lock} />
+          <SIcon name="plock-{lock}" iset="icons" />
+          <span>Quyền hạn {min_privi + lock}</span>
         </label>
       {/each}
     </div>

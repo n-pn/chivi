@@ -39,40 +39,26 @@
           <th class="vstr">Nghĩa</th>
           <th class="cpos">Từ loại</th>
           <th class="attr">Thuộc tính</th>
-          <th class="uname">Người dùng</th>
+          <th class="user">Người dùng</th>
           <th class="scope">Khóa</th>
           <th>Cập nhật</th>
         </tr>
 
         <tr class="filter">
           <td><SIcon name="search" /></td>
-          <td
-            ><input type="text" placeholder="-" bind:value={filter.zstr} /></td>
-          <td
-            ><input type="text" placeholder="-" bind:value={filter.vstr} /></td>
+          <td><input type="text" placeholder="-" bind:value={filter.zstr} /></td>
+          <td><input type="text" placeholder="-" bind:value={filter.vstr} /></td>
           <td>
             <button class="m-btn _sm">{filter.cpos || '-'}</button>
           </td>
-          <td class="attr"
-            ><input type="text" placeholder="-" bind:value={filter.attr} /></td>
-          <td class="uname"
-            ><input
-              type="text"
-              placeholder="-"
-              bind:value={filter.uname} /></td>
-          <td class="plock"
-            ><input
-              type="text"
-              placeholder="-"
-              bind:value={filter.plock} /></td>
+          <td class="attr"><input type="text" placeholder="-" bind:value={filter.attr} /></td>
+          <td class="user"><input type="text" placeholder="-" bind:value={filter.user} /></td>
+          <td class="lock"><input type="text" placeholder="-" bind:value={filter.lock} /></td>
           <td>
             <button class="m-btn _sm" on:click={reset_filter}>
               <SIcon name="eraser" />
             </button>
-            <a
-              class="m-btn _sm"
-              data-kbd="ctrl+enter"
-              href={pager.gen_url({ ...filter, pg: 1 })}>
+            <a class="m-btn _sm" data-kbd="ctrl+enter" href={pager.gen_url({ ...filter, pg: 1 })}>
               <SIcon name="search" />
             </a>
           </td>
@@ -80,19 +66,17 @@
       </thead>
 
       <tbody>
-        {#each table.items as { zstr, vstr, cpos, attr, mtime, uname, plock }, idx}
-          <tr class="term">
+        {#each table.items as { zstr, vstr, cpos, attr, time, user, lock }, idx}
+          {@const edit_url = `/mt/dicts/${data.dict}/+defn?zstr=${zstr}&cpos=${cpos}`}
+          <tr class="defn">
             <td class="-idx">
-              <a href="/mt/dicts/{data.dname}/+term?zstr={zstr}&cpos={cpos}">
-                {table.start + idx}</a>
+              <a href={edit_url}>{table.start + idx}</a>
             </td>
             <!-- svelte-ignore a11y-click-events-have-zstr-events -->
             <td class="-zstr">
               <span>{zstr}</span>
               <div class="hover">
-                <button
-                  class="m-btn _xs"
-                  on:click|stopPropagation={() => (filter.zstr = zstr)}>
+                <button class="m-btn _xs" on:click|stopPropagation={() => (filter.zstr = zstr)}>
                   <SIcon name="search" />
                 </button>
               </div>
@@ -103,12 +87,8 @@
               <span>{vstr}</span>
 
               <div class="hover">
-                <span class="m-btn _xs _active">
-                  <SIcon name="pencil" />
-                </span>
-                <button
-                  class="m-btn _xs"
-                  on:click|stopPropagation={() => (filter.vstr = vstr)}>
+                <a class="m-btn _xs _active" href={edit_url}><SIcon name="pencil" /></a>
+                <button class="m-btn _xs" on:click|stopPropagation={() => (filter.vstr = vstr)}>
                   <SIcon name="search" />
                 </button>
               </div>
@@ -124,20 +104,25 @@
               </div>
             </td>
             <td class="attr">
-              <span class="flex"
-                >{#each attr.split(' ') as a}
-                  <a href="{root_path}?attr={a}">{a}</a>
-                {/each}</span>
+              <span class="flex">
+                {#if attr}
+                  {#each attr.split(' ') as a}
+                    <a href="{root_path}?attr={a}"><code>{a}</code></a>
+                  {/each}
+                {:else}
+                  <code>None</code>
+                {/if}
+              </span>
             </td>
-            <td class="uname" class:_self={uname == $_user.uname}>
-              <a href="{root_path}?uname={uname}">{uname}</a>
+            <td class="user" class:_self={user == $_user.uname}>
+              <a href="{root_path}?user={user}">{user}</a>
             </td>
-            <td class="plock _{plock}">
-              <a href="{root_path}?plock={plock}">
-                <SIcon name="plock-{plock}" iset="icons" />
+            <td class="lock _{lock}">
+              <a href="{root_path}?lock={lock}">
+                <SIcon name="plock-{lock}" iset="icons" />
               </a>
             </td>
-            <td class="mtime">{rel_time_vp(mtime)} </td>
+            <td class="time">{rel_time_vp(time)} </td>
           </tr>
         {/each}
       </tbody>
@@ -222,8 +207,8 @@
   }
 
   .-idx,
-  .mtime,
-  .uname {
+  .time,
+  .user {
     @include fgcolor(tert);
   }
 
@@ -238,7 +223,7 @@
     }
   }
 
-  .uname {
+  .user {
     width: 6rem;
     font-weight: 500;
 
@@ -295,13 +280,13 @@
     }
   }
 
-  .term._mute {
+  .defn._mute {
     @include bgcolor(neutral, 5, 3);
     text-decoration: line-through;
     font-style: italic;
   }
 
-  .term._temp {
+  .defn._temp {
     @include fgcolor(tert);
     font-style: italic;
   }
@@ -314,7 +299,7 @@
     }
   }
 
-  .plock {
+  .lock {
     &._0 {
       @include fgcolor(success);
     }

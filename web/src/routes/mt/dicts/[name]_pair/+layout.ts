@@ -5,7 +5,6 @@ import type { LayoutLoad } from './$types'
 export interface DictData {
   dinfo: CV.Zvdict
   users: string[]
-  // terms: CV.Viterm[]
 }
 
 export const load = (async ({ fetch, params: { name }, url }) => {

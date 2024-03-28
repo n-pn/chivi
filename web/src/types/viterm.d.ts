@@ -17,19 +17,17 @@ declare namespace CV {
     state: string
   }
 
-  interface Viterm {
+  interface Zvdefn {
+    dict: string
     zstr: string
     cpos: string
 
     vstr: string
     attr: string
 
-    uname: string
-    mtime: number
-
-    plock: number
-    local: boolean
-    hviet: string
+    user: string
+    time: number
+    lock: number
   }
 
   export type Cvtree = [

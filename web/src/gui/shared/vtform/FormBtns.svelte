@@ -60,7 +60,7 @@
       data-kbd="↵"
       type="submit"
       disabled={privi < tform.req_privi}
-      data-umami-event="upsert-viterm"
+      data-umami-event="upsert-zvterm"
       data-umami-event-uname={uname}
       data-umami-event-privi={privi}>
       <span class="text">{tform.state ? 'Lưu' : 'Xóa'}</span>

@@ -37,6 +37,8 @@ declare namespace CV {
 
   interface Rdopts {
     fpath: string
+
+    zname: string
     pdict: string
     wn_id: number
 

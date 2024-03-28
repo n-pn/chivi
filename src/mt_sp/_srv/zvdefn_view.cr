@@ -14,7 +14,7 @@ class SP::ZvdefnView
 
       if dict
         args << dict
-        sql << " and zstr like $1"
+        sql << " and dict = $1"
       end
 
       if zstr

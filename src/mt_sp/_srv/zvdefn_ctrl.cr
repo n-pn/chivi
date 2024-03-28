@@ -45,9 +45,9 @@ class SP::ZvdefnCtrl < AC::Base
 
   @[AC::Route::GET("/find")]
   def show(dict : String, zstr : String, cpos : String)
-    term = Zvdefn.find(dict: dict, zstr: zstr, cpos: cpos)
+    guard_privi 0, "xem thông tin từ điển"
 
-    if term
+    if term = Zvdefn.find(dict: dict, zstr: zstr, cpos: cpos)
       render json: term
     else
       render :not_found, text: "Không tồn tại"

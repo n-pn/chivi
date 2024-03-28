@@ -13,6 +13,7 @@ export const load = (async ({ url, parent }) => {
   const ropts = {
     fpath: rdata.fpath,
     pdict: gen_pdict(crepo),
+    zname: crepo.zname,
     wn_id: crepo.wn_id,
     rmode: url.searchParams.get('rm') || 'qt',
     qt_rm: url.searchParams.get('qt') || 'qt_v1',

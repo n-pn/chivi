@@ -2,20 +2,20 @@ import { nav_link } from '$utils/header_util'
 
 import type { PageLoad } from './$types'
 
-export const load = (async ({ fetch, url, params: { dname }, parent }) => {
+export const load = (async ({ fetch, url, params: { dict }, parent }) => {
   const { dinfo } = await parent()
 
   const form = init_form(url.searchParams)
-  let prev: CV.Viterm
+  let prev: CV.Zvdefn
 
   if (form.zstr && form.cpos) {
-    const url = `/_ai/terms/find?dict=${dname}&zstr=${form.zstr}&cpos=${form.cpos}`
+    const url = `/_sp/zvdefns/find?dict=${dict}&zstr=${form.zstr}&cpos=${form.cpos}`
     const res = await fetch(url)
     if (res.ok) {
       prev = await res.json()
       form.attr ||= prev.attr
       form.vstr ||= prev.vstr
-      form.plock ||= prev.plock
+      form.lock ||= prev.lock
     } else {
       console.log(await res.text())
     }
@@ -31,7 +31,7 @@ export const load = (async ({ fetch, url, params: { dname }, parent }) => {
 
   const _title = 'Từ điển: ' + dinfo.label
 
-  return { dname, form, prev, _meta, _title }
+  return { dict, form, prev, _meta, _title }
 }) satisfies PageLoad
 
 function init_form(params: URLSearchParams) {
@@ -40,6 +40,6 @@ function init_form(params: URLSearchParams) {
     vstr: params.get('vstr') || '',
     cpos: params.get('cpos') || '',
     attr: params.get('attr') || '',
-    plock: +params.get('plock'),
+    lock: +params.get('lock'),
   }
 }
